@@ -52,16 +52,22 @@ style-superman/
 │   └── monthly_heat_report.md
 ├── scripts/                  # 自動化腳本
 │   ├── generate_daily_brief.py
+│   ├── generate_monthly_heat_report.py  # 月度歐美速報骨架
 │   ├── score_trends.py
 │   ├── track_rankings.py     # 排行快照檢視 + 名次演化比對
+│   ├── ingest_ranking_snapshot.py  # 安全加入排行快照（dry-run + 寫入）
 │   ├── validate_repo.py      # PR 前 smoke validation
 │   └── README.md
+├── tests/                    # 最小驗收
+│   ├── test_smoke.py         #   核心腳本 smoke（無需 pytest）
+│   └── fixtures/             #   ingest 合成測試範例
 ├── templates/                # 產出物的固定格式
 │   ├── daily_brief_template.md
 │   ├── trend_card_template.md
 │   ├── short_video_idea_template.md
 │   ├── ranking_snapshot_template.md
-│   └── monthly_heat_report_template.md
+│   ├── monthly_heat_report_template.md
+│   └── raw_signal_pack_template.md  # RAW_SIGNALS 中間格式契約
 ├── docs/                     # 系統設計與營運手冊
 │   ├── system_design.md
 │   ├── content_strategy.md

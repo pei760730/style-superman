@@ -71,6 +71,7 @@ git commit -m "brief: YYYY-MM-DD"
 ## 3. 每月
 
 - 產出或回看 `reports/monthly/YYYY-MM-eu.md`，確認月報有標訊號來源分層、信心與抓取限制。
+  （要手動產骨架：`python scripts/generate_monthly_heat_report.py --month YYYY-MM`；每月 1 號排程會自動產全文。）
 - 回測評分命中率（見 `trend_scoring_rules.md` §6）。
 - 視數據調整評分權重 / 內容支柱佔比，並記到 `CHANGELOG.md`。
 - 若月報暴露固定弱點（例如電商即時 best-seller 訊號不足），回頭硬化相關 prompts / templates。

@@ -44,3 +44,4 @@ note: "一句話理由"
 
 - 公關稿要識別出來並降可信度，但不一定丟棄——品牌動態本身就是訊號。
 - 如果一篇文章 action 是 discard，給一句話理由，不要默默丟。
+- 抽出的 signal 要能對齊 `templates/raw_signal_pack_template.md` 的欄位（source_id / region / signal_type / credibility 等），方便彙整成 daily brief 的 RAW_SIGNALS。

@@ -21,6 +21,16 @@ python scripts/generate_daily_brief.py --draft         # 產 *.draft.md（不入
 
 它只負責「填日期 + 套模板 + 來源摘要」，實際趨勢內容由 AI（`prompts/daily_trend_brief.md`）或人工補上。
 
+### `generate_monthly_heat_report.py`
+產出當月「歐美熱度速報」骨架，寫到 `reports/monthly/YYYY-MM-eu.md`。自動帶入最新 Lyst / StockX 季度基準 period 與來源摘要，其餘判斷留 `待填`。
+
+```bash
+python scripts/generate_monthly_heat_report.py --month 2026-06
+python scripts/generate_monthly_heat_report.py --month 2026-06 --draft   # 產 *.draft.md
+```
+
+對照每月 1 號的遠端排程（全自動產全文），這支是「本地手動產骨架」的入口。內容判斷見 `prompts/monthly_heat_report.md`。
+
 ### `score_trends.py`
 對趨勢清單做加權評分與排序。權重與分級門檻見 [docs/trend_scoring_rules.md](../docs/trend_scoring_rules.md)。
 
@@ -87,8 +97,18 @@ python scripts/generate_daily_brief.py
 python scripts/score_trends.py --input trends.json
 ```
 
+## 驗收 / 測試
+PR 前（CI 也會自動跑）：
+
+```bash
+python scripts/validate_repo.py     # repo 契約 14 項
+python tests/test_smoke.py          # 核心腳本最小驗收（7 項，無需 pytest）
+```
+
+`tests/test_smoke.py` 跑過所有核心指令並斷言結果；`tests/fixtures/*_snapshot.yml` 是 ingest 的合成測試範例。
+
 ## 後續規劃
-- 接 RSS / API 自動收集（`sources.yml` 的 `rss` 欄位已預留）
+- 接 RSS / API 自動收集（`sources.yml` 的 `rss` 欄位已預留；中間格式見 `templates/raw_signal_pack_template.md`）
 - 接 LLM 自動撰寫 brief 全文
 - 接推送（Telegram / Notion / Sheets）
 

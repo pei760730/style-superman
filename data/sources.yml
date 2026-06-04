@@ -1,0 +1,152 @@
+# sources.yml
+# 情報來源清單。系統每日從這些來源收集潮流訊號。
+# 欄位說明：
+#   id        唯一代號（小寫 kebab）
+#   name      顯示名稱
+#   region    jp / kr / us-eu / global
+#   type      media / brand / community / social / retailer
+#   tier      1=核心必看  2=常態追蹤  3=輔助/驗證
+#   url       主站
+#   rss       RSS（若有，未來自動抓取用；無則留 null）
+#   notes     用途備註
+
+sources:
+  # ---------- 全球潮流媒體 ----------
+  - id: hypebeast
+    name: Hypebeast
+    region: global
+    type: media
+    tier: 1
+    url: https://hypebeast.com/
+    rss: https://hypebeast.com/feed
+    notes: 街頭 / 聯名 / 球鞋的全球風向標
+
+  - id: highsnobiety
+    name: Highsnobiety
+    region: global
+    type: media
+    tier: 1
+    url: https://www.highsnobiety.com/
+    rss: https://www.highsnobiety.com/feed/
+    notes: 高端街頭 + 文化視角，選題深度佳
+
+  - id: gq-style
+    name: GQ Style
+    region: us-eu
+    type: media
+    tier: 2
+    url: https://www.gq.com/style
+    rss: null
+    notes: 主流男裝、紅毯與名人穿搭
+
+  - id: esquire-style
+    name: Esquire Style
+    region: us-eu
+    type: media
+    tier: 3
+    url: https://www.esquire.com/style/
+    rss: null
+    notes: 經典男裝、tailoring 角度
+
+  # ---------- 日潮 ----------
+  - id: hypebeast-jp
+    name: Hypebeast JP
+    region: jp
+    type: media
+    tier: 1
+    url: https://hypebeast.com/jp
+    rss: null
+    notes: 日本在地聯名與發售情報
+
+  - id: fashionsnap
+    name: Fashionsnap
+    region: jp
+    type: media
+    tier: 1
+    url: https://www.fashionsnap.com/
+    rss: https://www.fashionsnap.com/rss.xml
+    notes: 日本時尚產業最完整的新聞源
+
+  - id: wwd-japan
+    name: WWD Japan
+    region: jp
+    type: media
+    tier: 2
+    url: https://www.wwdjapan.com/
+    rss: null
+    notes: 產業 / 品牌營運 / 秀場
+
+  # ---------- 韓潮 ----------
+  - id: hypebeast-kr
+    name: Hypebeast KR
+    region: kr
+    type: media
+    tier: 2
+    url: https://hypebeast.kr/
+    rss: null
+    notes: 韓國街頭與發售
+
+  - id: musinsa
+    name: MUSINSA Magazine
+    region: kr
+    type: retailer
+    tier: 1
+    url: https://www.musinsa.com/
+    rss: null
+    notes: 韓國最大男裝電商，可看實際熱賣與穿搭內容
+
+  # ---------- 社群（人工監看，未來接 API） ----------
+  - id: ig-menswear
+    name: Instagram — Menswear hashtags
+    region: global
+    type: social
+    tier: 1
+    url: https://www.instagram.com/explore/tags/menswear/
+    rss: null
+    notes: 監看 #menswear #ootdmen #techwear 等標籤的熱度變化
+
+  - id: tiktok-mensfashion
+    name: TikTok — Men's Fashion
+    region: global
+    type: social
+    tier: 1
+    url: https://www.tiktok.com/tag/mensfashion
+    rss: null
+    notes: 短影音趨勢源頭，輪廓 / 配色 / 單品爆紅的第一現場
+
+  - id: reddit-malefashion
+    name: Reddit r/malefashionadvice
+    region: us-eu
+    type: community
+    tier: 2
+    url: https://www.reddit.com/r/malefashionadvice/
+    rss: https://www.reddit.com/r/malefashionadvice/.rss
+    notes: 歐美素人討論，驗證趨勢是否真的落地
+
+  - id: reddit-techwear
+    name: Reddit r/techwearclothing
+    region: global
+    type: community
+    tier: 3
+    url: https://www.reddit.com/r/techwearclothing/
+    rss: https://www.reddit.com/r/techwearclothing/.rss
+    notes: 機能風垂直社群
+
+  # ---------- 零售 / 發售追蹤 ----------
+  - id: ssense
+    name: SSENSE
+    region: global
+    type: retailer
+    tier: 2
+    url: https://www.ssense.com/en-us/men
+    rss: null
+    notes: 看哪些設計師單品被推、被折扣，反映庫存與需求
+
+  - id: end-clothing
+    name: END. Clothing
+    region: us-eu
+    type: retailer
+    tier: 3
+    url: https://www.endclothing.com/
+    rss: null
+    notes: 發售與 raffle 熱度

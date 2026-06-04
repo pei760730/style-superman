@@ -1,0 +1,79 @@
+# trend_taxonomy.yml
+# 趨勢分類體系。每個被收集到的訊號都應被歸到一個 category + 若干 tags。
+# 這是整套系統的「語言」——評分、簡報、選題都依賴它。
+
+version: 1
+
+# 主分類：一個 trend 必屬於且僅屬於一個 category
+categories:
+  - id: item
+    name: 單品 (Item)
+    desc: 具體的服飾或配件（某件外套、某雙鞋、某個包）
+    examples: ["barrel jeans", "suede 樂福鞋", "balaclava", "鋁框墨鏡"]
+
+  - id: silhouette
+    name: 輪廓 (Silhouette)
+    desc: 版型與身形比例的走向
+    examples: ["oversized 落肩", "wide-leg", "cropped 上衣", "drop-crotch"]
+
+  - id: color
+    name: 配色 (Color / Palette)
+    desc: 當季正在升溫的顏色與色彩組合
+    examples: ["mocha mousse 棕", "butter yellow", "全身 tonal 灰", "酒紅 x 海軍藍"]
+
+  - id: material
+    name: 材質 (Material / Texture)
+    desc: 布料、質感、工藝的趨勢
+    examples: ["麂皮", "尼龍機能布", "粗針織", "做舊水洗"]
+
+  - id: style
+    name: 風格 (Style / Aesthetic)
+    desc: 整體美學風格與次文化
+    examples: ["gorpcore 機能戶外", "old money", "japanese workwear", "y2k 復古"]
+
+  - id: brand
+    name: 品牌動態 (Brand)
+    desc: 品牌的聯名、發售、人事、開店、轉向
+    examples: ["新任創意總監", "聯名發售", "首店開幕", "副線推出"]
+
+  - id: person
+    name: 人物 (Person)
+    desc: 帶動風向的人（明星、設計師、KOL、運動員）
+    examples: ["某 rapper 帶火單品", "球員場邊穿搭", "設計師個人風格"]
+
+  - id: culture
+    name: 文化現象 (Culture)
+    desc: 跨越單品的文化 / 社會 / 產業現象
+    examples: ["二手與 vintage 崛起", "男性美妝", "運動與時尚融合"]
+
+# 標籤：一個 trend 可掛多個 tag，用於交叉檢索與選題
+tag_groups:
+  region:
+    - jp        # 日潮
+    - kr        # 韓潮
+    - us-eu     # 歐美
+    - global
+
+  season:
+    - ss        # 春夏
+    - fw        # 秋冬
+    - transition
+
+  audience:
+    - mass          # 大眾可穿
+    - enthusiast    # 潮流玩家
+    - niche         # 小眾垂直
+
+  content_angle:    # 適合轉成什麼內容
+    - how-to-wear   # 教學穿搭
+    - explainer     # 趨勢科普
+    - hot-take      # 觀點 / 爭議
+    - haul-review   # 開箱 / 評測
+    - listicle      # 清單盤點
+
+  lifecycle:        # 趨勢生命週期（影響評分權重）
+    - emerging      # 剛冒頭
+    - rising        # 快速升溫
+    - peak          # 高峰
+    - mainstream    # 已大眾化
+    - declining     # 退燒

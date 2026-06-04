@@ -1,0 +1,142 @@
+# brands.yml
+# 追蹤中的男裝 / 潮流品牌。系統會優先標記與這些品牌相關的訊號。
+# 欄位：
+#   id        代號
+#   name      品牌名
+#   region    主要發源地
+#   segment   luxury / high-street / streetwear / workwear / techwear / heritage / sport
+#   tier      1=重點追蹤  2=常態  3=雷達
+#   watch     目前特別關注的點
+#   notes     備註
+
+brands:
+  # ---------- 日本 ----------
+  - id: visvim
+    name: visvim
+    region: jp
+    segment: workwear
+    tier: 1
+    watch: ["民族工藝細節", "高單價二手保值"]
+    notes: 日系 americana / craft 標竿
+
+  - id: kapital
+    name: KAPITAL
+    region: jp
+    segment: workwear
+    tier: 1
+    watch: ["boro 拼布", "怪趣味設計病毒傳播"]
+    notes: 社群上極易爆紅的話題品牌
+
+  - id: sacai
+    name: sacai
+    region: jp
+    segment: luxury
+    tier: 1
+    watch: ["混搭剪裁", "聯名（Nike 等）"]
+    notes: hybrid 剪裁影響整個產業
+
+  - id: wtaps
+    name: WTAPS
+    region: jp
+    segment: streetwear
+    tier: 2
+    watch: ["軍裝 workwear", "發售熱度"]
+    notes: 日系街頭硬核代表
+
+  - id: comme-des-garcons
+    name: COMME des GARÇONS
+    region: jp
+    segment: luxury
+    tier: 2
+    watch: ["PLAY 大眾線", "聯名"]
+    notes: 影響力跨越世代
+
+  # ---------- 韓國 ----------
+  - id: we11done
+    name: We11done
+    region: kr
+    segment: luxury
+    tier: 2
+    watch: ["K-pop 帶動", "歐美擴張"]
+    notes: 韓潮高端代表
+
+  - id: gentle-monster
+    name: Gentle Monster
+    region: kr
+    segment: luxury
+    tier: 2
+    watch: ["眼鏡單品", "概念店行銷"]
+    notes: 配件帶動整體形象
+
+  - id: ader-error
+    name: ADER error
+    region: kr
+    segment: streetwear
+    tier: 3
+    watch: ["極簡配色", "設計細節"]
+    notes: 韓系設計師街頭
+
+  # ---------- 歐美 / 全球 ----------
+  - id: aime-leon-dore
+    name: Aimé Leon Dore
+    region: us-eu
+    segment: heritage
+    tier: 1
+    watch: ["New Balance 聯名", "old money x 街頭混血"]
+    notes: 近年定義美式優雅街頭
+
+  - id: stussy
+    name: Stüssy
+    region: us-eu
+    segment: streetwear
+    tier: 1
+    watch: ["長青聯名", "basic 重新流行"]
+    notes: 街頭常青樹，回潮指標
+
+  - id: our-legacy
+    name: Our Legacy
+    region: us-eu
+    segment: high-street
+    tier: 2
+    watch: ["輪廓實驗", "材質"]
+    notes: 歐系設計師，影響穿搭社群
+
+  - id: arcteryx
+    name: Arc'teryx
+    region: us-eu
+    segment: techwear
+    tier: 1
+    watch: ["gorpcore 主力", "veilance 副線"]
+    notes: 機能風進城市的核心品牌
+
+  - id: salomon
+    name: Salomon
+    region: us-eu
+    segment: sport
+    tier: 1
+    watch: ["XT-6 等鞋款", "時尚化"]
+    notes: 運動越界時尚的代表案例
+
+  - id: loewe
+    name: Loewe
+    region: us-eu
+    segment: luxury
+    tier: 1
+    watch: ["創意總監動向", "話題單品"]
+    notes: 高端男裝風向，常引爆社群
+
+  - id: bottega-veneta
+    name: Bottega Veneta
+    region: us-eu
+    segment: luxury
+    tier: 2
+    watch: ["皮件工藝", "低調奢華 quiet luxury"]
+    notes: quiet luxury 代表
+
+  - id: carhartt-wip
+    name: Carhartt WIP
+    region: us-eu
+    segment: workwear
+    tier: 2
+    watch: ["工裝大眾化", "聯名"]
+    notes: workwear 入門首選，大眾接受度高

@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Secrets / env
+.env
+.env.*
+!.env.example
+*.key
+secrets.yml
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Local working files
+/tmp/
+/.cache/
+scratch/
+
+# Generated artifacts that should NOT be committed (drafts before review)
+reports/daily/*.draft.md

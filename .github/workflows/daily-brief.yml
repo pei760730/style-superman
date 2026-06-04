@@ -1,0 +1,52 @@
+name: Daily Brief
+
+# 每日自動產出 Daily Brief 骨架。
+#
+# 現階段只跑 generate_daily_brief.py（填模板 + 來源摘要），
+# 把骨架 commit 回 repo。實際趨勢內容仍由 AI / 人工補上。
+# 接入 LLM 後，可在 generate 步驟後加上自動撰寫。
+#
+# 觸發方式：
+#   - workflow_dispatch：手動觸發（預設先用這個）
+#   - schedule：每日定時（預設註解掉，要全自動時再打開）
+
+on:
+  workflow_dispatch:
+  # schedule:
+  #   # 每天 UTC 23:00（台灣時間隔日 07:00）跑
+  #   - cron: "0 23 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Generate daily brief skeleton
+        env:
+          PYTHONIOENCODING: utf-8
+        run: python scripts/generate_daily_brief.py
+
+      - name: Commit brief if changed
+        run: |
+          git config user.name "style-superman-bot"
+          git config user.email "actions@github.com"
+          if [ -n "$(git status --porcelain reports/daily)" ]; then
+            git add reports/daily
+            git commit -m "brief: auto skeleton $(date -u +%Y-%m-%d)"
+            git push
+          else
+            echo "No new brief to commit."
+          fi

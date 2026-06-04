@@ -4,7 +4,8 @@
 #   id        代號
 #   name      品牌名
 #   region    主要發源地
-#   segment   luxury / high-street / streetwear / workwear / techwear / heritage / sport
+#   segment   luxury / high-street / streetwear / workwear / techwear / heritage / sport / contemporary
+#             （contemporary = 日系素材主義 / 上品：重布料·版型·完成度，不靠 logo/hype）
 #   tier      1=重點追蹤  2=常態  3=雷達
 #   watch     目前特別關注的點
 #   notes     備註
@@ -50,6 +51,72 @@ brands:
     tier: 2
     watch: ["PLAY 大眾線", "聯名"]
     notes: 影響力跨越世代
+
+  # ---------- 日本：素材主義 / contemporary（Pei 重點追蹤的日潮 lane）----------
+  # 共同密碼：素材 → 版型 → 完成度做到極致，其餘留白。不靠 logo / 不追 hype。
+  - id: auralee
+    name: AURALEE
+    region: jp
+    segment: contemporary
+    tier: 1
+    watch: ["自家開發布料", "巴黎發表 / 國際擴張", "buyer 點名 tailored jacket"]
+    notes: 此 lane 最 refined、最接近國際舞台；Pei 品味錨點
+
+  - id: ciota
+    name: CIOTA
+    region: jp
+    segment: contemporary
+    tier: 1
+    watch: ["軍裝 / 丹寧老工法重做", "indigo 染", "供給稀缺度"]
+    notes: 最有 craft / 根源敘事的一家；Pei 品味錨點
+
+  - id: neat
+    name: NEAT
+    region: jp
+    segment: contemporary
+    tier: 1
+    watch: ["義 / 英高級毛料長褲", "tapered 乾淨版型", "型號擴充 / 別注"]
+    notes: 一條好褲子主義的 specialist；Pei 品味錨點
+
+  - id: comoli
+    name: COMOLI
+    region: jp
+    segment: contemporary
+    tier: 1
+    watch: ["垂墜 refined basics", "每季定番演化", "二手保值"]
+    notes: 此 lane 的定義者，幾乎是 AURALEE 的兄弟座標
+
+  - id: a-presse
+    name: A.PRESSE
+    region: jp
+    segment: contemporary
+    tier: 1
+    watch: ["vintage-rooted 熱度", "發售即售罄", "別注 / 聯名"]
+    notes: 近年最熱的 vintage-rooted refined，熱度正高
+
+  - id: markaware
+    name: marka / MARKAWARE
+    region: jp
+    segment: contemporary
+    tier: 2
+    watch: ["永續素材主義 tailoring", "buyer 選品"]
+    notes: 報告 SS26 buyer 選品點到；可持續取向
+
+  - id: graphpaper
+    name: Graphpaper
+    region: jp
+    segment: contemporary
+    tier: 2
+    watch: ["contemporary minimal", "select shop 自有企劃 / 別注"]
+    notes: 版型更現代一點；店+品牌雙身份
+
+  - id: stein
+    name: stein
+    region: jp
+    segment: contemporary
+    tier: 2
+    watch: ["現代 oversize refined", "版型實驗"]
+    notes: 同 lane 但廓形更前衛
 
   # ---------- 韓國 ----------
   - id: we11done

@@ -6,10 +6,10 @@
 
 | # | 決策題 | Codex 建議 | 待人類確認? |
 |---|--------|------------|--------------|
-| D1 | 韓潮是否獨立 monthly report | 先留在 daily brief 與月報 cross-market section，不立刻獨立月報 | 是 |
-| D2 | 月報排序固定 Top 5/10 或依訊號浮動 | 固定主榜 Top 5，另設「觀察名單」浮動 3–5 條 | 是 |
-| D3 | 是否新增 content idea 目錄 | 先新增 `reports/content_ideas/`，不新增根目錄 `content_pool/` | 是 |
-| D4 | 來源 tier 調整原則 | Tier 1 僅給可驗證且高訊號密度來源；社群與公關稿多數作 confirming signal | 是 |
+| D1 | 韓潮是否獨立 monthly report | 已拍板：補 KR 來源、daily brief 固定追 KR、月報加韓潮 cross-market；獨立 KR 月報暫緩 | 否 |
+| D2 | 月報排序固定 Top 5/10 或依訊號浮動 | 已拍板：月報主榜固定 Top 5，另設浮動觀察名單 3–5 條 | 否 |
+| D3 | 是否新增 content idea 目錄 | 已拍板：方向採 `reports/content_ideas/YYYY-MM.md`；本輪不建實體目錄 | 否 |
+| D4 | 來源 tier 調整原則 | 已拍板：採 tier 判斷原則；本輪不批量改 `data/`，另案 PR 再改 | 否 |
 | D5 | LLM 供應商策略 | 先做 vendor-neutral adapter + manual/mock provider；真實 Claude/OpenAI API 另案拍板 | 是 |
 
 ---
@@ -36,9 +36,9 @@
 - 先做 cross-market section 可保留韓潮敏感度，又不會讓月報變成「來源不足但硬湊榜」。
 - 若連續 2–3 個月都有 5 條以上高可信 KR raw signals，且能轉成 2 條以上 headline / short video ideas，再升級為獨立 KR monthly report。
 
-### 待人類確認?
+### 拍板狀態
 
-**是。** 這會影響 Style Superman 是否把韓潮定位成獨立內容支柱；需人類確認品牌是否要主動強化 KR 覆蓋。
+**已拍板。** 採「補 KR 來源 + daily brief 固定追 KR + 月報加韓潮 cross-market 小節」；**獨立 KR 月報暫緩**。維持升級門檻：連續 2–3 個月都有 5 條以上高可信 KR raw signals，且能轉成 2 條以上 headline / short video ideas，再升級為獨立 KR monthly report。
 
 ---
 
@@ -66,9 +66,9 @@
 - 完全浮動雖然誠實，但不利於月報模板、短影音選題節奏與長期比較。
 - 「Top 5 + 觀察名單」可同時保留穩定輸出與訊號誠實度：主榜只收高信心題，觀察名單可放早期但未完全驗證的 trend。
 
-### 待人類確認?
+### 拍板狀態
 
-**是。** 排序數量會影響月報閱讀體驗、內容產量與後續短影音節奏；需人類確認是否偏好精簡或大量盤點。
+**已拍板。** 採混合制：月報主榜固定 Top 5，另列 3–5 條浮動「觀察名單 / confirming signals」。主榜只收最值得優先看的高信心題；觀察名單保留早期、跨市場或待確認訊號。
 
 ---
 
@@ -94,9 +94,9 @@
 - 先用 Markdown 選題池可保持低成本；等到需要狀態欄位、發布日期、平台分發時，再決定是否引入 YAML frontmatter 或外部工具。
 - 建議命名：`reports/content_ideas/YYYY-MM.md`，每月一檔，避免每日碎檔過多。
 
-### 待人類確認?
+### 拍板狀態
 
-**是。** 選題池是否留在 repo，取決於人類的實際拍攝 / 排程工具；若已主要使用 Notion，repo 只需保留精華或回測資料。
+**已拍板。** 方向採 `reports/content_ideas/YYYY-MM.md`；**本輪不新增實體目錄**，待下一個內容流程 PR 再建立或調整。
 
 ---
 
@@ -117,7 +117,7 @@
 
 ### 理由
 
-- 本輪 scope 不碰 `data/`，因此不應直接改來源 tier。
+- 本輪只因 D1 補必要 KR 來源；不批量重排既有 `data/` 來源 tier，因此不應在同一 PR 做全來源重分級。
 - C6 RSS 收集會開始自動讀 `source_tier`，若沒有文字原則，工程很容易把「可抓到 RSS」誤解成「可信度最高」。
 - tier 應同時看可驗證性、男裝相關性、訊號密度、是否一手資料，而不是只看知名度。
 
@@ -141,9 +141,9 @@
 - **品牌新聞稿 / 公關稿**：可證明品牌動作，不可單獨證明趨勢熱度。
 - **無方法說明的榜單 / affiliate listicle**：可參考內容角度，不應當作主要排名依據。
 
-### 待人類確認?
+### 拍板狀態
 
-**是。** 來源 tier 會影響自動化權重與內容可信度；人類需確認哪些來源符合 Style Superman 的市場觀點，之後再另開資料 PR 修改 `data/sources.yml`。
+**已拍板。** 採本節 tier 判斷原則；**本輪不批量修改 `data/` 既有來源 tier**。需要重分級時另開資料 PR，逐筆說明原因與口徑。
 
 ---
 

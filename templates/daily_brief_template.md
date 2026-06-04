@@ -36,6 +36,15 @@
 
 ---
 
+## 🇰🇷 韓潮 KR 追蹤
+
+<!-- 固定保留 KR 訊號位；若當日無高信心訊號，寫「今日無可驗證 KR 訊號」，不可補熱度。 -->
+- **K-pop / 名人造型：** {{kr_kpop_styling}} — {{kr_kpop_source}}
+- **韓系設計師 / 零售：** {{kr_designer_retail}} — {{kr_retail_source}}
+- **跨市場外溢：** {{kr_cross_market}} — {{kr_cross_market_source}}
+
+---
+
 ## 👀 明日追蹤 Watchlist
 
 <!-- 1–2 個伏筆 -->

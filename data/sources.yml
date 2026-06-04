@@ -76,6 +76,33 @@ sources:
     rss: null
     notes: 產業 / 品牌營運 / 秀場
 
+  - id: mens-nonno
+    name: MEN'S NON-NO
+    region: jp
+    type: media
+    tier: 1
+    url: https://www.mensnonno.jp/
+    rss: null
+    notes: 街頭 / 當代 / 高端男裝穿搭，日本男裝雜誌指標
+
+  - id: popeye-mag
+    name: POPEYE / BRUTUS
+    region: jp
+    type: media
+    tier: 2
+    url: https://popeyemagazine.jp/
+    rss: null
+    notes: city boy 美學源頭，文化視角的男性風格
+
+  - id: houyhnhnm
+    name: Houyhnhnm（フウィナム）
+    region: jp
+    type: media
+    tier: 2
+    url: https://www.houyhnhnm.jp/
+    rss: null
+    notes: 日系街頭 / 設計師 / 文化媒體，抓尖端日潮
+
   # ---------- 韓潮 ----------
   - id: hypebeast-kr
     name: Hypebeast KR
@@ -179,3 +206,40 @@ sources:
       免費轉售/熱銷實數：最暢銷球鞋、服飾、配件、成長最快品牌。
       偏球鞋/街頭，男裝代表性最強，但涵蓋不到精品成衣。
       快照見 data/rankings/stockx.yml
+
+  # 日本：沒有單一威望榜，靠 EC 即時銷售榜 + 二手成交需求
+  - id: zozotown
+    name: ZOZOTOWN メンズランキング
+    region: jp
+    type: ranking
+    tier: 1
+    url: https://zozo.jp/ranking/all-sales-men.html
+    rss: null
+    cadence: realtime       # 即時 / 日榜
+    notes: >
+      日本最大 EC 的男裝即時銷售榜，可分類（上衣/外套/鞋/setup）。
+      偏大眾走量（Uniqlo/Nike/連帽T），抓不到尖端日潮 → 須配媒體/街拍看。
+      ⚠ JS 動態頁，自動抓取需 headless browser；目前手動採集。
+      快照見 data/rankings/zozotown.yml
+
+  - id: wear-zozo
+    name: WEAR by ZOZO
+    region: jp
+    type: ranking
+    tier: 2
+    url: https://wear.jp/
+    rss: null
+    cadence: realtime
+    notes: 穿搭 / 單品 / 紅人排行，看 shop staff、模特實穿。比 EC 榜更貼近造型風向。
+
+  - id: mercari-jp
+    name: Mercari（メルカリ）
+    region: jp
+    type: ranking
+    tier: 2
+    url: https://about.mercari.com/press/
+    rss: null
+    cadence: report         # 報告不定期；平台數據即時
+    notes: >
+      日本最大二手平台，成交=需求訊號。品牌榜 10 年來 #1 從 Chanel→Uniqlo。
+      日本版的 StockX，但更廣、非球鞋導向。快照見 data/rankings/mercari-jp.yml

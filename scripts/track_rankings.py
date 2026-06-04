@@ -40,8 +40,16 @@ ROOT = Path(__file__).resolve().parent.parent
 RANKINGS_DIR = ROOT / "data" / "rankings"
 
 SOURCES = {
-    "lyst": "lyst-index.yml",
-    "stockx": "stockx.yml",
+    "lyst": "lyst-index.yml",       # 歐美：季度威望榜
+    "stockx": "stockx.yml",         # 歐美：轉售熱銷實數
+    "zozo": "zozotown.yml",         # 日本：EC 即時銷售榜
+    "mercari": "mercari-jp.yml",    # 日本：二手成交需求
+}
+
+# 顯示分組：依地區，方便 --source all 時排版
+REGION_GROUPS = {
+    "🇺🇸🇪🇺 歐美": ["lyst", "stockx"],
+    "🇯🇵 日本": ["zozo", "mercari"],
 }
 
 
@@ -171,14 +179,87 @@ def show_stockx_latest(data: dict) -> None:
     print()
 
 
+# ---------- 顯示：ZOZOTOWN ----------
+
+def show_zozo_latest(data: dict) -> None:
+    snaps = snapshots(data)
+    if not snaps:
+        print("（ZOZOTOWN 無快照）")
+        return
+    s = snaps[0]
+    print(f"\n🛍  ZOZOTOWN 男裝 · {s.get('period')}（採集 {s.get('captured')}）")
+    if s.get("method") != "official-ranking":
+        # 誠實標註：非官方逐位排名
+        print(f"    ⚠ {s.get('method')}：非官方逐位排名")
+
+    items = s.get("observed_trending") or s.get("items") or []
+    print("\n  熱賣單品" + ("（觀察，無嚴格名次）" if not items or "rank" not in items[0] else ""))
+    print("  " + "-" * 40)
+    for it in items:
+        prefix = f"{it['rank']:>2}. " if "rank" in it else "  · "
+        print(f"  {prefix}{it['brand']} · {it['item']}")
+
+    if s.get("menswear_read"):
+        print("\n  👔 男裝視角")
+        for m in s["menswear_read"]:
+            print(f"     · {m}")
+    print()
+
+
+# ---------- 顯示：Mercari ----------
+
+def show_mercari_latest(data: dict) -> None:
+    snaps = snapshots(data)
+    if not snaps:
+        print("（Mercari 無快照）")
+        return
+    s = snaps[0]
+    print(f"\n♻  Mercari（二手成交）· {s.get('period')}（{s.get('report', '')}）")
+
+    bt = s.get("brand_top")
+    if bt:
+        note = f"  — {bt['note']}" if bt.get("note") else ""
+        print(f"\n  成交品牌 #1   {bt['name']}{note}")
+    if s.get("cross_gen_brands"):
+        print(f"  跨世代保值   {', '.join(s['cross_gen_brands'])}")
+    if s.get("category_shift"):
+        print("\n  品類結構變化")
+        for c in s["category_shift"]:
+            print(f"     · {c}")
+    if s.get("menswear_read"):
+        print("\n  👔 男裝視角")
+        for m in s["menswear_read"]:
+            print(f"     · {m}")
+    print()
+
+
+# 來源 → 顯示函式對照
+SHOW = {
+    "lyst": show_lyst_latest,
+    "stockx": show_stockx_latest,
+    "zozo": show_zozo_latest,
+    "mercari": show_mercari_latest,
+}
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="排行快照檢視與比對")
-    parser.add_argument("--source", choices=["lyst", "stockx", "all"], default="all")
+    parser.add_argument(
+        "--source",
+        choices=["lyst", "stockx", "zozo", "mercari", "all"],
+        default="all",
+    )
+    parser.add_argument("--region", choices=["us-eu", "jp"], help="只看某地區（覆蓋 --source）")
     parser.add_argument("--compare", action="store_true", help="比對最新兩季名次（目前僅 Lyst）")
     parser.add_argument("--json", action="store_true", help="輸出最新快照 JSON")
     args = parser.parse_args()
 
-    targets = ["lyst", "stockx"] if args.source == "all" else [args.source]
+    if args.region:
+        targets = REGION_GROUPS["🇺🇸🇪🇺 歐美" if args.region == "us-eu" else "🇯🇵 日本"]
+    elif args.source == "all":
+        targets = list(SOURCES)
+    else:
+        targets = [args.source]
 
     if args.json:
         out = {k: (snapshots(load(k))[:1] or [None])[0] for k in targets}
@@ -187,12 +268,9 @@ def main() -> None:
 
     for key in targets:
         data = load(key)
-        if key == "lyst":
-            show_lyst_latest(data)
-            if args.compare:
-                compare_lyst(data)
-        else:
-            show_stockx_latest(data)
+        SHOW[key](data)
+        if key == "lyst" and args.compare:
+            compare_lyst(data)
 
 
 if __name__ == "__main__":

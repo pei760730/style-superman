@@ -1,0 +1,41 @@
+# zozotown.yml
+# ZOZOTOWN 男裝銷售快照（日本最大 EC 即時榜）。
+#
+# 來源：https://zozo.jp/ranking/all-sales-men.html  （免費，即時/日榜）
+# 性質：大眾走量 → 反映日本一般男性「現在在買什麼」，非尖端日潮。
+#       尖端（visvim/Kapital/設計師）要看媒體/街拍（sources.yml region: jp 的 media）。
+#
+# ⚠ 採集限制：ZOZO 排行頁是 JS 動態渲染，一般抓取工具拿不到逐位名次。
+#   自動化需 headless browser（Playwright/Puppeteer）或手動採集。
+#   在那之前，這裡記「觀察到的熱賣單品」而非官方 1–N 排名（method 欄標明）。
+
+source: zozotown
+region: jp
+cadence: realtime
+free: true
+url: https://zozo.jp/ranking/all-sales-men.html
+
+snapshots:
+  - period: "2026-06"
+    captured: "2026-06-04"
+    method: search-observed     # 來源：搜尋結果觀察，非官方逐位排名
+    caveat: >
+      ZOZO 榜為 JS 動態頁，本筆為觀察到的熱賣單品，非官方 1–N 名次。
+      逐位排名待 headless 抓取或手動採集後補上（屆時 method 改 official-ranking 並加 rank 欄）。
+
+    # 觀察到的熱賣單品（無嚴格名次，勿當排行解讀）
+    observed_trending:
+      - { brand: "Nike",            item: "Air Force 1 '07 LV8" }
+      - { brand: "U.S. POLO ASSN.", item: "oversized 長袖 T" }
+      - { brand: "FOG Essentials",  item: "pullover hoodie（反光 logo）" }
+      - { brand: "Carhartt",        item: "midweight hooded zip（oversized / 刷毛）" }
+      - { brand: "CLEL",            item: "Royal Oxford regular collar shirt" }
+      - { brand: "welise",          item: "2026SS basic regular shirt（short length）" }
+      - { brand: "Psycho Bunny",    item: "polo shirt" }
+      - { brand: "Hanes",           item: "tagless tee" }
+
+    menswear_read:
+      - "oversized 輪廓 + 品牌 logo 單品 + 機能/刷毛布料 = 日本大眾男裝主流"
+      - "Nike AF1、FOG Essentials、Carhartt：街頭基本款走量，非尖端"
+      - "welise 2026SS『短版』呼應日潮『短 × 寬』輪廓（見 2026-06-04 daily brief）"
+      - "尖端日潮（visvim/Kapital/設計師）EC 榜抓不到 → 看 media/街拍交叉驗證"

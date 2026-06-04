@@ -66,11 +66,14 @@ git commit -m "brief: YYYY-MM-DD"
 
 - 從選題池排 3–5 支拍攝。
 - 檢查 `data/` 是否要更新（新品牌、新人物、新來源）。
+- 週選題如何承接 daily brief，見 [Content Calendar](content_calendar.md)。
 
 ## 3. 每月
 
+- 產出或回看 `reports/monthly/YYYY-MM-eu.md`，確認月報有標訊號來源分層、信心與抓取限制。
 - 回測評分命中率（見 `trend_scoring_rules.md` §6）。
 - 視數據調整評分權重 / 內容支柱佔比，並記到 `CHANGELOG.md`。
+- 若月報暴露固定弱點（例如電商即時 best-seller 訊號不足），回頭硬化相關 prompts / templates。
 
 ## 4. 維護 data/
 

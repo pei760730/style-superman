@@ -57,6 +57,8 @@ Daily Brief 的 headline trend
 - **每週**：從選題池排出 3–5 支拍攝。
 - **每月**：回看哪類內容表現好，調整支柱佔比與評分權重。
 
+Daily brief → 每週選題 → 每月速報 → 主題分析的完整生產線，見 [Content Calendar](content_calendar.md)。
+
 ## 7. 成功指標
 
 | 層級 | 指標 |

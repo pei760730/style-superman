@@ -19,17 +19,18 @@
 
 1. 從 `RAW_SIGNALS` 中濾掉重複、廣告、無關噪音。
 2. 將每個有效訊號歸類到 taxonomy 的 category，掛上 region / lifecycle / content_angle 標籤。
-3. 挑出 **今日 3–5 個最值得關注的趨勢**（headline trends），其餘歸入 quick hits。
+3. 挑出 **今日 3–5 個最值得關注的趨勢**（headline trends），其餘歸入 quick hits；訊號弱時可少於 3 個，不硬湊。
 4. 對每個 headline trend：說明「是什麼 / 為什麼現在 / 對創作者的意義」。
 5. 標出 **1–2 個明日值得追蹤的伏筆**（watchlist）。
-6. 整份輸出嚴格遵守 `templates/daily_brief_template.md` 的結構。
+6. 產出「可拍選題」時，優先給實穿、可驗證、低製作門檻的角度；hot-take 可以有態度，但不能把待查訊號講成結論。
+7. 整份輸出嚴格遵守 `templates/daily_brief_template.md` 的結構，不新增 / 刪除 template 欄位。
 
 ## 輸出要求
 
 - 語言：繁體中文為主，品牌 / 單品 / 專有名詞保留英文原文。
-- 口吻：編輯部、有觀點、不空泛。避免「在當今快速變化的時尚界…」這類開場套話。
-- 每個 headline trend 控制在 80–150 字。
-- 不確定的訊號要標 `（待驗證）`，不要編造熱度數據。
+- 口吻：符合 `docs/content_strategy.md` 的品牌調性——自信但不裝、實用優先、快準有態度、誠實；避免「在當今快速變化的時尚界…」這類開場套話。
+- 每個 headline trend 控制在 80–150 字，第一句直接給重點，不先鋪陳背景。
+- 不確定的訊號要標 `（待驗證）` 或 `待查`，不要編造熱度數據、排名、百分比、銷量。
 - 結尾附上「可拍選題」3 條，連到 short_video_ideas 流程。
 
 ## 注意

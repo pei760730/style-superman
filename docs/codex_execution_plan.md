@@ -232,9 +232,11 @@ python scripts/validate_repo.py
 python -m unittest discover -s tests
 ```
 
-### C7 — LLM 自動撰寫 brief adapter 介面（Claude Code 工程範圍）
+### ~~C7 — LLM 自動撰寫 brief adapter 介面~~（DROPPED，2026-06-04）
 
-**Goal**
+> **不做。** 經檢討（見 `docs/decisions.md` D5）：系統已透過排程雲端 agent 自動產出 AI 報告，C7 屬重複造既有能力；加真實 API 違反「不為寫 code 而寫 code」。需要 AI 寫 brief 時把 `raw_signal_pack` 交給對話中的 Claude / 排程 agent 即可。日後若有無人值守硬需求再重啟。以下原規格僅留作紀錄。
+
+**Goal（原）**
 在不綁定 Claude / OpenAI / 其他供應商的前提下，先建立「把 raw signals + prompt/template 轉成完整 daily brief」的 adapter 介面，讓未來可替換 LLM provider，也可保留手動 prompt 流程。
 
 **Scope**
@@ -307,8 +309,6 @@ python -m unittest discover -s tests
 
 ## 5. 下一個建議 PR
 
-**下一個建議 PR：C6 — RSS 收集 → `raw_signal_pack`。**
+**工程 backlog（C1–C6）已全部完成；C7 已 DROPPED（見 D5）。目前無待辦工程 PR。**
 
-原因：C1–C5 已把 validation、ranking ingest、raw signal 契約、月報骨架與 smoke checks 補齊；下一階段應先把真實 RSS 來源穩定轉進 raw 層，再讓 C7 的 LLM adapter 讀同一份 input。這樣可避免 LLM 直接吃未整理來源、也避免把來源事實與 Style Superman 判斷混在一起。
-
-C7 建議緊接在 C6 後開 PR；若 C6 實作時已新增 raw pack fixtures，可直接沿用作 C7 的 mock / manual provider 測試資料。
+下一步不是工程，而是**讓系統跑、累積真實資料**：Lyst Q2（7 月排程自動 ingest）、每月歐美速報（每月 1 號排程）。需要新工程時再依實際需求開卡，不預先堆 backlog。

@@ -127,8 +127,8 @@ python scripts/track_rankings.py
 - [x] Codex 第一輪系統 review + Claude Code 工程任務卡
 - [x] PR smoke validation + GitHub Actions CI
 - [x] RSS 收集 → raw_signal_pack（事實層；C6）
-- [ ] 接入更多來源抓取（非 RSS API / 爬蟲）
-- [ ] AI 自動撰寫 brief 全文
+- [x] AI 撰寫報告 — 已由排程雲端 agent 達成（不另接 repo 內 LLM API；見 docs/decisions.md D5）
+- [ ]（視需求）接入更多來源抓取（非 RSS API / 爬蟲）
 - [ ] 推送到 Telegram / Notion
 - [ ] 短影音選題自動排程
 

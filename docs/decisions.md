@@ -10,7 +10,7 @@
 | D2 | 月報排序固定 Top 5/10 或依訊號浮動 | 已拍板：月報主榜固定 Top 5，另設浮動觀察名單 3–5 條 | 否 |
 | D3 | 是否新增 content idea 目錄 | 已拍板：方向採 `reports/content_ideas/YYYY-MM.md`；本輪不建實體目錄 | 否 |
 | D4 | 來源 tier 調整原則 | 已拍板：採 tier 判斷原則；本輪不批量改 `data/`，另案 PR 再改 | 否 |
-| D5 | LLM 供應商策略 | 先做 vendor-neutral adapter + manual/mock provider；真實 Claude/OpenAI API 另案拍板 | 是 |
+| D5 | LLM 供應商策略 | **已拍板：不接 API、C7 不做**（理由：排程雲端 agent 已自動產出 AI 報告，C7 屬重複造既有能力） | 否 |
 
 ---
 
@@ -169,6 +169,12 @@
 - `mock` provider 讓 tests / CI 可驗證「自動撰寫 brief」管線，不依賴外部 LLM，也不會因模型輸出漂移造成測試不穩。
 - Claude / OpenAI 都可能適合，但真實 API 牽涉 key 管理、成本、資料外送與模型選型，不應由 Claude Code 在工程 PR 中自行決定。
 
-### 待人類確認?
+### 已拍板（2026-06-04）
 
-**是。** 人類需拍板是否允許真實 API provider、優先供應商、API key 管理方式與每月成本上限。未拍板前，C7 只應實作 `manual` / `mock` 與可擴充 adapter 介面。
+**不接 API、C7 不做。** 經檢討：
+
+- 系統**已經**透過排程雲端 agent（每月歐美速報、Lyst Q2 watcher）自動產出 AI 撰寫的報告，且 agent 會上網查證、對照季榜、標信心——比腳本單次呼叫 API 更強。C7「腳本直接呼叫 LLM 寫 brief」有一半是**重複造已有能力**。
+- 加真實 API 的唯一增益是「全自動無人值守」，但排程 agent 已接近此效果；代價卻是金鑰管理、每月帳單、額外失敗點與編造風險。違反「不為寫 code 而寫 code、先輕後重」。
+- 需要 AI 寫 brief 時，把 `raw_signal_pack` 直接交給對話中的 Claude 或排程 agent 即可，無需 repo 內 API key。
+
+> 註：此項原為 day-1 README roadmap 的願景被升級成「決策」，非實際需求（見檢討）。若日後真有無人值守的硬需求再重啟。

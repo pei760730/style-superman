@@ -11,7 +11,7 @@
 ## Input（由系統填入）
 
 - `DATE`: {{date}}
-- `RAW_SIGNALS`: {{raw_signals}}   # 當日收集到的訊號清單（來源 / 標題 / 連結 / 摘要）
+- `RAW_SIGNALS`: {{raw_signals}}   # 當日收集到的訊號清單（格式見 templates/raw_signal_pack_template.md）
 - `TAXONOMY`: 見 data/trend_taxonomy.yml
 - `SCORED_TRENDS`: {{scored_trends}}  # score_trends.py 的輸出（可選）
 

@@ -5,6 +5,10 @@
 ## [Unreleased]
 
 ### Added
+- **完成 Codex 執行計畫 C3–C5**
+  - C3：`templates/raw_signal_pack_template.md` — RAW_SIGNALS 中間格式契約（接 RSS/LLM 前先固定形狀）；`prompts/article_to_insight.md`、`prompts/daily_trend_brief.md` 加引用
+  - C4：`scripts/generate_monthly_heat_report.py` — 本地產月度歐美速報骨架（自動帶入 Lyst/StockX 季度基準），`--draft` 不入版控
+  - C5：`tests/test_smoke.py` — 核心腳本最小驗收（7 項，無需 pytest）；接進 `ci.yml` 為 PR smoke 一步
 - `scripts/ingest_ranking_snapshot.py`（C2）— 安全加入排行快照：預設 dry-run 檢查契約（period 不重複、rank 不重複、StockX 不壓成單一 ranking、Mercari 必含 brand_top/menswear_read），`--write` 才寫入且保留既有註解。附 `tests/fixtures/*_snapshot.yml` 合成範例。
 - `scripts/validate_repo.py` + `.github/workflows/ci.yml` + `requirements.txt` — 補 PR smoke validation，讓 YAML / template / report 契約在 merge 前自動檢查。
 - `CLAUDE.md` + `docs/codex_execution_plan.md` — 實際落地 Codex 第一輪 repo review，補 Claude Code 執行守則、工程任務卡與下一步驗收順序。

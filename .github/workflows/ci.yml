@@ -46,3 +46,8 @@ jobs:
         run: |
           python scripts/generate_daily_brief.py --date 2099-01-01 --draft
           rm -f reports/daily/2099-01-01.draft.md
+
+      - name: Acceptance smoke tests
+        env:
+          PYTHONIOENCODING: utf-8
+        run: python tests/test_smoke.py

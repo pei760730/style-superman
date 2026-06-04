@@ -44,6 +44,6 @@
 ---
 
 ### 填寫紀律
-- **只填有來源的數字**，沒確認的名次/百分比留空或標 `（待查）`，不要編（見 docs/operating_manual 與根目錄 CLAUDE.md「不虛構」）。
+- **只填有來源的數字**，沒確認的名次/百分比留空或標 `（待查）`，不要編（見 docs/operating_manual 與根目錄 `CLAUDE.md`「不虛構」）。
 - StockX 報告混用「全站最暢銷」與「各品牌最佳新款」兩種口徑——**分欄記錄，不要硬湊成一條 1–10 排名**。
 - 填完跑 `python scripts/track_rankings.py --source <lyst|stockx>` 自驗格式無誤。

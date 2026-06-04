@@ -39,6 +39,16 @@ python scripts/score_trends.py --demo --json           # 輸出 JSON
 ]
 ```
 
+### `validate_repo.py`
+檢查 repo 的基本契約：YAML 必填欄位、排行 rank 是否重複、template 必要段落、report 命名與標題。建議每次 PR 前跑一次。
+
+```bash
+python scripts/validate_repo.py
+python scripts/validate_repo.py --data
+python scripts/validate_repo.py --templates
+python scripts/validate_repo.py --reports
+```
+
 ### `track_rankings.py`
 讀取 `data/rankings/` 的排行快照（Lyst Index / StockX），顯示最新榜並比對名次演化。模組說明見 [docs/rankings.md](../docs/rankings.md)。
 

@@ -21,6 +21,22 @@ python scripts/generate_daily_brief.py --draft         # 產 *.draft.md（不入
 
 它只負責「填日期 + 套模板 + 來源摘要」，實際趨勢內容由 AI（`prompts/daily_trend_brief.md`）或人工補上。
 
+可選 `--with-rss` 同時收集 RSS 來源成 raw_signal_pack（需網路；抓取失敗會優雅降級，brief 仍照產）：
+
+```bash
+python scripts/generate_daily_brief.py --date 2026-06-04 --with-rss --raw-signals-out /tmp/raw.yml
+```
+
+### `collect_raw_signals.py`
+從 `data/sources.yml` 中有 RSS 的來源收集近期文章，轉成符合 `templates/raw_signal_pack_template.md` 的 raw_signal_pack（**事實層**：只收 source/title/url/date/summary；`signal_type`、`credibility` 留 `待查`，交 `prompts/article_to_insight.md` 補）。純標準庫、抓取失敗自動跳過。
+
+```bash
+python scripts/collect_raw_signals.py                    # → stdout
+python scripts/collect_raw_signals.py --out /tmp/raw.yml --limit 5
+```
+
+> raw_signal_pack 是中間產物，**不入長期版控**（見 `templates/raw_signal_pack_template.md`）。
+
 ### `generate_monthly_heat_report.py`
 產出當月「歐美熱度速報」骨架，寫到 `reports/monthly/YYYY-MM-eu.md`。自動帶入最新 Lyst / StockX 季度基準 period 與來源摘要，其餘判斷留 `待填`。
 

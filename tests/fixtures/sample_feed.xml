@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- TEST FIXTURE — 合成 RSS 2.0，供 collect_raw_signals.parse_feed 離線測試。 -->
+<rss version="2.0">
+  <channel>
+    <title>Test Feed</title>
+    <link>https://example.com/</link>
+    <description>合成測試 feed</description>
+    <item>
+      <title>Test Brand A 發表 2099 春夏系列</title>
+      <link>https://example.com/a</link>
+      <pubDate>Wed, 04 Jun 2026 10:00:00 +0000</pubDate>
+      <description><![CDATA[<p>合成測試摘要：Test Brand A 的 <b>新系列</b> 與聯名。</p>]]></description>
+    </item>
+    <item>
+      <title>Test Brand B x Test Brand C 聯名球鞋</title>
+      <link>https://example.com/b</link>
+      <pubDate>Tue, 03 Jun 2026 08:30:00 +0000</pubDate>
+      <description>合成測試摘要二。</description>
+    </item>
+  </channel>
+</rss>

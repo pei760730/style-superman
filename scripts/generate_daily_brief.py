@@ -62,7 +62,7 @@ def summarize_sources(sources: list[dict]) -> str:
     return " ｜ ".join(parts) if parts else "（無來源設定）"
 
 
-def build_brief(date_str: str) -> str:
+def build_brief(date_str: str, rss_note: str = "") -> str:
     """把 template 填上日期與骨架佔位，回傳草稿全文。"""
     sources = load_yaml(DATA_DIR / "sources.yml").get("sources", [])
 
@@ -80,9 +80,43 @@ def build_brief(date_str: str) -> str:
     footer = (
         f"\n\n---\n\n"
         f"<!-- 來源覆蓋：{summarize_sources(sources)} -->\n"
+        f"{rss_note}"
         f"<!-- 下一步：用 prompts/daily_trend_brief.md 填入今日訊號 -->\n"
     )
     return body + footer
+
+
+def collect_rss(out_path: str | None) -> str:
+    """收集 RSS 來源成 raw_signal_pack（事實層）。回傳要附在 brief footer 的註解。
+
+    抓取失敗一律優雅降級——即使完全沒網路也不中斷 brief 產出。
+    """
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    try:
+        import collect_raw_signals as crs
+    except Exception as e:  # noqa: BLE001
+        return f"<!-- RSS 收集略過：無法載入 collect_raw_signals（{e}） -->\n"
+
+    sources = crs.rss_sources()
+    signals, warnings = crs.collect(sources)
+
+    if out_path:
+        try:
+            Path(out_path).write_text(crs.to_yaml(signals), encoding="utf-8")
+            print(f"📥 raw_signal_pack：收集 {len(signals)} 則 → {out_path}")
+        except OSError as e:
+            print(f"⚠️  raw pack 寫入失敗：{e}")
+    else:
+        print(f"📥 raw_signal_pack：收集 {len(signals)} 則（未指定 --raw-signals-out，未寫檔）")
+
+    if warnings:
+        print(f"   （{len(warnings)} 個來源降級：{'; '.join(warnings[:3])}{' …' if len(warnings) > 3 else ''}）")
+
+    out_hint = f"，已寫到 {out_path}" if out_path else "（未寫檔）"
+    return (
+        f"<!-- RSS 收集：{len(signals)} 則事實訊號、{len(warnings)} 來源降級{out_hint}；"
+        f"signal_type/credibility 待 prompts/article_to_insight.md 補 -->\n"
+    )
 
 
 def main() -> None:
@@ -93,10 +127,23 @@ def main() -> None:
         action="store_true",
         help="輸出成 *.draft.md（被 .gitignore 排除，不入版控）",
     )
+    parser.add_argument(
+        "--with-rss",
+        action="store_true",
+        help="收集有 RSS 的來源成 raw_signal_pack（事實層，需網路；失敗則優雅降級）",
+    )
+    parser.add_argument(
+        "--raw-signals-out",
+        help="把收集到的 raw_signal_pack 寫到此路徑（YAML）；需搭配 --with-rss",
+    )
     args = parser.parse_args()
 
     date_str = args.date or dt.date.today().isoformat()
     OUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    rss_note = ""
+    if args.with_rss:
+        rss_note = collect_rss(args.raw_signals_out)
 
     suffix = ".draft.md" if args.draft else ".md"
     out_path = OUT_DIR / f"{date_str}{suffix}"
@@ -105,7 +152,7 @@ def main() -> None:
         print(f"⚠️  {out_path.name} 已存在，未覆蓋。要重產請先刪除或改用 --draft。")
         return
 
-    out_path.write_text(build_brief(date_str), encoding="utf-8")
+    out_path.write_text(build_brief(date_str, rss_note), encoding="utf-8")
     print(f"✅ 已產出骨架：{out_path.relative_to(ROOT)}")
     print("   下一步：依 prompts/daily_trend_brief.md 用 AI 或人工補上今日趨勢內容。")
 

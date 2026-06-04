@@ -5,6 +5,10 @@
 ## [Unreleased]
 
 ### Added
+- **C6 — RSS 收集 → raw_signal_pack**
+  - `scripts/collect_raw_signals.py`：從 `data/sources.yml` 有 RSS 的來源收集近期文章，轉成事實層 raw_signal_pack（純標準庫、抓取失敗優雅降級；`signal_type`/`credibility` 留待查交 article_to_insight）
+  - `generate_daily_brief.py` 新增 `--with-rss` / `--raw-signals-out`
+  - `tests/fixtures/sample_feed.xml` + test_smoke 加 2 項 RSS 離線測試（不依賴網路，共 9 項）
 - **完成 Codex 執行計畫 C3–C5**
   - C3：`templates/raw_signal_pack_template.md` — RAW_SIGNALS 中間格式契約（接 RSS/LLM 前先固定形狀）；`prompts/article_to_insight.md`、`prompts/daily_trend_brief.md` 加引用
   - C4：`scripts/generate_monthly_heat_report.py` — 本地產月度歐美速報骨架（自動帶入 Lyst/StockX 季度基準），`--draft` 不入版控

@@ -51,16 +51,17 @@ style-superman/
 │   ├── ranking_ingest.md
 │   └── monthly_heat_report.md
 ├── scripts/                  # 自動化腳本
-│   ├── generate_daily_brief.py
+│   ├── generate_daily_brief.py          # 支援 --with-rss 收集 raw_signal_pack
 │   ├── generate_monthly_heat_report.py  # 月度歐美速報骨架
+│   ├── collect_raw_signals.py           # RSS → raw_signal_pack（事實層）
 │   ├── score_trends.py
 │   ├── track_rankings.py     # 排行快照檢視 + 名次演化比對
 │   ├── ingest_ranking_snapshot.py  # 安全加入排行快照（dry-run + 寫入）
 │   ├── validate_repo.py      # PR 前 smoke validation
 │   └── README.md
 ├── tests/                    # 最小驗收
-│   ├── test_smoke.py         #   核心腳本 smoke（無需 pytest）
-│   └── fixtures/             #   ingest 合成測試範例
+│   ├── test_smoke.py         #   核心腳本 smoke（9 項，無需 pytest）
+│   └── fixtures/             #   ingest 快照 + RSS feed 合成測試範例
 ├── templates/                # 產出物的固定格式
 │   ├── daily_brief_template.md
 │   ├── trend_card_template.md
@@ -125,7 +126,8 @@ python scripts/track_rankings.py
 - [x] Codex / Claude Code / 人類協作分工手冊
 - [x] Codex 第一輪系統 review + Claude Code 工程任務卡
 - [x] PR smoke validation + GitHub Actions CI
-- [ ] 接入真實來源抓取（RSS / API）
+- [x] RSS 收集 → raw_signal_pack（事實層；C6）
+- [ ] 接入更多來源抓取（非 RSS API / 爬蟲）
 - [ ] AI 自動撰寫 brief 全文
 - [ ] 推送到 Telegram / Notion
 - [ ] 短影音選題自動排程

@@ -5,6 +5,7 @@
 ## [Unreleased]
 
 ### Added
+- `reports/analysis/2026-early-summer-jp-kr-eu.md` — 2026 初夏（5–6 月）歐美/日/韓 男裝從頭到腳趨勢 + 值得關注品牌；對照 repo 量化榜，**每節附英文原文來源連結**（報告交付一律附來源以便回原文深讀）
 - **韓國 rankings（KREAM + MUSINSA）** — 把韓潮從「媒體訊號」升級成可長期比對的量化榜
   - `data/rankings/kream.yml` — KREAM 限量/轉售成交量（韓版 StockX）：2025 年度 Nike 成交 #1、平台去球鞋化 50%→37%；2026-01 中古精品 +203%、Rolex +363%
   - `data/rankings/musinsa.yml` — MUSINSA 平台銷售榜（最大男裝電商）：2026-02 무신사 스탠다드 連 5 月 #1、adidas #2；2025-12 #1 PB、#2 TNF

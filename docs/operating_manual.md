@@ -52,6 +52,16 @@ git add reports/daily/YYYY-MM-DD.md
 git commit -m "brief: YYYY-MM-DD"
 ```
 
+## 1.5 AI 分工（Codex / Claude Code）
+
+日常操作可以把 AI 當成兩種角色使用：
+
+- **Codex**：負責判斷今日趨勢、整理 prompt / template、維護文件與 PR 整合。
+- **Claude Code**：負責較長程的工程任務，例如擴充 `scripts/`、補測試、批次整理 YAML / Markdown。
+- **人類**：負責最後的品牌觀點、資料可信度與發布決策。
+
+完整分工、RACI 與交接模板見 [AI Collaboration Playbook](ai_collaboration.md)。
+
 ## 2. 每週
 
 - 從選題池排 3–5 支拍攝。

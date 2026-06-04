@@ -59,7 +59,8 @@ style-superman/
 │   ├── system_design.md
 │   ├── content_strategy.md
 │   ├── trend_scoring_rules.md
-│   └── operating_manual.md
+│   ├── operating_manual.md
+│   └── ai_collaboration.md      # Codex / Claude Code / 人類分工手冊
 └── .github/
     └── workflows/
         └── daily-brief.yml   # 每日自動跑 brief 的排程
@@ -94,7 +95,7 @@ python scripts/track_rankings.py
 3. **格式即契約** — 所有產出都走 `templates/`，方便日後被 n8n / Notion / Sheets 解析。
 4. **先輕後重** — 先把流程跑順、累積資料，再決定要不要上重型自動化。
 
-詳見 [docs/system_design.md](docs/system_design.md)。
+詳見 [docs/system_design.md](docs/system_design.md)。AI 分工與交接規則見 [docs/ai_collaboration.md](docs/ai_collaboration.md)。
 
 ---
 
@@ -104,6 +105,7 @@ python scripts/track_rankings.py
 - [x] Daily brief 骨架腳本
 - [x] 趨勢評分規則
 - [x] Rankings 模組（Lyst Index + StockX，可長期比對）
+- [x] Codex / Claude Code / 人類協作分工手冊
 - [ ] 接入真實來源抓取（RSS / API）
 - [ ] AI 自動撰寫 brief 全文
 - [ ] 推送到 Telegram / Notion

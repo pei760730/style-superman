@@ -150,3 +150,32 @@ sources:
     url: https://www.endclothing.com/
     rss: null
     notes: 發售與 raffle 熱度
+
+  # ---------- 排行 / 數據源 (rankings) ----------
+  # 定期發布、可量化的「最紅品牌 / 熱銷單品」排行。
+  # 結構化快照存在 data/rankings/，用 scripts/track_rankings.py 比對演化。
+  - id: lyst-index
+    name: Lyst Index
+    region: global          # 偏 us-eu + 精品；全性別（女裝權重高）
+    type: ranking
+    tier: 1
+    url: https://www.lyst.com/data/the-lyst-index/
+    rss: null
+    cadence: quarterly      # 季度發布；底層數據為月對月 (MoM)
+    notes: >
+      免費權威榜：最紅品牌 Top 20 + 最熱單品 Top 10。
+      2026 Q1 起 methodology 改為 desire/demand/discovery 三維。
+      偏精品/全性別 → 男裝需自行過濾。快照見 data/rankings/lyst-index.yml
+
+  - id: stockx
+    name: StockX (Big Facts / Current Culture Index)
+    region: global          # 美國主導；偏男性街頭
+    type: ranking
+    tier: 1
+    url: https://stockx.com/about/
+    rss: null
+    cadence: annual+midyear # 年度 + 年中報告；平台數據即時
+    notes: >
+      免費轉售/熱銷實數：最暢銷球鞋、服飾、配件、成長最快品牌。
+      偏球鞋/街頭，男裝代表性最強，但涵蓋不到精品成衣。
+      快照見 data/rankings/stockx.yml

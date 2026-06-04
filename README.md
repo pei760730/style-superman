@@ -29,10 +29,13 @@ style-superman/
 ├── CHANGELOG.md              # 版本與系統演進紀錄
 ├── .gitignore
 ├── data/                     # 系統的「知識底層」（人工 + 機器共同維護）
-│   ├── sources.yml           # 情報來源清單（站點 / 帳號 / RSS）
+│   ├── sources.yml           # 情報來源清單（站點 / 帳號 / RSS / 排行）
 │   ├── trend_taxonomy.yml    # 趨勢分類體系
 │   ├── brands.yml            # 追蹤中的男裝品牌
-│   └── people.yml            # 追蹤中的關鍵人物
+│   ├── people.yml            # 追蹤中的關鍵人物
+│   └── rankings/             # 定期可量化排行快照（可長期比對）
+│       ├── lyst-index.yml    #   Lyst Index 季度（最紅品牌+單品）
+│       └── stockx.yml        #   StockX 年度/年中（熱銷實數）
 ├── reports/
 │   └── daily/                # 每日 brief 產出（按日期命名）
 ├── prompts/                  # 餵給 AI 的提示詞模板
@@ -43,6 +46,7 @@ style-superman/
 ├── scripts/                  # 自動化腳本
 │   ├── generate_daily_brief.py
 │   ├── score_trends.py
+│   ├── track_rankings.py     # 排行快照檢視 + 名次演化比對
 │   └── README.md
 ├── templates/                # 產出物的固定格式
 │   ├── daily_brief_template.md
@@ -71,6 +75,9 @@ python scripts/generate_daily_brief.py
 
 # 3. 對趨勢資料打分
 python scripts/score_trends.py
+
+# 4. 看最紅品牌 / 熱銷單品排行（Lyst Index + StockX）
+python scripts/track_rankings.py
 ```
 
 每日的成品會落在 [reports/daily/](reports/daily/)，命名為 `YYYY-MM-DD.md`。
@@ -93,6 +100,7 @@ python scripts/score_trends.py
 - [x] Repo 結構與資料底層
 - [x] Daily brief 骨架腳本
 - [x] 趨勢評分規則
+- [x] Rankings 模組（Lyst Index + StockX，可長期比對）
 - [ ] 接入真實來源抓取（RSS / API）
 - [ ] AI 自動撰寫 brief 全文
 - [ ] 推送到 Telegram / Notion

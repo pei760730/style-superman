@@ -1,0 +1,66 @@
+# lyst-index.yml
+# Lyst Index 季度排行快照。每季新增一筆，最新放最上面。
+# 用 scripts/track_rankings.py 比對相鄰兩季的名次變化。
+#
+# 來源：https://www.lyst.com/data/the-lyst-index/  （免費）
+# 性質：全性別、偏精品 → 男裝相關需自行過濾（球鞋/街頭部分另看 stockx.yml）
+#
+# move 欄位 = 來源標示的「相對上季」變化：
+#   new   = 本季新進榜      re-entry = 重返榜       =/+N/-N = 名次升降
+
+source: lyst-index
+cadence: quarterly
+free: true
+url: https://www.lyst.com/data/the-lyst-index/
+
+snapshots:
+  - period: "2026-Q1"
+    published: "2026-04"
+    methodology: "desire / demand / discovery 三維（2026 Q1 改版）"
+    notes: >
+      Chanel 首度登頂；methodology 改版。Saint Laurent 立領外套需求 MoM +5,550%
+      成為最熱單品。Zara 因 Super Bowl x Bad Bunny + John Galliano 聯名爆紅。
+      Vivienne Westwood Long Fond Gown 搜尋 +890%。Calvin Klein 因影集 +43%。
+
+    # 最紅品牌 Top 20
+    brands:
+      - { rank: 1,  name: Chanel,          move: new }
+      - { rank: 2,  name: Saint Laurent,   move: -1 }
+      - { rank: 3,  name: Dior,            move: new }
+      - { rank: 4,  name: Miu Miu,         move: -2 }
+      - { rank: 5,  name: Gucci,           move: +4 }
+      - { rank: 6,  name: Ralph Lauren,    move: -2 }
+      - { rank: 7,  name: Prada,           move: -2 }
+      - { rank: 8,  name: Coach,           move: -2 }
+      - { rank: 9,  name: Burberry,        move: -1 }
+      - { rank: 10, name: COS,             move: -7 }
+      - { rank: 11, name: The Row,         move: -4 }
+      - { rank: 12, name: Versace,         move: +2 }
+      - { rank: 13, name: Moncler,         move: -3 }
+      - { rank: 14, name: Chloé,           move: -3 }
+      - { rank: 15, name: Bottega Veneta,  move: -3 }
+      - { rank: 16, name: Loewe,           move: -3 }
+      - { rank: 17, name: Stone Island,    move: -2 }
+      - { rank: 18, name: Massimo Dutti,   move: -2 }
+      - { rank: 19, name: Fendi,           move: re-entry }
+      - { rank: 20, name: Celine,          move: new }
+
+    # 最熱單品 Top 10
+    products:
+      - { rank: 1,  brand: Saint Laurent,    item: "Stand-Collar Jacket",     note: "需求 MoM +5,550%" }
+      - { rank: 2,  brand: Chanel,           item: "Pumps" }
+      - { rank: 3,  brand: Adidas,           item: "Chinese Style Track Top" }
+      - { rank: 4,  brand: Celine,           item: "Ballet Lace-up Shoes" }
+      - { rank: 5,  brand: Vivienne Westwood,item: "Long Fond Gown",          note: "搜尋 +890%" }
+      - { rank: 6,  brand: Chanel,           item: "Maxi Flap Bag" }
+      - { rank: 7,  brand: Saint Laurent,    item: "Butterfly Sunglasses" }
+      - { rank: 8,  brand: Trader Joe's,     item: "Tote Bag" }
+      - { rank: 9,  brand: Village PM,       item: "1PM Sneakers" }
+      - { rank: 10, brand: Kangol,           item: "Tropic 504 Flat Cap" }
+
+    # 男裝視角註記（手動標）：本季與男裝較相關的訊號
+    menswear_focus:
+      - "Adidas Chinese Style Track Top（#3 單品）— 運動/街頭，男性可穿"
+      - "Saint Laurent 立領外套 + Butterfly 墨鏡 — 男裝亦適用"
+      - "Stone Island (#17)、Moncler (#13) — 男性機能/outerwear 指標"
+      - "Ralph Lauren (#6)、Burberry (#9) — prep/heritage 男裝呼應 SS2026 學院風趨勢"

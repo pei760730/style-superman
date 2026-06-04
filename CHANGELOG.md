@@ -4,6 +4,15 @@
 
 ## [Unreleased]
 
+### Added
+- **Rankings 模組**：定期可量化排行（`data/rankings/`）
+  - `lyst-index.yml` — Lyst Index 季度快照（已收錄 2026-Q1：Top 20 品牌 + Top 10 單品）
+  - `stockx.yml` — StockX 年度/年中快照（已收錄 2025 全年熱銷）
+  - `scripts/track_rankings.py` — 檢視最新榜 + 比對名次演化（已驗證可跑）
+  - `templates/ranking_snapshot_template.md`、`prompts/ranking_ingest.md`、`docs/rankings.md`
+  - `sources.yml` 新增 lyst-index / stockx 兩個 `type: ranking` 來源
+- `reports/daily/2026-06-04.md` — SS2026 基準快照（歐美 × 日 × 韓）
+
 ### Planned
 - 接入真實來源抓取（RSS / Instagram / 站點）
 - AI 自動撰寫 daily brief 全文（接 Claude / OpenAI）

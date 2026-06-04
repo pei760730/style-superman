@@ -1,0 +1,63 @@
+# stockx.yml
+# StockX 轉售/熱銷快照。每份報告新增一筆，最新放最上面。
+#
+# 來源：https://stockx.com/about/  （Big Facts / Current Culture Index，免費）
+# 性質：轉售實數，偏球鞋/街頭 → 男裝代表性最強；涵蓋不到精品成衣。
+# 注意：StockX 報告混用「全站最暢銷」與「各品牌年度最佳新款」兩種口徑，
+#       這裡如實分欄記錄，不硬湊成單一 1–10 排名。
+
+source: stockx
+cadence: annual+midyear
+free: true
+url: https://stockx.com/about/
+
+snapshots:
+  - period: "2025-annual"
+    published: "2025-Q4"     # 約略；報告涵蓋 2025 全年
+    report: "Big Facts 2025"
+
+    # 全站最暢銷（明確口徑）
+    best_seller_sneaker:
+      brand: ASICS
+      item: "Gel-1130 (Black/Pure Silver)"
+      note: "2025 全站最暢銷球鞋；ASICS YoY +45%"
+
+    apparel_top:
+      brand: "Fear of God Essentials"
+      item: "Arch Logo Hoodie (Jet Black)"
+      note: "服飾類銷售第一"
+
+    accessory_top:
+      brand: Nike
+      item: "Pro Therma-Fit Hyperwarm Hood"
+      note: "配件類第一"
+
+    all_time_best_seller:
+      brand: Nike
+      item: "Dunk Low Retro White Black (Panda)"
+      note: "平台史上最暢銷球鞋"
+
+    # 各品牌「年度最佳新款」（品牌口徑，非全站排名）
+    notable_new_models:
+      - { brand: Nike,           item: "Ja 3",              note: "Nike #1 新款" }
+      - { brand: Nike,           item: "A'ja Wilson A'One", note: "Nike #2 新款" }
+      - { brand: Nike,           item: "Total 90 III",      note: "Nike #3 新款" }
+      - { brand: Nike,           item: "Kobe 6 Protro",     note: "#1 實戰籃球鞋；YoY +100%" }
+      - { brand: New Balance,    item: "204L",              note: "NB #1 新款" }
+      - { brand: adidas,         item: "Samba Jane",        note: "adidas #1 新款" }
+      - { brand: adidas,         item: "Bad Bunny Ballerina", note: "adidas #3 新款" }
+      - { brand: Converse,       item: "Shai 001",          note: "Converse #1 新款" }
+      - { brand: Onitsuka Tiger, item: "TGRS",              note: "品牌最佳新款" }
+
+    # 成長最快品牌（YoY）
+    fastest_growing_brands:
+      - { brand: Brooks,  change: "+1508%" }
+      - { brand: Mizuno,  change: "+148%" }
+      - { brand: ASICS,   change: "+45% YoY" }
+      - { brand: Saucony, change: "+38%" }
+
+    # 男裝/潮流解讀（手動標）
+    menswear_focus:
+      - "跑鞋復興：ASICS / Brooks / Mizuno / Saucony 全面起飛 — gorpcore 與運動越界延續"
+      - "Salomon、ASICS 在年中報告即為成長最快 — 對應 SS2026『運動 x 時尚』"
+      - "Fear of God Essentials Hoodie 仍是街頭服飾銷售王 — elevated basics 長青"

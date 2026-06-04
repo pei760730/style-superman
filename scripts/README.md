@@ -39,6 +39,16 @@ python scripts/score_trends.py --demo --json           # 輸出 JSON
 ]
 ```
 
+### `track_rankings.py`
+讀取 `data/rankings/` 的排行快照（Lyst Index / StockX），顯示最新榜並比對名次演化。模組說明見 [docs/rankings.md](../docs/rankings.md)。
+
+```bash
+python scripts/track_rankings.py                    # Lyst + StockX 最新榜
+python scripts/track_rankings.py --source lyst       # 只看 Lyst
+python scripts/track_rankings.py --source lyst --compare   # 比對最新兩季名次
+python scripts/track_rankings.py --json              # 輸出 JSON
+```
+
 ## 日常流程（手動版）
 
 ```bash

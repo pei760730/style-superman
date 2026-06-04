@@ -1,6 +1,6 @@
 # AI Collaboration Playbook — Style Superman
 
-這份文件把 **ChatGPT / Codex（以下稱「Codex」）** 與 **Claude Code** 在本 repo 的責任拆開，避免兩個 AI 都在做同一件事、或把「內容判斷」和「工程落地」混在一起。
+這份文件把 **ChatGPT / Codex（以下稱「Codex」）** 與 **Claude Code** 在本 repo 的責任拆開，避免兩個 AI 都在做同一件事、或把「內容判斷」和「工程落地」混在一起。Codex 第一輪實際 review 與工程任務拆解見 [Codex Execution Plan](codex_execution_plan.md)；Claude Code 的 repo 入口守則見 [`../CLAUDE.md`](../CLAUDE.md)。
 
 核心原則：
 

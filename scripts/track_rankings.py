@@ -9,13 +9,17 @@ track_rankings.py
 讓你看出趨勢往哪走，而不只是看單一時間點。
 
 資料源：
-    data/rankings/lyst-index.yml   Lyst Index（季度，最紅品牌+單品）
-    data/rankings/stockx.yml       StockX（年度/年中，熱銷實數）
+    data/rankings/lyst-index.yml   歐美：Lyst Index（季度，最紅品牌+單品）
+    data/rankings/stockx.yml       歐美：StockX（年度/年中，熱銷實數）
+    data/rankings/mercari-jp.yml   日本：Mercari（二手成交需求）
+    data/rankings/kream.yml        韓國：KREAM（限量/轉售成交量，韓版 StockX）
+    data/rankings/musinsa.yml      韓國：MUSINSA（平台銷售榜，最大男裝電商）
 
 用法：
     python scripts/track_rankings.py                 # 全部來源，最新榜
     python scripts/track_rankings.py --source lyst    # 只看 Lyst
     python scripts/track_rankings.py --source stockx  # 只看 StockX
+    python scripts/track_rankings.py --region kr      # 只看韓國（KREAM + MUSINSA）
     python scripts/track_rankings.py --source lyst --compare   # 比對最新兩季名次
     python scripts/track_rankings.py --json           # 輸出 JSON
 """
@@ -43,12 +47,22 @@ SOURCES = {
     "lyst": "lyst-index.yml",       # 歐美：季度威望榜
     "stockx": "stockx.yml",         # 歐美：轉售熱銷實數
     "mercari": "mercari-jp.yml",    # 日本：二手成交需求
+    "kream": "kream.yml",           # 韓國：限量/轉售成交量（韓版 StockX）
+    "musinsa": "musinsa.yml",       # 韓國：平台銷售榜（最大男裝電商）
 }
 
 # 顯示分組：依地區，方便 --source all 時排版
 REGION_GROUPS = {
     "🇺🇸🇪🇺 歐美": ["lyst", "stockx"],
     "🇯🇵 日本": ["mercari"],
+    "🇰🇷 韓國": ["kream", "musinsa"],
+}
+
+# --region 旗標 → REGION_GROUPS 鍵
+REGION_KEYS = {
+    "us-eu": "🇺🇸🇪🇺 歐美",
+    "jp": "🇯🇵 日本",
+    "kr": "🇰🇷 韓國",
 }
 
 
@@ -205,11 +219,69 @@ def show_mercari_latest(data: dict) -> None:
     print()
 
 
+# ---------- 顯示：KREAM（韓國，限量/轉售成交） ----------
+
+def show_kream_latest(data: dict) -> None:
+    snaps = snapshots(data)
+    if not snaps:
+        print("（KREAM 無快照）")
+        return
+    s = snaps[0]
+    print(f"\n💎  KREAM（限量/轉售成交）· {s.get('period')}（{s.get('report', '')}）")
+    if s.get("methodology"):
+        print(f"    方法：{s['methodology']}")
+
+    bt = s.get("brand_top")
+    if bt:
+        note = f"  — {bt['note']}" if bt.get("note") else ""
+        print(f"\n  成交品牌 #{bt.get('rank', 1)}   {bt['name']}{note}")
+    if s.get("category_shift"):
+        print("\n  平台/結構變化")
+        for c in s["category_shift"]:
+            print(f"     · {c}")
+    if s.get("notable"):
+        print("\n  🔑 高熱度標的")
+        for n in s["notable"]:
+            print(f"     · {n}")
+    if s.get("menswear_read"):
+        print("\n  👔 男裝視角")
+        for m in s["menswear_read"]:
+            print(f"     · {m}")
+    print()
+
+
+# ---------- 顯示：MUSINSA（韓國，平台銷售榜） ----------
+
+def show_musinsa_latest(data: dict) -> None:
+    snaps = snapshots(data)
+    if not snaps:
+        print("（MUSINSA 無快照）")
+        return
+    s = snaps[0]
+    print(f"\n🛍  MUSINSA（무신사 銷售榜）· {s.get('period')}（{s.get('report', '')}）")
+    if s.get("methodology"):
+        print(f"    方法：{s['methodology']}")
+
+    print("\n  銷售品牌榜")
+    print("  " + "-" * 40)
+    for b in s.get("brands", []):
+        note = f"  — {b['note']}" if b.get("note") else ""
+        print(f"  {b['rank']:>2}. {b['name']}{note}")
+
+    if s.get("menswear_read"):
+        print("\n  👔 男裝視角")
+        for m in s["menswear_read"]:
+            print(f"     · {m}")
+    print()
+
+
 # 來源 → 顯示函式對照
 SHOW = {
     "lyst": show_lyst_latest,
     "stockx": show_stockx_latest,
     "mercari": show_mercari_latest,
+    "kream": show_kream_latest,
+    "musinsa": show_musinsa_latest,
 }
 
 
@@ -217,16 +289,16 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="排行快照檢視與比對")
     parser.add_argument(
         "--source",
-        choices=["lyst", "stockx", "mercari", "all"],
+        choices=["lyst", "stockx", "mercari", "kream", "musinsa", "all"],
         default="all",
     )
-    parser.add_argument("--region", choices=["us-eu", "jp"], help="只看某地區（覆蓋 --source）")
+    parser.add_argument("--region", choices=["us-eu", "jp", "kr"], help="只看某地區（覆蓋 --source）")
     parser.add_argument("--compare", action="store_true", help="比對最新兩季名次（目前僅 Lyst）")
     parser.add_argument("--json", action="store_true", help="輸出最新快照 JSON")
     args = parser.parse_args()
 
     if args.region:
-        targets = REGION_GROUPS["🇺🇸🇪🇺 歐美" if args.region == "us-eu" else "🇯🇵 日本"]
+        targets = REGION_GROUPS[REGION_KEYS[args.region]]
     elif args.source == "all":
         targets = list(SOURCES)
     else:

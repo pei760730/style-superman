@@ -38,7 +38,9 @@ style-superman/
 │   └── rankings/             # 定期可量化排行快照（可長期比對）
 │       ├── lyst-index.yml    #   歐美：Lyst Index 季度（最紅品牌+單品）
 │       ├── stockx.yml        #   歐美：StockX 年度/年中（熱銷實數）
-│       └── mercari-jp.yml    #   日本：Mercari 二手成交需求
+│       ├── mercari-jp.yml    #   日本：Mercari 二手成交需求
+│       ├── kream.yml         #   韓國：KREAM 限量/轉售成交量（韓版 StockX）
+│       └── musinsa.yml       #   韓國：MUSINSA 平台銷售榜（最大男裝電商）
 ├── reports/
 │   ├── daily/                # 每日 brief 產出（按日期命名）
 │   ├── monthly/              # 月度熱度速報（歐美，YYYY-MM-eu.md），排程自動生成
@@ -98,7 +100,7 @@ python scripts/generate_daily_brief.py
 # 3. 對趨勢資料打分
 python scripts/score_trends.py
 
-# 4. 看最紅品牌 / 熱銷單品排行（Lyst Index + StockX + Mercari）
+# 4. 看最紅品牌 / 熱銷單品排行（歐美 Lyst+StockX／日本 Mercari／韓國 KREAM+MUSINSA）
 python scripts/track_rankings.py
 ```
 
@@ -122,7 +124,7 @@ python scripts/track_rankings.py
 - [x] Repo 結構與資料底層
 - [x] Daily brief 骨架腳本
 - [x] 趨勢評分規則
-- [x] Rankings 模組（Lyst Index + StockX + Mercari，可長期比對）
+- [x] Rankings 模組（歐美 Lyst+StockX／日本 Mercari／韓國 KREAM+MUSINSA，可長期比對）
 - [x] Codex / Claude Code / 人類協作分工手冊
 - [x] Codex 第一輪系統 review + Claude Code 工程任務卡
 - [x] PR smoke validation + GitHub Actions CI

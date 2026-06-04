@@ -34,13 +34,28 @@ Lyst 補精品/設計師視角，StockX 補街頭/球鞋實銷，兩者互補。
 > 在**媒體與街拍**（`sources.yml` region: jp 的 media：Fashionsnap / MEN'S NON-NO / Houyhnhnm / POPEYE）。
 > 追日潮必須**量化榜 + 媒體街拍兩條腿一起看**，落差比西方大。
 
+### 🇰🇷 韓國
+韓國**沒有 Lyst 那種跨平台搜尋需求指數**，但有兩個平台級量化榜，互補：
+
+| 來源 | 給什麼 | 頻率 | 性質 / 限制 |
+|------|--------|:----:|------------|
+| **KREAM** | 限量/轉售**成交量**（韓版 StockX，네이버 자회사） | 週/月榜 | 成交=真實願付，偏球鞋/限量/精品；平台內部數據 |
+| **MUSINSA** | 平台**銷售榜**（最大男裝電商，會員直購+點擊、광고 미반영） | 日榜+官方月榜 | 最貼「韓男實際在買」；只反映站內庫存與用戶，有商業偏差 |
+
+KREAM 看「韓國願意花多少錢搶」（flex / 限量 / 精品轉售），MUSINSA 看「韓男日常實際買什麼」（PB 基本款 / 機能外套）。兩者一起看才完整。
+
+> 🚫 **逐位名次無法自動抓取**：kream.co.kr / musinsa.com 的即時榜頁為 JS 動態渲染，WebFetch 對 KREAM 回 500、MUSINSA 拒連（同 ZOZO 的 headless/反爬限制）。
+> 依「不準確就拿掉」原則：快照**採官方稿/官方月榜的公開數據手動建立**，不硬刮逐位即時榜。
+
 ## 檔案結構
 
 ```txt
 data/rankings/
 ├── lyst-index.yml     # 歐美：季度，最新放最上
 ├── stockx.yml         # 歐美：年度/年中
-└── mercari-jp.yml     # 日本：二手成交需求
+├── mercari-jp.yml     # 日本：二手成交需求
+├── kream.yml          # 韓國：限量/轉售成交量（韓版 StockX）
+└── musinsa.yml        # 韓國：平台銷售榜（最大男裝電商）
 templates/ranking_snapshot_template.md   # 新增一期時複製的格式
 prompts/ranking_ingest.md                # 用 AI 把新報告轉成 YAML
 scripts/track_rankings.py                # 檢視最新榜 + 比對名次演化
@@ -50,10 +65,11 @@ scripts/track_rankings.py                # 檢視最新榜 + 比對名次演化
 
 ### 看現在的榜
 ```bash
-python scripts/track_rankings.py                 # 全部（歐美 + 日本）
+python scripts/track_rankings.py                 # 全部（歐美 + 日本 + 韓國）
 python scripts/track_rankings.py --region jp      # 只看日本（Mercari）
 python scripts/track_rankings.py --region us-eu   # 只看歐美（Lyst + StockX）
-python scripts/track_rankings.py --source lyst    # 單一來源（lyst/stockx/mercari）
+python scripts/track_rankings.py --region kr      # 只看韓國（KREAM + MUSINSA）
+python scripts/track_rankings.py --source lyst    # 單一來源（lyst/stockx/mercari/kream/musinsa）
 ```
 
 ### 新一期發布時（季度 / 年度）
@@ -86,8 +102,10 @@ Rankings 是 `score_trends.py` 的**外部佐證輸入**：一個趨勢若同時
 | Lyst Index | 2026-Q1（Chanel 首度登頂；SL 立領外套單品 #1，MoM +5,550%）|
 | StockX | 2025 全年（ASICS Gel-1130 最暢銷；跑鞋品牌全面起飛）|
 | Mercari | 2013→2022（成交 #1 Chanel→Uniqlo）|
+| KREAM | 2025 年度（Nike 成交 #1；平台去球鞋化 50%→37%）＋ 2026-01（中古精品 +203%、Rolex +363%）|
+| MUSINSA | 2026-02（무신사 스탠다드 連 5 月 #1、adidas #2）＋ 2025-12（#1 PB、#2 TNF）|
 
-下一期：Lyst Q2 2026（已設排程）、StockX 2026 年中。
+下一期：Lyst Q2 2026（已設排程）、StockX 2026 年中、KREAM/MUSINSA 官方月榜更新時補一期。
 
 ## 🚫 ZOZOTOWN：評估後不採用（紀錄）
 

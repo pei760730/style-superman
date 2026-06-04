@@ -1,0 +1,61 @@
+# kream.yml
+# KREAM（크림）限量/轉售成交快照。네이버 자회사，韓國最大限量交易平台。
+#
+# 來源：https://kream.co.kr/content/ranking_all-monthly （週榜/月榜，免費瀏覽）
+#       年度/趨勢數據另引自官方稿與媒體（見各 snapshot report 欄）。
+# 性質：韓版 StockX——成交量 = 真實轉售需求。比 MUSINSA 站內銷售更貼「市場願意花多少錢搶」。
+# 限制：平台內部成交數據，反映韓國 flex / 限量消費，非全市場；逐位名次頁為 JS 動態，
+#       目前無 headless 無法自動逐位抓取（同 ZOZO 限制，見 docs/rankings.md），快照採官方公開數據手動建立。
+
+source: kream
+region: kr
+cadence: monthly         # 站上週榜/月榜即時；本檔記年度結算與重大趨勢
+free: true
+url: https://kream.co.kr/content/ranking_all-monthly
+
+snapshots:
+  - period: "2025（年度結算）"
+    published: "2026-04"
+    report: "KREAM 2025 연간 실적 + 거래 트렌드（官方稿／헤럴드·CEOSCOREDAILY 報導）"
+    methodology: "限量/轉售平台成交量；本快照彙整年度結算與官方公開數據，非逐位站內即時榜"
+
+    brand_top:
+      rank: 1
+      name: Nike
+      note: "成交量長期 #1；Air Jordan / Dunk Low / Air Force 1 為街頭基本盤"
+
+    # 平台結構變化（韓國轉售消費往哪走）
+    category_shift:
+      - "球鞋佔總成交額 50%(2024) → 約 37%(2025)：非球鞋（精品／錶／科技）擴到約 63%，從球鞋平台轉綜合"
+      - "2025 全年營收 3,975 億韓元，歷史新高（日本市場高速成長帶動）"
+
+    # 高溢價/高熱度代表標的（可查證的知名轉售品）
+    notable:
+      - "Off-White × Air Jordan 1（The Ten / Virgil Abloh）：官方價約 20 萬韓元 → 轉售 80 萬韓元級"
+      - "Travis Scott × Dunk Low 'Camo'：官方約 15 萬 → 轉售 60 萬韓元級"
+
+    menswear_read:
+      - "KREAM 成交量 = 韓國真實轉售需求；Nike 街頭基本盤仍最硬，男裝入門押注先看 Nike 經典三線"
+      - "平台去球鞋化（50%→37%）→ 韓國男性 flex 消費往精品／配件／錶分散，不再純街牌"
+
+  - period: "2026-01"
+    published: "2026-01-31"
+    report: "KREAM 빈티지/중고명품 트렌드（중고 명품 서비스 6 개월 성과）"
+    methodology: "中古精品（vintage）服務 6 個月成交數據，官方公開"
+
+    brand_top:
+      rank: 1
+      name: Nike
+      note: "整體成交仍 Nike 領先；本期亮點在中古精品（vintage）爆發"
+
+    category_shift:
+      - "中古精品（vintage）成交量 +203% YoY、成交金額 +93% YoY：從高端擴散到小眾品項"
+      - "Rolex 成交量 +363% YoY：精品錶轉售在韓國快速放量"
+
+    notable:
+      - "Chrome Hearts 'Tiny Cross Charm'：中古服務更新後最多成交單品"
+      - "Hermès 'Birkin 25 Étoupe（金扣）'：本期最高成交價 3,900 萬韓元"
+
+    menswear_read:
+      - "韓國男性轉售熱度從球鞋外溢到 Chrome Hearts 銀飾、精品錶（Rolex）→ 配件/jewelry 是下一個內容點"
+      - "中古精品放量 = 二手/vintage 敘事在韓國成立，可對照日本 Mercari 的『實穿保值』看市場差異"

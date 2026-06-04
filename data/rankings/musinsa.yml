@@ -1,0 +1,47 @@
+# musinsa.yml
+# MUSINSA（무신사）銷售排行快照。韓國最大男裝/潮流電商平台。
+#
+# 來源：https://www.musinsa.com/ranking/archive （官方月간 랭킹，免費）
+# 性質：平台「銷售榜」——每日晨更，僅以會員直接購買 + 點擊計算，광고 미반영（不含廣告權重）。
+#       提供性別/品類 TOP30。最貼「韓國男性實際在買什麼」。
+# 限制：平台內部榜，只反映 MUSINSA 站內庫存與用戶，有平台商業偏差；尖端設計師潮流仍要看媒體。
+#       逐位榜頁為 JS 動態，無 headless 無法自動逐位抓取，快照採官方月榜公開數據手動建立。
+
+source: musinsa
+region: kr
+cadence: monthly         # 站上日榜即時；官方月間 랭킹每月發布
+free: true
+url: https://www.musinsa.com/ranking/archive
+
+snapshots:
+  - period: "2026-02"
+    published: "2026-02"
+    report: "무신사 월간 랭킹 · 2月 판매 TOP 브랜드"
+    methodology: "회원 직접 구매 + 클릭 데이터만, 광고 미반영；提供 성별/카테고리別 TOP30"
+    brands:
+      - rank: 1
+        name: MUSINSA STANDARD
+        note: "自有 PB，連續 5 個月 #1"
+      - rank: 2
+        name: adidas
+        note: "야외 시즌；러닝화/라이프스타일 스니커즈 라인업 견인"
+    menswear_read:
+      - "PB（무신사 스탠다드）長踞 #1：韓國男裝主力買的是平台自有基本款 CP 值，不是高價設計"
+      - "adidas 上 #2：terrace/running 復古鞋韓國與歐美同步發燒，可對照 StockX 跑鞋起飛"
+
+  - period: "2025-12"
+    published: "2025-12"
+    report: "무신사 월간 랭킹 · 12月 판매 TOP 브랜드"
+    methodology: "회원 직접 구매 + 클릭 데이터만, 광고 미반영"
+    brands:
+      - rank: 1
+        name: MUSINSA STANDARD
+        note: "自有 PB"
+      - rank: 2
+        name: THE NORTH FACE
+        note: "혹한；Project Down / Nuptse 等 헤비 아우터 為冬季必備"
+    menswear_read:
+      - "冬季 TNF 重機能外套（Nuptse / Project Down）韓國冬裝剛需，與日本 Mercari 的 TNF 保值互相印證"
+
+  # 參考：무신사 累積 베스트브랜드 TOP100 — #1 무신사 스탠다드 / #2 슬로우애시드(Slowacid) / #3 라퍼지스토어(Lafudgestore)
+  # （非單月，列為長期基準，未建為獨立 snapshot 以免與月榜口徑混淆）

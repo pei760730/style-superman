@@ -5,6 +5,12 @@
 ## [Unreleased]
 
 ### Added
+- **韓國 rankings（KREAM + MUSINSA）** — 把韓潮從「媒體訊號」升級成可長期比對的量化榜
+  - `data/rankings/kream.yml` — KREAM 限量/轉售成交量（韓版 StockX）：2025 年度 Nike 成交 #1、平台去球鞋化 50%→37%；2026-01 中古精品 +203%、Rolex +363%
+  - `data/rankings/musinsa.yml` — MUSINSA 平台銷售榜（最大男裝電商）：2026-02 무신사 스탠다드 連 5 月 #1、adidas #2；2025-12 #1 PB、#2 TNF
+  - `track_rankings.py` 新增 `kream`/`musinsa` 來源 + `--region kr` 過濾與 KR 顯示
+  - `validate_repo.py` 加 musinsa 品牌 rank 唯一性檢查
+  - docs/rankings.md 補韓國生態（KREAM 看 flex/轉售、MUSINSA 看日常實買）與「逐位榜 JS 動態無法自動抓、採官方公開數據手動建立」紀錄
 - **C6 — RSS 收集 → raw_signal_pack**
   - `scripts/collect_raw_signals.py`：從 `data/sources.yml` 有 RSS 的來源收集近期文章，轉成事實層 raw_signal_pack（純標準庫、抓取失敗優雅降級；`signal_type`/`credibility` 留待查交 article_to_insight）
   - `generate_daily_brief.py` 新增 `--with-rss` / `--raw-signals-out`

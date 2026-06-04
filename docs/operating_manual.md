@@ -20,7 +20,9 @@ python scripts/generate_daily_brief.py
 
 ### Step 2 — 收集訊號
 依 `data/sources.yml` 巡一遍核心來源（tier 1 必看）。把值得記的丟進處理：
-- 每篇用 `prompts/article_to_insight.md` 的格式榨乾成 insight。
+- 有 RSS 的來源可半自動收集：`python scripts/collect_raw_signals.py --out /tmp/raw.yml`
+  （或產 brief 時一併 `--with-rss --raw-signals-out /tmp/raw.yml`）。產出是**事實層** raw_signal_pack。
+- 每篇用 `prompts/article_to_insight.md` 把 raw signal 補上 `signal_type` / `credibility` 並榨成 insight。
 - 重點放在「新訊號」與「跨來源重複出現」的東西。
 
 ### Step 3 — 整理候選趨勢

@@ -81,6 +81,27 @@ def main() -> int:
     r = run(["scripts/ingest_ranking_snapshot.py", "--source", "lyst"], stdin=bad)
     check("ingest dry-run 壞資料被擋", r.returncode == 1 and "重複 rank" in r.stdout, r.stdout + r.stderr)
 
+    # 8–9. RSS 收集（離線：用 fixture，不碰網路）
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import collect_raw_signals as crs  # noqa: E402
+
+    feed_xml = (FIX / "sample_feed.xml").read_text(encoding="utf-8")
+    src = {"id": "test-src", "tier": 2, "region": "us-eu", "rss": "x"}
+    sigs = crs.parse_feed(feed_xml, src)
+    ok_parse = (
+        len(sigs) == 2
+        and sigs[0]["source_id"] == "test-src"
+        and sigs[0]["published"] == "2026-06-04"      # RFC822 → YYYY-MM-DD
+        and sigs[0]["signal_type"] == "待查"           # 收集層不判斷
+        and "<" not in sigs[0]["summary"]              # HTML 已清掉
+    )
+    check("RSS parse_feed 離線解析", ok_parse, str(sigs[:1]))
+
+    # collect() 注入假 fetcher：抓取失敗應降級成 warning，不丟例外
+    sigs2, warns = crs.collect([src, {"id": "dead", "tier": 3, "region": "jp", "rss": "y"}],
+                               fetcher=lambda url: feed_xml if url == "x" else None)
+    check("RSS collect 注入 fetcher + 降級", len(sigs2) == 2 and len(warns) == 1, f"{len(sigs2)} sigs, {warns}")
+
     print(f"\n{_passed} passed, {_failed} failed")
     return 1 if _failed else 0
 

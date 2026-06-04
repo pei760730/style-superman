@@ -5,6 +5,7 @@
 ## [Unreleased]
 
 ### Added
+- `reports/analysis/2026-us-jp-overlap.md` — 歐美×日本 2026 潮流交集分析（運動鞋越界 / gorpcore / elevated basics 為共同核心；ASICS·Salomon·FOG·Uniqlo 跨市場）
 - **日本 rankings + 媒體源**
   - `data/rankings/mercari-jp.yml` — Mercari 二手成交（成交 #1 Chanel→Uniqlo）
   - `track_rankings.py` 新增 `mercari` 來源 + `--region jp|us-eu` 過濾

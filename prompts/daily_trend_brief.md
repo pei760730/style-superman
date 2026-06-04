@@ -21,9 +21,10 @@
 2. 將每個有效訊號歸類到 taxonomy 的 category，掛上 region / lifecycle / content_angle 標籤。
 3. 挑出 **今日 3–5 個最值得關注的趨勢**（headline trends），其餘歸入 quick hits；訊號弱時可少於 3 個，不硬湊。
 4. 對每個 headline trend：說明「是什麼 / 為什麼現在 / 對創作者的意義」。
-5. 標出 **1–2 個明日值得追蹤的伏筆**（watchlist）。
-6. 產出「可拍選題」時，優先給實穿、可驗證、低製作門檻的角度；hot-take 可以有態度，但不能把待查訊號講成結論。
-7. 整份輸出嚴格遵守 `templates/daily_brief_template.md` 的結構，不新增 / 刪除 template 欄位。
+5. 固定填寫 `## 🇰🇷 韓潮 KR 追蹤`：追 MUSINSA / Hypebeast KR / 韓系設計師 / K-pop 造型等 KR 訊號；若當日沒有可驗證訊號，明寫「今日無可驗證 KR 訊號」，不得為了填欄位編熱度。
+6. 標出 **1–2 個明日值得追蹤的伏筆**（watchlist）。
+7. 產出「可拍選題」時，優先給實穿、可驗證、低製作門檻的角度；hot-take 可以有態度，但不能把待查訊號講成結論。
+8. 整份輸出嚴格遵守 `templates/daily_brief_template.md` 的結構，不新增 / 刪除 template 欄位。
 
 ## 輸出要求
 
@@ -32,6 +33,7 @@
 - 每個 headline trend 控制在 80–150 字，第一句直接給重點，不先鋪陳背景。
 - 不確定的訊號要標 `（待驗證）` 或 `待查`，不要編造熱度數據、排名、百分比、銷量。
 - 結尾附上「可拍選題」3 條，連到 short_video_ideas 流程。
+- 「韓潮 KR 追蹤」是固定追蹤位，不代表每日必有熱度；來源不足時標 `待查`。
 
 ## 注意
 

@@ -108,19 +108,91 @@ sources:
     name: Hypebeast KR
     region: kr
     type: media
-    tier: 2
+    tier: 1
     url: https://hypebeast.kr/
     rss: null
-    notes: 韓國街頭與發售
+    notes: 韓國街頭 / 聯名 / 發售情報，作為 KR 高訊號密度專業媒體
 
   - id: musinsa
-    name: MUSINSA Magazine
+    name: MUSINSA
     region: kr
     type: retailer
     tier: 1
     url: https://www.musinsa.com/
     rss: null
-    notes: 韓國最大男裝電商，可看實際熱賣與穿搭內容
+    notes: 韓國代表性時尚平台，可觀察男裝品牌、發售與平台編輯推品；商業偏差需標註
+
+  - id: musinsa-newsroom
+    name: MUSINSA Newsroom
+    region: kr
+    type: media
+    tier: 2
+    url: https://about.musinsa.com/newsroom
+    rss: null
+    notes: MUSINSA 集團動態與平台品牌新聞；可證明官方 / 平台事件，不單獨證明熱賣
+
+  - id: eyesmag
+    name: EYESMAG
+    region: kr
+    type: media
+    tier: 2
+    url: https://www.eyesmag.com/
+    rss: null
+    notes: 韓國 fashion / lifestyle / street culture 媒體，適合抓韓系街頭、聯名與設計師動向
+
+  - id: dazed-korea
+    name: Dazed Korea
+    region: kr
+    type: media
+    tier: 2
+    url: https://dazedkorea.com/
+    rss: null
+    notes: 韓國時尚 editorial 與 K-pop 造型訊號；偏編輯 / 名人曝光，需與其他來源交叉驗證
+
+  - id: w-korea
+    name: W Korea
+    region: kr
+    type: media
+    tier: 2
+    url: https://www.wkorea.com/
+    rss: null
+    notes: 高端時尚、名人造型與 K-pop editorial；可補品牌露出與造型脈絡
+
+  - id: vogue-korea
+    name: Vogue Korea
+    region: kr
+    type: media
+    tier: 2
+    url: https://www.vogue.co.kr/
+    rss: null
+    notes: 精品與 K-pop 造型曝光；作為韓潮名人穿搭與高端品牌外溢的確認訊號
+
+  - id: wwd-korea
+    name: WWD Korea
+    region: kr
+    type: media
+    tier: 2
+    url: https://www.wwdkorea.com/
+    rss: null
+    notes: 韓國時尚產業、設計師與品牌商業動態；偏脈絡與事件確認
+
+  - id: cm29
+    name: 29CM
+    region: kr
+    type: retailer
+    tier: 2
+    url: https://29cm.co.kr/
+    rss: null
+    notes: 韓國 curated fashion / lifestyle 平台；可觀察韓系設計師與零售端策展，但不得單獨寫成銷售硬數據
+
+  - id: kream
+    name: KREAM
+    region: kr
+    type: retailer
+    tier: 2
+    url: https://kream.co.kr/
+    rss: null
+    notes: 韓國 resale / drops 平台，可觀察球鞋、街頭與發售需求；需標明平台與轉售口徑限制
 
   # ---------- 社群（人工監看，未來接 API） ----------
   - id: ig-menswear

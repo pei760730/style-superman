@@ -7,15 +7,16 @@
 目前 repo 已經是一個可運作的 **男性潮流情報 MVP**：
 
 - `data/` 已有來源、taxonomy、品牌、人物與排行快照。
-- `scripts/` 已能產 daily brief 骨架、趨勢評分、檢視排行。
-- `prompts/` + `templates/` 已形成內容契約。
+- `scripts/` 已能產 daily brief 骨架、趨勢評分、排行檢視、排行 ingest、月報骨架與 repo validation。
+- `prompts/` + `templates/` 已形成內容契約，且已有 `raw_signal_pack` 中間格式。
 - `reports/` 已有 daily、monthly、analysis 三種產物。
+- `tests/` + GitHub Actions 已有 smoke checks，可在 PR 前守住基本契約。
 
 Codex 本輪不急著改腳本邏輯，優先做三件事：
 
 1. **補齊工程交接面**：讓 Claude Code 有清楚的 repo 指令與任務卡。
-2. **修正文件導覽落差**：README 要反映目前已存在的 monthly / ranking prompt 與 template。
-3. **鎖定下一階段工程順序**：先 validation，再 ingestion，再 LLM / 推送；不要反過來先做重型自動化。
+2. **修正文件導覽落差**：README 要反映目前已存在的 monthly / ranking / raw signal 能力。
+3. **鎖定下一階段工程順序**：C1–C5 已完成；下一步先接 RSS 收集到 `raw_signal_pack`，再做 vendor-neutral LLM brief adapter。
 
 ---
 
@@ -26,18 +27,19 @@ Codex 本輪不急著改腳本邏輯，優先做三件事：
 | Daily Brief | `templates/daily_brief_template.md` + `prompts/daily_trend_brief.md` | 可用 | 保持 Markdown 結構穩定；工程只填骨架，主編判斷由 Codex / 人類做。 |
 | Trend Card | `templates/trend_card_template.md` + `prompts/trend_analysis.md` | 可用 | 五維度分數必須附理由，仍是 `score_trends.py` 的核心輸入契約。 |
 | Short Video Idea | `templates/short_video_idea_template.md` + `prompts/short_video_ideas.md` | 可用 | 只由 headline trends 轉出，不要把弱訊號硬轉成選題。 |
-| Ranking Snapshot | `templates/ranking_snapshot_template.md` + `prompts/ranking_ingest.md` | 可用但需驗證器 | 下一步應由 Claude Code 補 schema validation，避免 YAML 手填出錯。 |
+| Ranking Snapshot | `templates/ranking_snapshot_template.md` + `prompts/ranking_ingest.md` | 已有 ingest + validation | 維持 dry-run 優先；正式寫入前必須可被 `validate_repo.py` 檢查。 |
 | Monthly Heat Report | `templates/monthly_heat_report_template.md` + `prompts/monthly_heat_report.md` | MVP | 月報是綜合判斷，不是官方榜；每條都要有來源與信心。 |
+| Raw Signal Pack | `templates/raw_signal_pack_template.md` | 契約已定 | raw 層只存來源事實，不做「會紅 / 該追」判斷；C6 會把 RSS 收集接到此格式。 |
 
 ---
 
 ## 2. Claude Code 任務卡
 
-以下任務按建議順序排列。每張卡都可以獨立開 PR，但不要同一個 PR 混太多方向。
+以下任務按建議順序排列。每張卡都可以獨立開 PR，但不要同一個 PR 混太多方向。C6 之後屬 **Claude Code 的工程範圍**；Codex 只在本文件定規格、做後續 review，不在本輪修改 `scripts/` / `tests/` / CI。
 
-### C1 — Repo validation CLI（已完成：`scripts/validate_repo.py`）
+### ✅ C1 — Repo validation CLI（已完成：`scripts/validate_repo.py`）
 
-**Goal**  
+**Goal**
 新增一個 validation 入口，讓人工 / AI 修改 YAML、templates、reports 後可以快速檢查格式與基本契約。
 
 **Scope**
@@ -74,9 +76,9 @@ python scripts/validate_repo.py --data
 python scripts/validate_repo.py --templates
 ```
 
-### C2 — Ranking ingest helper
+### ✅ C2 — Ranking ingest helper（已完成：`scripts/ingest_ranking_snapshot.py`）
 
-**Goal**  
+**Goal**
 降低更新 Lyst / StockX / Mercari 快照時的手填錯誤，把「AI 轉 YAML」後的資料先經過 dry-run 檢查。
 
 **Scope**
@@ -103,9 +105,9 @@ python scripts/ingest_ranking_snapshot.py --source lyst --input tests/fixtures/l
 python scripts/track_rankings.py --source lyst --compare
 ```
 
-### C3 — Daily brief source pack format
+### ✅ C3 — Daily brief source pack format（已完成：`templates/raw_signal_pack_template.md`）
 
-**Goal**  
+**Goal**
 在接 RSS / LLM 前，先定義 `RAW_SIGNALS` 的穩定中間格式，避免 daily prompt 每天吃到不同形狀的資料。
 
 **Scope**
@@ -135,9 +137,9 @@ Raw signal 至少包含：
 python scripts/generate_daily_brief.py --date 2099-01-01 --draft
 ```
 
-### C4 — Monthly heat report generator MVP
+### ✅ C4 — Monthly heat report generator MVP（已完成：`scripts/generate_monthly_heat_report.py`）
 
-**Goal**  
+**Goal**
 把現有 `prompts/monthly_heat_report.md` 與 `templates/monthly_heat_report_template.md` 接成一個半自動骨架產生器，先不做全自動 web 判斷。
 
 **Scope**
@@ -163,9 +165,9 @@ python scripts/generate_monthly_heat_report.py --month 2026-06 --region us-eu
 python scripts/generate_monthly_heat_report.py --month 2099-01 --region us-eu --draft
 ```
 
-### C5 — Test fixtures + CI smoke checks
+### ✅ C5 — Test fixtures + CI smoke checks（已完成）
 
-**Goal**  
+**Goal**
 讓核心腳本有最小穩定驗收，避免後續自動化一改就壞。
 
 **Scope**
@@ -182,15 +184,110 @@ python scripts/track_rankings.py --json
 python scripts/validate_repo.py
 ```
 
+### C6 — RSS 收集 → `raw_signal_pack`（Claude Code 工程範圍）
+
+**Goal**
+讓 `generate_daily_brief.py` 可從 `data/sources.yml` 中有 RSS 的來源收集當日 / 近 N 日文章，轉成符合 `templates/raw_signal_pack_template.md` 的 `raw_signal_pack`，供人工或後續 LLM 撰寫 brief 使用。
+
+**Scope**
+
+- 可修改：`scripts/generate_daily_brief.py`、必要時新增 `scripts/collect_raw_signals.py` / parser helper、`scripts/README.md`、`tests/` fixtures、`docs/operating_manual.md`。
+- 不要修改：`prompts/`、`templates/` 契約、`data/` 既有內容事實、`reports/` 已發布內容。
+- RSS 收集只處理 `data/sources.yml` 既有且 `rss` 非空的來源；新增來源需另開資料 PR 並由人類確認。
+- C6 只做「來源事實收集與格式化」，不做 trend scoring、不做 headline 判斷、不呼叫 LLM。
+
+**Contract**
+
+- Command examples:
+
+```bash
+python scripts/generate_daily_brief.py --date 2026-06-04 --draft --with-rss --raw-signals-out /tmp/raw_signal_pack.yml
+python scripts/generate_daily_brief.py --date 2026-06-04 --draft --with-rss --lookback-days 2
+```
+
+- Input:
+  - `data/sources.yml`：讀取 `id/name/region/type/tier/url/rss`。
+  - RSS / Atom feed：解析 article `title/link/published/summary`；不要求抓全文。
+  - CLI options：`--with-rss` 啟用收集；`--lookback-days N` 預設 `1`；`--raw-signals-out PATH` 可把 raw pack 寫到指定檔案。
+- Output:
+  - raw pack YAML 必須符合 `templates/raw_signal_pack_template.md` 的 `signals:` list 結構。
+  - brief draft 可新增一段 `RAW_SIGNALS` / `待整理來源訊號`，貼上 YAML 或摘要；若無訊號則明確寫 `今日 RSS 未取得可用訊號`。
+  - raw pack 預設不寫入 repo 長期路徑；若使用者指定 repo 內路徑，仍不得自動 commit。
+- Field mapping:
+  - `source_id/source_tier/region` 來自 `data/sources.yml`。
+  - `url/title/published/summary` 來自 RSS；日期解析失敗填 `待查`，不可猜。
+  - `signal_type` RSS 無法可靠判斷時填 `culture` 或 `style`，並在 summary 保持事實語氣；不要編造 taxonomy 細分。
+  - `credibility` 預設依 source tier / type 給初值：tier 1 media/ranking 可為 `high`，tier 2 可為 `medium`，社群 / tier 3 / 轉述型內容為 `medium` 或 `low`；規則需寫入 README 或 docs。
+- Error handling:
+  - 單一 feed 失敗不得讓整體命令失敗；輸出 warnings，其他來源照跑。
+  - 全部 feed 失敗時 exit code 可仍為 `0`（因 daily draft 可生成），但必須在輸出與 draft 中標明沒有取得 raw signals。
+  - 網路 timeout、非 XML、日期解析失敗都要有可讀 warning。
+
+**Acceptance checks**
+
+```bash
+python scripts/generate_daily_brief.py --date 2099-01-01 --draft --with-rss --raw-signals-out /tmp/raw_signal_pack.yml
+python scripts/generate_daily_brief.py --date 2099-01-01 --draft --with-rss --lookback-days 2
+python scripts/validate_repo.py
+python -m unittest discover -s tests
+```
+
+### C7 — LLM 自動撰寫 brief adapter 介面（Claude Code 工程範圍）
+
+**Goal**
+在不綁定 Claude / OpenAI / 其他供應商的前提下，先建立「把 raw signals + prompt/template 轉成完整 daily brief」的 adapter 介面，讓未來可替換 LLM provider，也可保留手動 prompt 流程。
+
+**Scope**
+
+- 可修改：`scripts/generate_daily_brief.py`、必要時新增 `scripts/llm_adapter.py`、`scripts/README.md`、`tests/` fixtures、`docs/operating_manual.md`。
+- 不要修改：`prompts/`、`templates/` 契約、`data/` 內容事實、`reports/` 已發布內容。
+- C7 只定工程介面與 dry-run / mock 行為；真實 API key、供應商選型與費用策略需人類拍板（見 `docs/decisions.md`）。
+
+**Contract**
+
+- Adapter interface（可用 Python class / function / protocol 實作，命名由 Claude Code 決定，但需文件化）：
+  - Input:
+    - `date: YYYY-MM-DD`
+    - `raw_signal_pack: dict | str`（符合 C3/C6 契約）
+    - `brief_template: str`（來自 `templates/daily_brief_template.md`）
+    - `prompt_template: str`（來自 `prompts/daily_trend_brief.md`，但本任務不改 prompt）
+    - `provider: manual|mock|claude|openai|...`
+    - optional `model`, `temperature`, `max_tokens`
+  - Output:
+    - 完整 Markdown brief 字串，能寫入 `reports/daily/YYYY-MM-DD.md` 或 `.draft.md`。
+    - metadata dict：`provider/model/generated_at/raw_signal_count/warnings`。
+  - Error handling:
+    - provider 不存在、缺 API key、API timeout、回傳空內容時，不得覆蓋既有 brief；改回 manual draft 並輸出明確 warning。
+    - LLM output 不得新增無來源排名 / 百分比 / 事實；若 adapter 做不到自動驗證，至少在 metadata warnings 標記 `requires_human_review`。
+- CLI behavior:
+
+```bash
+python scripts/generate_daily_brief.py --date 2026-06-04 --draft --from-raw /tmp/raw_signal_pack.yml --llm-provider mock
+python scripts/generate_daily_brief.py --date 2026-06-04 --draft --from-raw /tmp/raw_signal_pack.yml --llm-provider manual
+```
+
+- `manual` provider：不呼叫 API，只把 prompt + raw signals 組成可複製的手動撰寫包。
+- `mock` provider：測試用，回傳 deterministic brief，讓 CI 不依賴外部 LLM。
+- 真實 provider：可先留 stub；若要實作 Claude / OpenAI API，需另開 PR 並由人類確認供應商策略與 key 管理。
+
+**Acceptance checks**
+
+```bash
+python scripts/generate_daily_brief.py --date 2099-01-01 --draft --from-raw tests/fixtures/raw_signal_pack.yml --llm-provider mock
+python scripts/generate_daily_brief.py --date 2099-01-01 --draft --from-raw tests/fixtures/raw_signal_pack.yml --llm-provider manual
+python scripts/validate_repo.py
+python -m unittest discover -s tests
+```
+
 ---
 
 ## 3. 人類決策 Queue
 
-這些不是 Claude Code 該自行決定的事，請人類 / Codex 先拍板：
+這些不是 Claude Code 該自行決定的事，請人類 / Codex 先拍板。Codex 本輪已把建議方案、理由與待確認狀態整理到 [Decisions](decisions.md)：
 
 1. **是否要把「韓潮」拉成獨立 monthly report**，或先只在 daily brief 裡追蹤。
 2. **月報排序要不要固定 Top 5 / Top 10**，還是依訊號強弱浮動。
-3. **是否要新增 content calendar 目錄**，例如 `reports/content_ideas/` 或 `content_pool/`。
+3. **是否要新增 content idea 目錄**，例如 `reports/content_ideas/` 或 `content_pool/`。
 4. **來源 tier 調整**：哪些來源能算 tier 1，哪些只能做 confirming signal。
 5. **LLM 供應商策略**：Claude / OpenAI 是否都要支援，還是先只保留 prompt 手動流程。
 
@@ -210,6 +307,8 @@ python scripts/validate_repo.py
 
 ## 5. 下一個建議 PR
 
-**C1 已完成。下一個建議 PR：C2 — Ranking ingest helper。**
+**下一個建議 PR：C6 — RSS 收集 → `raw_signal_pack`。**
 
-原因：validation 已能守住資料契約；下一步應降低更新 Lyst / StockX / Mercari 快照時的手填風險，先做 dry-run ingest，再考慮全自動來源抓取。
+原因：C1–C5 已把 validation、ranking ingest、raw signal 契約、月報骨架與 smoke checks 補齊；下一階段應先把真實 RSS 來源穩定轉進 raw 層，再讓 C7 的 LLM adapter 讀同一份 input。這樣可避免 LLM 直接吃未整理來源、也避免把來源事實與 Style Superman 判斷混在一起。
+
+C7 建議緊接在 C6 後開 PR；若 C6 實作時已新增 raw pack fixtures，可直接沿用作 C7 的 mock / manual provider 測試資料。

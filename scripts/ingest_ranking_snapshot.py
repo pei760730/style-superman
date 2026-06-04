@@ -1,0 +1,224 @@
+#!/usr/bin/env python3
+"""
+ingest_ranking_snapshot.py
+==========================
+安全地把「一筆新的排行快照」加進 data/rankings/<source>.yml。
+
+目的：降低手填 Lyst / StockX / Mercari 快照的出錯風險。
+先 **dry-run** 檢查（預設行為，不寫檔），確認格式與契約都對，再加 `--write` 真正寫入。
+寫入時用**文字插入**把新快照放到 `snapshots:` 最上面，**不重新序列化整個檔**，
+所以既有快照的註解與排版都不會被破壞。
+
+用法：
+    # 檢查（不寫檔）——預設
+    python scripts/ingest_ranking_snapshot.py --source lyst --input /tmp/lyst_q2.yml
+
+    # 從 stdin 讀
+    cat /tmp/lyst_q2.yml | python scripts/ingest_ranking_snapshot.py --source lyst
+
+    # 通過檢查後真正寫入
+    python scripts/ingest_ranking_snapshot.py --source lyst --input /tmp/lyst_q2.yml --write
+
+輸入格式：一段 YAML，內容是「一筆 snapshot」——可以是
+    - 單一 mapping（period: ... 開頭），或
+    - 只含一個 mapping 的 list（- period: ... 開頭）
+格式見 templates/ranking_snapshot_template.md。
+"""
+
+from __future__ import annotations
+
+import argparse
+import sys
+from pathlib import Path
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
+try:
+    import yaml
+except ImportError:  # pragma: no cover
+    yaml = None
+
+ROOT = Path(__file__).resolve().parent.parent
+RANKINGS_DIR = ROOT / "data" / "rankings"
+
+SOURCES = {
+    "lyst": "lyst-index.yml",
+    "stockx": "stockx.yml",
+    "mercari": "mercari-jp.yml",
+}
+# 檔案內 `source:` 欄位的值（用來核對輸入沒放錯來源）
+SOURCE_FIELD = {
+    "lyst": "lyst-index",
+    "stockx": "stockx",
+    "mercari": "mercari-jp",
+}
+
+
+def fail(msg: str) -> "None":
+    print(f"⚠️  {msg}")
+    raise SystemExit(1)
+
+
+def load_input(path: str | None) -> tuple[dict, str]:
+    """讀輸入（檔案或 stdin），回傳 (snapshot dict, 原始文字)。"""
+    if path:
+        raw = Path(path).read_text(encoding="utf-8")
+    else:
+        if sys.stdin.isatty():
+            fail("沒有 --input 也沒有 stdin 輸入。請提供新快照 YAML。")
+        raw = sys.stdin.read()
+
+    if not raw.strip():
+        fail("輸入是空的。")
+
+    parsed = yaml.safe_load(raw)
+    # 接受 list[1] 或單一 mapping
+    if isinstance(parsed, list):
+        if len(parsed) != 1:
+            fail(f"輸入應只含 1 筆 snapshot，實際有 {len(parsed)} 筆。")
+        snapshot = parsed[0]
+    elif isinstance(parsed, dict):
+        snapshot = parsed
+    else:
+        fail("輸入無法解析成 snapshot（需為 mapping 或單元素 list）。")
+    if not isinstance(snapshot, dict):
+        fail("snapshot 必須是 mapping（key: value）。")
+    return snapshot, raw
+
+
+def existing_periods(target_path: Path) -> tuple[list, dict]:
+    """回傳 (現有 period 清單, 目標檔解析後的 dict)。"""
+    data = yaml.safe_load(target_path.read_text(encoding="utf-8")) or {}
+    snaps = data.get("snapshots") or []
+    periods = [s.get("period") for s in snaps if isinstance(s, dict)]
+    return periods, data
+
+
+# ---------- 各來源的 snapshot 契約檢查 ----------
+
+def check_ranks(rows, label: str, errors: list[str]) -> int:
+    if not isinstance(rows, list):
+        errors.append(f"{label} 必須是 list")
+        return 0
+    ranks = []
+    for i, row in enumerate(rows, 1):
+        if not isinstance(row, dict):
+            errors.append(f"{label}[{i}] 必須是 mapping")
+            continue
+        rank = row.get("rank")
+        if not isinstance(rank, int):
+            errors.append(f"{label}[{i}] rank 必須是整數")
+        else:
+            ranks.append(rank)
+    if len(ranks) != len(set(ranks)):
+        errors.append(f"{label} 有重複 rank")
+    return len(rows)
+
+
+def validate_snapshot(source: str, snap: dict) -> tuple[list[str], list[str]]:
+    """回傳 (errors, info)。errors 非空代表不可寫入。"""
+    errors: list[str] = []
+    info: list[str] = []
+
+    period = snap.get("period")
+    if not period:
+        errors.append("缺 period（或為空）")
+    else:
+        info.append(f"period = {period}")
+
+    if source == "lyst":
+        n_b = check_ranks(snap.get("brands"), "brands", errors)
+        n_p = check_ranks(snap.get("products"), "products", errors)
+        info.append(f"brands {n_b} 筆、products {n_p} 筆")
+    elif source == "stockx":
+        if "ranking" in snap:
+            errors.append("StockX 不可把資料壓成單一 'ranking' list（口徑要分開）")
+        known = [k for k in ("best_seller_sneaker", "apparel_top", "accessory_top",
+                             "all_time_best_seller", "notable_new_models",
+                             "fastest_growing_brands") if k in snap]
+        if not known:
+            errors.append("StockX snapshot 沒有任何已知欄位（best_seller_sneaker 等）")
+        else:
+            info.append(f"欄位：{', '.join(known)}")
+    elif source == "mercari":
+        for required in ("brand_top", "menswear_read"):
+            if required not in snap:
+                errors.append(f"Mercari snapshot 缺 {required}")
+        bt = snap.get("brand_top")
+        if isinstance(bt, dict) and bt.get("name"):
+            info.append(f"brand_top = {bt['name']}")
+
+    return errors, info
+
+
+def build_block(snap: dict) -> str:
+    """把 snapshot 重新輸出成可插在 snapshots: 底下的 2-space list item。"""
+    dumped = yaml.dump([snap], sort_keys=False, allow_unicode=True, default_flow_style=False)
+    # 整段縮排 2 格，放到 `snapshots:` 之下
+    return "".join(f"  {line}" if line.strip() else line for line in dumped.splitlines(keepends=True))
+
+
+def write_snapshot(target_path: Path, snap: dict) -> None:
+    """把新 snapshot 文字插到 `snapshots:` 行的正下方，保留檔內既有註解與排版。"""
+    lines = target_path.read_text(encoding="utf-8").splitlines(keepends=True)
+    idx = next((i for i, ln in enumerate(lines) if ln.rstrip() == "snapshots:"), None)
+    if idx is None:
+        fail(f"{target_path.name} 找不到 `snapshots:` 行，無法插入。")
+    block = build_block(snap)
+    if not block.endswith("\n"):
+        block += "\n"
+    lines.insert(idx + 1, block)
+    target_path.write_text("".join(lines), encoding="utf-8")
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="安全加入一筆排行快照（預設 dry-run）")
+    parser.add_argument("--source", choices=list(SOURCES), required=True)
+    parser.add_argument("--input", help="新快照 YAML 檔；省略則讀 stdin")
+    parser.add_argument("--write", action="store_true", help="通過檢查後真正寫入（預設只 dry-run）")
+    args = parser.parse_args()
+
+    if yaml is None:
+        fail("需要 pyyaml：pip install -r requirements.txt")
+
+    target_path = RANKINGS_DIR / SOURCES[args.source]
+    if not target_path.exists():
+        fail(f"找不到目標檔：{target_path}")
+
+    snap, _raw = load_input(args.input)
+
+    errors, info = validate_snapshot(args.source, snap)
+
+    # 跨檔檢查：period 不可與既有重複
+    periods, _data = existing_periods(target_path)
+    period = snap.get("period")
+    if period and period in periods:
+        errors.append(f"period {period!r} 已存在於 {target_path.name}，不可重複 ingest")
+
+    print(f"來源：{args.source}（{SOURCE_FIELD[args.source]}）→ {target_path.relative_to(ROOT)}")
+    for line in info:
+        print(f"  · {line}")
+    print(f"  · 既有 snapshots：{len(periods)} 筆 {periods if periods else ''}")
+
+    if errors:
+        print("\n❌ 檢查未通過：")
+        for e in errors:
+            print(f"   - {e}")
+        raise SystemExit(1)
+
+    print("\n✅ 契約檢查通過。")
+
+    if not args.write:
+        print("（DRY RUN — 未寫入。確認無誤後加 --write 真正寫入。）")
+        return
+
+    write_snapshot(target_path, snap)
+    print(f"✍️  已將 {period} 插入 {target_path.name} 的 snapshots 最上方。")
+    print("   下一步請自驗：")
+    print(f"     python scripts/validate_repo.py --data")
+    print(f"     python scripts/track_rankings.py --source {args.source} --compare")
+
+
+if __name__ == "__main__":
+    main()

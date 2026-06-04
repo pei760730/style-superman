@@ -57,9 +57,17 @@ python scripts/track_rankings.py --source lyst    # 單一來源（lyst/stockx/m
 ```
 
 ### 新一期發布時（季度 / 年度）
-1. 用 `prompts/ranking_ingest.md` 把報告轉成 YAML（或手動照 `templates/ranking_snapshot_template.md` 填）。
-2. 貼到對應 `.yml` 的 `snapshots:` **最上面**（最新在前）。
-3. 跑 `python scripts/track_rankings.py --source <lyst|stockx>` 自驗格式。
+1. 用 `prompts/ranking_ingest.md` 把報告轉成 YAML（或手動照 `templates/ranking_snapshot_template.md` 填），存成一個檔（例 `/tmp/lyst_q2.yml`）。
+2. **先 dry-run 檢查**（不寫檔）：
+   ```bash
+   python scripts/ingest_ranking_snapshot.py --source lyst --input /tmp/lyst_q2.yml
+   ```
+   它會擋下：period 重複、rank 重複/非整數、StockX 被壓成單一 ranking、Mercari 缺 `brand_top`/`menswear_read`。
+3. 檢查通過後 `--write` 寫入（自動放到 `snapshots:` 最上面，保留既有註解）：
+   ```bash
+   python scripts/ingest_ranking_snapshot.py --source lyst --input /tmp/lyst_q2.yml --write
+   ```
+4. 自驗：`python scripts/validate_repo.py --data` 與 `python scripts/track_rankings.py --source lyst --compare`。
 
 ### 比對演化（累積 2 期以上才有意義）
 ```bash

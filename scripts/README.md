@@ -49,8 +49,22 @@ python scripts/validate_repo.py --templates
 python scripts/validate_repo.py --reports
 ```
 
+### `ingest_ranking_snapshot.py`
+安全地把「一筆新排行快照」加進 `data/rankings/<source>.yml`。預設 **dry-run**（只檢查不寫檔），確認契約都對再加 `--write`。寫入用文字插入，**保留既有快照的註解與排版**。
+
+```bash
+# 檢查（不寫檔）—— 預設
+python scripts/ingest_ranking_snapshot.py --source lyst --input /tmp/lyst_q2.yml
+cat /tmp/lyst_q2.yml | python scripts/ingest_ranking_snapshot.py --source lyst   # 或 stdin
+
+# 通過檢查後真正寫入（放到 snapshots 最上方）
+python scripts/ingest_ranking_snapshot.py --source lyst --input /tmp/lyst_q2.yml --write
+```
+
+檢查項：period 必填且不可與既有重複；Lyst rank 不重複/為整數；StockX 不可壓成單一 `ranking`；Mercari 必含 `brand_top` / `menswear_read`。輸入格式見 [templates/ranking_snapshot_template.md](../templates/ranking_snapshot_template.md)，範例見 `tests/fixtures/*_snapshot.yml`。
+
 ### `track_rankings.py`
-讀取 `data/rankings/` 的排行快照（Lyst Index / StockX），顯示最新榜並比對名次演化。模組說明見 [docs/rankings.md](../docs/rankings.md)。
+讀取 `data/rankings/` 的排行快照（Lyst Index / StockX / Mercari），顯示最新榜並比對名次演化。模組說明見 [docs/rankings.md](../docs/rankings.md)。
 
 ```bash
 python scripts/track_rankings.py                    # 全部（歐美 + 日本）

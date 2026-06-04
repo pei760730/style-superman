@@ -1,0 +1,12 @@
+# TEST FIXTURE — 合成資料，非真實排行。僅供 ingest_ranking_snapshot.py dry-run 驗證用。
+- period: "2099-annual"
+  published: "2099-Q4"
+  report: "Test Big Facts 2099"
+  best_seller_sneaker:
+    brand: Test Brand A
+    item: "Test Sneaker"
+    note: "合成測試資料"
+  fastest_growing_brands:
+    - { brand: Test Brand B, change: "+99%" }
+  menswear_read:
+    - "合成測試 read 條目"

@@ -27,6 +27,8 @@
 style-superman/
 ├── README.md                 # 你現在看的這份
 ├── CHANGELOG.md              # 版本與系統演進紀錄
+├── CLAUDE.md                 # Claude Code 在本 repo 的執行守則
+├── requirements.txt           # Python 相依套件
 ├── .gitignore
 ├── data/                     # 系統的「知識底層」（人工 + 機器共同維護）
 │   ├── sources.yml           # 情報來源清單（站點 / 帳號 / RSS / 排行）
@@ -45,24 +47,31 @@ style-superman/
 │   ├── daily_trend_brief.md
 │   ├── trend_analysis.md
 │   ├── article_to_insight.md
-│   └── short_video_ideas.md
+│   ├── short_video_ideas.md
+│   ├── ranking_ingest.md
+│   └── monthly_heat_report.md
 ├── scripts/                  # 自動化腳本
 │   ├── generate_daily_brief.py
 │   ├── score_trends.py
 │   ├── track_rankings.py     # 排行快照檢視 + 名次演化比對
+│   ├── validate_repo.py      # PR 前 smoke validation
 │   └── README.md
 ├── templates/                # 產出物的固定格式
 │   ├── daily_brief_template.md
 │   ├── trend_card_template.md
-│   └── short_video_idea_template.md
+│   ├── short_video_idea_template.md
+│   ├── ranking_snapshot_template.md
+│   └── monthly_heat_report_template.md
 ├── docs/                     # 系統設計與營運手冊
 │   ├── system_design.md
 │   ├── content_strategy.md
 │   ├── trend_scoring_rules.md
 │   ├── operating_manual.md
-│   └── ai_collaboration.md      # Codex / Claude Code / 人類分工手冊
+│   ├── ai_collaboration.md      # Codex / Claude Code / 人類分工手冊
+│   └── codex_execution_plan.md  # Codex 第一輪 review 後的工程任務卡
 └── .github/
     └── workflows/
+        ├── ci.yml            # PR smoke checks
         └── daily-brief.yml   # 每日自動跑 brief 的排程
 ```
 
@@ -80,7 +89,7 @@ python scripts/generate_daily_brief.py
 # 3. 對趨勢資料打分
 python scripts/score_trends.py
 
-# 4. 看最紅品牌 / 熱銷單品排行（Lyst Index + StockX）
+# 4. 看最紅品牌 / 熱銷單品排行（Lyst Index + StockX + Mercari）
 python scripts/track_rankings.py
 ```
 
@@ -95,7 +104,7 @@ python scripts/track_rankings.py
 3. **格式即契約** — 所有產出都走 `templates/`，方便日後被 n8n / Notion / Sheets 解析。
 4. **先輕後重** — 先把流程跑順、累積資料，再決定要不要上重型自動化。
 
-詳見 [docs/system_design.md](docs/system_design.md)。AI 分工與交接規則見 [docs/ai_collaboration.md](docs/ai_collaboration.md)。
+詳見 [docs/system_design.md](docs/system_design.md)。AI 分工與交接規則見 [docs/ai_collaboration.md](docs/ai_collaboration.md)；Codex 已拆好的下一步工程任務見 [docs/codex_execution_plan.md](docs/codex_execution_plan.md)。
 
 ---
 
@@ -104,8 +113,10 @@ python scripts/track_rankings.py
 - [x] Repo 結構與資料底層
 - [x] Daily brief 骨架腳本
 - [x] 趨勢評分規則
-- [x] Rankings 模組（Lyst Index + StockX，可長期比對）
+- [x] Rankings 模組（Lyst Index + StockX + Mercari，可長期比對）
 - [x] Codex / Claude Code / 人類協作分工手冊
+- [x] Codex 第一輪系統 review + Claude Code 工程任務卡
+- [x] PR smoke validation + GitHub Actions CI
 - [ ] 接入真實來源抓取（RSS / API）
 - [ ] AI 自動撰寫 brief 全文
 - [ ] 推送到 Telegram / Notion

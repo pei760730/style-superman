@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: python -m pip install -r requirements.txt
+
+      - name: Compile Python scripts
+        run: python -m py_compile scripts/*.py
+
+      - name: Validate repo contracts
+        env:
+          PYTHONIOENCODING: utf-8
+        run: python scripts/validate_repo.py
+
+      - name: Score trend demo
+        env:
+          PYTHONIOENCODING: utf-8
+        run: python scripts/score_trends.py --demo
+
+      - name: Track rankings JSON
+        env:
+          PYTHONIOENCODING: utf-8
+        run: python scripts/track_rankings.py --json
+
+      - name: Generate draft daily brief
+        env:
+          PYTHONIOENCODING: utf-8
+        run: |
+          python scripts/generate_daily_brief.py --date 2099-01-01 --draft
+          rm -f reports/daily/2099-01-01.draft.md

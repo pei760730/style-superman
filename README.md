@@ -65,6 +65,7 @@ style-superman/
 ├── docs/                     # 系統設計與營運手冊
 │   ├── system_design.md
 │   ├── content_strategy.md
+│   ├── content_calendar.md      # Daily → weekly → monthly → analysis 內容生產線
 │   ├── trend_scoring_rules.md
 │   ├── operating_manual.md
 │   ├── ai_collaboration.md      # Codex / Claude Code / 人類分工手冊
@@ -104,7 +105,7 @@ python scripts/track_rankings.py
 3. **格式即契約** — 所有產出都走 `templates/`，方便日後被 n8n / Notion / Sheets 解析。
 4. **先輕後重** — 先把流程跑順、累積資料，再決定要不要上重型自動化。
 
-詳見 [docs/system_design.md](docs/system_design.md)。AI 分工與交接規則見 [docs/ai_collaboration.md](docs/ai_collaboration.md)；Codex 已拆好的下一步工程任務見 [docs/codex_execution_plan.md](docs/codex_execution_plan.md)。
+詳見 [docs/system_design.md](docs/system_design.md)。內容策略見 [docs/content_strategy.md](docs/content_strategy.md)，Daily → weekly → monthly → analysis 的生產線見 [docs/content_calendar.md](docs/content_calendar.md)。AI 分工與交接規則見 [docs/ai_collaboration.md](docs/ai_collaboration.md)；Codex 已拆好的下一步工程任務見 [docs/codex_execution_plan.md](docs/codex_execution_plan.md)。
 
 ---
 

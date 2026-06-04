@@ -6,11 +6,16 @@
 
 ### Added
 - **日本 rankings + 媒體源**
-  - `data/rankings/zozotown.yml` — ZOZOTOWN 男裝 EC 銷售（2026-06 觀察；⚠ JS 動態頁，非官方逐位排名）
   - `data/rankings/mercari-jp.yml` — Mercari 二手成交（成交 #1 Chanel→Uniqlo）
-  - `track_rankings.py` 新增 `zozo` / `mercari` 來源 + `--region jp|us-eu` 過濾
-  - `sources.yml` 新增日本 ranking（zozotown/wear/mercari）與 media（MEN'S NON-NO/POPEYE/Houyhnhnm）
+  - `track_rankings.py` 新增 `mercari` 來源 + `--region jp|us-eu` 過濾
+  - `sources.yml` 新增日本 media（MEN'S NON-NO/POPEYE/Houyhnhnm）與 WEAR
   - docs/rankings.md 補日本生態與「量化榜+媒體街拍兩條腿」鐵則
+
+### Removed
+- **ZOZOTOWN 排行**（zozotown.yml + 腳本/來源 plumbing）—— 評估後移除。
+  zozo.jp 由 Akamai 防護（curl 403、頁面 JS 動態、WebFetch 逾時、聚合站無逐位名次），
+  無真實 headless 瀏覽器無法準確抓取，屬不該背的重量。依「不準確就拿掉」不保留半準觀察清單。
+  紀錄與替代方案見 docs/rankings.md「ZOZOTOWN：評估後不採用」。
 - **Rankings 模組**：定期可量化排行（`data/rankings/`）
   - `lyst-index.yml` — Lyst Index 季度快照（已收錄 2026-Q1：Top 20 品牌 + Top 10 單品）
   - `stockx.yml` — StockX 年度/年中快照（已收錄 2025 全年熱銷）

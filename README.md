@@ -36,7 +36,6 @@ style-superman/
 │   └── rankings/             # 定期可量化排行快照（可長期比對）
 │       ├── lyst-index.yml    #   歐美：Lyst Index 季度（最紅品牌+單品）
 │       ├── stockx.yml        #   歐美：StockX 年度/年中（熱銷實數）
-│       ├── zozotown.yml      #   日本：ZOZOTOWN EC 即時銷售
 │       └── mercari-jp.yml    #   日本：Mercari 二手成交需求
 ├── reports/
 │   └── daily/                # 每日 brief 產出（按日期命名）

@@ -35,4 +35,4 @@ snapshots:
     menswear_read:
       - "二手 #1 Chanel→Uniqlo：日本男裝需求黏性在『實穿耐用』而非 logo 炫耀"
       - "Nike / GU / Zara / TNF 跨世代保值 → 安全押注、好流通"
-      - "新品熱度看 zozotown.yml；需求黏性 / 保值看這裡，兩者互補"
+      - "二手成交反映需求黏性 / 保值；新品即時熱度（ZOZO）因 Akamai 防護未納入，見 docs/rankings.md"

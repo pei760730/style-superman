@@ -207,30 +207,21 @@ sources:
       偏球鞋/街頭，男裝代表性最強，但涵蓋不到精品成衣。
       快照見 data/rankings/stockx.yml
 
-  # 日本：沒有單一威望榜，靠 EC 即時銷售榜 + 二手成交需求
-  - id: zozotown
-    name: ZOZOTOWN メンズランキング
-    region: jp
-    type: ranking
-    tier: 1
-    url: https://zozo.jp/ranking/all-sales-men.html
-    rss: null
-    cadence: realtime       # 即時 / 日榜
-    notes: >
-      日本最大 EC 的男裝即時銷售榜，可分類（上衣/外套/鞋/setup）。
-      偏大眾走量（Uniqlo/Nike/連帽T），抓不到尖端日潮 → 須配媒體/街拍看。
-      ⚠ JS 動態頁，自動抓取需 headless browser；目前手動採集。
-      快照見 data/rankings/zozotown.yml
-
+  # 日本：沒有單一威望榜，靠二手成交需求 + 穿搭社群
+  # 註：ZOZOTOWN 男裝銷售榜已評估後移除——zozo.jp 由 Akamai 防護，對非瀏覽器
+  #     請求回 403、頁面 JS 動態渲染，無真實 headless 瀏覽器無法準確抓取逐位名次，
+  #     超出本 repo 該背的重量。寧缺勿濫（不準確就不留）。詳見 CHANGELOG / docs/rankings.md。
   - id: wear-zozo
     name: WEAR by ZOZO
     region: jp
     type: ranking
     tier: 2
-    url: https://wear.jp/
+    url: https://wear.jp/men-ranking/
     rss: null
     cadence: realtime
-    notes: 穿搭 / 單品 / 紅人排行，看 shop staff、模特實穿。比 EC 榜更貼近造型風向。
+    notes: >
+      穿搭社群男裝時榜（wear.jp 可存取，非 Akamai 擋）。給的是「熱門穿搭貼文」，
+      非單品銷售榜，且品牌/單品需逐篇再抓 → metric 與 EC 榜不同。目前僅列為來源，未建 rankings 快照。
 
   - id: mercari-jp
     name: Mercari（メルカリ）

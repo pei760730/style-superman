@@ -42,14 +42,13 @@ RANKINGS_DIR = ROOT / "data" / "rankings"
 SOURCES = {
     "lyst": "lyst-index.yml",       # 歐美：季度威望榜
     "stockx": "stockx.yml",         # 歐美：轉售熱銷實數
-    "zozo": "zozotown.yml",         # 日本：EC 即時銷售榜
     "mercari": "mercari-jp.yml",    # 日本：二手成交需求
 }
 
 # 顯示分組：依地區，方便 --source all 時排版
 REGION_GROUPS = {
     "🇺🇸🇪🇺 歐美": ["lyst", "stockx"],
-    "🇯🇵 日本": ["zozo", "mercari"],
+    "🇯🇵 日本": ["mercari"],
 }
 
 
@@ -179,33 +178,6 @@ def show_stockx_latest(data: dict) -> None:
     print()
 
 
-# ---------- 顯示：ZOZOTOWN ----------
-
-def show_zozo_latest(data: dict) -> None:
-    snaps = snapshots(data)
-    if not snaps:
-        print("（ZOZOTOWN 無快照）")
-        return
-    s = snaps[0]
-    print(f"\n🛍  ZOZOTOWN 男裝 · {s.get('period')}（採集 {s.get('captured')}）")
-    if s.get("method") != "official-ranking":
-        # 誠實標註：非官方逐位排名
-        print(f"    ⚠ {s.get('method')}：非官方逐位排名")
-
-    items = s.get("observed_trending") or s.get("items") or []
-    print("\n  熱賣單品" + ("（觀察，無嚴格名次）" if not items or "rank" not in items[0] else ""))
-    print("  " + "-" * 40)
-    for it in items:
-        prefix = f"{it['rank']:>2}. " if "rank" in it else "  · "
-        print(f"  {prefix}{it['brand']} · {it['item']}")
-
-    if s.get("menswear_read"):
-        print("\n  👔 男裝視角")
-        for m in s["menswear_read"]:
-            print(f"     · {m}")
-    print()
-
-
 # ---------- 顯示：Mercari ----------
 
 def show_mercari_latest(data: dict) -> None:
@@ -237,7 +209,6 @@ def show_mercari_latest(data: dict) -> None:
 SHOW = {
     "lyst": show_lyst_latest,
     "stockx": show_stockx_latest,
-    "zozo": show_zozo_latest,
     "mercari": show_mercari_latest,
 }
 
@@ -246,7 +217,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="排行快照檢視與比對")
     parser.add_argument(
         "--source",
-        choices=["lyst", "stockx", "zozo", "mercari", "all"],
+        choices=["lyst", "stockx", "mercari", "all"],
         default="all",
     )
     parser.add_argument("--region", choices=["us-eu", "jp"], help="只看某地區（覆蓋 --source）")

@@ -78,7 +78,7 @@ python scripts/track_rankings.py --source lyst    # 單一來源（lyst/stockx/m
    ```bash
    python scripts/ingest_ranking_snapshot.py --source lyst --input /tmp/lyst_q2.yml
    ```
-   它會擋下：period 重複、rank 重複/非整數、StockX 被壓成單一 ranking、Mercari 缺 `brand_top`/`menswear_read`。
+   它會擋下：period 重複、rank 重複/非整數、StockX 被壓成單一 ranking、Mercari / KREAM 缺 `brand_top`/`menswear_read`、MUSINSA `brands` rank 重複/非整數。（支援來源：lyst / stockx / mercari / kream / musinsa）
 3. 檢查通過後 `--write` 寫入（自動放到 `snapshots:` 最上面，保留既有註解）：
    ```bash
    python scripts/ingest_ranking_snapshot.py --source lyst --input /tmp/lyst_q2.yml --write

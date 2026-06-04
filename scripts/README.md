@@ -87,17 +87,18 @@ cat /tmp/lyst_q2.yml | python scripts/ingest_ranking_snapshot.py --source lyst  
 python scripts/ingest_ranking_snapshot.py --source lyst --input /tmp/lyst_q2.yml --write
 ```
 
-檢查項：period 必填且不可與既有重複；Lyst rank 不重複/為整數；StockX 不可壓成單一 `ranking`；Mercari 必含 `brand_top` / `menswear_read`。輸入格式見 [templates/ranking_snapshot_template.md](../templates/ranking_snapshot_template.md)，範例見 `tests/fixtures/*_snapshot.yml`。
+支援來源：`lyst` / `stockx` / `mercari` / `kream` / `musinsa`。檢查項：period 必填且不可與既有重複；Lyst rank 不重複/為整數；StockX 不可壓成單一 `ranking`；Mercari / KREAM 必含 `brand_top` / `menswear_read`；MUSINSA 的 `brands` rank 不重複/為整數。輸入格式見 [templates/ranking_snapshot_template.md](../templates/ranking_snapshot_template.md)，範例見 `tests/fixtures/*_snapshot.yml`。
 
 ### `track_rankings.py`
-讀取 `data/rankings/` 的排行快照（Lyst Index / StockX / Mercari），顯示最新榜並比對名次演化。模組說明見 [docs/rankings.md](../docs/rankings.md)。
+讀取 `data/rankings/` 的排行快照（歐美 Lyst+StockX / 日本 Mercari / 韓國 KREAM+MUSINSA），顯示最新榜並比對名次演化。模組說明見 [docs/rankings.md](../docs/rankings.md)。
 
 ```bash
-python scripts/track_rankings.py                    # 全部（歐美 + 日本）
+python scripts/track_rankings.py                    # 全部（歐美 + 日本 + 韓國）
 python scripts/track_rankings.py --region jp         # 只看日本（Mercari）
 python scripts/track_rankings.py --region us-eu      # 只看歐美（Lyst + StockX）
-python scripts/track_rankings.py --source lyst       # 單一來源：lyst/stockx/mercari
-python scripts/track_rankings.py --source lyst --compare   # 比對最新兩季名次
+python scripts/track_rankings.py --region kr         # 只看韓國（KREAM + MUSINSA）
+python scripts/track_rankings.py --source lyst       # 單一來源：lyst/stockx/mercari/kream/musinsa
+python scripts/track_rankings.py --source lyst --compare   # 比對最新兩季名次（目前僅 Lyst）
 python scripts/track_rankings.py --json              # 輸出 JSON
 ```
 
@@ -117,8 +118,8 @@ python scripts/score_trends.py --input trends.json
 PR 前（CI 也會自動跑）：
 
 ```bash
-python scripts/validate_repo.py     # repo 契約 14 項
-python tests/test_smoke.py          # 核心腳本最小驗收（7 項，無需 pytest）
+python scripts/validate_repo.py     # repo 契約（隨 data/templates/reports 數量增減，目前 16 項）
+python tests/test_smoke.py          # 核心腳本最小驗收（9 項，無需 pytest）
 ```
 
 `tests/test_smoke.py` 跑過所有核心指令並斷言結果；`tests/fixtures/*_snapshot.yml` 是 ingest 的合成測試範例。

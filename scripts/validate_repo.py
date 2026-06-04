@@ -201,6 +201,13 @@ def check_ranking_file(path: Path) -> CheckResult:
         latest = snapshots[0]
         if isinstance(latest, dict):
             check_rank_values(latest.get("brands"), path, "latest brands", errors)
+    elif source == "kream" and snapshots:
+        latest = snapshots[0]
+        if isinstance(latest, dict):
+            if "brand_top" not in latest:
+                errors.append(f"{path}: latest KREAM snapshot missing brand_top")
+            if "menswear_read" not in latest:
+                errors.append(f"{path}: latest KREAM snapshot missing menswear_read")
     return CheckResult(str(path.relative_to(ROOT)), errors)
 
 

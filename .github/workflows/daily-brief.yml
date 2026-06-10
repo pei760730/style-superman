@@ -16,8 +16,13 @@ name: Daily Brief
 on:
   workflow_dispatch:
   schedule:
-    # 每天 UTC 23:00（台灣時間隔日 07:00）跑
+    # 每天 UTC 23:00（台灣時間隔日 07:00）跑。
+    # ⚠ runner 的「今天」是 UTC：23:00Z 時 UTC 日期仍是台灣的昨天，
+    #   故日期必須以 Asia/Taipei 計算（見 Compute brief date step），不能讓腳本吃預設值。
     - cron: "0 23 * * *"
+    # ⏳ TEMP（2026-06-11 schedule 觸發驗證用，驗證到一次實際觸發後即移除）：
+    - cron: "25 17 * * *"
+    - cron: "55 17 * * *"
 
 permissions:
   contents: write
@@ -37,10 +42,17 @@ jobs:
       - name: Install dependencies
         run: pip install pyyaml
 
+      - name: Compute brief date (Asia/Taipei)
+        id: briefdate
+        run: |
+          d="$(TZ=Asia/Taipei date +%F)"
+          echo "date=$d" >> "$GITHUB_OUTPUT"
+          echo "Brief date (Taipei): $d / runner UTC: $(date -u +%FT%TZ)"
+
       - name: Generate daily brief skeleton
         env:
           PYTHONIOENCODING: utf-8
-        run: python scripts/generate_daily_brief.py
+        run: python scripts/generate_daily_brief.py --date "${{ steps.briefdate.outputs.date }}"
 
       - name: Commit brief if changed
         run: |
@@ -48,7 +60,7 @@ jobs:
           git config user.email "actions@github.com"
           if [ -n "$(git status --porcelain reports/daily)" ]; then
             git add reports/daily
-            git commit -m "brief: auto skeleton $(date -u +%Y-%m-%d)"
+            git commit -m "brief: auto skeleton ${{ steps.briefdate.outputs.date }}"
             git push
           else
             echo "No new brief to commit."

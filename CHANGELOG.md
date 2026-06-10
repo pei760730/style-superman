@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+### Fixed
+- **daily-brief 排程的日期時區 bug**（2026-06-11，首跑前攔到）：schedule 在 UTC 23:00 觸發時
+  runner 的「今天」仍是台灣的昨天，腳本吃預設日期會永遠指向已存在的昨日報告 → 防覆寫跳過 →
+  排程產線靜默空轉。workflow 改以 `TZ=Asia/Taipei` 計算日期並顯式傳 `--date`，
+  commit 訊息同步用該日期（`.github/workflows/daily-brief.yml`；教訓記 docs/lessons.md）
+
 ### Planned
 - 接入更多來源抓取（非 RSS API / 站點；新增來源需人類拍板）
 - 推送管線（Telegram / Notion / Google Sheets）——未拍板，先讓 daily 產線跑順

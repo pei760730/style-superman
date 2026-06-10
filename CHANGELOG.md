@@ -30,8 +30,8 @@
 ### Fixed
 - CHANGELOG 分區錯置與 Planned 區和 D5 決策矛盾的項目
 
-### Added
-- **選題池落地（D3）** — `reports/content_ideas/2026-06.md`：每月一檔、狀態流 候選→已排→已拍→發布→棄用；只收 daily/monthly 出現過的選題；`validate_repo.py` 加命名檢查；README / content_calendar / decisions 同步
+### Removed
+- **選題池（content_ideas）整組移除** — 擁有者拍板：本 repo 純個人興趣（深挖趨勢、找出問題），沒有要拍片，不需要可拍選題池。`reports/content_ideas/`（含排程 agent 2026-06-10 依舊任務卡落地的 2026-06.md）、`validate_repo.py` 命名檢查、README / decisions 引用一併清除；挑買池仍依 D3 走 `reports/buy_shortlist/`（待需要時建立）
 
 ### Data
 - **RSS 覆蓋 5/30 → 16/30**：對 `rss: null` 的 13 個來源逐一實測常見 feed 端點，11 個可解析即寫入

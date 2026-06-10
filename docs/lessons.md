@@ -10,6 +10,16 @@
 
 ## 已硬化（檢查已存在，記錄根因）
 
+### 2026-06-10 · 殭屍任務卡：排程 agent 拿舊世界觀照做
+- **發生什麼**：6/5 拍板「內容生產 → 個人挑買」重定位，但改動留在本機 5 天沒 push。期間排程 agent 讀到的 remote decisions.md 仍是舊方向（D3 = content_ideas 選題池），照舊任務卡把選題池落地成 PR 並 merge——對 agent 來說它完全照規矩辦事。根因有兩層：**(1) 未 push 的拍板等於不存在**（agent 的世界觀 = origin/master）；(2) 任務卡沒有時效 / 一致性檢查，方向變了沒人通知執行端。
+- **對策**：拍板當天就 push（哪怕開 draft PR）；agent 執行任何既有任務卡前先比對 CLAUDE.md 定位與 decisions.md 最新拍板，矛盾就停（已寫入 CLAUDE.md 慣例）。
+- **硬化**：`data/decision_guards.yml` + `repo_health.py` 決策守衛檢查（ERROR，CI 擋）——「不可回頭」的拍板留下禁用識別字（如 `content_ideas`、`short_video`），任何把它們寫回活文件 / 程式碼的 PR 直接紅燈，**殭屍任務卡的產物進不了 master**。守衛只防識別字層；任務卡本身的時效仍靠執行前比對（流程規則）。
+
+### 2026-06-10 · 警告無人看見：產線停擺時恰好沒人 push
+- **發生什麼**：repo_health 的新鮮度檢查（daily 斷更等）只在有人跑它時才被看見；CI 又只在 push / PR 時觸發——**產線停擺的時候，正是最沒有 push 的時候**，警告形同不存在。lessons 原 soft note「工程全綠掩蓋產線停擺」的根因即此。
+- **對策**：警告必須自己找上門，且要變成「持久物件」而不是一次性 log。
+- **硬化**：`.github/workflows/health.yml`——每週一、四排程跑 `repo_health.py --strict`（WARN 也算失敗），失敗即自動開 / 更新 `repo-health` issue。頻率刻意不設每日（避免通知疲勞衰退成噪音）；daily 斷更 3 天內必被下一次巡檢抓到。它同時是 daily-brief.yml 的獨立看門狗（那邊排程若無聲死掉，斷更會在這裡現形）。「同類警告兩週沒人理 → 修產線或改宣告節奏」仍是人類決策，issue 模板內建提醒。
+
 ### 2026-06-10 · GitHub workflow 註冊會無聲消失
 - **發生什麼**：`daily-brief.yml` 從 init 就在 origin/master 上，但 GitHub Actions 的 workflow 註冊表裡沒有它——連手動 dispatch 都按不了，且沒有任何錯誤訊息。期間帳號曾被 GitHub 風控 suspend 過，`ci.yml` 因每次 push 都觸發而自動重新註冊，`daily-brief.yml` 沒被改過就一直失聯。
 - **對策**：對該檔做一次內容變更並 push，GitHub 會重新註冊。
@@ -18,7 +28,7 @@
 ### 2026-06-10 · 文件比決策慢，會留下兩套世界觀
 - **發生什麼**：D5 拍板「不接 LLM API」後，`system_design.md`、`operating_manual.md`、`scripts/README.md`、`CHANGELOG.md` Planned、`daily-brief.yml` 註解仍寫著「未來接 LLM API 自動撰寫」。後來的讀者（人或 agent）會不知道哪個是現實。
 - **對策**：拍板一個決策時，同一個 PR 內 grep 全 repo 找與該決策矛盾的描述一併改掉。
-- **硬化**：`repo_health.py` 的路徑掃描能抓「提到不存在的檔案」這類漂移；**語意矛盾（兩段文字互相打架）仍要靠 review** —— decisions.md 拍板後加一步「全 repo 矛盾掃描」。
+- **硬化**：兩層。**識別字層已機器化**——`data/decision_guards.yml` 讓每個「不可回頭」的拍板留下禁用識別字（檔名 / 欄位名 / 目錄名），repo_health 掃到即 ERROR、CI 擋。**散文層（兩段文字語意互相打架）機器抓不到，誠實劃界給 review**：guard pattern 刻意不放會出現在否定句的自然語言詞（「不要做短影音」會誤殺），所以拍板後的「全 repo 矛盾掃描」這步仍是人 / agent 的 review 義務（CLAUDE.md 慣例）。
 
 ### 2026-06-04 · 反爬網站不要硬刮（ZOZO / Akamai）
 - **發生什麼**：嘗試抓 ZOZOTOWN 男裝銷售榜，curl 403 / JS 動態 / 聚合站無逐位名次，全部失敗。
@@ -30,7 +40,7 @@
 ### 2026-06-10 · 「每日」系統的最大風險是根本沒在跑
 - **發生什麼**：repo 工程全綠（CI ✅、決策全拍板），但 daily brief 只產過一次。工程完成度掩蓋了「產線停擺」的事實。
 - **對策**：`repo_health.py` 新鮮度檢查讓停擺可見；agent 每次開工先跑 health（見 `CLAUDE.md`）。
-- **觀察點**：若警告連續出現超過兩週都沒人理，代表「警告→修復」斷鏈，要嘛開自動排程、要嘛承認 daily 改成 weekly，不要讓警告衰退成噪音。
+- **硬化進度（2026-06-10）**：「警告無人看見」的環節已硬化（health.yml 排程巡檢 + 自動 issue，見上方）。**仍在觀察**：daily 排程 6/10 才開、issue 機制是否真的讓警告被處理——若 repo-health issue 開著超過兩週沒動作，回到原判斷：修產線或承認 daily 改 weekly。
 
 ### Windows 終端機 cp950 編碼
 - 所有腳本已加 `sys.stdout.reconfigure(encoding="utf-8")`；新腳本記得照抄，CI 端配 `PYTHONIOENCODING: utf-8`。PowerShell 5.1 的 `Get-Content` 讀 UTF-8 檔會亂碼，讀檔用支援 UTF-8 的工具。

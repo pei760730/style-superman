@@ -1,0 +1,69 @@
+name: Repo Health Patrol
+
+# 週期巡檢 — Self-Evolution Loop 的「警告 → 有人理」斷鏈修復。
+#
+# 解決的問題（docs/lessons.md「每日系統的最大風險是根本沒在跑」）：
+#   產線停擺時恰好沒人 push → CI 不跑 → repo_health 的新鮮度警告無人看見。
+#   本 workflow 用 schedule 主動跑 --strict（WARN 也算失敗），有問題就：
+#     1. run 變紅（GitHub 會通知 scheduled run 失敗）
+#     2. 自動開 / 更新一個 `repo-health` issue——警告變成持久物件，不會衰退成噪音
+#
+# 也是 daily-brief.yml 的獨立看門狗：若 daily-brief 排程死了（例如 workflow
+# 註冊無聲消失，見 lessons），daily 斷更 3 天會被這裡的新鮮度檢查抓到。
+#
+# 觸發：每週一、四 UTC 01:00（台灣 09:00）+ 手動 dispatch。
+#   頻率刻意不設每日：避免通知疲勞——警告的出口是 issue，不是洗版。
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 1 * * 1,4"
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  patrol:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Run repo health (strict)
+        id: health
+        env:
+          PYTHONIOENCODING: utf-8
+        run: python scripts/repo_health.py --strict | tee health-report.txt
+
+      - name: File or update health issue
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          gh label create repo-health --description "repo_health.py 巡檢警告" --color D93F0B 2>/dev/null || true
+          {
+            echo "repo_health --strict 於 $(date -u +%Y-%m-%dT%H:%MZ) 巡檢未通過："
+            echo
+            echo '```'
+            cat health-report.txt
+            echo '```'
+            echo
+            echo "處理方式見 CLAUDE.md 的 Self-Evolution Loop；修好後關閉本 issue。"
+            echo "若同類警告反覆出現且兩週無人處理，依 docs/lessons.md：要嘛修產線，要嘛調整節奏宣告（daily→weekly），不要讓警告衰退成噪音。"
+          } > issue-body.md
+          existing=$(gh issue list --label repo-health --state open --json number --jq '.[0].number' || echo "")
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body-file issue-body.md
+          else
+            gh issue create --title "🩺 Repo health 巡檢未通過" --label repo-health --body-file issue-body.md
+          fi

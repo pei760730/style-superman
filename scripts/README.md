@@ -67,7 +67,8 @@ python scripts/score_trends.py --demo --json           # 輸出 JSON
 
 ### `repo_health.py`
 Repo 自我健康檢查（Self-Evolution Loop 的 Observe / Diagnose / Next Action 層）。
-檢查**一致性**（每支腳本有沒有文件、文件提到的路徑存不存在、孤兒檔、workflow 引用）與
+檢查**一致性**（每支腳本有沒有文件、文件提到的路徑存不存在、孤兒檔、workflow 引用、
+**決策守衛** `data/decision_guards.yml`——已拍板決策的禁用識別字不得回到活文件 / 程式碼）與
 **新鮮度**（daily 斷更幾天、當月月報缺不缺、Lyst 快照是否落後），並輸出 Next Actions。
 
 ```bash
@@ -77,7 +78,8 @@ python scripts/repo_health.py --consistency  # 只跑一致性（CI 用；新鮮
 python scripts/repo_health.py --strict       # WARN 也算失敗（手動巡檢）
 ```
 
-一致性問題（ERROR）會讓 CI 紅；新鮮度（WARN）只提醒不擋 PR。每次開工先跑這支。
+一致性問題（ERROR）會讓 CI 紅；新鮮度（WARN）不擋 PR，但 `.github/workflows/health.yml`
+每週一、四排程跑 `--strict` 巡檢，未通過會自動開 / 更新 `repo-health` issue。每次開工先跑這支。
 
 ### `validate_repo.py`
 檢查 repo 的基本契約：YAML 必填欄位、排行 rank 是否重複、template 必要段落、report 命名與標題。建議每次 PR 前跑一次。

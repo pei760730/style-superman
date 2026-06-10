@@ -25,6 +25,9 @@
   拍板「不可回頭」的決策要同步建守衛
 
 ### Changed
+- README 對齊現實：smoke 項數改指向檔頭（硬編數字必漂移）；workflows 樹補 `health.yml`；
+  串接列反映 RSS / AI 撰寫已接；codex_execution_plan 改標已封存（現役待辦由 repo_health 產生）；
+  roadmap 反映 daily 排程已開啟（2026-06-10）
 - **系統重新定位：內容生產 → 個人興趣 + 挑買決策。** 擁有者本人不拍片 / 不做內容創作；全 repo 從「服務內容創作者 / 產短影音選題」改為「服務我自己：追潮流、挑單品入手」。
   - daily brief 結尾 `🎬 可拍選題 Content Hooks` → `🛒 對我有用 For Me`（值得入手 / 想試的穿搭 / 想深入了解）；`對創作者的意義` → `對我的意義`。月報 `🎬 可拍選題` → `🛒 本月挑買方向`。
   - `prompts/short_video_ideas.md` → `prompts/buy_picks.md`、`templates/short_video_idea_template.md` → `templates/buy_pick_template.md`：從短影音腳本卡改造成「挑買卡」（該不該買 / 怎麼搭 / 在哪買 / 補哪個衣櫥缺口）。

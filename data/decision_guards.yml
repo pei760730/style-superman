@@ -34,6 +34,26 @@ guards:
       - docs/codex_execution_plan.md
       - data/decision_guards.yml
 
+  - id: audit-rejected-over-engineering
+    decision: "D6（2026-06-11 Kai 拍板）"
+    reason: "2026-06-10 全域審計的四項提案否決：_common.py 共用模組 / field_contracts.yml / repo_health 設定驅動外部化——看起來專業但增加熵；月報回補由快照鐵則防護"
+    pattern: "_common\\.py|field_contracts|health_checks\\.yml|output_contracts\\.yml"
+    scope:
+      - CLAUDE.md
+      - README.md
+      - docs/
+      - prompts/
+      - templates/
+      - scripts/
+      - tests/
+      - data/
+      - .github/
+    exclude:
+      - CHANGELOG.md
+      - docs/decisions.md
+      - docs/lessons.md
+      - data/decision_guards.yml
+
   - id: d5-no-llm-api-in-repo
     decision: "D5（2026-06-04）"
     reason: "不接 repo 內 LLM API：AI 撰寫走對話 agent / 排程雲端 agent，腳本不呼叫 LLM、不管 API key"

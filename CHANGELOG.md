@@ -5,6 +5,10 @@
 ## [Unreleased]
 
 ### Added
+- **D6 拍板 + 守衛**（2026-06-11，Kai）：2026-06-10 全域審計的四項工程提案正式否決、不可回頭
+  （scripts 層共用模組、平行契約定義檔、repo_health 設定驅動外部化、月報回補）。
+  決策記 `docs/decisions.md` D6；新增守衛 `audit-rejected-over-engineering` 擋識別字復活
+  （月報回補由快照鐵則 + 檔內 banner 防護，不入守衛）
 - **RSS 自動收集覆蓋 16 → 17**（2026-06-10 盤點）：
   - `vogue-korea` 啟用 RSS（feed 實測可用，但出版方 XML 未宣告 `media:` namespace →
     `collect_raw_signals.parse_feed` 新增 unbound-prefix fallback：ParseError 時自動補宣告再重試，

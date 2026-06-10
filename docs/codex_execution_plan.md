@@ -21,6 +21,7 @@ Codex 本輪不急著改腳本邏輯，優先做三件事：
 1. **補齊工程交接面**：讓 Claude Code 有清楚的 repo 指令與任務卡。
 2. **修正文件導覽落差**：README 要反映目前已存在的 monthly / ranking / raw signal 能力。
 3. **鎖定下一階段工程順序**：C1–C5 已完成；下一步先接 RSS 收集到 `raw_signal_pack`，再做 vendor-neutral LLM brief adapter。
+   *（封存註：RSS 收集即 C6，已完成；LLM adapter 即 C7，已依 D5 拍板 dropped——本行保留當時判斷原文，現況以檔頭封存說明為準。）*
 
 ---
 

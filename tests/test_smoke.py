@@ -76,9 +76,23 @@ def main() -> int:
     )
     check("score_trends 計分公式 + 分級門檻", ok_score, str(st.score_one(dict(known))))
 
-    # 3. track_rankings json
+    # 3. track_rankings json — 不只「長得像 JSON」，要真的可解析且含 lyst 榜結構
+    import json as _json
+
     r = run(["scripts/track_rankings.py", "--json"])
-    check("track_rankings --json", r.returncode == 0 and r.stdout.strip().startswith("{"), r.stderr)
+    try:
+        rankings = _json.loads(r.stdout)
+    except _json.JSONDecodeError:
+        rankings = None
+    ok_rank = (
+        r.returncode == 0
+        and isinstance(rankings, dict)
+        and "lyst" in rankings
+        and rankings["lyst"].get("period")
+        and isinstance(rankings["lyst"].get("brands"), list)
+        and len(rankings["lyst"]["brands"]) > 0
+    )
+    check("track_rankings --json 結構可解析", ok_rank, r.stdout[:120])
 
     # 4. daily brief draft（產後刪）
     draft = ROOT / "reports" / "daily" / "2099-01-01.draft.md"

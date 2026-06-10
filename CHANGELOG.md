@@ -4,6 +4,17 @@
 
 ## [Unreleased]
 
+### Planned
+- 接入更多來源抓取（非 RSS API / 站點；新增來源需人類拍板）
+- 推送管線（Telegram / Notion / Google Sheets）——未拍板，先讓 daily 產線跑順
+- 挑買 shortlist 自動整理
+- ~~AI 自動撰寫 daily brief 全文（接 Claude / OpenAI）~~ — 已由 D5 收掉（2026-06-04）：走排程雲端 agent，不接 repo 內 API
+
+## [0.2.0] — 2026-06-11
+
+> **重定位版**：內容生產 → 個人挑買決策（2026-06-05 拍板）＋ Self-Evolution Loop 落地
+> （repo_health / 決策守衛 / 產出契約 / 週期巡檢）＋ 2026-06-10 全域審計收斂。
+
 ### Added
 - **D6 拍板 + 守衛**（2026-06-11，Kai）：2026-06-10 全域審計的四項工程提案正式否決、不可回頭
   （scripts 層共用模組、平行契約定義檔、repo_health 設定驅動外部化、月報回補）。
@@ -40,6 +51,18 @@
   的斷鏈；同時是 daily-brief 排程的獨立看門狗
 - `CLAUDE.md` 慣例新增：執行既有任務卡 / 排程任務前先比對定位與最新拍板（殭屍任務卡防線的流程層）；
   拍板「不可回頭」的決策要同步建守衛
+- **Self-Evolution Loop 落地**（repo 升級成可自我檢查的系統）
+  - `scripts/repo_health.py` — Observe / Diagnose / Next Action：一致性檢查（腳本↔文件同步、孤兒檔、文件提到的路徑存在性、workflow 引用）為 ERROR 擋 CI；新鮮度檢查（daily 斷更、當月月報、Lyst 快照落後）為 WARN 提醒；輸出 Next Actions / `--json`
+  - `docs/lessons.md` — Learn 層教訓簿：soft note → 反覆出現 → 硬化成檢查的升級路徑；種子教訓（workflow 註冊無聲消失、文件比決策慢、ZOZO 反爬）
+  - `CLAUDE.md` 重寫為 AI Agent 作業入口：repo 目標、不可破壞假設、Observe→…→Next 工作迴圈、驗收命令、禁區
+  - CI 新增 `repo_health.py --consistency` step；test_smoke 加 health 檢查項
+- **Rankings 模組**（早期項，原誤置於 Removed 區，2026-06-10 歸位）：定期可量化排行（`data/rankings/`）
+  - `lyst-index.yml` — Lyst Index 季度快照（已收錄 2026-Q1：Top 20 品牌 + Top 10 單品）
+  - `stockx.yml` — StockX 年度/年中快照（已收錄 2025 全年熱銷）
+  - `scripts/track_rankings.py` — 檢視最新榜 + 比對名次演化（已驗證可跑）
+  - `templates/ranking_snapshot_template.md`、`prompts/ranking_ingest.md`、`docs/rankings.md`
+  - `sources.yml` 新增 lyst-index / stockx 兩個 `type: ranking` 來源
+- `reports/daily/2026-06-04.md` — SS2026 基準快照（歐美 × 日 × 韓）（早期項，同上歸位）
 
 ### Changed
 - **審計殘餘修正（2026-06-11「全修」）**：
@@ -82,15 +105,6 @@
   - 評分維度 `content_potential 內容潛力（好不好拍）` → `wearability 可駕馭度（好不好穿、能否融入衣櫥）`；同步 `score_trends.py`、`trend_card_template.md`、`trend_scoring_rules.md`、`validate_repo.py`。
   - 文件層全面改寫：`content_strategy.md`（受眾＝我自己、情報支柱、個人成功指標）、`content_calendar.md`（每週挑買取代每週拍攝）、`system_design.md` 第 5 階段「選題」→「挑買」、`operating_manual.md` Step 6、`ai_collaboration.md` / `decisions.md` / `codex_execution_plan.md` 的內容創作語言。`CLAUDE.md` 加上個人定位守則。
   - 契約檢查（`validate_repo.py`）與 smoke tests 全綠。
-
-### Added
-- **Self-Evolution Loop 落地**（repo 升級成可自我檢查的系統）
-  - `scripts/repo_health.py` — Observe / Diagnose / Next Action：一致性檢查（腳本↔文件同步、孤兒檔、文件提到的路徑存在性、workflow 引用）為 ERROR 擋 CI；新鮮度檢查（daily 斷更、當月月報、Lyst 快照落後）為 WARN 提醒；輸出 Next Actions / `--json`
-  - `docs/lessons.md` — Learn 層教訓簿：soft note → 反覆出現 → 硬化成檢查的升級路徑；種子教訓（workflow 註冊無聲消失、文件比決策慢、ZOZO 反爬）
-  - `CLAUDE.md` 重寫為 AI Agent 作業入口：repo 目標、不可破壞假設、Observe→…→Next 工作迴圈、驗收命令、禁區
-  - CI 新增 `repo_health.py --consistency` step；test_smoke 加 health 檢查項
-
-### Changed
 - **清除 D5 後殘留的兩套世界觀**：`docs/system_design.md`、`docs/operating_manual.md`、`scripts/README.md`、`.github/workflows/daily-brief.yml` 中「未來接 LLM API 自動撰寫」的描述全部改為現實（AI 撰寫走對話 agent / 排程雲端 agent，不接 repo 內 API）
 - `docs/ai_collaboration.md` 角色改為 model-agnostic（主編 / 工程是「帽子」不是綁定產品），新增自我審查偏誤規則（同一個 agent 不終審自己的產出）
 - `docs/codex_execution_plan.md` 頂部標註已封存（C1–C6 完成、C7 dropped；現役待辦改由 `repo_health.py` 產生）
@@ -103,6 +117,10 @@
 
 ### Removed
 - **選題池（content_ideas）整組移除** — 擁有者拍板：本 repo 純個人興趣（深挖趨勢、找出問題），沒有要拍片，不需要可拍選題池。`reports/content_ideas/`（含排程 agent 2026-06-10 依舊任務卡落地的 2026-06.md）、`validate_repo.py` 命名檢查、README / decisions 引用一併清除；挑買池仍依 D3 走 `reports/buy_shortlist/`（待需要時建立）
+- **ZOZOTOWN 排行**（zozotown.yml + 腳本/來源 plumbing）—— 評估後移除。
+  zozo.jp 由 Akamai 防護（curl 403、頁面 JS 動態、WebFetch 逾時、聚合站無逐位名次），
+  無真實 headless 瀏覽器無法準確抓取，屬不該背的重量。依「不準確就拿掉」不保留半準觀察清單。
+  紀錄與替代方案見 docs/rankings.md「ZOZOTOWN：評估後不採用」。
 
 ### Data
 - **RSS 覆蓋 5/30 → 16/30**：對 `rss: null` 的 13 個來源逐一實測常見 feed 端點，11 個可解析即寫入
@@ -141,27 +159,6 @@
   - `track_rankings.py` 新增 `mercari` 來源 + `--region jp|us-eu` 過濾
   - `sources.yml` 新增日本 media（MEN'S NON-NO/POPEYE/Houyhnhnm）與 WEAR
   - docs/rankings.md 補日本生態與「量化榜+媒體街拍兩條腿」鐵則
-
-### Removed
-- **ZOZOTOWN 排行**（zozotown.yml + 腳本/來源 plumbing）—— 評估後移除。
-  zozo.jp 由 Akamai 防護（curl 403、頁面 JS 動態、WebFetch 逾時、聚合站無逐位名次），
-  無真實 headless 瀏覽器無法準確抓取，屬不該背的重量。依「不準確就拿掉」不保留半準觀察清單。
-  紀錄與替代方案見 docs/rankings.md「ZOZOTOWN：評估後不採用」。
-
-### Added（早期，原誤置於 Removed 區，2026-06-10 歸位）
-- **Rankings 模組**：定期可量化排行（`data/rankings/`）
-  - `lyst-index.yml` — Lyst Index 季度快照（已收錄 2026-Q1：Top 20 品牌 + Top 10 單品）
-  - `stockx.yml` — StockX 年度/年中快照（已收錄 2025 全年熱銷）
-  - `scripts/track_rankings.py` — 檢視最新榜 + 比對名次演化（已驗證可跑）
-  - `templates/ranking_snapshot_template.md`、`prompts/ranking_ingest.md`、`docs/rankings.md`
-  - `sources.yml` 新增 lyst-index / stockx 兩個 `type: ranking` 來源
-- `reports/daily/2026-06-04.md` — SS2026 基準快照（歐美 × 日 × 韓）
-
-### Planned
-- 接入更多來源抓取（非 RSS API / 站點；新增來源需人類拍板）
-- 推送管線（Telegram / Notion / Google Sheets）——未拍板，先讓 daily 產線跑順
-- 挑買 shortlist 自動整理
-- ~~AI 自動撰寫 daily brief 全文（接 Claude / OpenAI）~~ — 已由 D5 收掉（2026-06-04）：走排程雲端 agent，不接 repo 內 API
 
 ## [0.1.0] — 2026-06-04
 

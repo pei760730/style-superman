@@ -128,7 +128,7 @@ sources:
     type: media
     tier: 2
     url: https://about.musinsa.com/newsroom
-    rss: null
+    rss: null   # 無公開 feed（2026-06-10 實測：/newsroom/feed 404，頁面無 rss/atom link 宣告）
     notes: MUSINSA 集團動態與平台品牌新聞；可證明官方 / 平台事件，不單獨證明熱賣
 
   - id: eyesmag
@@ -137,7 +137,7 @@ sources:
     type: media
     tier: 2
     url: https://www.eyesmag.com/
-    rss: null
+    rss: null   # 無公開 feed（2026-06-10 實測：/feed、/rss 皆 404，首頁 HTML 無 rss/atom link 宣告），維持人工監看
     notes: 韓國 fashion / lifestyle / street culture 媒體，適合抓韓系街頭、聯名與設計師動向
 
   - id: dazed-korea
@@ -164,7 +164,7 @@ sources:
     type: media
     tier: 2
     url: https://www.vogue.co.kr/
-    rss: null
+    rss: https://www.vogue.co.kr/feed   # 2026-06-10 實測可解析（RSS 2.0）；偏 editorial / 全性別，男裝篩選交 insight 層
     notes: 精品與 K-pop 造型曝光；作為韓潮名人穿搭與高端品牌外溢的確認訊號
 
   - id: wwd-korea

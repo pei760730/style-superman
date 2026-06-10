@@ -5,6 +5,13 @@
 ## [Unreleased]
 
 ### Added
+- **RSS 自動收集覆蓋 16 → 17**（2026-06-10 盤點）：
+  - `vogue-korea` 啟用 RSS（feed 實測可用，但出版方 XML 未宣告 `media:` namespace →
+    `collect_raw_signals.parse_feed` 新增 unbound-prefix fallback：ParseError 時自動補宣告再重試，
+    純標準庫、真壞 XML 仍降級回空；smoke 測試 +2）
+  - `eyesmag`、`musinsa-newsroom` 實測無公開 feed（404 + 頁面無宣告），於 sources.yml 註記維持人工監看
+  - 其餘 11 個無 RSS 來源屬結構性不可自動收：rankings ×4（季度/年度報告，走快照）、
+    social ×2（IG/TikTok 無 RSS）、retailer ×5（無公開 feed，反爬教訓不硬刮）
 - **報告產出契約檢查**（`repo_health.py`，WARN，health.yml 週期巡檢盯）——
   決策守衛只掃活文件、reports/ 是封存快照不在 scope，排程 agent 拿舊任務卡「產出」的報告
   會從這個缺口進 master（2026-06-10 daily 實際發生：趨勢卡用 `對創作者的意義`、結尾是

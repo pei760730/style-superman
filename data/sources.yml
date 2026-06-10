@@ -229,7 +229,9 @@ sources:
     tier: 3
     url: https://www.reddit.com/r/techwearclothing/
     rss: https://www.reddit.com/r/techwearclothing/.rss
-    notes: 機能風垂直社群
+    notes: >
+      機能風垂直社群。品質警訊（2026-06-10）：盜播 spam 灌版（8 則中 5 則），
+      collect 層已對 community 來源加標題層 spam 過濾；若髒訊號持續穿透，下一步降級或移除。
 
   # ---------- 零售 / 發售追蹤 ----------
   - id: ssense

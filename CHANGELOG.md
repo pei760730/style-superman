@@ -38,6 +38,22 @@
   拍板「不可回頭」的決策要同步建守衛
 
 ### Changed
+- **第一性原理全域審計（2026-06-10）的收斂修正**（3 個獨立 agent 分區深讀 + 逐項反向驗證後落地）：
+  - 契約同步：`prompts/article_to_insight.md` 輸出鍵名 `category` → `signal_type`，對齊
+    `templates/raw_signal_pack_template.md`（同值域、鍵名不一致是彙整時的靜默摩擦）
+  - CI 去重：`ci.yml` 收斂為 py_compile + test_smoke 單一驗收入口——原本 validate_repo /
+    repo_health / score_trends / track_rankings / generate_daily_brief 在 CI 與 smoke 各跑一遍
+  - smoke 補計分公式已知答案測試（washed-denim 卡 4/4/4/5/4 = 85.0、分級門檻、權重總和=1）——
+    原本只驗「跑得動」不驗「算得對」
+  - 文件對齊現實：README 樹狀圖去掉「內容生產線」舊語、operating_manual 任務卡指引改指
+    repo_health Next Actions（codex plan 已封存）、decisions.md 頭部改為自足描述
+  - `docs/rankings.md` 補 snapshots 排序細則：「最新」以發布／入庫時間為準非 period 字面
+    （消除 KREAM 年度結算 vs 月度快照的歧義）
+  - 重定位前的兩份歷史快照（daily 2026-06-04、monthly 2026-06-eu）檔頭加「請勿改寫」banner，
+    防未來 agent 把不溯及的舊格式誤當違規修掉
+  - 審計中**評估後不做**（理由記錄於 PR）：yaml 載入抽共用模組（腳本獨立性 > 樣板去重）、
+    repo_health 設定驅動重構（YAGNI）、field_contracts.yml 平行契約定義（template 即契約，
+    兩套定義=兩套世界觀風險）、月報缺段落回補（快照不回改）
 - repo_health RSS 覆蓋指標分母改為「結構上可自動收的來源」（media / community → 17/19）——
   原本拿全部 30 個來源當分母，但 ranking 走快照、social 無 RSS、retailer 不硬刮，
   覆蓋率永遠像「只做一半」，指標會衰退成沒人看的噪音

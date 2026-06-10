@@ -1,6 +1,6 @@
 # Operating Manual — Style Superman
 
-每天怎麼操作這套系統。從零到一份可用的 brief + 選題。
+每天怎麼操作這套系統。從零到一份可用的 brief + 挑買方向。
 
 ## 0. 一次性設定
 
@@ -32,7 +32,7 @@ python scripts/generate_daily_brief.py
 ```json
 [
   {"name": "...", "heat": 4, "growth": 5,
-   "longevity": 3, "content_potential": 4, "accessibility": 3}
+   "longevity": 3, "wearability": 4, "accessibility": 3}
 ]
 ```
 
@@ -45,8 +45,8 @@ python scripts/score_trends.py --input trends.json
 ### Step 5 — 寫 brief
 用 `prompts/daily_trend_brief.md` 把排序結果寫成完整 brief，填回 `reports/daily/YYYY-MM-DD.md`。
 
-### Step 6 — 出選題
-對 headline 趨勢用 `prompts/short_video_ideas.md` 生 2–3 個選題卡，丟進選題池。
+### Step 6 — 出挑買方向
+對 headline 趨勢用 `prompts/buy_picks.md` 生 2–3 張挑買卡（值不值得買 / 怎麼搭 / 在哪買 / 補哪個缺口），丟進挑買 shortlist。
 
 ### Step 7 — 封存
 ```bash
@@ -66,16 +66,16 @@ git commit -m "brief: YYYY-MM-DD"
 
 ## 2. 每週
 
-- 從選題池排 3–5 支拍攝。
+- 從挑買 shortlist 收斂出 1–3 個真正想入手的方向。
 - 檢查 `data/` 是否要更新（新品牌、新人物、新來源）。
-- 週選題如何承接 daily brief，見 [Content Calendar](content_calendar.md)。
+- 週挑買如何承接 daily brief，見 [Content Calendar](content_calendar.md)。
 
 ## 3. 每月
 
 - 產出或回看 `reports/monthly/YYYY-MM-eu.md`，確認月報有標訊號來源分層、信心與抓取限制。
   （要手動產骨架：`python scripts/generate_monthly_heat_report.py --month YYYY-MM`；每月 1 號排程會自動產全文。）
 - 回測評分命中率（見 `trend_scoring_rules.md` §6）。
-- 視數據調整評分權重 / 內容支柱佔比，並記到 `CHANGELOG.md`。
+- 視數據調整評分權重 / 情報支柱佔比，並記到 `CHANGELOG.md`。
 - 若月報暴露固定弱點（例如電商即時 best-seller 訊號不足），回頭硬化相關 prompts / templates。
 
 ## 4. 維護 data/

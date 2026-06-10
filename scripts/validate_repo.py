@@ -219,9 +219,9 @@ def check_data() -> list[CheckResult]:
 
 
 TEMPLATE_REQUIREMENTS = {
-    "daily_brief_template.md": ["{{date}}", "## 🔥 今日重點趨勢 Headline Trends", "## 🎬 可拍選題 Content Hooks"],
+    "daily_brief_template.md": ["{{date}}", "## 🔥 今日重點趨勢 Headline Trends", "## 🛒 對我有用 For Me"],
     "trend_card_template.md": ["{{trend_name}}", "## 評分（0–5", "{{heat}}", "{{growth}}"],
-    "short_video_idea_template.md": ["{{idea_title}}", "## 鉤子", "## CTA"],
+    "buy_pick_template.md": ["{{item_title}}", "## 為什麼值得入手", "## 怎麼搭"],
     "ranking_snapshot_template.md": ["Lyst Index", "StockX", "snapshots:"],
     "monthly_heat_report_template.md": ["{{month}}", "## 🔥 本月最紅品牌", "## 來源 / 限制"],
 }

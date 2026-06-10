@@ -8,7 +8,7 @@
 |---|--------|------------|--------------|
 | D1 | 韓潮是否獨立 monthly report | 已拍板：補 KR 來源、daily brief 固定追 KR、月報加韓潮 cross-market；獨立 KR 月報暫緩 | 否 |
 | D2 | 月報排序固定 Top 5/10 或依訊號浮動 | 已拍板：月報主榜固定 Top 5，另設浮動觀察名單 3–5 條 | 否 |
-| D3 | 是否新增 content idea 目錄 | 已拍板：方向採 `reports/content_ideas/YYYY-MM.md`；本輪不建實體目錄 | 否 |
+| D3 | 是否新增挑買 shortlist 目錄 | 已拍板：方向採 `reports/buy_shortlist/YYYY-MM.md`；本輪不建實體目錄 | 否 |
 | D4 | 來源 tier 調整原則 | 已拍板：採 tier 判斷原則；本輪不批量改 `data/`，另案 PR 再改 | 否 |
 | D5 | LLM 供應商策略 | **已拍板：不接 API、C7 不做**（理由：排程雲端 agent 已自動產出 AI 報告，C7 屬重複造既有能力） | 否 |
 
@@ -32,13 +32,13 @@
 ### 理由
 
 - 目前 `data/sources.yml` 的韓潮來源數量較少，且多數缺 RSS；立刻固定月報容易把單一來源訊號寫得過重。
-- 韓潮對男裝內容很重要，但常透過 K-pop、名人造型、MUSINSA 零售與短影音擴散，較適合先在 daily brief 裡累積訊號，再觀察是否穩定形成月度主題。
+- 韓潮對男裝很重要，但常透過 K-pop、名人造型、MUSINSA 零售與短影音擴散，較適合先在 daily brief 裡累積訊號，再觀察是否穩定形成月度主題。
 - 先做 cross-market section 可保留韓潮敏感度，又不會讓月報變成「來源不足但硬湊榜」。
-- 若連續 2–3 個月都有 5 條以上高可信 KR raw signals，且能轉成 2 條以上 headline / short video ideas，再升級為獨立 KR monthly report。
+- 若連續 2–3 個月都有 5 條以上高可信 KR raw signals，且能轉成 2 條以上 headline / 挑買方向，再升級為獨立 KR monthly report。
 
 ### 拍板狀態
 
-**已拍板。** 採「補 KR 來源 + daily brief 固定追 KR + 月報加韓潮 cross-market 小節」；**獨立 KR 月報暫緩**。維持升級門檻：連續 2–3 個月都有 5 條以上高可信 KR raw signals，且能轉成 2 條以上 headline / short video ideas，再升級為獨立 KR monthly report。
+**已拍板。** 採「補 KR 來源 + daily brief 固定追 KR + 月報加韓潮 cross-market 小節」；**獨立 KR 月報暫緩**。維持升級門檻：連續 2–3 個月都有 5 條以上高可信 KR raw signals，且能轉成 2 條以上 headline / 挑買方向，再升級為獨立 KR monthly report。
 
 ---
 
@@ -63,7 +63,7 @@
 
 - 固定 Top 5 能讓讀者快速理解「本月最該看什麼」，也方便未來做跨月回測。
 - 固定 Top 10 在訊號不足月份容易灌水，違反 repo「不虛構 / 不硬湊」慣例。
-- 完全浮動雖然誠實，但不利於月報模板、短影音選題節奏與長期比較。
+- 完全浮動雖然誠實，但不利於月報模板、挑買節奏與長期比較。
 - 「Top 5 + 觀察名單」可同時保留穩定輸出與訊號誠實度：主榜只收高信心題，觀察名單可放早期但未完全驗證的 trend。
 
 ### 拍板狀態
@@ -72,32 +72,32 @@
 
 ---
 
-## D3 — 要不要新增 content idea 目錄
+## D3 — 要不要新增挑買 shortlist 目錄
 
 ### 選項
 
-1. **新增 `reports/content_ideas/`**
-   把由 daily brief / monthly report 轉出的短影音、圖文、hot-take 選題放在 reports 底下。
-2. **新增根目錄 `content_pool/`**
-   把選題池當成與 `reports/` 平行的一級產品。
+1. **新增 `reports/buy_shortlist/`**
+   把由 daily brief / monthly report 轉出的挑買卡 / 想入手方向放在 reports 底下。
+2. **新增根目錄 `shortlist/`**
+   把挑買 shortlist 當成與 `reports/` 平行的一級產品。
 3. **暫不新增目錄**
-   先把選題放在 daily brief 或人工外部工具（Notion / Sheet）裡。
+   先把挑買方向放在 daily brief 或人工外部工具（Notion / Sheet）裡。
 
 ### 建議
 
-採 **選項 1：新增 `reports/content_ideas/`**，但先只定為輕量 Markdown 選題池；本輪不新增實體目錄，待下一個內容流程 PR 再建立。
+採 **選項 1：新增 `reports/buy_shortlist/`**，但先只定為輕量 Markdown 挑買池；本輪不新增實體目錄，待下一個流程 PR 再建立。
 
 ### 理由
 
-- `reports/` 已承擔「情報產物」角色，content ideas 是 daily / monthly 的下游，放在 `reports/` 底下比較符合現有資訊架構。
-- 根目錄 `content_pool/` 會讓 repo 一級目錄變多，也容易和未來 Notion / Sheets 排程工具重疊。
-- 先用 Markdown 選題池可保持低成本；等到需要狀態欄位、發布日期、平台分發時，再決定是否引入 YAML frontmatter 或外部工具。
-- 建議命名：`reports/content_ideas/YYYY-MM.md`，每月一檔，避免每日碎檔過多。
+- `reports/` 已承擔「情報產物」角色，挑買卡是 daily / monthly 的下游，放在 `reports/` 底下比較符合現有資訊架構。
+- 根目錄 `shortlist/` 會讓 repo 一級目錄變多，也容易和未來 Notion / Sheets 工具重疊。
+- 先用 Markdown 挑買池可保持低成本；等到需要狀態欄位、入手日期、預算追蹤時，再決定是否引入 YAML frontmatter 或外部工具。
+- 建議命名：`reports/buy_shortlist/YYYY-MM.md`，每月一檔，避免每日碎檔過多。
 
 ### 拍板狀態
 
-**已拍板。** 方向採 `reports/content_ideas/YYYY-MM.md`；本輪不新增實體目錄，待下一個內容流程 PR 再建立或調整。
-**→ 已落地（2026-06-10）**：`reports/content_ideas/2026-06.md` 建立，含池子規則與 6 月種子選題；`validate_repo.py` 同步檢查命名。
+**已拍板。** 方向採 `reports/buy_shortlist/YYYY-MM.md`（2026-06-05 個人挑買重定位後）；**本輪不新增實體目錄**，待下一個流程 PR 再建立或調整。
+**⚠️ 衝突待拍板（2026-06-10）**：排程 agent 依重定位前的任務卡落地了 `reports/content_ideas/2026-06.md`（可拍選題池，內容生產導向），與個人挑買定位矛盾。待人類擇一：(a) 改造成 `buy_shortlist` 挑買池、(b) 移除、(c) 保留並推翻重定位。
 
 ---
 

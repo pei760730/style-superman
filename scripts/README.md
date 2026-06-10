@@ -61,7 +61,7 @@ python scripts/score_trends.py --demo --json           # 輸出 JSON
 ```json
 [
   {"name": "barrel jeans", "heat": 4, "growth": 5,
-   "longevity": 3, "content_potential": 4, "accessibility": 3}
+   "longevity": 3, "wearability": 4, "accessibility": 3}
 ]
 ```
 

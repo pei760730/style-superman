@@ -1,6 +1,6 @@
 # Trend Card — {{trend_name}}
 
-> 一張趨勢卡 = 一個趨勢的完整判斷。供評分、簡報、選題共用。
+> 一張趨勢卡 = 一個趨勢的完整判斷。供評分、簡報、挑買共用。
 
 | 欄位 | 內容 |
 |------|------|
@@ -27,9 +27,9 @@
 ## 落地度
 {{accessibility_note}}
 
-## 內容潛力
-**適合角度：** {{content_angles}}
-{{content_potential_note}}
+## 可駕馭度 / 個人契合
+**適合穿搭切入：** {{styling_angles}}
+{{wearability_note}}
 
 ## 風險 / 反方觀點
 {{risks}}
@@ -43,7 +43,7 @@
 | 熱度 heat | {{heat}} | {{heat_reason}} |
 | 成長性 growth | {{growth}} | {{growth_reason}} |
 | 持續性 longevity | {{longevity}} | {{longevity_reason}} |
-| 內容潛力 content_potential | {{content_potential}} | {{cp_reason}} |
+| 可駕馭度 wearability | {{wearability}} | {{wearability_reason}} |
 | 落地度 accessibility | {{accessibility}} | {{acc_reason}} |
 
 **綜合分（由腳本計算）：** {{total_score}}

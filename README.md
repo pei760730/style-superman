@@ -1,9 +1,9 @@
 # Style Superman
 
 > **Men's Fashion & Culture Intelligence System**
-> 男性潮流 / 穿搭 / 文化趨勢的每日情報中樞
+> 男性潮流 / 穿搭 / 文化趨勢的每日情報中樞（個人興趣 + 挑買決策用）
 
-這不是一個普通的筆記倉庫，而是一套「每天自動把全球男性潮流訊號 → 整理 → 分類 → 評分 → 轉成可用內容」的情報系統。
+這不是一個普通的筆記倉庫，而是一套「每天自動把全球男性潮流訊號 → 整理 → 分類 → 評分 → 轉成可用情報與挑買建議」的個人情報系統。它服務的對象是我自己：一個追男裝潮流、會親手挑單品入手的玩家，不做內容生產 / 拍片。
 
 ---
 
@@ -13,9 +13,9 @@
 |------|------|------|
 | 1. 收集 | 每日抓取潮流訊號（日潮 / 韓潮 / 歐美） | 原始來源清單 |
 | 2. 分類 | 依 taxonomy 把訊號歸類（單品 / 輪廓 / 配色 / 品牌 / 人物） | 結構化 trend cards |
-| 3. 評分 | 用熱度 / 成長性 / 內容潛力打分 | 排序後的 trend 清單 |
+| 3. 評分 | 用熱度 / 成長性 / 可駕馭度打分 | 排序後的 trend 清單 |
 | 4. 簡報 | 轉成可閱讀的 Daily Brief | `reports/daily/YYYY-MM-DD.md` |
-| 5. 選題 | 轉成短影音 / 社群貼文選題 | 內容點子卡 |
+| 5. 挑買 | 轉成「該不該買 / 怎麼搭 / 在哪買」 | 挑買卡 |
 | 6. 累積 | 長期沉澱成趨勢資料庫 | `data/` + `reports/` 歷史 |
 | 7. 串接 | 未來接 AI / RSS / n8n / Telegram / Notion / Sheets | 自動化管線 |
 
@@ -50,7 +50,7 @@ style-superman/
 │   ├── daily_trend_brief.md
 │   ├── trend_analysis.md
 │   ├── article_to_insight.md
-│   ├── short_video_ideas.md
+│   ├── buy_picks.md
 │   ├── ranking_ingest.md
 │   └── monthly_heat_report.md
 ├── scripts/                  # 自動化腳本
@@ -69,7 +69,7 @@ style-superman/
 ├── templates/                # 產出物的固定格式
 │   ├── daily_brief_template.md
 │   ├── trend_card_template.md
-│   ├── short_video_idea_template.md
+│   ├── buy_pick_template.md
 │   ├── ranking_snapshot_template.md
 │   ├── monthly_heat_report_template.md
 │   └── raw_signal_pack_template.md  # RAW_SIGNALS 中間格式契約
@@ -114,7 +114,7 @@ python scripts/track_rankings.py
 ## 設計理念
 
 1. **資料與內容分離** — `data/` 是長期知識底層，`reports/` 是每日快照，互不污染。
-2. **人機協作** — 腳本負責骨架與評分，AI（透過 `prompts/`）負責語意整理與選題，人負責拍板。
+2. **人機協作** — 腳本負責骨架與評分，AI（透過 `prompts/`）負責語意整理與挑買建議，人（我）負責拍板買不買。
 3. **格式即契約** — 所有產出都走 `templates/`，方便日後被 n8n / Notion / Sheets 解析。
 4. **先輕後重** — 先把流程跑順、累積資料，再決定要不要上重型自動化。
 
@@ -137,6 +137,6 @@ python scripts/track_rankings.py
 - [ ] **讓每日產線真的跑起來**（目前最重要：daily brief 斷更會被 health check 警告）
 - [ ]（視需求）接入更多來源抓取（非 RSS API / 爬蟲）
 - [ ] 推送到 Telegram / Notion（未拍板）
-- [ ] 短影音選題自動排程
+- [ ] 挑買 shortlist 自動整理
 
 完整演進見 [CHANGELOG.md](CHANGELOG.md)。

@@ -8,11 +8,11 @@ score_trends.py
 輸出是加權後的綜合分與排序。權重與規則見 docs/trend_scoring_rules.md。
 
 五個維度：
-    heat              當下熱度
-    growth            成長速度（比熱度更看「斜率」）
-    longevity         可持續性（短命病毒 vs 長期趨勢）
-    content_potential 內容可塑性（好不好拍）
-    accessibility     落地度（一般人能不能穿 / 買）
+    heat          當下熱度
+    growth        成長速度（比熱度更看「斜率」）
+    longevity     可持續性（短命病毒 vs 長期趨勢）
+    wearability   可駕馭度（好不好穿上身、能否融入我的衣櫥）
+    accessibility 落地度（買不買得到、價格門檻）
 
 用法：
     # 用內建範例資料跑一次（驗證腳本可用）
@@ -24,7 +24,7 @@ score_trends.py
 JSON 格式（list[dict]）：
     [
       {"name": "barrel jeans", "heat": 4, "growth": 5,
-       "longevity": 3, "content_potential": 4, "accessibility": 3},
+       "longevity": 3, "wearability": 4, "accessibility": 3},
       ...
     ]
 """
@@ -40,13 +40,13 @@ from pathlib import Path
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
-# 權重：強調「成長性」與「內容潛力」——我們要的是能拍、又還在升的趨勢，
-# 而不是已經到頂的大眾品。權重總和為 1.0。詳見 docs/trend_scoring_rules.md。
+# 權重：強調「成長性」與「可駕馭度」——我要的是還在升、又穿得上身的趨勢，
+# 而不是已經到頂、或我根本駕馭不了的東西。權重總和為 1.0。詳見 docs/trend_scoring_rules.md。
 WEIGHTS = {
     "heat": 0.20,
     "growth": 0.30,
     "longevity": 0.15,
-    "content_potential": 0.25,
+    "wearability": 0.25,
     "accessibility": 0.10,
 }
 
@@ -95,15 +95,15 @@ def print_table(ranked: list[dict]) -> None:
 
 DEMO_DATA = [
     {"name": "barrel / banana leg jeans", "heat": 4, "growth": 5,
-     "longevity": 3, "content_potential": 4, "accessibility": 3},
+     "longevity": 3, "wearability": 4, "accessibility": 3},
     {"name": "gorpcore (機能戶外)", "heat": 4, "growth": 3,
-     "longevity": 4, "content_potential": 4, "accessibility": 3},
+     "longevity": 4, "wearability": 4, "accessibility": 3},
     {"name": "全身 tonal 棕 (mocha)", "heat": 3, "growth": 4,
-     "longevity": 3, "content_potential": 5, "accessibility": 4},
+     "longevity": 3, "wearability": 5, "accessibility": 4},
     {"name": "suede 樂福鞋", "heat": 3, "growth": 3,
-     "longevity": 4, "content_potential": 3, "accessibility": 4},
+     "longevity": 4, "wearability": 3, "accessibility": 4},
     {"name": "balaclava 巴拉克拉瓦帽", "heat": 2, "growth": 2,
-     "longevity": 1, "content_potential": 3, "accessibility": 1},
+     "longevity": 1, "wearability": 3, "accessibility": 1},
 ]
 
 

@@ -20,9 +20,6 @@ on:
     # ⚠ runner 的「今天」是 UTC：23:00Z 時 UTC 日期仍是台灣的昨天，
     #   故日期必須以 Asia/Taipei 計算（見 Compute brief date step），不能讓腳本吃預設值。
     - cron: "0 23 * * *"
-    # ⏳ TEMP（2026-06-11 schedule 觸發驗證用，驗證到一次實際觸發後即移除）：
-    - cron: "25 17 * * *"
-    - cron: "55 17 * * *"
 
 permissions:
   contents: write

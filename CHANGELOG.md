@@ -31,6 +31,9 @@
   拍板「不可回頭」的決策要同步建守衛
 
 ### Changed
+- repo_health 輸出品質：Next Actions 去重保序（多個 finding 指到同一條行動時不再重複列）；
+  daily 斷更的建議文字不再說「開啟 schedule」（已於 2026-06-10 開啟）——改指向查 Actions run 紀錄
+  （檔案在 ≠ 在跑）。`docs/system_design.md` 排程列同步反映現實
 - **系統重新定位：內容生產 → 個人興趣 + 挑買決策。** 擁有者本人不拍片 / 不做內容創作；全 repo 從「服務內容創作者 / 產短影音選題」改為「服務我自己：追潮流、挑單品入手」。
   - daily brief 結尾 `🎬 可拍選題 Content Hooks` → `🛒 對我有用 For Me`（值得入手 / 想試的穿搭 / 想深入了解）；`對創作者的意義` → `對我的意義`。月報 `🎬 可拍選題` → `🛒 本月挑買方向`。
   - `prompts/short_video_ideas.md` → `prompts/buy_picks.md`、`templates/short_video_idea_template.md` → `templates/buy_pick_template.md`：從短影音腳本卡改造成「挑買卡」（該不該買 / 怎麼搭 / 在哪買 / 補哪個衣櫥缺口）。

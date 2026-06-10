@@ -238,7 +238,8 @@ def check_daily_freshness(today: dt.date) -> list[Finding]:
             "warn",
             f"daily brief 已 {gap} 天沒產出（最新：{latest.isoformat()}）",
             "重啟每日產線：generate_daily_brief.py --with-rss 產骨架 → AI/人工補內容；"
-            "若要自動化，開啟 .github/workflows/daily-brief.yml 的 schedule",
+            "daily-brief.yml 的 schedule 已開啟（2026-06-10）仍斷更＝排程死了或註冊消失，"
+            "去看 GitHub Actions run 紀錄（檔案在 ≠ 在跑，見 docs/lessons.md）",
         ))
     else:
         findings.append(Finding("info", f"daily brief 最新：{latest.isoformat()}（{gap} 天前）"))
@@ -395,7 +396,10 @@ def main() -> None:
     errors = [f for f in findings if f.level == "error"]
     warns = [f for f in findings if f.level == "warn"]
     infos = [f for f in findings if f.level == "info"]
-    actions = [f.action for f in findings if f.action and f.level in ("error", "warn")]
+    # 同一條行動可能被多個 finding 指到（如多處缺 pyyaml）——去重保序
+    actions = list(dict.fromkeys(
+        f.action for f in findings if f.action and f.level in ("error", "warn")
+    ))
 
     if args.json:
         print(json.dumps({

@@ -21,7 +21,7 @@
 3. **關聯** — 涉及哪些 brands.yml / people.yml 裡的對象？沒有就標 none。
 4. **新鮮度** — 這是新訊號，還是在重複已知趨勢？(new / confirming / stale)
 5. **可信度** — 一手報導 / 二手轉述 / 公關稿 / 推測？(high / medium / low)
-6. **行動建議** — 要不要進今天的 brief？要不要開一張 trend card？要不要存成選題素材？
+6. **行動建議** — 要不要進今天的 brief？要不要開一張 trend card？要不要存成挑買參考？
 
 ## 輸出格式
 
@@ -36,7 +36,7 @@ related:
   people: []
 freshness: new|confirming|stale
 credibility: high|medium|low
-action: brief | trend_card | save_for_content | discard
+action: brief | trend_card | save_for_shortlist | discard
 note: "一句話理由"
 ```
 

@@ -14,6 +14,77 @@ free: true
 url: https://www.musinsa.com/ranking/archive
 
 snapshots:
+  - period: 2026-06-10（近30日・男性）
+    published: '2026-06-10'
+    report: 무신사 랭킹（站上월간/近30日滾動）· 男性 브랜드 TOP200，本快照取 TOP20
+    methodology: 회원 직접 구매 + 클릭 데이터만, 광고 미반영；ranking API period=MONTHLY, gf=M, 전체 연령
+    notes: '官方「5月 월간 랭킹 리포트」專文（往例隔月上旬發佈）截至 2026-06-10 尚未見索引， 本快照改以站上 랭킹 API（period=MONTHLY）抓取。注意口徑差異：官方月報為月曆月、
+      全性別；本快照為近 30 日滾動、男性榜。「단독」= 무신사 平台獨佔販售品牌。
+
+      '
+    brands:
+    - rank: 1
+      name: MUSINSA STANDARD
+      note: 自有 PB；自 2025-10 起連續霸榜（단독）
+    - rank: 2
+      name: adidas
+    - rank: 3
+      name: Nike
+    - rank: 4
+      name: 디미트리블랙（dimitriblack）
+      note: 단독・國產
+    - rank: 5
+      name: 드로우핏（DRAWFIT）
+      note: 단독・國產
+    - rank: 6
+      name: 키뮤어（kiimuir）
+      note: 단독・國產
+    - rank: 7
+      name: 언탭트 스튜디오（untapped）
+      note: 단독・國產
+    - rank: 8
+      name: 트릴리온（trillion）
+      note: 단독・國產
+    - rank: 9
+      name: New Balance
+    - rank: 10
+      name: 르아르（leire）
+      note: 단독・國產
+    - rank: 11
+      name: Crocs
+      note: 夏季涼鞋季節財
+    - rank: 12
+      name: 아웃스탠딩（outstanding）
+      note: 단독・國產
+    - rank: 13
+      name: PUMA
+    - rank: 14
+      name: 수아레（SUARE）
+      note: 단독・國產
+    - rank: 15
+      name: ASICS
+      note: 月內名次 UP
+    - rank: 16
+      name: MIND BRIDGE
+    - rank: 17
+      name: 알리스（alyss）
+      note: 단독・國產
+    - rank: 18
+      name: Polo Ralph Lauren
+    - rank: 19
+      name: 후브스（hooves）
+      note: 단독・國產
+    - rank: 20
+      name: 다이브인（divein）
+      note: 단독・國產
+    menswear_read:
+    - 男性榜 TOP20 有 12 個 무신사 단독 國產品牌：韓國男裝消費主力不只是 PB CP 值，而是整層平台獨佔的國產 contemporary/basic
+      生態（觀察）
+    - 'MUSINSA STANDARD 仍 #1：PB 結構性霸榜延續（2025-10 起）'
+    - 運動線排序 adidas(2) > Nike(3) > NB(9) > PUMA(13) > ASICS(15)：adidas 在韓持續壓 Nike，與 2026-02
+      官方月榜一致；ASICS 名次上行可對照 StockX 跑鞋熱（解讀）
+    - 'Polo Ralph Lauren #18：prep/heritage 在韓國男性月榜仍有位置，呼應 Lyst 2026-Q1 Ralph Lauren
+      #6（解讀）'
   - period: "2026-02"
     published: "2026-02"
     report: "무신사 월간 랭킹 · 2月 판매 TOP 브랜드"

@@ -30,7 +30,7 @@ Codex 本輪不急著改腳本邏輯，優先做三件事：
 |------|------|------|------------|
 | Daily Brief | `templates/daily_brief_template.md` + `prompts/daily_trend_brief.md` | 可用 | 保持 Markdown 結構穩定；工程只填骨架，主編判斷由 Codex / 人類做。 |
 | Trend Card | `templates/trend_card_template.md` + `prompts/trend_analysis.md` | 可用 | 五維度分數必須附理由，仍是 `score_trends.py` 的核心輸入契約。 |
-| Short Video Idea | `templates/short_video_idea_template.md` + `prompts/short_video_ideas.md` | 可用 | 只由 headline trends 轉出，不要把弱訊號硬轉成選題。 |
+| Buy Pick 挑買卡 | `templates/buy_pick_template.md` + `prompts/buy_picks.md` | 可用 | 只由 headline trends 轉出；誠實給「買 / 等 / 跳過」，不要把弱訊號硬轉成「現在最該買」。 |
 | Ranking Snapshot | `templates/ranking_snapshot_template.md` + `prompts/ranking_ingest.md` | 已有 ingest + validation | 維持 dry-run 優先；正式寫入前必須可被 `validate_repo.py` 檢查。 |
 | Monthly Heat Report | `templates/monthly_heat_report_template.md` + `prompts/monthly_heat_report.md` | MVP | 月報是綜合判斷，不是官方榜；每條都要有來源與信心。 |
 | Raw Signal Pack | `templates/raw_signal_pack_template.md` | 契約已定 | raw 層只存來源事實，不做「會紅 / 該追」判斷；C6 會把 RSS 收集接到此格式。 |
@@ -293,7 +293,7 @@ python -m unittest discover -s tests
 
 1. **是否要把「韓潮」拉成獨立 monthly report**，或先只在 daily brief 裡追蹤。
 2. **月報排序要不要固定 Top 5 / Top 10**，還是依訊號強弱浮動。
-3. **是否要新增 content idea 目錄**，例如 `reports/content_ideas/` 或 `content_pool/`。
+3. **是否要新增挑買 shortlist 目錄**，例如 `reports/buy_shortlist/` 或 `shortlist/`。
 4. **來源 tier 調整**：哪些來源能算 tier 1，哪些只能做 confirming signal。
 5. **LLM 供應商策略**：Claude / OpenAI 是否都要支援，還是先只保留 prompt 手動流程。
 

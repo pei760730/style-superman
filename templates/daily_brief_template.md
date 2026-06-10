@@ -14,14 +14,14 @@
 - **分類：** {{category}} ｜ {{region}} ｜ {{lifecycle}}
 - **是什麼：** {{what}}
 - **為什麼是現在：** {{why_now}}
-- **對創作者的意義：** {{so_what}}
+- **對我的意義：** {{so_what}}
 - **來源：** {{sources}}
 
 ### 2. {{trend_title}}
 - **分類：** …
 - **是什麼：** …
 - **為什麼是現在：** …
-- **對創作者的意義：** …
+- **對我的意義：** …
 - **來源：** …
 
 <!-- 依此類推 -->
@@ -52,12 +52,12 @@
 
 ---
 
-## 🎬 可拍選題 Content Hooks
+## 🛒 對我有用 For Me
 
-<!-- 3 條，連到 short video 流程 -->
-1. {{idea_title}}（{{content_angle}}）
-2. {{idea_title}}（{{content_angle}}）
-3. {{idea_title}}（{{content_angle}}）
+<!-- 連到挑買流程（prompts/buy_picks.md）；訊號弱時只填有把握的項，不硬湊 -->
+- **值得入手：** {{buy_pick}}
+- **想試的穿搭：** {{styling_to_try}}
+- **想深入了解：** {{topic_to_dig}}
 
 ---
 

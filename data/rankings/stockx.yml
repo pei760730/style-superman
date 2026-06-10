@@ -13,8 +13,64 @@ url: https://stockx.com/about/
 
 snapshots:
   - period: "2025-annual"
-    published: "2025-Q4"     # 約略；報告涵蓋 2025 全年
-    report: "Big Facts 2025"
+    published: "2026-01"
+    report: 'Big Facts: Current Culture Index 2026（第 7 屆年度報告，2026-01-12 發佈）'
+    notes: >
+      2025 全年「定版」數字。下一筆 2025-ytd（Big Facts: 2025 Trends，2025-11-12 發佈）
+      是同年度的 11 月先行盤點，故部分數字不同（如 Mizuno 先行 +148% → 定版 +124%）；
+      兩版口徑不同，依鐵則分開記錄。新聞稿僅有品牌層級資料，
+      單品名（如 2025 最暢銷球鞋型號定版）待查（需讀完整報告圖檔）。
+    best_seller_sneaker:
+      brand: 待查
+      item: 待查
+      note: 新聞稿未列單品；2025 最暢銷球鞋品牌前五（連續第 3 年）：Nike / Jordan / adidas / New Balance / ASICS
+    apparel_top:
+      brand: Fear of God
+      item: 待查
+      note: '連續第 4 年 apparel 類 #1'
+    fastest_growing_brands:
+    - brand: Mizuno
+      change: +124%
+      note: 球鞋成長最快；MXR / Wave Prophecy Moc lifestyle 化
+    - brand: Maison Mihara Yasuhiro
+      change: +91%
+      note: 球鞋
+    - brand: Saucony
+      change: +59%
+      note: 球鞋
+    - brand: Salomon
+      change: +58%
+      note: 球鞋
+    - brand: Uniqlo
+      change: +667%
+      note: 服飾
+    - brand: SKIMS
+      change: +196%
+      note: 服飾
+    - brand: adidas
+      change: +49%
+      note: 服飾
+    - brand: Sprayground
+      change: +287%
+      note: 配件
+    - brand: Syna World
+      change: +251%
+      note: 配件
+    price_signals:
+    - Nike 球鞋均價 YoY +5%、Jordan +6% — 軟了一段時間後的回暖跡象
+    predictions_2026:
+    - FIFA 世界盃年：足球影響加速（復古釘鞋 lifestyle 化、俱樂部 x 街頭品牌聯名）
+    - Bad Bunny：Super Bowl 中場 + 首雙 adidas 全原創簽名鞋
+    - 米蘭冬奧：運動 x 時尚交叉
+    - Pokémon 30 週年帶動交易卡持續成長
+    menswear_focus:
+    - Top5 球鞋品牌連 3 年不變（Nike/Jordan/adidas/NB/ASICS），但價格訊號顯示 Nike/Jordan 觸底回暖（解讀）
+    - 跑鞋復興第二波：Mizuno +124% 接棒 ASICS/Brooks，Saucony/Salomon 續漲 — gorpcore/運動越界仍在半山腰（解讀）
+    - Uniqlo 服飾轉售 +667%：實穿大眾品在二級市場起飛，與 Mercari『Chanel→Uniqlo』結構互相印證（解讀）
+    - 2026 世足年：復古足球釘鞋 lifestyle 化值得提前盯（adidas 受益面最大）（解讀）
+  - period: "2025-ytd"
+    published: "2025-11"     # 2025-11-12 發佈，年度先行盤點（年初至發佈時點）
+    report: "Big Facts: 2025 Trends（11 月先行版；全年定版見上一筆 CCI 2026）"
 
     # 全站最暢銷（明確口徑）
     best_seller_sneaker:

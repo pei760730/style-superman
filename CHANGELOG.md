@@ -4,6 +4,14 @@
 
 ## [Unreleased]
 
+### Changed
+- **系統重新定位：內容生產 → 個人興趣 + 挑買決策。** 擁有者本人不拍片 / 不做內容創作；全 repo 從「服務內容創作者 / 產短影音選題」改為「服務我自己：追潮流、挑單品入手」。
+  - daily brief 結尾 `🎬 可拍選題 Content Hooks` → `🛒 對我有用 For Me`（值得入手 / 想試的穿搭 / 想深入了解）；`對創作者的意義` → `對我的意義`。月報 `🎬 可拍選題` → `🛒 本月挑買方向`。
+  - `prompts/short_video_ideas.md` → `prompts/buy_picks.md`、`templates/short_video_idea_template.md` → `templates/buy_pick_template.md`：從短影音腳本卡改造成「挑買卡」（該不該買 / 怎麼搭 / 在哪買 / 補哪個衣櫥缺口）。
+  - 評分維度 `content_potential 內容潛力（好不好拍）` → `wearability 可駕馭度（好不好穿、能否融入衣櫥）`；同步 `score_trends.py`、`trend_card_template.md`、`trend_scoring_rules.md`、`validate_repo.py`。
+  - 文件層全面改寫：`content_strategy.md`（受眾＝我自己、情報支柱、個人成功指標）、`content_calendar.md`（每週挑買取代每週拍攝）、`system_design.md` 第 5 階段「選題」→「挑買」、`operating_manual.md` Step 6、`ai_collaboration.md` / `decisions.md` / `codex_execution_plan.md` 的內容創作語言。`CLAUDE.md` 加上個人定位守則。
+  - 契約檢查（`validate_repo.py`）與 smoke tests 全綠。
+
 ### Added
 - **Self-Evolution Loop 落地**（repo 升級成可自我檢查的系統）
   - `scripts/repo_health.py` — Observe / Diagnose / Next Action：一致性檢查（腳本↔文件同步、孤兒檔、文件提到的路徑存在性、workflow 引用）為 ERROR 擋 CI；新鮮度檢查（daily 斷更、當月月報、Lyst 快照落後）為 WARN 提醒；輸出 Next Actions / `--json`
@@ -22,8 +30,8 @@
 ### Fixed
 - CHANGELOG 分區錯置與 Planned 區和 D5 決策矛盾的項目
 
-### Added
-- **選題池落地（D3）** — `reports/content_ideas/2026-06.md`：每月一檔、狀態流 候選→已排→已拍→發布→棄用；只收 daily/monthly 出現過的選題；`validate_repo.py` 加命名檢查；README / content_calendar / decisions 同步
+### Removed
+- **選題池（content_ideas）整組移除** — 擁有者拍板：本 repo 純個人興趣（深挖趨勢、找出問題），沒有要拍片，不需要可拍選題池。`reports/content_ideas/`（含排程 agent 2026-06-10 依舊任務卡落地的 2026-06.md）、`validate_repo.py` 命名檢查、README / decisions 引用一併清除；挑買池仍依 D3 走 `reports/buy_shortlist/`（待需要時建立）
 
 ### Data
 - **RSS 覆蓋 5/30 → 16/30**：對 `rss: null` 的 13 個來源逐一實測常見 feed 端點，11 個可解析即寫入
@@ -81,7 +89,7 @@
 ### Planned
 - 接入更多來源抓取（非 RSS API / 站點；新增來源需人類拍板）
 - 推送管線（Telegram / Notion / Google Sheets）——未拍板，先讓 daily 產線跑順
-- 短影音選題自動排程
+- 挑買 shortlist 自動整理
 - ~~AI 自動撰寫 daily brief 全文（接 Claude / OpenAI）~~ — 已由 D5 收掉（2026-06-04）：走排程雲端 agent，不接 repo 內 API
 
 ## [0.1.0] — 2026-06-04

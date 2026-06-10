@@ -22,6 +22,11 @@
 ### Fixed
 - CHANGELOG 分區錯置與 Planned 區和 D5 決策矛盾的項目
 
+### Data
+- **RSS 覆蓋 5/30 → 16/30**：對 `rss: null` 的 13 個來源逐一實測常見 feed 端點，11 個可解析即寫入
+  （GQ、Esquire、Hypebeast JP/KR、WWD Japan/Korea、MEN'S NON-NO、POPEYE、Houyhnhnm、Dazed Korea、W Korea）；
+  eyesmag / vogue-korea 無可用 feed 維持 null。GQ / Esquire 為全站 feed，男裝篩選交 insight 層
+
 ### Ops
 - **開啟 daily-brief 每日排程**（UTC 23:00 = 台灣 07:00 自動產骨架，2026-06-10 Kai 拍板）；workflow 已確認在 GitHub 端重新註冊
 - Actions 升級至 Node 24 相容版（`checkout@v5`、`setup-python@v6`；GitHub 2026-06-16 起強制 Node 24）

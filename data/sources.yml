@@ -36,7 +36,7 @@ sources:
     type: media
     tier: 2
     url: https://www.gq.com/style
-    rss: null
+    rss: https://www.gq.com/feed/rss   # 全站 feed（含非 style 內容，篩選交 article_to_insight）；2026-06-10 實測可解析
     notes: 主流男裝、紅毯與名人穿搭
 
   - id: esquire-style
@@ -45,7 +45,7 @@ sources:
     type: media
     tier: 3
     url: https://www.esquire.com/style/
-    rss: null
+    rss: https://www.esquire.com/rss/all.xml   # 全站 feed（含非 style 內容）；2026-06-10 實測可解析
     notes: 經典男裝、tailoring 角度
 
   # ---------- 日潮 ----------
@@ -55,7 +55,7 @@ sources:
     type: media
     tier: 1
     url: https://hypebeast.com/jp
-    rss: null
+    rss: https://hypebeast.com/jp/feed   # 2026-06-10 實測可解析
     notes: 日本在地聯名與發售情報
 
   - id: fashionsnap
@@ -73,7 +73,7 @@ sources:
     type: media
     tier: 2
     url: https://www.wwdjapan.com/
-    rss: null
+    rss: https://www.wwdjapan.com/feed   # 2026-06-10 實測可解析
     notes: 產業 / 品牌營運 / 秀場
 
   - id: mens-nonno
@@ -82,7 +82,7 @@ sources:
     type: media
     tier: 1
     url: https://www.mensnonno.jp/
-    rss: null
+    rss: https://www.mensnonno.jp/feed/   # 2026-06-10 實測可解析
     notes: 街頭 / 當代 / 高端男裝穿搭，日本男裝雜誌指標
 
   - id: popeye-mag
@@ -91,7 +91,7 @@ sources:
     type: media
     tier: 2
     url: https://popeyemagazine.jp/
-    rss: null
+    rss: https://popeyemagazine.jp/feed/   # 2026-06-10 實測可解析
     notes: city boy 美學源頭，文化視角的男性風格
 
   - id: houyhnhnm
@@ -100,7 +100,7 @@ sources:
     type: media
     tier: 2
     url: https://www.houyhnhnm.jp/
-    rss: null
+    rss: https://www.houyhnhnm.jp/feed/   # 2026-06-10 實測可解析
     notes: 日系街頭 / 設計師 / 文化媒體，抓尖端日潮
 
   # ---------- 韓潮 ----------
@@ -110,7 +110,7 @@ sources:
     type: media
     tier: 1
     url: https://hypebeast.kr/
-    rss: null
+    rss: https://hypebeast.kr/feed   # 2026-06-10 實測可解析
     notes: 韓國街頭 / 聯名 / 發售情報，作為 KR 高訊號密度專業媒體
 
   - id: musinsa
@@ -146,7 +146,7 @@ sources:
     type: media
     tier: 2
     url: https://dazedkorea.com/
-    rss: null
+    rss: https://dazedkorea.com/feed   # 2026-06-10 實測可解析；偏 editorial / K-pop，credibility 篩選交 insight 層
     notes: 韓國時尚 editorial 與 K-pop 造型訊號；偏編輯 / 名人曝光，需與其他來源交叉驗證
 
   - id: w-korea
@@ -155,7 +155,7 @@ sources:
     type: media
     tier: 2
     url: https://www.wkorea.com/
-    rss: null
+    rss: https://www.wkorea.com/feed/   # 2026-06-10 實測可解析
     notes: 高端時尚、名人造型與 K-pop editorial；可補品牌露出與造型脈絡
 
   - id: vogue-korea
@@ -173,7 +173,7 @@ sources:
     type: media
     tier: 2
     url: https://www.wwdkorea.com/
-    rss: null
+    rss: https://www.wwdkorea.com/rss/allArticle.xml   # 2026-06-10 實測可解析
     notes: 韓國時尚產業、設計師與品牌商業動態；偏脈絡與事件確認
 
   - id: cm29

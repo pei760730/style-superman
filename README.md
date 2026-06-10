@@ -59,7 +59,8 @@ style-superman/
 │   ├── score_trends.py
 │   ├── track_rankings.py     # 排行快照檢視 + 名次演化比對
 │   ├── ingest_ranking_snapshot.py  # 安全加入排行快照（dry-run + 寫入）
-│   ├── validate_repo.py      # PR 前 smoke validation
+│   ├── validate_repo.py      # PR 前 smoke validation（格式契約）
+│   ├── repo_health.py        # 自我健康檢查（產線新鮮度 + 文件↔程式碼漂移 + Next Actions）
 │   └── README.md
 ├── tests/                    # 最小驗收
 │   ├── test_smoke.py         #   核心腳本 smoke（9 項，無需 pytest）
@@ -77,9 +78,10 @@ style-superman/
 │   ├── content_calendar.md      # Daily → weekly → monthly → analysis 內容生產線
 │   ├── trend_scoring_rules.md
 │   ├── operating_manual.md
-│   ├── ai_collaboration.md      # Codex / Claude Code / 人類分工手冊
-│   ├── codex_execution_plan.md  # Codex 第一輪 review 後的工程任務卡
-│   └── decisions.md             # 下一階段主編決策建議與待確認事項
+│   ├── ai_collaboration.md      # 主編 / 工程 / 人類角色手冊（model-agnostic）
+│   ├── codex_execution_plan.md  # 第一輪工程任務卡（已封存，C1–C6 完成）
+│   ├── decisions.md             # 主編決策紀錄（D1–D5 已拍板）
+│   └── lessons.md               # 教訓簿（soft note → 反覆出現 → 硬化成檢查）
 └── .github/
     └── workflows/
         ├── ci.yml            # PR smoke checks
@@ -130,8 +132,10 @@ python scripts/track_rankings.py
 - [x] PR smoke validation + GitHub Actions CI
 - [x] RSS 收集 → raw_signal_pack（事實層；C6）
 - [x] AI 撰寫報告 — 已由排程雲端 agent 達成（不另接 repo 內 LLM API；見 docs/decisions.md D5）
+- [x] Self-Evolution Loop — `repo_health.py`（自我檢查 + Next Actions）+ `docs/lessons.md`（教訓硬化路徑）+ `CLAUDE.md` agent 工作迴圈
+- [ ] **讓每日產線真的跑起來**（目前最重要：daily brief 斷更會被 health check 警告）
 - [ ]（視需求）接入更多來源抓取（非 RSS API / 爬蟲）
-- [ ] 推送到 Telegram / Notion
+- [ ] 推送到 Telegram / Notion（未拍板）
 - [ ] 短影音選題自動排程
 
 完整演進見 [CHANGELOG.md](CHANGELOG.md)。

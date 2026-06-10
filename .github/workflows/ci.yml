@@ -30,6 +30,11 @@ jobs:
           PYTHONIOENCODING: utf-8
         run: python scripts/validate_repo.py
 
+      - name: Repo health (consistency)
+        env:
+          PYTHONIOENCODING: utf-8
+        run: python scripts/repo_health.py --consistency
+
       - name: Score trend demo
         env:
           PYTHONIOENCODING: utf-8

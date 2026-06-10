@@ -1,0 +1,308 @@
+#!/usr/bin/env python3
+"""
+repo_health.py
+==============
+Repo 自我健康檢查 — Self-Evolution Loop 的 Observe / Diagnose / Next Action 層。
+
+validate_repo.py 檢查「格式契約」（YAML 欄位、template 段落）；
+這支檢查「系統還活著嗎、文件與程式碼有沒有漂移」：
+
+  一致性（ERROR，CI 會擋）：
+    - scripts/*.py 每支都要在 scripts/README.md 有說明
+    - docs/ prompts/ templates/ 的每個檔案都要被其他文件引用（孤兒偵測）
+    - 活文件中提到的 repo 內路徑必須存在（文件↔程式碼漂移偵測）
+    - .github/workflows/ 引用的腳本必須存在
+
+  新鮮度（WARN，CI 不擋，但要被看見）：
+    - daily brief 斷更幾天
+    - 當月 monthly report 是否缺
+    - Lyst 季度快照是否落後超過一季
+
+歷史紀錄（CHANGELOG、docs/codex_execution_plan.md、reports/）不在路徑掃描範圍——
+它們允許提到已刪除或未建立的檔案。
+
+用法：
+    python scripts/repo_health.py            # 人讀報告 + Next Actions
+    python scripts/repo_health.py --json     # 給 agent 吃的 JSON
+    python scripts/repo_health.py --strict   # WARN 也算失敗（手動巡檢用）
+
+exit code：有 ERROR → 1（--strict 時 WARN 也算）；否則 0。
+"""
+
+from __future__ import annotations
+
+import argparse
+import datetime as dt
+import json
+import re
+import sys
+from pathlib import Path
+
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8")
+
+ROOT = Path(__file__).resolve().parent.parent
+
+# 新鮮度門檻
+DAILY_STALE_DAYS = 3          # daily brief 超過這天數沒產出就警告
+MONTHLY_GRACE_DAY = 3         # 每月 N 號後仍無當月月報就警告
+LYST_STALE_QUARTERS = 2       # Lyst 快照落後 >= 這個季數就警告（落後 1 季屬正常發布延遲）
+
+# 路徑掃描的「活文件」範圍；歷史紀錄不掃（允許提到已刪/規劃中的檔案）
+PATH_SCAN_EXCLUDE = {
+    "CHANGELOG.md",                    # 演進史，會提到已移除的檔案
+    "docs/codex_execution_plan.md",    # 已封存的第一輪工程任務紀錄
+}
+PATH_RE = re.compile(
+    r"(?:data|docs|prompts|scripts|templates|tests|\.github)/[A-Za-z0-9_\-./]*\.(?:md|py|yml|yaml|xml|txt)"
+)
+PLACEHOLDER_MARKS = ("YYYY", "{{", "<", "*", "…")
+
+
+class Finding:
+    def __init__(self, level: str, message: str, action: str | None = None):
+        self.level = level      # error / warn / info
+        self.message = message
+        self.action = action    # 對應的下一步行動（可為 None）
+
+
+def living_md_files() -> list[Path]:
+    """要掃描的活文件：repo 內 .md，排除 reports/（封存快照）與明確排除清單。"""
+    files = []
+    for path in ROOT.rglob("*.md"):
+        rel = path.relative_to(ROOT).as_posix()
+        if rel.startswith("reports/") or rel in PATH_SCAN_EXCLUDE:
+            continue
+        if "__pycache__" in rel or rel.startswith((".venv/", "venv/")):
+            continue
+        files.append(path)
+    return files
+
+
+# ---------- 一致性檢查（ERROR） ----------
+
+def check_scripts_documented() -> list[Finding]:
+    """每支 scripts/*.py 都要在 scripts/README.md 被提到。"""
+    findings: list[Finding] = []
+    readme = ROOT / "scripts" / "README.md"
+    text = readme.read_text(encoding="utf-8") if readme.exists() else ""
+    for script in sorted((ROOT / "scripts").glob("*.py")):
+        if script.name not in text:
+            findings.append(Finding(
+                "error",
+                f"scripts/{script.name} 未出現在 scripts/README.md",
+                f"在 scripts/README.md 補上 {script.name} 的用法說明（或移除該腳本）",
+            ))
+    return findings
+
+
+def check_orphans() -> list[Finding]:
+    """docs/ prompts/ templates/ 的每個檔案都要被其他文件引用至少一次。"""
+    findings: list[Finding] = []
+    corpus: dict[str, str] = {}
+    for path in living_md_files():
+        corpus[path.relative_to(ROOT).as_posix()] = path.read_text(encoding="utf-8")
+    # CHANGELOG / codex_execution_plan 雖不做路徑存在掃描，但「被引用」的證據仍可採計
+    for rel in PATH_SCAN_EXCLUDE:
+        p = ROOT / rel
+        if p.exists():
+            corpus[rel] = p.read_text(encoding="utf-8")
+
+    for subdir in ("docs", "prompts", "templates"):
+        for path in sorted((ROOT / subdir).glob("*.md")):
+            rel = path.relative_to(ROOT).as_posix()
+            referenced = any(
+                path.name in text for other, text in corpus.items() if other != rel
+            )
+            if not referenced:
+                findings.append(Finding(
+                    "error",
+                    f"{rel} 沒有被任何其他文件引用（孤兒檔）",
+                    f"把 {rel} 接回導覽（README / docs），或評估是否該刪除 / 併入他檔",
+                ))
+    return findings
+
+
+def check_path_references() -> list[Finding]:
+    """活文件中提到的 repo 內路徑必須真的存在（文件↔程式碼漂移）。"""
+    findings: list[Finding] = []
+    seen: set[tuple[str, str]] = set()
+    for path in living_md_files():
+        rel = path.relative_to(ROOT).as_posix()
+        for match in PATH_RE.findall(path.read_text(encoding="utf-8")):
+            if any(mark in match for mark in PLACEHOLDER_MARKS):
+                continue
+            if (rel, match) in seen:
+                continue
+            seen.add((rel, match))
+            if not (ROOT / match).exists():
+                findings.append(Finding(
+                    "error",
+                    f"{rel} 提到 {match}，但該檔不存在",
+                    f"修正 {rel} 的引用（檔案改名 / 已刪 / 規劃未建都要讓文件反映現實）",
+                ))
+    return findings
+
+
+def check_workflow_scripts() -> list[Finding]:
+    """workflows 內 run: 引用的 scripts / tests 檔案必須存在。"""
+    findings: list[Finding] = []
+    wf_dir = ROOT / ".github" / "workflows"
+    pattern = re.compile(r"(?:scripts|tests)/[A-Za-z0-9_\-]+\.py")
+    for wf in sorted(wf_dir.glob("*.yml")):
+        for match in set(pattern.findall(wf.read_text(encoding="utf-8"))):
+            if not (ROOT / match).exists():
+                findings.append(Finding(
+                    "error",
+                    f".github/workflows/{wf.name} 引用 {match}，但該檔不存在",
+                    f"修正 {wf.name} 或補回 {match}",
+                ))
+    return findings
+
+
+# ---------- 新鮮度檢查（WARN） ----------
+
+def check_daily_freshness(today: dt.date) -> list[Finding]:
+    findings: list[Finding] = []
+    dates = []
+    for report in (ROOT / "reports" / "daily").glob("????-??-??.md"):
+        try:
+            dates.append(dt.date.fromisoformat(report.stem))
+        except ValueError:
+            continue
+    if not dates:
+        findings.append(Finding(
+            "warn", "reports/daily/ 沒有任何 daily brief",
+            "跑 python scripts/generate_daily_brief.py 啟動每日產線",
+        ))
+        return findings
+    latest = max(dates)
+    gap = (today - latest).days
+    if gap > DAILY_STALE_DAYS:
+        findings.append(Finding(
+            "warn",
+            f"daily brief 已 {gap} 天沒產出（最新：{latest.isoformat()}）",
+            "重啟每日產線：generate_daily_brief.py --with-rss 產骨架 → AI/人工補內容；"
+            "若要自動化，開啟 .github/workflows/daily-brief.yml 的 schedule",
+        ))
+    else:
+        findings.append(Finding("info", f"daily brief 最新：{latest.isoformat()}（{gap} 天前）"))
+    return findings
+
+
+def check_monthly_freshness(today: dt.date) -> list[Finding]:
+    expected = ROOT / "reports" / "monthly" / f"{today:%Y-%m}-eu.md"
+    if expected.exists():
+        return [Finding("info", f"當月月報已存在：{expected.name}")]
+    if today.day >= MONTHLY_GRACE_DAY:
+        return [Finding(
+            "warn",
+            f"當月月報 {expected.name} 不存在（已過每月 {MONTHLY_GRACE_DAY} 號）",
+            "確認每月 1 號的排程 agent 是否有跑；或手動 generate_monthly_heat_report.py 補產",
+        )]
+    return []
+
+
+def check_lyst_staleness(today: dt.date) -> list[Finding]:
+    """Lyst 是唯一固定季度節奏的榜，落後兩季以上代表 ingest 斷了。"""
+    try:
+        import yaml
+    except ImportError:
+        return [Finding("warn", "缺 pyyaml，略過 Lyst 快照檢查", "pip install -r requirements.txt")]
+    path = ROOT / "data" / "rankings" / "lyst-index.yml"
+    if not path.exists():
+        return [Finding("error", "data/rankings/lyst-index.yml 不存在", "補回 Lyst 快照檔")]
+    data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    snaps = data.get("snapshots") or []
+    periods = [s.get("period", "") for s in snaps if isinstance(s, dict)]
+    latest_q = None
+    for p in periods:
+        m = re.match(r"^(\d{4})-Q([1-4])$", str(p))
+        if m:
+            idx = int(m.group(1)) * 4 + int(m.group(2))
+            latest_q = max(latest_q or 0, idx)
+    if latest_q is None:
+        return [Finding("warn", "lyst-index.yml 沒有可解析的季度 period", "檢查 snapshots 的 period 格式（YYYY-QN）")]
+    current_q = today.year * 4 + (today.month - 1) // 3 + 1
+    behind = current_q - latest_q
+    if behind >= LYST_STALE_QUARTERS:
+        return [Finding(
+            "warn",
+            f"Lyst 快照落後 {behind} 季（最新：{max(periods)}）",
+            "新一季 Lyst Index 已發布的話，跑 prompts/ranking_ingest.md → ingest_ranking_snapshot.py 補快照",
+        )]
+    return [Finding("info", f"Lyst 快照：落後 {behind} 季（正常發布延遲內）")]
+
+
+def check_rss_coverage() -> list[Finding]:
+    try:
+        import yaml
+    except ImportError:
+        return []
+    data = yaml.safe_load((ROOT / "data" / "sources.yml").read_text(encoding="utf-8")) or {}
+    sources = data.get("sources", [])
+    with_rss = sum(1 for s in sources if s.get("rss"))
+    return [Finding("info", f"RSS 覆蓋：{with_rss}/{len(sources)} 個來源可自動收集")]
+
+
+# ---------- 輸出 ----------
+
+def run_checks(today: dt.date, consistency_only: bool = False) -> list[Finding]:
+    findings: list[Finding] = []
+    findings += check_scripts_documented()
+    findings += check_orphans()
+    findings += check_path_references()
+    findings += check_workflow_scripts()
+    if not consistency_only:
+        findings += check_daily_freshness(today)
+        findings += check_monthly_freshness(today)
+        findings += check_lyst_staleness(today)
+        findings += check_rss_coverage()
+    return findings
+
+
+ICONS = {"error": "❌", "warn": "⚠️ ", "info": "ℹ️ "}
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Repo 自我健康檢查（Observe / Diagnose / Next Action）")
+    parser.add_argument("--json", action="store_true", help="輸出 JSON（給 agent / 自動化吃）")
+    parser.add_argument("--strict", action="store_true", help="WARN 也算失敗")
+    parser.add_argument("--consistency", action="store_true", help="只跑一致性檢查（CI 用，不含新鮮度）")
+    parser.add_argument("--date", help="以指定日期計算新鮮度（YYYY-MM-DD，測試用）")
+    args = parser.parse_args()
+
+    today = dt.date.fromisoformat(args.date) if args.date else dt.date.today()
+    findings = run_checks(today, consistency_only=args.consistency)
+
+    errors = [f for f in findings if f.level == "error"]
+    warns = [f for f in findings if f.level == "warn"]
+    infos = [f for f in findings if f.level == "info"]
+    actions = [f.action for f in findings if f.action and f.level in ("error", "warn")]
+
+    if args.json:
+        print(json.dumps({
+            "date": today.isoformat(),
+            "errors": [f.message for f in errors],
+            "warnings": [f.message for f in warns],
+            "info": [f.message for f in infos],
+            "next_actions": actions,
+        }, ensure_ascii=False, indent=2))
+    else:
+        print(f"Repo Health · {today.isoformat()}")
+        print("=" * 50)
+        for f in errors + warns + infos:
+            print(f"{ICONS[f.level]} {f.message}")
+        if actions:
+            print("\n## Next Actions（依優先序）")
+            for i, action in enumerate(actions, 1):
+                print(f"{i}. {action}")
+        if not errors and not warns:
+            print("\n✅ 一切健康，沒有待辦。")
+
+    failed = bool(errors) or (args.strict and bool(warns))
+    raise SystemExit(1 if failed else 0)
+
+
+if __name__ == "__main__":
+    main()

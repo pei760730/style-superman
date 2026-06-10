@@ -1,12 +1,25 @@
 # AI Collaboration Playbook — Style Superman
 
-這份文件把 **ChatGPT / Codex（以下稱「Codex」）** 與 **Claude Code** 在本 repo 的責任拆開，避免兩個 AI 都在做同一件事、或把「內容判斷」和「工程落地」混在一起。Codex 第一輪實際 review 與工程任務拆解見 [Codex Execution Plan](codex_execution_plan.md)；Claude Code 的 repo 入口守則見 [`../CLAUDE.md`](../CLAUDE.md)。
+這份文件定義本 repo 的三個**角色（帽子）**，避免「內容判斷」和「工程落地」混在一起。
+agent 的作業入口見 [`../CLAUDE.md`](../CLAUDE.md)；第一輪工程任務的歷史紀錄見 [Codex Execution Plan](codex_execution_plan.md)（已封存）。
+
+## 0. 角色是帽子，不是產品（2026-06-10 更新）
+
+本文件最初寫於「Codex 當總編、Claude Code 當工程工人」的分工假設下——那是**舊模型能力的產物**。
+現在的高階模型可以同時勝任兩頂帽子，因此規則更新為：
+
+- **「主編」「工程」是職能，不綁定特定 AI 產品。** 下文的「Codex」讀作「戴主編帽的 agent」、
+  「Claude Code」讀作「戴工程帽的 agent」。同一個 agent 可以在一個任務裡先後戴兩頂帽子。
+- **自我審查偏誤控制**：同一個 agent / 同一段對話**不終審自己的產出**。
+  內容判斷類（headline、月報主榜、hot-take）終審永遠是人類；
+  工程類大改（架構、契約變更）的 review 應由獨立 session / 獨立 agent 做，或至少明確標注「未經獨立 review」。
+- **不雙重主責**仍然成立：一個任務同時只有一頂帽子是 accountable；換帽要明說。
 
 核心原則：
 
-- **Codex 做系統總編與 repo 變更整合**：看整體架構、定規格、拆任務、寫文件、整合 PR。
-- **Claude Code 做長程工程執行與大範圍重構**：照規格實作腳本、測試、自動化與批次修改。
-- **人類做最終品牌判斷**：決定哪些趨勢值得講、語氣是否符合 Style Superman、是否發布。
+- **主編帽**：看整體架構、定規格、拆任務、寫文件、管內容契約、整合 PR。
+- **工程帽**：照規格實作腳本、測試、自動化與批次修改。
+- **人類做最終品牌判斷**：決定哪些趨勢值得講、語氣是否符合 Style Superman、是否發布、是否花錢。
 
 ---
 

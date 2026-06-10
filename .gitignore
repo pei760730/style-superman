@@ -30,3 +30,4 @@ scratch/
 
 # Generated artifacts that should NOT be committed (drafts before review)
 reports/daily/*.draft.md
+reports/monthly/*.draft.md

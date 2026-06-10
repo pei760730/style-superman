@@ -3,12 +3,15 @@ name: Daily Brief
 # 每日自動產出 Daily Brief 骨架。
 #
 # 現階段只跑 generate_daily_brief.py（填模板 + 來源摘要），
-# 把骨架 commit 回 repo。實際趨勢內容仍由 AI / 人工補上。
-# 接入 LLM 後，可在 generate 步驟後加上自動撰寫。
+# 把骨架 commit 回 repo。趨勢內容由對話中的 agent / 排程雲端 agent 補上
+# ——不在 workflow 內呼叫 LLM API（決策 D5，見 docs/decisions.md）。
 #
 # 觸發方式：
 #   - workflow_dispatch：手動觸發（預設先用這個）
 #   - schedule：每日定時（預設註解掉，要全自動時再打開）
+#
+# ⚠ 2026-06-10：本檔曾在 GitHub 端「註冊消失」（帳號風控後遺症，連 dispatch 都不可用）。
+#   檔案內容變更並 push 即可重新註冊；「檔案在 ≠ 在跑」，要看 Actions run 紀錄（docs/lessons.md）。
 
 on:
   workflow_dispatch:

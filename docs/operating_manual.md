@@ -87,12 +87,23 @@ git commit -m "brief: YYYY-MM-DD"
 | `brands.yml` | 新品牌冒頭 / 既有品牌動向重大改變 |
 | `people.yml` | 新的帶風向人物 / 影響力升降 |
 
-## 5. 自動化開關（未來）
+## 5. 自動化開關
 
 - **GitHub Actions**：`.github/workflows/daily-brief.yml` 可定時自動跑 Step 1（產骨架）。
-  接上 LLM 後可擴到自動寫 brief。預設 `workflow_dispatch` 手動觸發，排程那行需要時再開。
-- **n8n / Telegram / Notion**：把 brief 推到你每天會看的地方。
-- 原則：**先手動跑順、確認有價值，再自動化。** 不要為了自動化而自動化。
+  預設 `workflow_dispatch` 手動觸發，排程那行需要時再開。
+  AI 撰寫全文由對話中的 agent / 排程雲端 agent 做，**不接 repo 內 LLM API**（決策 D5，見 `docs/decisions.md`）。
+- **推送（Telegram / Notion 等）**：未拍板。先手動跑順、確認有價值，再自動化；不要為了自動化而自動化。
+
+## 5.5 系統自我檢查
+
+每次開工（或懷疑系統停擺）先跑：
+
+```bash
+python scripts/repo_health.py
+```
+
+它會回報：daily 斷更幾天、當月月報缺不缺、Lyst 快照是否過期、文件與程式碼有沒有漂移，
+並直接給出 Next Actions。agent 的完整工作迴圈見根目錄 `CLAUDE.md`。
 
 ## 6. 疑難排解
 

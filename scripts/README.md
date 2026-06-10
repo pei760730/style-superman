@@ -65,6 +65,20 @@ python scripts/score_trends.py --demo --json           # 輸出 JSON
 ]
 ```
 
+### `repo_health.py`
+Repo 自我健康檢查（Self-Evolution Loop 的 Observe / Diagnose / Next Action 層）。
+檢查**一致性**（每支腳本有沒有文件、文件提到的路徑存不存在、孤兒檔、workflow 引用）與
+**新鮮度**（daily 斷更幾天、當月月報缺不缺、Lyst 快照是否落後），並輸出 Next Actions。
+
+```bash
+python scripts/repo_health.py                # 人讀報告 + Next Actions
+python scripts/repo_health.py --json         # 給 agent / 自動化吃
+python scripts/repo_health.py --consistency  # 只跑一致性（CI 用；新鮮度不擋 PR）
+python scripts/repo_health.py --strict       # WARN 也算失敗（手動巡檢）
+```
+
+一致性問題（ERROR）會讓 CI 紅；新鮮度（WARN）只提醒不擋 PR。每次開工先跑這支。
+
 ### `validate_repo.py`
 檢查 repo 的基本契約：YAML 必填欄位、排行 rank 是否重複、template 必要段落、report 命名與標題。建議每次 PR 前跑一次。
 
@@ -118,15 +132,16 @@ python scripts/score_trends.py --input trends.json
 PR 前（CI 也會自動跑）：
 
 ```bash
-python scripts/validate_repo.py     # repo 契約（隨 data/templates/reports 數量增減，目前 16 項）
-python tests/test_smoke.py          # 核心腳本最小驗收（9 項，無需 pytest）
+python scripts/validate_repo.py            # repo 契約（隨 data/templates/reports 數量增減）
+python tests/test_smoke.py                 # 核心腳本最小驗收（無需 pytest）
+python scripts/repo_health.py --consistency  # 文件↔程式碼一致性
 ```
 
 `tests/test_smoke.py` 跑過所有核心指令並斷言結果；`tests/fixtures/*_snapshot.yml` 是 ingest 的合成測試範例。
 
 ## 後續規劃
-- 接 RSS / API 自動收集（`sources.yml` 的 `rss` 欄位已預留；中間格式見 `templates/raw_signal_pack_template.md`）
-- 接 LLM 自動撰寫 brief 全文
-- 接推送（Telegram / Notion / Sheets）
+- 接更多來源自動收集（非 RSS API；新增來源需人類拍板）
+- 推送（Telegram / Notion / Sheets）——未拍板，先讓 daily 產線跑順
+- AI 撰寫全文走對話 agent / 排程雲端 agent，**不接 repo 內 LLM API**（決策 D5）
 
 詳見 [docs/operating_manual.md](../docs/operating_manual.md)。

@@ -222,6 +222,7 @@ TEMPLATE_REQUIREMENTS = {
     "daily_brief_template.md": ["{{date}}", "## 🔥 今日重點趨勢 Headline Trends", "## 🛒 對我有用 For Me"],
     "trend_card_template.md": ["{{trend_name}}", "## 評分（0–5", "{{heat}}", "{{growth}}"],
     "buy_pick_template.md": ["{{item_title}}", "## 為什麼值得入手", "## 怎麼搭"],
+    "weekly_buy_picks_template.md": ["{{week}}", "## 🧢 頭部", "## 👕 上身", "## 👖 下身", "## 👟 足部", "## 🎯 如果本週只買一樣"],
     "ranking_snapshot_template.md": ["Lyst Index", "StockX", "snapshots:"],
     "monthly_heat_report_template.md": ["{{month}}", "## 🔥 本月最紅品牌", "## 來源 / 限制"],
 }
@@ -246,6 +247,7 @@ def check_templates() -> list[CheckResult]:
 REPORT_PATTERNS = {
     "daily": re.compile(r"^\d{4}-\d{2}-\d{2}\.md$"),
     "monthly": re.compile(r"^\d{4}-\d{2}-[a-z-]+\.md$"),
+    "buy_shortlist": re.compile(r"^\d{4}-W\d{2}\.md$"),  # 週挑（ISO 週，D3）
 }
 
 

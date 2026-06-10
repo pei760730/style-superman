@@ -37,6 +37,18 @@ python scripts/collect_raw_signals.py --out /tmp/raw.yml --limit 5
 
 > raw_signal_pack 是中間產物，**不入長期版控**（見 `templates/raw_signal_pack_template.md`）。
 
+### `generate_weekly_buy_picks.py`
+產出「本週最值得買 Head-to-Toe」骨架，寫到 `reports/buy_shortlist/YYYY-Wnn.md`（ISO 週）。
+自動帶入週期、本週 daily briefs 清單、各排行快照最新 period；4 區 × 3 樣的挑買內容由 AI（`prompts/weekly_buy_picks.md`）或人工補上。
+
+```bash
+python scripts/generate_weekly_buy_picks.py                  # 本週
+python scripts/generate_weekly_buy_picks.py --date 2026-06-10
+python scripts/generate_weekly_buy_picks.py --draft          # 產 *.draft.md（不入版控）
+```
+
+已存在的正式檔不覆寫（封存快照不回改）。
+
 ### `generate_monthly_heat_report.py`
 產出當月「歐美熱度速報」骨架，寫到 `reports/monthly/YYYY-MM-eu.md`。自動帶入最新 Lyst / StockX 季度基準 period 與來源摘要，其餘判斷留 `待填`。
 

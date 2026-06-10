@@ -104,6 +104,17 @@ def main() -> int:
                                fetcher=lambda url: feed_xml if url == "x" else None)
     check("RSS collect 注入 fetcher + 降級", len(sigs2) == 2 and len(warns) == 1, f"{len(sigs2)} sigs, {warns}")
 
+    # 9b. 週挑骨架（draft 模式，不污染版控）
+    r = run(["scripts/generate_weekly_buy_picks.py", "--date", "2099-01-07", "--draft"])
+    draft = ROOT / "reports" / "buy_shortlist" / "2099-W02.draft.md"
+    check("generate_weekly_buy_picks --draft", r.returncode == 0 and draft.exists(),
+          r.stdout + r.stderr)
+    if draft.exists():
+        text = draft.read_text(encoding="utf-8")
+        check("週挑骨架含 4 區與週期", "2099-W02" in text and "🧢 頭部" in text and "👟 足部" in text,
+              text[:200])
+        draft.unlink()
+
     # 10. repo_health 一致性檢查全綠（文件↔程式碼沒有漂移；新鮮度 WARN 不在此擋）
     r = run(["scripts/repo_health.py", "--consistency"])
     check("repo_health --consistency exit 0", r.returncode == 0, r.stdout + r.stderr)

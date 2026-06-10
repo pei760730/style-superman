@@ -15,8 +15,9 @@ validate_repo.py 檢查「格式契約」（YAML 欄位、template 段落）；
     - 決策守衛（data/decision_guards.yml）：已拍板決策的禁用識別字
       不得回到活文件 / 程式碼（擋「殭屍任務卡」——舊世界觀的任務被照做）
 
-  新鮮度（WARN，CI 不擋，但要被看見）：
+  新鮮度（WARN，CI 不擋，但由 health.yml 週期巡檢盯）：
     - daily brief 斷更幾天
+    - 週挑（buy_shortlist）是否落後 2 週以上
     - 當月 monthly report 是否缺
     - Lyst 季度快照是否落後超過一季
 
@@ -233,6 +234,29 @@ def check_daily_freshness(today: dt.date) -> list[Finding]:
     return findings
 
 
+def check_weekly_picks_freshness(today: dt.date) -> list[Finding]:
+    """週挑（buy_shortlist）斷更檢查。目錄空 = 還沒開始，只提示不警告。"""
+    weeks = []
+    for report in (ROOT / "reports" / "buy_shortlist").glob("????-W??.md"):
+        m = re.match(r"^(\d{4})-W(\d{2})$", report.stem)
+        if m:
+            weeks.append((int(m.group(1)), int(m.group(2))))
+    if not weeks:
+        return [Finding("info", "reports/buy_shortlist/ 尚無週挑",
+                        "想開始的話：generate_weekly_buy_picks.py 產骨架")]
+    iso = today.isocalendar()
+    latest = max(weeks)
+    behind = (iso[0] - latest[0]) * 52 + (iso[1] - latest[1])
+    if behind >= 2:
+        return [Finding(
+            "warn",
+            f"週挑已 {behind} 週沒產出（最新：{latest[0]}-W{latest[1]:02d}）",
+            "跑 generate_weekly_buy_picks.py 產骨架 → 依 prompts/weekly_buy_picks.md 補內容；"
+            "若不想維持週更，更新 docs/decisions.md 調整節奏宣告",
+        )]
+    return [Finding("info", f"週挑最新：{latest[0]}-W{latest[1]:02d}（落後 {behind} 週內）")]
+
+
 def check_monthly_freshness(today: dt.date) -> list[Finding]:
     expected = ROOT / "reports" / "monthly" / f"{today:%Y-%m}-eu.md"
     if expected.exists():
@@ -299,6 +323,7 @@ def run_checks(today: dt.date, consistency_only: bool = False) -> list[Finding]:
     findings += check_decision_guards()
     if not consistency_only:
         findings += check_daily_freshness(today)
+        findings += check_weekly_picks_freshness(today)
         findings += check_monthly_freshness(today)
         findings += check_lyst_staleness(today)
         findings += check_rss_coverage()

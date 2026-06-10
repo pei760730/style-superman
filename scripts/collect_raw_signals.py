@@ -24,6 +24,7 @@ C6 範圍：**只做「來源事實收集 + 格式化」**——
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 import urllib.request
 from email.utils import parsedate_to_datetime
@@ -44,6 +45,24 @@ SOURCES = ROOT / "data" / "sources.yml"
 UA = "Mozilla/5.0 (compatible; StyleSupermanBot/0.1; +https://github.com/pei760730/style-superman)"
 DEFAULT_LIMIT = 10
 ATOM = "{http://www.w3.org/2005/Atom}"
+
+# 社群來源（type: community）的標題層 spam 過濾。
+# 背景：2026-06-10 brief 收集備註——reddit-techwear 被盜播 spam 灌版（8 則中 5 則）。
+# 只攔「明顯非時尚」的盜播 / 導流模式，寧可漏放給 insight 層判斷，不誤殺正常貼文；
+# 濾掉幾則一律記 warning（不靜默，見 CLAUDE.md 誠實原則）。
+SPAM_RE = re.compile(
+    r"(?i)"
+    r"(\b(?:watch|stream(?:ing)?)\b.{0,40}\b(?:free|online|live|hd|1080p?|720p)\b"
+    r"|\bfull\s?(?:movie|episode|match|fight|game)\b"
+    r"|\b(?:s\d{1,2}\s?e\d{1,3})\b"
+    r"|\bt\.me/|\btelegram\b"
+    r"|\bcrack(?:ed)?\s?(?:apk|version)\b)"
+)
+
+
+def is_spam(title: str, summary: str = "") -> bool:
+    """標題層 spam 判定（盜播 / 導流類）。語意級的離題判斷仍交 insight 層。"""
+    return bool(SPAM_RE.search(f"{title} {summary}"))
 
 
 def rss_sources() -> list[dict]:
@@ -149,6 +168,12 @@ def collect(sources: list[dict], limit: int = DEFAULT_LIMIT, fetcher=fetch_feed)
         got = parse_feed(xml_text, s, limit)
         if not got:
             warnings.append(f"{s.get('id')}: 解析不到項目（跳過）")
+        if s.get("type") == "community":
+            kept = [sig for sig in got if not is_spam(sig["title"], sig["summary"])]
+            dropped = len(got) - len(kept)
+            if dropped:
+                warnings.append(f"{s.get('id')}: 標題層濾掉 {dropped} 則疑似 spam（盜播/導流）")
+            got = kept
         signals.extend(got)
     return signals, warnings
 

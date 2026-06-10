@@ -5,6 +5,11 @@
 ## [Unreleased]
 
 ### Added
+- **趨勢卡：washed / faded denim「舊味」丹寧**（`reports/analysis/2026-washed-denim.md`）——
+  2026-06-10 watchlist 單源訊號跨源查證後升級：方向早於 KR 訊號半年已在歐美女裝確立（2025-12 美媒 + Margiela/Dior SS26 秀場）、
+  JP 零售春季已主推；男裝大媒體仍未跟進＝挑買窗口。score_trends 85.0 → 主打
+- **社群來源 spam 過濾**（`collect_raw_signals.py`）—— reddit-techwear 盜播灌版事件（2026-06-10 brief 警訊）的工程回應：
+  community 來源標題層攔盜播/導流模式，濾掉必記 warning 不靜默；smoke 新增不誤殺測試
 - **週挑「本週最值得買 Head-to-Toe」**（擁有者直接需求，D3 挑買池落地）—— 每週 4 區（頭/上身/下身/足）× 各 3 樣 + 為什麼是本週：
   `templates/weekly_buy_picks_template.md` + `prompts/weekly_buy_picks.md` + `scripts/generate_weekly_buy_picks.py`
   → `reports/buy_shortlist/YYYY-Wnn.md`；validate_repo 檢查命名與模板、repo_health 新增週挑斷更 WARN（≥2 週）；

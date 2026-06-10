@@ -104,6 +104,21 @@ def main() -> int:
                                fetcher=lambda url: feed_xml if url == "x" else None)
     check("RSS collect 注入 fetcher + 降級", len(sigs2) == 2 and len(warns) == 1, f"{len(sigs2)} sigs, {warns}")
 
+    # 9a. 社群來源 spam 過濾：盜播類標題被濾掉且記 warning；正常貼文不受影響
+    spam_feed = feed_xml.replace(
+        "</channel>",
+        "<item><title>WATCH Fight Night FREE online HD stream</title>"
+        "<link>http://spam.example</link></item></channel>",
+    )
+    community = {"id": "test-reddit", "tier": 3, "region": "global", "type": "community", "rss": "x"}
+    sigs3, warns3 = crs.collect([community], fetcher=lambda url: spam_feed)
+    ok_spam = (
+        len(sigs3) == 2                                   # 原 2 則正常保留
+        and any("spam" in w for w in warns3)              # 濾掉的有報出來（不靜默）
+        and not crs.is_spam("AURALEE indigo denim review")  # 正常標題不誤殺
+    )
+    check("社群來源 spam 過濾 + 不誤殺", ok_spam, f"{len(sigs3)} sigs, {warns3}")
+
     # 9b. 週挑骨架（draft 模式，不污染版控）
     r = run(["scripts/generate_weekly_buy_picks.py", "--date", "2099-01-07", "--draft"])
     draft = ROOT / "reports" / "buy_shortlist" / "2099-W02.draft.md"

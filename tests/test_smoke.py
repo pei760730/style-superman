@@ -108,6 +108,17 @@ def main() -> int:
     r = run(["scripts/repo_health.py", "--consistency"])
     check("repo_health --consistency exit 0", r.returncode == 0, r.stdout + r.stderr)
 
+    # 11. 決策守衛反向測試：違規識別字寫進活文件必須被抓（exit 1 且訊息點名守衛）
+    violating = ROOT / "scripts" / "_guard_smoke_probe.py"
+    # 探針識別字拆開組裝，避免本測試檔自己觸發守衛
+    violating.write_text("# probe: " + "content_" + "ideas" + "\n", encoding="utf-8")
+    try:
+        r = run(["scripts/repo_health.py", "--consistency"])
+        check("決策守衛抓到違規識別字", r.returncode == 1 and "決策守衛" in r.stdout,
+              r.stdout + r.stderr)
+    finally:
+        violating.unlink()
+
     print(f"\n{_passed} passed, {_failed} failed")
     return 1 if _failed else 0
 

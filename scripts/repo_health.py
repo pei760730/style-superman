@@ -12,6 +12,8 @@ validate_repo.py 檢查「格式契約」（YAML 欄位、template 段落）；
     - docs/ prompts/ templates/ 的每個檔案都要被其他文件引用（孤兒偵測）
     - 活文件中提到的 repo 內路徑必須存在（文件↔程式碼漂移偵測）
     - .github/workflows/ 引用的腳本必須存在
+    - 決策守衛（data/decision_guards.yml）：已拍板決策的禁用識別字
+      不得回到活文件 / 程式碼（擋「殭屍任務卡」——舊世界觀的任務被照做）
 
   新鮮度（WARN，CI 不擋，但要被看見）：
     - daily brief 斷更幾天
@@ -144,6 +146,47 @@ def check_path_references() -> list[Finding]:
     return findings
 
 
+def check_decision_guards() -> list[Finding]:
+    """已拍板決策的禁用識別字不得回到活文件 / 程式碼（data/decision_guards.yml）。
+
+    只做識別字層（檔名 / 欄位名 / 目錄名），零誤殺；散文層語意矛盾仍靠 review。
+    """
+    findings: list[Finding] = []
+    guards_path = ROOT / "data" / "decision_guards.yml"
+    if not guards_path.exists():
+        return [Finding("error", "data/decision_guards.yml 不存在",
+                        "補回決策守衛檔（或從 git 歷史還原）")]
+    try:
+        import yaml
+    except ImportError:
+        return [Finding("warn", "缺 pyyaml，略過決策守衛檢查", "pip install -r requirements.txt")]
+    data = yaml.safe_load(guards_path.read_text(encoding="utf-8")) or {}
+
+    scan_suffixes = (".md", ".py", ".yml", ".yaml")
+    for guard in data.get("guards", []):
+        pattern = re.compile(guard["pattern"])
+        excludes = tuple(guard.get("exclude", []))
+        for scope in guard.get("scope", []):
+            base = ROOT / scope
+            paths = [base] if base.is_file() else sorted(base.rglob("*")) if base.is_dir() else []
+            for path in paths:
+                if not path.is_file() or path.suffix not in scan_suffixes:
+                    continue
+                rel = path.relative_to(ROOT).as_posix()
+                if rel.startswith(excludes) or "__pycache__" in rel:
+                    continue
+                for n, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+                    if pattern.search(line):
+                        findings.append(Finding(
+                            "error",
+                            f"{rel}:{n} 違反決策守衛 {guard['id']}（{guard['decision']}）：{line.strip()[:80]}",
+                            f"該決策已拍板：{guard['reason']}——移除此引用；"
+                            f"若是要推翻決策，先更新 docs/decisions.md 與本守衛，不要默默繞過",
+                        ))
+                        break  # 每檔每守衛報一次即可
+    return findings
+
+
 def check_workflow_scripts() -> list[Finding]:
     """workflows 內 run: 引用的 scripts / tests 檔案必須存在。"""
     findings: list[Finding] = []
@@ -253,6 +296,7 @@ def run_checks(today: dt.date, consistency_only: bool = False) -> list[Finding]:
     findings += check_orphans()
     findings += check_path_references()
     findings += check_workflow_scripts()
+    findings += check_decision_guards()
     if not consistency_only:
         findings += check_daily_freshness(today)
         findings += check_monthly_freshness(today)

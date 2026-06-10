@@ -52,7 +52,12 @@ Next      → repo_health.py 的 Next Actions 就是下一輪 TODO
 - **文件同步**：加 / 改 / 刪腳本 → 同步 `scripts/README.md`（health check 會抓漏）；
   新檔案要被導覽引用，不留孤兒（health check 會抓）。
 - **Changelog**：能力層面的變更（新腳本、新檢查、新資料源、移除模組）記入 `CHANGELOG.md` 對應分區（Added / Changed / Removed 別放錯區）。
-- **決策過時時**：不要默默繞過；更新 `docs/decisions.md` 並在同 PR 清掉全 repo 矛盾描述。
+- **執行既有任務卡 / 排程任務前**：先比對本檔定位與 `docs/decisions.md` 最新拍板——
+  任務卡可能來自重定位前的舊世界觀（殭屍任務卡，2026-06-10 發生過）。矛盾就**停**，
+  記入 decisions.md 待拍板，不執行。
+- **決策過時時**：不要默默繞過；更新 `docs/decisions.md` 並在同 PR 清掉全 repo 矛盾描述、
+  掃一遍排程 agent 的任務來源；「不可回頭」的拍板要在 `data/decision_guards.yml`
+  留下禁用識別字（repo_health 會擋住任何把它們寫回來的 PR）。
 - **Prompts**：`prompts/` 是給 AI 的內容工作模板，使用時嚴格遵守對應 template 欄位；
   工程 PR 不改 prompts 的內容判斷規則。
 

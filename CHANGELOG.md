@@ -4,6 +4,17 @@
 
 ## [Unreleased]
 
+### Added
+- **決策守衛（decision guards）** — `data/decision_guards.yml` + `repo_health.py` 新檢查（ERROR，CI 擋）：
+  已拍板決策留下禁用識別字（如 `content_ideas` / `short_video` / LLM SDK import），任何把它們寫回
+  活文件 / 程式碼的 PR 直接紅燈。擋「殭屍任務卡」（排程 agent 拿重定位前的舊任務照做，2026-06-10 實際發生）。
+  守衛只做識別字層（零誤殺）；散文層語意矛盾誠實劃界給 review（見 docs/lessons.md）
+- **週期健康巡檢** — `.github/workflows/health.yml`：每週一、四排程跑 `repo_health.py --strict`，
+  未通過自動開 / 更新 `repo-health` issue。修復「產線停擺時恰好沒人 push → CI 不跑 → 警告無人看見」
+  的斷鏈；同時是 daily-brief 排程的獨立看門狗
+- `CLAUDE.md` 慣例新增：執行既有任務卡 / 排程任務前先比對定位與最新拍板（殭屍任務卡防線的流程層）；
+  拍板「不可回頭」的決策要同步建守衛
+
 ### Changed
 - **系統重新定位：內容生產 → 個人興趣 + 挑買決策。** 擁有者本人不拍片 / 不做內容創作；全 repo 從「服務內容創作者 / 產短影音選題」改為「服務我自己：追潮流、挑單品入手」。
   - daily brief 結尾 `🎬 可拍選題 Content Hooks` → `🛒 對我有用 For Me`（值得入手 / 想試的穿搭 / 想深入了解）；`對創作者的意義` → `對我的意義`。月報 `🎬 可拍選題` → `🛒 本月挑買方向`。

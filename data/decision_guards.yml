@@ -1,0 +1,46 @@
+# decision_guards.yml
+# 決策守衛 — Self-Evolution Loop 的硬化層之一（repo_health.py 讀取，違反 = ERROR，CI 會擋）。
+#
+# 用途：每個「拍板後不可回頭」的方向決策，留下一組機器可查的禁用識別字。
+#       之後任何 PR（包括排程 agent 拿舊任務卡產的）若把這些識別字寫回活文件 / 程式碼，
+#       repo_health 直接紅燈——殭屍任務卡在 CI 就被擋下，不用等人工 review。
+#
+# 誠實邊界：守衛只做「識別字層」（檔名、欄位名、目錄名——機械、零誤殺）。
+#           散文層的語意矛盾（兩段文字互相打架）機器抓不到，仍靠 review；
+#           所以 pattern 不要放會出現在否定句裡的自然語言詞（例如「短影音」），只放識別字。
+#
+# 欄位：id / decision（出處）/ reason / pattern（regex，對行做 search）/
+#       scope（要掃的相對路徑前綴）/ exclude（歷史紀錄與決策檔本身，允許提到）。
+
+guards:
+  - id: positioning-no-content-production
+    decision: "重定位（2026-06-05 拍板、2026-06-10 D3 確認移除選題池）"
+    reason: "本 repo 是個人挑買決策系統，不是內容生產管線：不產可拍選題、不留內容生產識別字"
+    pattern: "content_potential|short_video|content_ideas"
+    scope:
+      - CLAUDE.md
+      - README.md
+      - docs/
+      - prompts/
+      - templates/
+      - scripts/
+      - tests/
+      - data/
+      - .github/
+    exclude:
+      - CHANGELOG.md
+      - docs/decisions.md
+      - docs/lessons.md
+      - docs/codex_execution_plan.md
+      - data/decision_guards.yml
+
+  - id: d5-no-llm-api-in-repo
+    decision: "D5（2026-06-04）"
+    reason: "不接 repo 內 LLM API：AI 撰寫走對話 agent / 排程雲端 agent，腳本不呼叫 LLM、不管 API key"
+    pattern: "import anthropic|import openai|from anthropic|from openai|ANTHROPIC_API_KEY|OPENAI_API_KEY"
+    scope:
+      - scripts/
+      - tests/
+      - .github/
+    exclude:
+      - data/decision_guards.yml

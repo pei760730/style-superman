@@ -31,6 +31,9 @@
   拍板「不可回頭」的決策要同步建守衛
 
 ### Changed
+- README 對齊現實：smoke 項數改指向檔頭（硬編數字必漂移）；workflows 樹補 `health.yml`；
+  串接列反映 RSS / AI 撰寫已接；codex_execution_plan 改標已封存（現役待辦由 repo_health 產生）；
+  roadmap 反映 daily 排程已開啟（2026-06-10）
 - repo_health 輸出品質：Next Actions 去重保序（多個 finding 指到同一條行動時不再重複列）；
   daily 斷更的建議文字不再說「開啟 schedule」（已於 2026-06-10 開啟）——改指向查 Actions run 紀錄
   （檔案在 ≠ 在跑）。`docs/system_design.md` 排程列同步反映現實

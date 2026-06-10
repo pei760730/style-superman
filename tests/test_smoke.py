@@ -12,6 +12,8 @@ test_smoke.py — 核心腳本的最小穩定驗收（C5）
 - generate_daily_brief --draft（產後即刪）
 - generate_monthly_heat_report --draft（產後即刪）
 - ingest_ranking_snapshot dry-run：合法 fixture 通過、壞資料被擋
+- RSS 離線解析 + 降級
+- repo_health --consistency（文件↔程式碼一致性）
 """
 
 from __future__ import annotations
@@ -101,6 +103,10 @@ def main() -> int:
     sigs2, warns = crs.collect([src, {"id": "dead", "tier": 3, "region": "jp", "rss": "y"}],
                                fetcher=lambda url: feed_xml if url == "x" else None)
     check("RSS collect 注入 fetcher + 降級", len(sigs2) == 2 and len(warns) == 1, f"{len(sigs2)} sigs, {warns}")
+
+    # 10. repo_health 一致性檢查全綠（文件↔程式碼沒有漂移；新鮮度 WARN 不在此擋）
+    r = run(["scripts/repo_health.py", "--consistency"])
+    check("repo_health --consistency exit 0", r.returncode == 0, r.stdout + r.stderr)
 
     print(f"\n{_passed} passed, {_failed} failed")
     return 1 if _failed else 0

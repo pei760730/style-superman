@@ -5,6 +5,22 @@
 ## [Unreleased]
 
 ### Added
+- **Self-Evolution Loop 落地**（repo 升級成可自我檢查的系統）
+  - `scripts/repo_health.py` — Observe / Diagnose / Next Action：一致性檢查（腳本↔文件同步、孤兒檔、文件提到的路徑存在性、workflow 引用）為 ERROR 擋 CI；新鮮度檢查（daily 斷更、當月月報、Lyst 快照落後）為 WARN 提醒；輸出 Next Actions / `--json`
+  - `docs/lessons.md` — Learn 層教訓簿：soft note → 反覆出現 → 硬化成檢查的升級路徑；種子教訓（workflow 註冊無聲消失、文件比決策慢、ZOZO 反爬）
+  - `CLAUDE.md` 重寫為 AI Agent 作業入口：repo 目標、不可破壞假設、Observe→…→Next 工作迴圈、驗收命令、禁區
+  - CI 新增 `repo_health.py --consistency` step；test_smoke 加 health 檢查項
+
+### Changed
+- **清除 D5 後殘留的兩套世界觀**：`docs/system_design.md`、`docs/operating_manual.md`、`scripts/README.md`、`.github/workflows/daily-brief.yml` 中「未來接 LLM API 自動撰寫」的描述全部改為現實（AI 撰寫走對話 agent / 排程雲端 agent，不接 repo 內 API）
+- `docs/ai_collaboration.md` 角色改為 model-agnostic（主編 / 工程是「帽子」不是綁定產品），新增自我審查偏誤規則（同一個 agent 不終審自己的產出）
+- `docs/codex_execution_plan.md` 頂部標註已封存（C1–C6 完成、C7 dropped；現役待辦改由 `repo_health.py` 產生）
+- `.github/workflows/daily-brief.yml` 內容更新觸發 GitHub 重新註冊（帳號風控後 workflow 註冊消失，連 dispatch 都不可用；見 lessons）
+- `.gitignore` 補 `reports/monthly/*.draft.md`
+- 修正本檔下方 0.1.0 之前的分區錯置：「Rankings 模組」等新增項原誤放在 Removed 區
+
+### Fixed
+- CHANGELOG 分區錯置與 Planned 區和 D5 決策矛盾的項目
 - `reports/analysis/2026-early-summer-jp-kr-eu.md` — 2026 初夏（5–6 月）歐美/日/韓 男裝從頭到腳趨勢 + 值得關注品牌；對照 repo 量化榜，**每節附英文原文來源連結**（報告交付一律附來源以便回原文深讀）
 - **韓國 rankings（KREAM + MUSINSA）** — 把韓潮從「媒體訊號」升級成可長期比對的量化榜
   - `data/rankings/kream.yml` — KREAM 限量/轉售成交量（韓版 StockX）：2025 年度 Nike 成交 #1、平台去球鞋化 50%→37%；2026-01 中古精品 +203%、Rolex +363%
@@ -40,6 +56,8 @@
   zozo.jp 由 Akamai 防護（curl 403、頁面 JS 動態、WebFetch 逾時、聚合站無逐位名次），
   無真實 headless 瀏覽器無法準確抓取，屬不該背的重量。依「不準確就拿掉」不保留半準觀察清單。
   紀錄與替代方案見 docs/rankings.md「ZOZOTOWN：評估後不採用」。
+
+### Added（早期，原誤置於 Removed 區，2026-06-10 歸位）
 - **Rankings 模組**：定期可量化排行（`data/rankings/`）
   - `lyst-index.yml` — Lyst Index 季度快照（已收錄 2026-Q1：Top 20 品牌 + Top 10 單品）
   - `stockx.yml` — StockX 年度/年中快照（已收錄 2025 全年熱銷）
@@ -49,10 +67,10 @@
 - `reports/daily/2026-06-04.md` — SS2026 基準快照（歐美 × 日 × 韓）
 
 ### Planned
-- 接入真實來源抓取（RSS / Instagram / 站點）
-- AI 自動撰寫 daily brief 全文（接 Claude / OpenAI）
-- 推送管線（Telegram / Notion / Google Sheets）
+- 接入更多來源抓取（非 RSS API / 站點；新增來源需人類拍板）
+- 推送管線（Telegram / Notion / Google Sheets）——未拍板，先讓 daily 產線跑順
 - 短影音選題自動排程
+- ~~AI 自動撰寫 daily brief 全文（接 Claude / OpenAI）~~ — 已由 D5 收掉（2026-06-04）：走排程雲端 agent，不接 repo 內 API
 
 ## [0.1.0] — 2026-06-04
 

@@ -1,5 +1,9 @@
 # Codex Execution Plan — Style Superman
 
+> **📦 已封存（2026-06-10）**：本文件是第一輪工程任務的歷史紀錄——C1–C6 全部完成、C7 已 dropped（D5）。
+> 它**不再是現役待辦來源**；現役待辦由 `python scripts/repo_health.py` 的 Next Actions 產生，
+> 方向決策見 `docs/decisions.md`。保留本檔是為了決策可回溯（任務卡格式仍可參考 §2）。
+
 > 這是 Codex 依 `docs/ai_collaboration.md` 實際跑完第一輪 repo review 後留下的執行計畫。目的不是再寫一份抽象分工，而是把「下一步該做什麼」拆成 Claude Code / 人類可以直接接手的任務卡。
 
 ## 0. 本輪 Codex 判斷

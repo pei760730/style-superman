@@ -5,6 +5,15 @@
 ## [Unreleased]
 
 ### Added
+- **RSS 自動收集覆蓋 16 → 17**（2026-06-10 盤點）：
+  - `vogue-korea` 啟用 RSS（feed 實測可用，但出版方 XML 未宣告 `media:` namespace →
+    `collect_raw_signals.parse_feed` 新增 unbound-prefix fallback：ParseError 時自動補宣告再重試，
+    純標準庫、真壞 XML 仍降級回空；smoke 測試 +2）
+  - `eyesmag`、`musinsa-newsroom` 實測無公開 feed（404 + 頁面無宣告），於 sources.yml 註記維持人工監看
+  - 其餘 11 個無 RSS 來源屬結構性不可自動收：rankings ×4（季度/年度報告，走快照）、
+    social ×2（IG/TikTok 無 RSS）、retailer ×5（無公開 feed，反爬教訓不硬刮）
+
+### Added
 - **趨勢卡：washed / faded denim「舊味」丹寧**（`reports/analysis/2026-washed-denim.md`）——
   2026-06-10 watchlist 單源訊號跨源查證後升級：方向早於 KR 訊號半年已在歐美女裝確立（2025-12 美媒 + Margiela/Dior SS26 秀場）、
   JP 零售春季已主推；男裝大媒體仍未跟進＝挑買窗口。score_trends 85.0 → 主打

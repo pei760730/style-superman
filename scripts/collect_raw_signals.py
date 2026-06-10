@@ -101,13 +101,35 @@ def _norm_date(raw: str) -> str:
     return "待查"
 
 
+def _declare_unbound_prefixes(xml_text: str) -> str:
+    """補上 feed 用了卻沒宣告的 XML namespace（出版方常見 bug，例：vogue.co.kr 的 media:）。
+
+    只在根元素補宣告、不動內容；URI 是假的也無妨——本解析器不靠 namespace 取值。
+    """
+    root_match = re.search(r"<(rss|feed)\b[^>]*>", xml_text)
+    if not root_match:
+        return xml_text
+    root_tag = root_match.group(0)
+    declared = set(re.findall(r"xmlns:([\w.-]+)", root_tag))
+    used = set(re.findall(r"<([\w.-]+):", xml_text)) | set(re.findall(r"\s([\w.-]+):[\w.-]+=", xml_text))
+    missing = used - declared - {"xml", "xmlns"}
+    if not missing:
+        return xml_text
+    extra = "".join(f' xmlns:{p}="urn:undeclared:{p}"' for p in sorted(missing))
+    patched_root = root_tag[:-1] + extra + ">"
+    return xml_text.replace(root_tag, patched_root, 1)
+
+
 def parse_feed(xml_text: str, source: dict, limit: int = DEFAULT_LIMIT) -> list[dict]:
     """把 feed 字串解析成 raw signals（不碰網路，可離線測試）。支援 RSS 2.0 與 Atom。"""
     signals: list[dict] = []
     try:
         root = ET.fromstring(xml_text.strip())
     except ET.ParseError:
-        return signals
+        try:
+            root = ET.fromstring(_declare_unbound_prefixes(xml_text.strip()))
+        except ET.ParseError:
+            return signals
 
     # RSS 2.0: <rss><channel><item>...；Atom: <feed><entry>...
     items = root.findall(".//item")

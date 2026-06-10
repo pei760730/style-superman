@@ -119,6 +119,14 @@ def main() -> int:
     )
     check("社群來源 spam 過濾 + 不誤殺", ok_spam, f"{len(sigs3)} sigs, {warns3}")
 
+    # 9c. 未宣告 namespace 的 feed（出版方 bug，如 vogue.co.kr 的 media:）：fallback 補宣告後照常解析
+    unbound_feed = feed_xml.replace(
+        "</title>", "</title><media:thumbnail url='http://img.example/x.jpg'/>", 1
+    )
+    sigs4 = crs.parse_feed(unbound_feed, src)
+    check("RSS unbound prefix fallback", len(sigs4) == 2, str(sigs4[:1]))
+    check("RSS 真壞 XML 仍降級回空", crs.parse_feed("<rss><channel><item>", src) == [], "")
+
     # 9b. 週挑骨架（draft 模式，不污染版控）
     r = run(["scripts/generate_weekly_buy_picks.py", "--date", "2099-01-07", "--draft"])
     draft = ROOT / "reports" / "buy_shortlist" / "2099-W02.draft.md"

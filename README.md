@@ -44,6 +44,7 @@ style-superman/
 ├── reports/
 │   ├── daily/                # 每日 brief 產出（按日期命名）
 │   ├── monthly/              # 月度熱度速報（歐美，YYYY-MM-eu.md），排程自動生成
+│   ├── buy_shortlist/        # 本週最值得買 Head-to-Toe（YYYY-Wnn.md；4 區 × 3 樣）
 │   └── analysis/             # 主題分析（如跨市場交集），可累積回看
 ├── prompts/                  # 餵給 AI 的提示詞模板
 │   ├── daily_trend_brief.md
@@ -136,6 +137,6 @@ python scripts/track_rankings.py
 - [ ] **讓每日產線真的跑起來**（目前最重要：daily brief 斷更會被 health check 警告）
 - [ ]（視需求）接入更多來源抓取（非 RSS API / 爬蟲）
 - [ ] 推送到 Telegram / Notion（未拍板）
-- [ ] 挑買 shortlist 自動整理
+- [x] 挑買 shortlist — 週挑「本週最值得買 Head-to-Toe」（reports/buy_shortlist/，4 區 × 3 樣）
 
 完整演進見 [CHANGELOG.md](CHANGELOG.md)。

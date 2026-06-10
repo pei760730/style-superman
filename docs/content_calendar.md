@@ -61,6 +61,9 @@ Topic Analysis（不定期）：把連續出現、值得壓注的議題寫成深
 
 **建議節奏**：每週收斂 1–3 個方向，依預算與衣櫥缺口調整。
 
+**固定產物**：「本週最值得買 Head-to-Toe」→ `reports/buy_shortlist/YYYY-Wnn.md`（4 區 × 各 3 樣 + 為什麼是本週）。
+跑 `python scripts/generate_weekly_buy_picks.py` 產骨架，依 `prompts/weekly_buy_picks.md` 填內容。
+
 **週度整理清單**：
 
 1. 回看過去 7 天 daily briefs，列出重複出現或分數高的趨勢。

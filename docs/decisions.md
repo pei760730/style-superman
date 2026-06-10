@@ -97,7 +97,8 @@
 ### 拍板狀態
 
 **已拍板。** 方向採 `reports/buy_shortlist/YYYY-MM.md`（2026-06-05 個人挑買重定位後）；**本輪不新增實體目錄**，待下一個流程 PR 再建立或調整。
-**已拍板（2026-06-10，擁有者）：採 (b) 移除。** 本 repo 沒有要拍片，純個人興趣：深挖趨勢、找出問題、收斂成挑買判斷。`reports/content_ideas/` 整組刪除（含排程 agent 依舊任務卡落地的 2026-06.md）；挑買池維持本決策原案 `reports/buy_shortlist/YYYY-MM.md`，待需要時建立。
+**已拍板（2026-06-10，擁有者）：採 (b) 移除。** 本 repo 沒有要拍片，純個人興趣：深挖趨勢、找出問題、收斂成挑買判斷。`reports/content_ideas/` 整組刪除（含排程 agent 依舊任務卡落地的 2026-06.md）。
+**→ 挑買池落地（2026-06-10，擁有者直接需求）**：形態從原案「每月一檔」演進為**週檔** `reports/buy_shortlist/YYYY-Wnn.md`——「本週最值得買 Head-to-Toe」：4 區（頭/上身/下身/足）× 各 3 樣 + 為什麼是本週。工具鏈：`templates/weekly_buy_picks_template.md` / `prompts/weekly_buy_picks.md` / `scripts/generate_weekly_buy_picks.py`；validate 檢查命名、repo_health 盯斷更（落後 2 週 WARN）。首期 2026-W24。
 
 ---
 

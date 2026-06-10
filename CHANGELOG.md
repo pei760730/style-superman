@@ -5,6 +5,10 @@
 ## [Unreleased]
 
 ### Added
+- **週挑「本週最值得買 Head-to-Toe」**（擁有者直接需求，D3 挑買池落地）—— 每週 4 區（頭/上身/下身/足）× 各 3 樣 + 為什麼是本週：
+  `templates/weekly_buy_picks_template.md` + `prompts/weekly_buy_picks.md` + `scripts/generate_weekly_buy_picks.py`
+  → `reports/buy_shortlist/YYYY-Wnn.md`；validate_repo 檢查命名與模板、repo_health 新增週挑斷更 WARN（≥2 週）；
+  首期 `reports/buy_shortlist/2026-W24.md`（12 樣全數標注 repo 內可驗證來源）
 - **決策守衛（decision guards）** — `data/decision_guards.yml` + `repo_health.py` 新檢查（ERROR，CI 擋）：
   已拍板決策留下禁用識別字（如 `content_ideas` / `short_video` / LLM SDK import），任何把它們寫回
   活文件 / 程式碼的 PR 直接紅燈。擋「殭屍任務卡」（排程 agent 拿重定位前的舊任務照做，2026-06-10 實際發生）。

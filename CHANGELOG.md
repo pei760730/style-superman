@@ -21,6 +21,10 @@
 
 ### Fixed
 - CHANGELOG 分區錯置與 Planned 區和 D5 決策矛盾的項目
+
+### Ops
+- **開啟 daily-brief 每日排程**（UTC 23:00 = 台灣 07:00 自動產骨架，2026-06-10 Kai 拍板）；workflow 已確認在 GitHub 端重新註冊
+- Actions 升級至 Node 24 相容版（`checkout@v5`、`setup-python@v6`；GitHub 2026-06-16 起強制 Node 24）
 - `reports/analysis/2026-early-summer-jp-kr-eu.md` — 2026 初夏（5–6 月）歐美/日/韓 男裝從頭到腳趨勢 + 值得關注品牌；對照 repo 量化榜，**每節附英文原文來源連結**（報告交付一律附來源以便回原文深讀）
 - **韓國 rankings（KREAM + MUSINSA）** — 把韓潮從「媒體訊號」升級成可長期比對的量化榜
   - `data/rankings/kream.yml` — KREAM 限量/轉售成交量（韓版 StockX）：2025 年度 Nike 成交 #1、平台去球鞋化 50%→37%；2026-01 中古精品 +203%、Rolex +363%

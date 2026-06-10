@@ -7,17 +7,17 @@ name: Daily Brief
 # ——不在 workflow 內呼叫 LLM API（決策 D5，見 docs/decisions.md）。
 #
 # 觸發方式：
-#   - workflow_dispatch：手動觸發（預設先用這個）
-#   - schedule：每日定時（預設註解掉，要全自動時再打開）
+#   - workflow_dispatch：手動觸發
+#   - schedule：每日 UTC 23:00（台灣時間隔日 07:00）自動產骨架（2026-06-10 由 Kai 拍板開啟）
 #
 # ⚠ 2026-06-10：本檔曾在 GitHub 端「註冊消失」（帳號風控後遺症，連 dispatch 都不可用）。
 #   檔案內容變更並 push 即可重新註冊；「檔案在 ≠ 在跑」，要看 Actions run 紀錄（docs/lessons.md）。
 
 on:
   workflow_dispatch:
-  # schedule:
-  #   # 每天 UTC 23:00（台灣時間隔日 07:00）跑
-  #   - cron: "0 23 * * *"
+  schedule:
+    # 每天 UTC 23:00（台灣時間隔日 07:00）跑
+    - cron: "0 23 * * *"
 
 permissions:
   contents: write
@@ -27,10 +27,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 

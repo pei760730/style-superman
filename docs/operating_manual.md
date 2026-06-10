@@ -89,8 +89,7 @@ git commit -m "brief: YYYY-MM-DD"
 
 ## 5. 自動化開關
 
-- **GitHub Actions**：`.github/workflows/daily-brief.yml` 可定時自動跑 Step 1（產骨架）。
-  預設 `workflow_dispatch` 手動觸發，排程那行需要時再開。
+- **GitHub Actions**：`.github/workflows/daily-brief.yml` 每天台灣時間 07:00 自動跑 Step 1（產骨架並 commit；2026-06-10 起開啟），也可 `workflow_dispatch` 手動觸發。
   AI 撰寫全文由對話中的 agent / 排程雲端 agent 做，**不接 repo 內 LLM API**（決策 D5，見 `docs/decisions.md`）。
 - **推送（Telegram / Notion 等）**：未拍板。先手動跑順、確認有價值，再自動化；不要為了自動化而自動化。
 

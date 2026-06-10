@@ -42,6 +42,15 @@
   拍板「不可回頭」的決策要同步建守衛
 
 ### Changed
+- **審計殘餘修正（2026-06-11「全修」）**：
+  - prompt↔template 契約補齊：`buy_picks.md` 欄位清單逐項對應 template（補「來源趨勢」「是什麼」，
+    9 項一欄不漏）；`daily_trend_brief.md` KR 追蹤明定三小項逐項填寫
+  - `codex_execution_plan.md` §0 加封存註（RSS=C6 已完成、adapter=C7 已 dropped），
+    保留原文、消除與檔頭封存說明的表面矛盾
+  - `content_calendar.md` 檔名沿用說明與 `content_strategy.md` 措辭統一
+  - `generate_monthly_heat_report.build()` 移除已讀未用的 region 參數（檔名後綴仍由 CLI 層處理）
+  - smoke：track_rankings `--json` 斷言從「開頭像 JSON」強化為「可解析 + lyst 榜結構完整」
+  - 評估後不修：kream 2026-01 快照的六個月期間範圍（無法查證確切月份，硬補違反不虛構）
 - **第一性原理全域審計（2026-06-10）的收斂修正**（3 個獨立 agent 分區深讀 + 逐項反向驗證後落地）：
   - 契約同步：`prompts/article_to_insight.md` 輸出鍵名 `category` → `signal_type`，對齊
     `templates/raw_signal_pack_template.md`（同值域、鍵名不一致是彙整時的靜默摩擦）

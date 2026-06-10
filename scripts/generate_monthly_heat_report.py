@@ -72,7 +72,7 @@ def source_summary() -> str:
     return f"歐美/全球來源 {len(eu)} 個（media {media}、ranking {ranking}）"
 
 
-def build(month: str, region: str) -> str:
+def build(month: str) -> str:
     lyst = latest_period("lyst-index.yml")
     stockx = latest_period("stockx.yml")
     body = TEMPLATE.read_text(encoding="utf-8") if TEMPLATE.exists() else "# 月報 · {{month}}\n（找不到模板）\n"
@@ -113,7 +113,7 @@ def main() -> None:
         print(f"⚠️  {out_path.name} 已存在，未覆蓋。要重產請先刪除或改用 --draft。")
         return
 
-    out_path.write_text(build(args.month, args.region), encoding="utf-8")
+    out_path.write_text(build(args.month), encoding="utf-8")
     print(f"✅ 已產出骨架：{out_path.relative_to(ROOT)}")
     print("   下一步：依 prompts/monthly_heat_report.md 用 AI 或人工填入本月品牌 / 單品判斷。")
 

@@ -11,6 +11,7 @@
 | D3 | 是否新增挑買 shortlist 目錄 | 已拍板：方向採 `reports/buy_shortlist/YYYY-MM.md`；本輪不建實體目錄 | 否 |
 | D4 | 來源 tier 調整原則 | 已拍板：採 tier 判斷原則；本輪不批量改 `data/`，另案 PR 再改 | 否 |
 | D5 | LLM 供應商策略 | **已拍板：不接 API、C7 不做**（理由：排程雲端 agent 已自動產出 AI 報告，C7 屬重複造既有能力） | 否 |
+| D6 | 2026-06-10 全域審計的四項工程提案 | **已拍板：四項全部否決、不可回頭**（`_common.py` 共用模組 / `field_contracts.yml` / repo_health 設定驅動重構 / 月報回補）——「看起來專業但增加熵」 | 否 |
 
 ---
 
@@ -180,3 +181,25 @@
 - 需要 AI 寫 brief 時，把 `raw_signal_pack` 直接交給對話中的 Claude 或排程 agent 即可，無需 repo 內 API key。
 
 > 註：此項原為 day-1 README roadmap 的願景被升級成「決策」，非實際需求（見檢討）。若日後真有無人值守的硬需求再重啟。
+
+## D6 — 全域審計四項工程提案的處置
+
+### 背景
+
+2026-06-10 第一性原理全域審計（3 個獨立 agent 分區深讀 + 反向驗證）產出多項工程提案，
+其中四項經評估屬「看起來專業但會增加熵」：
+
+1. **scripts 層共用模組（`_common.py`）**（抽 yaml 載入 / die / ensure_utf8 樣板）——
+   腳本獨立可跑 > 樣板去重；加共用模組 = 加耦合 + 加 import 失敗點。
+2. **平行契約定義檔（`field_contracts`）**（prompt↔template 欄位對應表）——
+   template 本身就是契約；第二套定義 = 兩套世界觀漂移風險，正是本 repo 踩過的坑。
+3. **repo_health 設定驅動重構**（把檢查項外部化成 `health_checks` / `output_contracts` 設定檔）——
+   現有 9 個檢查運作良好、執行快；YAGNI，檢查項破 15 個前不重啟。
+4. **月報缺段落回補**（2026-06-eu.md 補現行 template 段落）——
+   違反「reports 產出後不回改」鐵則；該檔已加歷史快照 banner。
+
+### 已拍板（2026-06-11，Kai）
+
+**四項全部否決，不可回頭。** 已建守衛 `audit-rejected-over-engineering`
+（`data/decision_guards.yml`）擋識別字復活；第 4 項由快照鐵則 + 檔內 banner 防護。
+若未來條件變化（如檢查項規模化、腳本數翻倍），依「決策過時時」慣例：先改本檔、再動守衛，不默默繞過。

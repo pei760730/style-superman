@@ -82,7 +82,8 @@ python scripts/score_trends.py --demo --json           # 輸出 JSON
 Repo 自我健康檢查（Self-Evolution Loop 的 Observe / Diagnose / Next Action 層）。
 檢查**一致性**（每支腳本有沒有文件、文件提到的路徑存不存在、孤兒檔、workflow 引用、
 **決策守衛** `data/decision_guards.yml`——已拍板決策的禁用識別字不得回到活文件 / 程式碼）與
-**新鮮度**（daily 斷更幾天、當月月報缺不缺、Lyst 快照是否落後），並輸出 Next Actions。
+**新鮮度 / 產線**（daily 斷更幾天、當月月報缺不缺、Lyst 快照是否落後、
+重定位後產的 daily / monthly 是否符合現行契約——殭屍任務卡的產出層防線），並輸出 Next Actions。
 
 ```bash
 python scripts/repo_health.py                # 人讀報告 + Next Actions

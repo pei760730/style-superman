@@ -5,6 +5,12 @@
 ## [Unreleased]
 
 ### Added
+- **報告產出契約檢查**（`repo_health.py`，WARN，health.yml 週期巡檢盯）——
+  決策守衛只掃活文件、reports/ 是封存快照不在 scope，排程 agent 拿舊任務卡「產出」的報告
+  會從這個缺口進 master（2026-06-10 daily 實際發生：趨勢卡用 `對創作者的意義`、結尾是
+  `🎬 可拍選題 Content Hooks`）。新檢查只看重定位拍板日（2026-06-05）之後產的 daily / monthly
+  （月報以當月 1 號計）：必含現行契約段落（daily `🛒 對我有用 For Me`、monthly `🛒 本月挑買方向`）、
+  不得含重定位前識別字；歷史快照不溯及。smoke 新增反向探針
 - **趨勢卡：washed / faded denim「舊味」丹寧**（`reports/analysis/2026-washed-denim.md`）——
   2026-06-10 watchlist 單源訊號跨源查證後升級：方向早於 KR 訊號半年已在歐美女裝確立（2025-12 美媒 + Margiela/Dior SS26 秀場）、
   JP 零售春季已主推；男裝大媒體仍未跟進＝挑買窗口。score_trends 85.0 → 主打

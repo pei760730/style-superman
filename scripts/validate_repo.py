@@ -246,6 +246,7 @@ def check_templates() -> list[CheckResult]:
 REPORT_PATTERNS = {
     "daily": re.compile(r"^\d{4}-\d{2}-\d{2}\.md$"),
     "monthly": re.compile(r"^\d{4}-\d{2}-[a-z-]+\.md$"),
+    "content_ideas": re.compile(r"^\d{4}-\d{2}\.md$"),  # 每月一檔選題池（D3）
 }
 
 

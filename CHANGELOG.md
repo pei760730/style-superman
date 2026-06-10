@@ -22,6 +22,9 @@
 ### Fixed
 - CHANGELOG 分區錯置與 Planned 區和 D5 決策矛盾的項目
 
+### Added
+- **選題池落地（D3）** — `reports/content_ideas/2026-06.md`：每月一檔、狀態流 候選→已排→已拍→發布→棄用；只收 daily/monthly 出現過的選題；`validate_repo.py` 加命名檢查；README / content_calendar / decisions 同步
+
 ### Data
 - **RSS 覆蓋 5/30 → 16/30**：對 `rss: null` 的 13 個來源逐一實測常見 feed 端點，11 個可解析即寫入
   （GQ、Esquire、Hypebeast JP/KR、WWD Japan/Korea、MEN'S NON-NO、POPEYE、Houyhnhnm、Dazed Korea、W Korea）；

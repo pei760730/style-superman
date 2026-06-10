@@ -96,7 +96,8 @@
 
 ### 拍板狀態
 
-**已拍板。** 方向採 `reports/content_ideas/YYYY-MM.md`；**本輪不新增實體目錄**，待下一個內容流程 PR 再建立或調整。
+**已拍板。** 方向採 `reports/content_ideas/YYYY-MM.md`；本輪不新增實體目錄，待下一個內容流程 PR 再建立或調整。
+**→ 已落地（2026-06-10）**：`reports/content_ideas/2026-06.md` 建立，含池子規則與 6 月種子選題；`validate_repo.py` 同步檢查命名。
 
 ---
 

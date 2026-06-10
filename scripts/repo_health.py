@@ -356,8 +356,17 @@ def check_rss_coverage() -> list[Finding]:
         return []
     data = yaml.safe_load((ROOT / "data" / "sources.yml").read_text(encoding="utf-8")) or {}
     sources = data.get("sources", [])
-    with_rss = sum(1 for s in sources if s.get("rss"))
-    return [Finding("info", f"RSS 覆蓋：{with_rss}/{len(sources)} 個來源可自動收集")]
+    # 分母只算結構上走得了 RSS 的來源（media / community）。
+    # ranking 走快照、social 無 RSS（IG 待 API）、retailer 無公開 feed 且不硬刮——
+    # 全來源當分母會讓覆蓋率永遠像「只做一半」，指標衰退成沒人看的噪音。
+    rssable = [s for s in sources if s.get("type") in ("media", "community")]
+    with_rss = sum(1 for s in rssable if s.get("rss"))
+    other = len(sources) - len(rssable)
+    return [Finding(
+        "info",
+        f"RSS 覆蓋：{with_rss}/{len(rssable)} 個可自動收來源"
+        f"（另 {other} 個 ranking/social/retailer 結構性不走 RSS）",
+    )]
 
 
 # ---------- 輸出 ----------

@@ -38,6 +38,9 @@
   拍板「不可回頭」的決策要同步建守衛
 
 ### Changed
+- repo_health RSS 覆蓋指標分母改為「結構上可自動收的來源」（media / community → 17/19）——
+  原本拿全部 30 個來源當分母，但 ranking 走快照、social 無 RSS、retailer 不硬刮，
+  覆蓋率永遠像「只做一半」，指標會衰退成沒人看的噪音
 - README 對齊現實：smoke 項數改指向檔頭（硬編數字必漂移）；workflows 樹補 `health.yml`；
   串接列反映 RSS / AI 撰寫已接；codex_execution_plan 改標已封存（現役待辦由 repo_health 產生）；
   roadmap 反映 daily 排程已開啟（2026-06-10）

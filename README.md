@@ -17,7 +17,7 @@
 | 4. 簡報 | 轉成可閱讀的 Daily Brief | `reports/daily/YYYY-MM-DD.md` |
 | 5. 挑買 | 轉成「該不該買 / 怎麼搭 / 在哪買」 | 挑買卡 |
 | 6. 累積 | 長期沉澱成趨勢資料庫 | `data/` + `reports/` 歷史 |
-| 7. 串接 | 未來接 AI / RSS / n8n / Telegram / Notion / Sheets | 自動化管線 |
+| 7. 串接 | RSS 收集與 AI 撰寫已接（排程雲端 agent）；推送（Telegram / Notion / Sheets）未拍板 | 自動化管線 |
 
 ---
 
@@ -64,7 +64,7 @@ style-superman/
 │   ├── repo_health.py        # 自我健康檢查（產線新鮮度 + 文件↔程式碼漂移 + Next Actions）
 │   └── README.md
 ├── tests/                    # 最小驗收
-│   ├── test_smoke.py         #   核心腳本 smoke（9 項，無需 pytest）
+│   ├── test_smoke.py         #   核心腳本 smoke（無需 pytest；項數見檔頭）
 │   └── fixtures/             #   ingest 快照 + RSS feed 合成測試範例
 ├── templates/                # 產出物的固定格式
 │   ├── daily_brief_template.md
@@ -86,7 +86,8 @@ style-superman/
 └── .github/
     └── workflows/
         ├── ci.yml            # PR smoke checks
-        └── daily-brief.yml   # 每日自動跑 brief 的排程
+        ├── daily-brief.yml   # 每日自動產 brief 骨架（UTC 23:00，2026-06-10 開啟）
+        └── health.yml        # 週一、四 repo_health --strict 巡檢，未過自動開 issue
 ```
 
 ---
@@ -118,7 +119,7 @@ python scripts/track_rankings.py
 3. **格式即契約** — 所有產出都走 `templates/`，方便日後被 n8n / Notion / Sheets 解析。
 4. **先輕後重** — 先把流程跑順、累積資料，再決定要不要上重型自動化。
 
-詳見 [docs/system_design.md](docs/system_design.md)。內容策略見 [docs/content_strategy.md](docs/content_strategy.md)，Daily → weekly → monthly → analysis 的生產線見 [docs/content_calendar.md](docs/content_calendar.md)。AI 分工與交接規則見 [docs/ai_collaboration.md](docs/ai_collaboration.md)；Codex 已拆好的下一步工程任務見 [docs/codex_execution_plan.md](docs/codex_execution_plan.md)，主編決策建議與待確認事項見 [docs/decisions.md](docs/decisions.md)。
+詳見 [docs/system_design.md](docs/system_design.md)。內容策略見 [docs/content_strategy.md](docs/content_strategy.md)，Daily → weekly → monthly → analysis 的生產線見 [docs/content_calendar.md](docs/content_calendar.md)。AI 分工與交接規則見 [docs/ai_collaboration.md](docs/ai_collaboration.md)；第一輪工程任務紀錄（已封存）見 [docs/codex_execution_plan.md](docs/codex_execution_plan.md)，現役待辦由 `repo_health.py` 的 Next Actions 產生；主編決策紀錄見 [docs/decisions.md](docs/decisions.md)。
 
 ---
 
@@ -134,7 +135,7 @@ python scripts/track_rankings.py
 - [x] RSS 收集 → raw_signal_pack（事實層；C6）
 - [x] AI 撰寫報告 — 已由排程雲端 agent 達成（不另接 repo 內 LLM API；見 docs/decisions.md D5）
 - [x] Self-Evolution Loop — `repo_health.py`（自我檢查 + Next Actions）+ `docs/lessons.md`（教訓硬化路徑）+ `CLAUDE.md` agent 工作迴圈
-- [ ] **讓每日產線真的跑起來**（目前最重要：daily brief 斷更會被 health check 警告）
+- [ ] **讓每日產線真的跑起來**（目前最重要——daily 排程已於 2026-06-10 開啟，觀察實跑；斷更會被 health.yml 週期巡檢抓到並自動開 issue）
 - [ ]（視需求）接入更多來源抓取（非 RSS API / 爬蟲）
 - [ ] 推送到 Telegram / Notion（未拍板）
 - [x] 挑買 shortlist — 週挑「本週最值得買 Head-to-Toe」（reports/buy_shortlist/，4 區 × 3 樣）

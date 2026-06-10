@@ -48,6 +48,60 @@ sources:
     rss: https://www.esquire.com/rss/all.xml   # 全站 feed（含非 style 內容）；2026-06-10 實測可解析
     notes: 經典男裝、tailoring 角度
 
+  - id: bof
+    name: The Business of Fashion
+    region: global
+    type: media
+    tier: 1
+    url: https://www.businessoffashion.com/
+    rss: https://www.businessoffashion.com/arc/outboundfeeds/rss/?outputType=xml   # 2026-06-11 實測可解析
+    notes: 國際時裝產業情報的最高標來源（品牌併購 / 人事 / 策略）；正文部分付費牆，事實層收 title+summary 已足
+
+  - id: wwd
+    name: WWD
+    region: us-eu
+    type: media
+    tier: 2
+    url: https://wwd.com/
+    rss: https://wwd.com/feed/   # 全站 feed（含 beauty / business）；2026-06-11 實測可解析
+    notes: 美國時裝產業日報源頭（WWD Japan / Korea 的母刊）；國際品牌動態第一手，男裝篩選交 insight 層
+
+  - id: sneakernews
+    name: Sneaker News
+    region: us-eu
+    type: media
+    tier: 2
+    url: https://sneakernews.com/
+    rss: https://sneakernews.com/feed/   # 2026-06-11 實測可解析
+    notes: 球鞋發售情報垂直媒體（日期 / 定價 / SKU 密度高）；與 Hypebeast 交叉驗證發售訊號
+
+  - id: fucking-young
+    name: Fucking Young!
+    region: us-eu
+    type: media
+    tier: 2
+    url: https://fuckingyoung.es/
+    rss: https://fuckingyoung.es/feed/   # 2026-06-11 實測可解析
+    notes: 歐陸男裝垂直媒體：新銳設計師 / 系列發表 / lookbook 密度高，補大媒體看不到的設計師端訊號
+
+  - id: heddels
+    name: Heddels
+    region: us-eu
+    type: media
+    tier: 2
+    url: https://www.heddels.com/
+    rss: https://www.heddels.com/feed/   # 2026-06-11 實測可解析
+    notes: 丹寧 / workwear / 質感製衣垂直媒體；「值不值得入手」的工藝與面料判斷依據
+
+  - id: permanent-style
+    name: Permanent Style
+    region: us-eu
+    type: media
+    tier: 3
+    url: https://www.permanentstyle.com/
+    rss: https://www.permanentstyle.com/feed   # 注意：無尾斜線（/feed/ 會失敗）；2026-06-11 實測可解析
+    notes: 倫敦 tailoring / craft 權威獨立媒體；經典男裝品質判斷的深度參照，更新頻率低但篇篇紮實
+
   # ---------- 日潮 ----------
   - id: hypebeast-jp
     name: Hypebeast JP
@@ -103,6 +157,15 @@ sources:
     rss: https://www.houyhnhnm.jp/feed/   # 2026-06-10 實測可解析
     notes: 日系街頭 / 設計師 / 文化媒體，抓尖端日潮
 
+  - id: senken
+    name: 繊研新聞（Senken Shimbun）
+    region: jp
+    type: media
+    tier: 2
+    url: https://senken.co.jp/
+    rss: https://senken.co.jp/posts/feed.xml   # feed 路徑在 /posts/ 下；2026-06-11 實測可解析
+    notes: 日本時裝產業專業日報；品牌經營 / 零售 / 供應鏈硬新聞，與 Fashionsnap 互補（更產業端）
+
   # ---------- 韓潮 ----------
   - id: hypebeast-kr
     name: Hypebeast KR
@@ -139,6 +202,15 @@ sources:
     url: https://www.eyesmag.com/
     rss: null   # 無公開 feed（2026-06-10 實測：/feed、/rss 皆 404，首頁 HTML 無 rss/atom link 宣告），維持人工監看
     notes: 韓國 fashion / lifestyle / street culture 媒體，適合抓韓系街頭、聯名與設計師動向
+
+  - id: gq-korea
+    name: GQ Korea
+    region: kr
+    type: media
+    tier: 2
+    url: https://www.gqkorea.co.kr/
+    rss: https://www.gqkorea.co.kr/feed   # 2026-06-11 實測可解析
+    notes: 韓國男裝編輯視角主力——男星 / K-pop 造型拆解與單品推介；補 KR 區長期缺的男裝垂直訊號
 
   - id: dazed-korea
     name: Dazed Korea

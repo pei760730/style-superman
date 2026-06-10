@@ -4,6 +4,16 @@
 
 ## [Unreleased]
 
+### Added
+- **來源深挖：RSS 自動收集覆蓋 17 → 25**（2026-06-11，擁有者拍板「日韓歐美潮流 + 國際時裝品牌來源深挖」）：
+  - 國際產業：`bof`（The Business of Fashion，tier 1）、`wwd`（美版母刊，tier 2）
+  - 歐美潮流：`sneakernews`（發售情報）、`fucking-young`（歐陸男裝設計師端）、
+    `heddels`（丹寧 / workwear 工藝判斷）、`permanent-style`（tailoring 品質參照，tier 3）
+  - 日潮：`senken`（繊研新聞，產業日報，與 Fashionsnap 互補）
+  - 韓潮：`gq-korea`（KR 男裝編輯視角，補 KR 區男裝垂直缺口）
+  - 全部 8 源以 repo 解析器三輪實測（fetch + parse + 端到端 collect 24 則 / 0 警告）後收錄；
+    另 18 個候選確認不可自動收（無公開 feed / 擋 bot / feed 停更），明細見 PR #34，不硬刮（lessons 鐵則）
+
 ### Fixed
 - **daily-brief 排程的日期時區 bug**（2026-06-11，首跑前攔到）：schedule 在 UTC 23:00 觸發時
   runner 的「今天」仍是台灣的昨天，腳本吃預設日期會永遠指向已存在的昨日報告 → 防覆寫跳過 →

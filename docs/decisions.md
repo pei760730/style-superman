@@ -1,6 +1,6 @@
 # Decisions — Style Superman 下一階段主編決策
 
-> 本文件回應 `docs/codex_execution_plan.md` §3 的「人類決策 Queue」。Codex 在這裡給出建議方案與理由；凡涉及品牌定位、對外發布節奏、費用或供應商選型者，仍需人類最終拍板。
+> 本文件記錄 Style Superman 的主編決策。D1–D5 源自 `docs/codex_execution_plan.md`（已封存）§3 的第一輪「人類決策 Queue」；後續決策直接在本檔新增，不另開分檔。凡涉及品牌定位、對外發布節奏、費用或供應商選型者，仍需人類最終拍板；「不可回頭」的拍板要同步在 `data/decision_guards.yml` 建守衛。
 
 ## 決策總覽
 

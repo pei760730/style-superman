@@ -76,7 +76,7 @@ style-superman/
 ├── docs/                     # 系統設計與營運手冊
 │   ├── system_design.md
 │   ├── content_strategy.md
-│   ├── content_calendar.md      # Daily → weekly → monthly → analysis 內容生產線
+│   ├── content_calendar.md      # Daily → weekly → monthly → analysis 情報→挑買流程
 │   ├── trend_scoring_rules.md
 │   ├── operating_manual.md
 │   ├── ai_collaboration.md      # 主編 / 工程 / 人類角色手冊（model-agnostic）

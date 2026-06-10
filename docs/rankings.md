@@ -61,6 +61,10 @@ prompts/ranking_ingest.md                # 用 AI 把新報告轉成 YAML
 scripts/track_rankings.py                # 檢視最新榜 + 比對名次演化
 ```
 
+> 📌 **snapshots 排序細則**：由上而下 = 新到舊，以**發布／入庫時間**為準，不是 period 字面排序。
+> 例：KREAM「2025 年度結算」官方稿發布於 2026-04，排在「2026-01」月度快照之上是正確的。
+> `ingest_ranking_snapshot.py --write` 會自動把新快照放最上，手動建檔時比照辦理。
+
 ## 日常操作
 
 ### 看現在的榜

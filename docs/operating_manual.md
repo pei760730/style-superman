@@ -62,7 +62,7 @@ git commit -m "brief: YYYY-MM-DD"
 - **Claude Code**：負責較長程的工程任務，例如擴充 `scripts/`、補測試、批次整理 YAML / Markdown。
 - **人類**：負責最後的品牌觀點、資料可信度與發布決策。
 
-完整分工、RACI 與交接模板見 [AI Collaboration Playbook](ai_collaboration.md)。Codex 已拆好的工程任務 queue 見 [Codex Execution Plan](codex_execution_plan.md)，交給 Claude Code 前先從該文件複製任務卡。
+完整分工、RACI 與交接模板見 [AI Collaboration Playbook](ai_collaboration.md)。現役工程待辦由 `scripts/repo_health.py` 的 Next Actions 產生；[Codex Execution Plan](codex_execution_plan.md) 為第一輪任務卡的歷史紀錄（已封存，C1–C6 完成），只供回溯設計脈絡，不再從中複製任務卡。
 
 ## 2. 每週
 

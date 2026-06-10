@@ -28,7 +28,7 @@
 ```yaml
 summary: "..."
 signals:
-  - category: item|silhouette|color|material|style|brand|person|culture
+  - signal_type: item|silhouette|color|material|style|brand|person|culture   # 鍵名對齊 raw_signal_pack 契約
     text: "..."
     lifecycle: emerging|rising|peak|mainstream|declining
 related:

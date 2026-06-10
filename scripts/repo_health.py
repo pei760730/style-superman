@@ -15,11 +15,13 @@ validate_repo.py 檢查「格式契約」（YAML 欄位、template 段落）；
     - 決策守衛（data/decision_guards.yml）：已拍板決策的禁用識別字
       不得回到活文件 / 程式碼（擋「殭屍任務卡」——舊世界觀的任務被照做）
 
-  新鮮度（WARN，CI 不擋，但由 health.yml 週期巡檢盯）：
+  新鮮度 / 產線（WARN，CI 不擋，但由 health.yml 週期巡檢盯）：
     - daily brief 斷更幾天
     - 週挑（buy_shortlist）是否落後 2 週以上
     - 當月 monthly report 是否缺
     - Lyst 季度快照是否落後超過一季
+    - 重定位後的 daily brief 是否符合現行契約
+      （殭屍任務卡的產出層防線——決策守衛不掃 reports/，舊世界觀產出從這裡抓）
 
 歷史紀錄（CHANGELOG、docs/codex_execution_plan.md、reports/）不在路徑掃描範圍——
 它們允許提到已刪除或未建立的檔案。
@@ -50,6 +52,11 @@ ROOT = Path(__file__).resolve().parent.parent
 DAILY_STALE_DAYS = 3          # daily brief 超過這天數沒產出就警告
 MONTHLY_GRACE_DAY = 3         # 每月 N 號後仍無當月月報就警告
 LYST_STALE_QUARTERS = 2       # Lyst 快照落後 >= 這個季數就警告（落後 1 季屬正常發布延遲）
+
+# Daily brief 產出契約（重定位 2026-06-05 拍板後產的 brief 適用；歷史快照不溯及）
+DAILY_CONTRACT_SINCE = dt.date(2026, 6, 5)
+DAILY_REQUIRED_MARK = "## 🛒 對我有用 For Me"                       # 現行 template 的必有段落
+DAILY_BANNED_MARKS = ("對創作者的意義", "可拍選題", "Content Hooks")  # 重定位前的欄位 / 段落識別字
 
 # 路徑掃描的「活文件」範圍；歷史紀錄不掃（允許提到已刪/規劃中的檔案）
 PATH_SCAN_EXCLUDE = {
@@ -301,6 +308,38 @@ def check_lyst_staleness(today: dt.date) -> list[Finding]:
     return [Finding("info", f"Lyst 快照：落後 {behind} 季（正常發布延遲內）")]
 
 
+def check_daily_brief_contract() -> list[Finding]:
+    """重定位後產的 daily brief 必須符合現行契約（templates/daily_brief_template.md）。
+
+    決策守衛只掃活文件，reports/ 是封存快照不在 scope——排程 / 外部 agent
+    拿舊任務卡「產出」的 brief 會從這個缺口進來（2026-06-10 實際發生）。
+    這裡補產出層防線：只檢查拍板日之後的 brief，歷史快照不溯及、不回改。
+    """
+    findings: list[Finding] = []
+    for report in sorted((ROOT / "reports" / "daily").glob("????-??-??.md")):
+        try:
+            day = dt.date.fromisoformat(report.stem)
+        except ValueError:
+            continue
+        if day < DAILY_CONTRACT_SINCE:
+            continue
+        text = report.read_text(encoding="utf-8")
+        problems = []
+        if DAILY_REQUIRED_MARK not in text:
+            problems.append(f"缺必有段落「{DAILY_REQUIRED_MARK}」")
+        hits = [m for m in DAILY_BANNED_MARKS if m in text]
+        if hits:
+            problems.append(f"含重定位前識別字 {hits}")
+        if problems:
+            findings.append(Finding(
+                "warn",
+                f"reports/daily/{report.name} 不符現行 daily brief 契約：{'；'.join(problems)}",
+                f"產出端還在用舊世界觀（殭屍任務卡）：更新產出該 brief 的排程 / 外部 agent 任務指示，"
+                f"並依 templates/daily_brief_template.md 重產 {report.name}",
+            ))
+    return findings
+
+
 def check_rss_coverage() -> list[Finding]:
     try:
         import yaml
@@ -326,6 +365,7 @@ def run_checks(today: dt.date, consistency_only: bool = False) -> list[Finding]:
         findings += check_weekly_picks_freshness(today)
         findings += check_monthly_freshness(today)
         findings += check_lyst_staleness(today)
+        findings += check_daily_brief_contract()
         findings += check_rss_coverage()
     return findings
 

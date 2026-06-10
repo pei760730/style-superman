@@ -14,6 +14,7 @@ test_smoke.py — 核心腳本的最小穩定驗收（C5）
 - ingest_ranking_snapshot dry-run：合法 fixture 通過、壞資料被擋
 - RSS 離線解析 + 降級
 - repo_health --consistency（文件↔程式碼一致性）
+- 反向探針：決策守衛抓違規識別字、daily brief 產出契約抓舊世界觀格式（探針檔產後即刪）
 """
 
 from __future__ import annotations
@@ -144,6 +145,18 @@ def main() -> int:
               r.stdout + r.stderr)
     finally:
         violating.unlink()
+
+    # 12. daily brief 產出契約反向測試：重定位後的 brief 用舊世界觀格式必須被抓（WARN，--strict 才 exit 1）
+    bad_brief = ROOT / "reports" / "daily" / "2099-12-31.md"
+    bad_brief.write_text("# Style Superman — Daily Brief · 2099-12-31\n\n- **對創作者的意義：** probe\n",
+                         encoding="utf-8")
+    try:
+        r = run(["scripts/repo_health.py", "--strict"])
+        check("daily brief 產出契約抓到舊世界觀格式",
+              r.returncode == 1 and "2099-12-31.md 不符現行 daily brief 契約" in r.stdout,
+              r.stdout + r.stderr)
+    finally:
+        bad_brief.unlink()
 
     print(f"\n{_passed} passed, {_failed} failed")
     return 1 if _failed else 0

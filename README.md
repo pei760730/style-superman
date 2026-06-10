@@ -44,6 +44,7 @@ style-superman/
 ├── reports/
 │   ├── daily/                # 每日 brief 產出（按日期命名）
 │   ├── monthly/              # 月度熱度速報（歐美，YYYY-MM-eu.md），排程自動生成
+│   ├── content_ideas/        # 每月選題池（YYYY-MM.md；候選→已排→已拍→發布）
 │   └── analysis/             # 主題分析（如跨市場交集），可累積回看
 ├── prompts/                  # 餵給 AI 的提示詞模板
 │   ├── daily_trend_brief.md

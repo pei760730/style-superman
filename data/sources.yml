@@ -380,6 +380,19 @@ sources:
       偏球鞋/街頭，男裝代表性最強，但涵蓋不到精品成衣。
       快照見 data/rankings/stockx.yml
 
+  - id: google-trends
+    name: Google Trends（月度快照）
+    region: us-eu           # 以 US 為歐美代理
+    type: ranking
+    tier: 2
+    url: https://trends.google.com/trends/
+    rss: null
+    cadence: monthly        # 無公開 API，每月人工拉取（方法論固定，見 docs/rankings.md）
+    notes: >
+      搜尋興趣 = 需求前置訊號，補 Lyst 季度之間的量化空窗。
+      相對值需錨點詞正規化才可跨月比對；只佐證方向（升/退），不單獨支撐「爆紅」結論。
+      快照見 data/rankings/google-trends.yml
+
   # 日本：沒有單一威望榜，靠二手成交需求 + 穿搭社群
   # 註：ZOZOTOWN 男裝銷售榜已評估後移除——zozo.jp 由 Akamai 防護，對非瀏覽器
   #     請求回 403、頁面 JS 動態渲染，無真實 headless 瀏覽器無法準確抓取逐位名次，

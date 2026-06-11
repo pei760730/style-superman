@@ -5,6 +5,14 @@
 ## [Unreleased]
 
 ### Added
+- **「歐美趨勢＋值得買做到極致」的轉化面與量化面**（2026-06-11 Kai 拍板「都做」）：
+  - **每週至少一張趨勢深挖卡（歐美優先）**：content_calendar §5 從「不定期」升格為每週節奏——
+    挑本週最強跨源趨勢做「跨源查證→生命週期→全價位帶落地→挑買判斷」（範本：washed-denim 卡）；
+    訊號弱可停一次但要在週挑註明，不硬寫。operating_manual 每週清單同步
+  - **Google Trends 月度快照**（`data/rankings/google-trends.yml`）：補 Lyst 季度之間的歐美量化空窗。
+    固定方法論（US / past 90 days / Shopping / 錨點詞 `sneakers` 正規化 anchor_ratio）+ 12 個追蹤詞
+    （每個標注 repo 內出處）；每月人工拉取 ~20 分鐘（無公開 API，不接非官方套件）。
+    流程見 docs/rankings.md；首期快照待首次拉取，不預填
 - **歐美來源第二輪深挖：話語層 + 社群實況（RSS 25 → 28）**（2026-06-11，擁有者拍板「歐美趨勢+值得買做到極致」；
   us-eu 原為三區最薄）：收 `blackbird-spyplane`（美式男裝話語層指標 newsletter，tier 2）、
   `put-this-on`（經典男裝/二手挖寶視角，tier 3）、`reddit-sneakers`（發售落地驗證，tier 3 community）。

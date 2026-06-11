@@ -106,6 +106,13 @@ def main() -> int:
     check("generate_monthly_heat_report --draft", r.returncode == 0 and mdraft.exists(), r.stderr)
     mdraft.unlink(missing_ok=True)
 
+    # 5b. monthly heat report 日本線（--region jp → -jp 後綴、標題帶地區名；產後刪）
+    jdraft = ROOT / "reports" / "monthly" / "2099-01-jp.draft.md"
+    r = run(["scripts/generate_monthly_heat_report.py", "--month", "2099-01", "--region", "jp", "--draft"])
+    ok = r.returncode == 0 and jdraft.exists() and "日本男裝" in jdraft.read_text(encoding="utf-8")
+    check("generate_monthly_heat_report --region jp", ok, r.stderr)
+    jdraft.unlink(missing_ok=True)
+
     # 6. ingest dry-run：合法 fixture 應通過（exit 0，不寫檔）
     r = run(["scripts/ingest_ranking_snapshot.py", "--source", "lyst", "--input", str(FIX / "lyst_snapshot.yml")])
     check("ingest dry-run 合法 fixture 通過", r.returncode == 0 and "DRY RUN" in r.stdout, r.stderr)

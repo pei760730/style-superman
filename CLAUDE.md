@@ -47,7 +47,7 @@ Next      → repo_health.py 的 Next Actions 就是下一輪 TODO
 
 ## 慣例
 
-- **命名**：daily `reports/daily/YYYY-MM-DD.md`；monthly `reports/monthly/YYYY-MM-eu.md`；
+- **命名**：daily `reports/daily/YYYY-MM-DD.md`；monthly `reports/monthly/YYYY-MM-<region>.md`（region：eu / jp）；
   data id 用小寫 kebab；腳本用 snake_case 動詞開頭（generate_ / collect_ / track_ / validate_）。
 - **文件同步**：加 / 改 / 刪腳本 → 同步 `scripts/README.md`（health check 會抓漏）；
   新檔案要被導覽引用，不留孤兒（health check 會抓）。

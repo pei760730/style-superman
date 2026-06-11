@@ -76,8 +76,8 @@ git commit -m "brief: YYYY-MM-DD"
 
 - **拉 Google Trends 月度快照**（約 20 分鐘）：依 `docs/rankings.md` 的固定方法論查追蹤關鍵字，
   記入 `data/rankings/google-trends.yml`——補 Lyst 季度之間的歐美量化空窗。
-- 產出或回看 `reports/monthly/YYYY-MM-eu.md`，確認月報有標訊號來源分層、信心與抓取限制。
-  （要手動產骨架：`python scripts/generate_monthly_heat_report.py --month YYYY-MM`；每月 1 號排程會自動產全文。）
+- 產出或回看 `reports/monthly/YYYY-MM-eu.md` 與 `YYYY-MM-jp.md`（日本線 2026-07 起），確認月報有標訊號來源分層、信心與抓取限制。
+  （要手動產骨架：`python scripts/generate_monthly_heat_report.py --month YYYY-MM [--region jp]`；每月 1 號排程會自動產全文。）
 - 回測評分命中率（見 `trend_scoring_rules.md` §6）。
 - 視數據調整評分權重 / 情報支柱佔比，並記到 `CHANGELOG.md`。
 - 若月報暴露固定弱點（例如電商即時 best-seller 訊號不足），回頭硬化相關 prompts / templates。

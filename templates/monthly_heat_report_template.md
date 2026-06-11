@@ -1,10 +1,10 @@
-# 歐美男裝・月度熱度速報 · {{month}}
+# {{region_name}}男裝・月度熱度速報 · {{month}}
 
-> Style Superman ｜ Monthly Heat Report（歐美）｜ 自動生成 {{generated_date}}
-> 綜合免費訊號（搜尋趨勢 + 電商 best-seller + 社群 + 媒體）+ repo 內季度基準榜，
-> 回答「這個月歐美什麼品牌 / 單品最紅」。月度可累積、可回看。
+> Style Superman ｜ Monthly Heat Report（{{region_name}}）｜ 自動生成 {{generated_date}}
+> 綜合免費訊號（搜尋趨勢 + 電商 best-seller + 社群 + 媒體）+ repo 內量化基準榜，
+> 回答「這個月{{region_name}}什麼品牌 / 單品最紅」。月度可累積、可回看。
 
-**訊號強度：** {{signal_strength}}　·　**對照基準：** Lyst {{baseline_quarter}}　·　**涵蓋月份：** {{month}}
+**訊號強度：** {{signal_strength}}　·　**對照基準：** {{baseline_label}}　·　**涵蓋月份：** {{month}}
 
 ---
 
@@ -14,7 +14,7 @@
 
 | 層級 | 可用來源 | 能支撐的說法 | 預設信心 |
 |------|----------|--------------|:--------:|
-| L1 硬數據 | Lyst / StockX / 平台公開榜單 / 官方銷售數據 | 可量化排行、需求變化、成交或銷售事實 | 高 |
+| L1 硬數據 | 地區量化基準榜（見 `data/rankings/`）/ 平台公開榜單 / 官方銷售數據 | 可量化排行、需求變化、成交或銷售事實 | 高 |
 | L2 已確認事件 | 官方發售 / 聯名 / 秀程 / pop-up / 品牌公告 / 可讀全文媒體報導 | 「已發生 / 即將發生」的事件熱度 | 高/中 |
 | L3 多源媒體共識 | 多家媒體同時討論的趨勢或單品 | 編輯共識、話題升溫 | 中 |
 | L4 弱訊號 / 待查 | 電商搜尋頁、best-seller 推測、搜尋 snippet、社群體感、單一來源 | 只能寫觀察或待查，不能寫成銷售硬數據 | 低/待查 |
@@ -64,10 +64,10 @@
 - ⬆ {{rising}} — {{reason}}（依據：L{{level}}；信心：{{confidence}}）
 - ⬇ {{cooling}} — {{reason}}（依據：L{{level}}；信心：{{confidence}}）
 
-## 🆚 對照季度基準（Lyst / StockX）
+## 🆚 對照量化基準（{{baseline_label}}）
 
-<!-- 跟 repo 內 data/rankings/ 的最新季榜比：誰本月特別動、季榜沒抓到的本月新訊號 -->
-- 與 Lyst {{baseline_quarter}} 一致：{{consistent}}
+<!-- 跟 repo 內 data/rankings/ 該地區最新基準榜比：誰本月特別動、基準榜沒抓到的本月新訊號 -->
+- 與 {{baseline_label}} 一致：{{consistent}}
 - 季榜沒有、但本月在動：{{new_this_month}}
 - 季榜殘熱、非本月新訊號：{{baseline_carryover}}
 
@@ -83,9 +83,9 @@
 
 - 本報告為**月度訊號綜合判斷**，非單一權威榜；信心欄標示每條的可靠度。
 - 月報主榜固定 Top 5，另設 3–5 條浮動觀察名單；訊號不足時寧可少列並標 `待查`，不可硬湊 Top 10。
-- 月度沒有免費的官方「歐美 Top 10」榜 → 本報告靠搜尋趨勢 + 電商 best-seller + 媒體交叉推導。
+- 月度沒有免費的官方「{{region_name}} Top 10」榜 → 本報告靠搜尋趨勢 + 電商 best-seller + 媒體交叉推導。
 - **事件聯名 ≠ 銷售證明**：官方 drop / 聯名 / 秀程是強事件訊號；沒有公開 API 或可回查排行時，不得把電商可見度寫成 best-seller 硬數據。
-- 季度硬數據仍以 Lyst / StockX 為準（見 `data/rankings/`）；兩者矛盾時以季榜為基準、月報標出差異。
+- 量化硬數據仍以該地區基準榜為準（{{baseline_label}}，見 `data/rankings/`）；兩者矛盾時以基準榜為準、月報標出差異。
 - **不編造名次與百分比**：沒來源支持的留空或標（待查）。
 - 抓取限制 / 弱訊號：{{weak_signal_notes}}
 - 來源清單：{{sources}}

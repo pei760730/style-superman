@@ -82,19 +82,19 @@ Topic Analysis（每週至少一張，歐美優先）：把最強跨源趨勢寫
 
 ## 4. 每月：Monthly Heat Report → 市場回看
 
-**目的**：把單日雜訊收斂成月度歐美男裝熱度地圖，供下月挑買與主題分析使用。
+**目的**：把單日雜訊收斂成月度男裝熱度地圖（歐美 + 日本兩條線，各自一份），供下月挑買與主題分析使用。
 
 **輸入**：
 
 - 當月 daily briefs。
-- `data/rankings/lyst-index.yml`、`data/rankings/stockx.yml` 的最新季度 / 年度基準。
-- `data/rankings/google-trends.yml` 的月度搜尋熱度快照（補 Lyst 季度之間的空窗；每月拉一次，流程見 `docs/rankings.md`）。
+- 該地區量化基準：歐美 `data/rankings/lyst-index.yml`、`stockx.yml`；日本 `mercari-jp.yml`（量化弱，主榜更依賴事件與媒體共識，信心保守）。
+- `data/rankings/google-trends.yml` 的月度搜尋熱度快照（補 Lyst 季度之間的歐美空窗；每月拉一次，流程見 `docs/rankings.md`）。
 - 官方發售、聯名、秀程、pop-up、可讀全文媒體報導。
 - 電商與社群觀察（若無公開 API 或可回查證據，只能當弱訊號）。
 
 **輸出**：
 
-- `reports/monthly/YYYY-MM-eu.md`
+- `reports/monthly/YYYY-MM-eu.md`、`reports/monthly/YYYY-MM-jp.md`（日本線 2026-07 起）
 - 本月品牌 / 單品熱度排序（綜合判斷，非官方榜）。
 - 訊號來源分層、信心標示、抓取限制。
 - 與 Lyst / StockX 基準的差異。

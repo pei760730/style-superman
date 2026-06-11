@@ -51,10 +51,11 @@ python scripts/generate_weekly_buy_picks.py --draft          # 產 *.draft.md（
 已存在的正式檔不覆寫（封存快照不回改）。
 
 ### `generate_monthly_heat_report.py`
-產出當月「歐美熱度速報」骨架，寫到 `reports/monthly/YYYY-MM-eu.md`。自動帶入最新 Lyst / StockX 季度基準 period 與來源摘要，其餘判斷留 `待填`。
+產出當月「熱度速報」骨架（`--region us-eu|jp`，預設歐美），寫到 `reports/monthly/YYYY-MM-eu.md` / `YYYY-MM-jp.md`。自動帶入該地區量化基準（歐美：Lyst / StockX；日本：Mercari）的最新 period 與來源摘要，其餘判斷留 `待填`。
 
 ```bash
 python scripts/generate_monthly_heat_report.py --month 2026-06
+python scripts/generate_monthly_heat_report.py --month 2026-07 --region jp
 python scripts/generate_monthly_heat_report.py --month 2026-06 --draft   # 產 *.draft.md
 ```
 

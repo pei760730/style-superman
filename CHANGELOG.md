@@ -5,6 +5,10 @@
 ## [Unreleased]
 
 ### Added
+- `reports/analysis/2026-06-11-cross-market-scan.md` — 跨市場掃描（4 並行研究 agent：JP / KR / US-EU / contemporary lane）：
+  與當日 brief 互補不重複；50+ 條訊號含發售日期/價格/來源，剔除年份混淆訊號並留查證註記；
+  關鍵發現：A.PRESSE FW26 全 lane 最早開跑＋丹寧被 SNKRDUNK 型號化、washed denim 擴散成 lane 級語法
+  （HERILL 為 CIOTA 現貨替代）、NB 1890 接棒 1906、轉售僅 47% 高於零售=買方市場確立
 - **空轉殭屍防線**（2026-06-11 第二輪深審發現）：骨架有必有段落標題、新鮮度也綠、
   但內容從沒被填（殘留 `{{…}}` 佔位）時，健檢會誤報產線健康——「檔案在 ≠ 內容在」的下一層。
   產出契約檢查新增：報告**日期已過**仍殘留佔位 = WARN（當日的不吵，內容填寫中）；smoke 加空轉探針

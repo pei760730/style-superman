@@ -115,7 +115,7 @@ def collect_rss(out_path: str | None) -> str:
     out_hint = f"，已寫到 {out_path}" if out_path else "（未寫檔）"
     return (
         f"<!-- RSS 收集：{len(signals)} 則事實訊號、{len(warnings)} 來源降級{out_hint}；"
-        f"signal_type/credibility 待 prompts/article_to_insight.md 補 -->\n"
+        f"signal_type/credibility 由 brief 主編 agent 判讀 -->\n"
     )
 
 

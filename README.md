@@ -88,7 +88,6 @@ style-superman/
 │   └── rankings/             # 量化排行快照（最新在上，可比對演化）
 │       ├── lyst-index.yml    #   歐美：Lyst Index 季度
 │       ├── stockx.yml        #   歐美：StockX 年度
-│       ├── google-trends.yml #   歐美：Google Trends 月快照（補季度空窗）
 │       ├── mercari-jp.yml    #   日本：Mercari 二手成交
 │       ├── kream.yml         #   韓國：KREAM 轉售
 │       └── musinsa.yml       #   韓國：MUSINSA 銷售榜
@@ -117,11 +116,10 @@ style-superman/
 │   ├── content_calendar.md      # daily → weekly → monthly → analysis 節奏
 │   ├── trend_scoring_rules.md   # 評分規則（wearability 等維度）
 │   ├── operating_manual.md      # 營運手冊
-│   ├── ai_collaboration.md      # 主編 / 工程 / 人類（品味終審）分工
+│   ├── ai_collaboration.md      # 帽子原則 + 不自我終審 + 誰拍板（D7 已瘦身）
 │   ├── rankings.md              # 排行快照方法論（口徑分開、不硬湊）
-│   ├── decisions.md             # 方向決策紀錄（D1–D6）
-│   ├── lessons.md               # 教訓簿（殭屍任務卡三例都在這）
-│   └── codex_execution_plan.md  # 第一輪工程任務卡（已封存）
+│   ├── decisions.md             # 方向決策紀錄（D1–D7）
+│   └── lessons.md               # 教訓簿（殭屍任務卡三例都在這）
 └── .github/workflows/
     ├── ci.yml                # PR validate + smoke
     ├── daily-brief.yml       # 每日骨架（台北 07:00；日期以 Asia/Taipei 顯式計算）
@@ -164,7 +162,7 @@ python scripts/repo_health.py --consistency
 
 ## Roadmap
 
-- [x] 資料底層 + 評分規則 + Rankings 模組（歐美 / 日 / 韓五榜 + Google Trends 月快照）
+- [x] 資料底層 + 評分規則 + Rankings 模組（歐美 / 日 / 韓五榜）
 - [x] CI（validate + smoke）+ 週期健檢巡檢（自動開 issue）
 - [x] RSS 收集事實層（17 → 25 → 28 源，三輪深挖）
 - [x] AI 撰寫走排程雲端 agent（D5：不接 repo 內 LLM API）
@@ -172,7 +170,7 @@ python scripts/repo_health.py --consistency
 - [x] 每日產線實跑（時區 bug 已修；斷更有看門狗）
 - [x] Daily brief 行動帳 + 密度規則；挑買卡 / 週挑 / 週趨勢深挖卡節奏
 - [x] 重定位殘留總清（2026-06-11：內容生產視角標籤組移除、routine 任務卡去殭屍化、全自動產出改分支+PR）
-- [ ] Google Trends 月快照首期拉取（方法論已定，見 docs/rankings.md）
+- [x] 第一性原理瘦身（2026-06-11 D7：砍死迴圈 prompt、封存任務卡、手動月拉流程；立反熵原則）
 - [ ] 推送通知（未拍板；傾向用既有據點，不加新平台）
 - [ ] 更多非 RSS 來源（視需求，不硬刮反爬站）
 

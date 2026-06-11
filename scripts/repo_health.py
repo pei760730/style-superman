@@ -23,7 +23,7 @@ validate_repo.py 檢查「格式契約」（YAML 欄位、template 段落）；
     - 重定位後產的報告（daily / monthly）是否符合現行契約
       （殭屍任務卡的產出層防線——決策守衛不掃 reports/，舊世界觀產出從這裡抓）
 
-歷史紀錄（CHANGELOG、docs/codex_execution_plan.md、reports/）不在路徑掃描範圍——
+歷史紀錄（CHANGELOG、reports/）不在路徑掃描範圍——
 它們允許提到已刪除或未建立的檔案。
 
 用法：
@@ -68,7 +68,6 @@ MONTHLY_REGION_SINCE = {"eu": dt.date(2026, 6, 1), "jp": dt.date(2026, 7, 1)}
 # 路徑掃描的「活文件」範圍；歷史紀錄不掃（允許提到已刪/規劃中的檔案）
 PATH_SCAN_EXCLUDE = {
     "CHANGELOG.md",                    # 演進史，會提到已移除的檔案
-    "docs/codex_execution_plan.md",    # 已封存的第一輪工程任務紀錄
 }
 PATH_RE = re.compile(
     r"(?:data|docs|prompts|scripts|templates|tests|\.github)/[A-Za-z0-9_\-./]*\.(?:md|py|yml|yaml|xml|txt)"
@@ -119,7 +118,7 @@ def check_orphans() -> list[Finding]:
     corpus: dict[str, str] = {}
     for path in living_md_files():
         corpus[path.relative_to(ROOT).as_posix()] = path.read_text(encoding="utf-8")
-    # CHANGELOG / codex_execution_plan 雖不做路徑存在掃描，但「被引用」的證據仍可採計
+    # CHANGELOG 雖不做路徑存在掃描，但「被引用」的證據仍可採計
     for rel in PATH_SCAN_EXCLUDE:
         p = ROOT / rel
         if p.exists():

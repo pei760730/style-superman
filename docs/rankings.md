@@ -47,34 +47,18 @@ KREAM 看「韓國願意花多少錢搶」（flex / 限量 / 精品轉售），M
 > 🚫 **逐位名次無法自動抓取**：kream.co.kr / musinsa.com 的即時榜頁為 JS 動態渲染，WebFetch 對 KREAM 回 500、MUSINSA 拒連（同 ZOZO 的 headless/反爬限制）。
 > 依「不準確就拿掉」原則：快照**採官方稿/官方月榜的公開數據手動建立**，不硬刮逐位即時榜。
 
-### 🌐 Google Trends（歐美月度空窗的補位）
+### 🌐 Google Trends（評估後移除，2026-06-11 D7）
 
-Lyst 一季一次、StockX 一年一次——中間的歐美量化空窗用 Google Trends 月快照補。
-**搜尋興趣是需求的前置訊號**：只佐證方向（升溫/退燒），不單獨支撐「爆紅/熱賣」硬結論。
-
-**每月拉取流程（約 20 分鐘，方法論固定，改了要記 CHANGELOG）**：
-
-1. 開 [trends.google.com](https://trends.google.com/trends/)，設定：**United States ｜ Past 90 days ｜ Shopping ｜ Web Search**。
-2. 把 `data/rankings/google-trends.yml` 檔頭的追蹤詞，**每批 ≤4 個 + 錨點詞 `sneakers`** 一起比較。
-3. 每個詞記 `anchor_ratio` = 該詞 90 天均值 ÷ 錨點詞 90 天均值（兩位小數），並標方向（↑↓→ 對上月）。
-4. 新 snapshot 放 `snapshots:` 最上面，格式：
-   ```yaml
-   - period: "2026-06"
-     pulled: "2026-06-30"
-     keywords:
-       - {term: "washed jeans", anchor_ratio: 0.18, direction: "↑"}
-   ```
-5. 讀法：**比方向不比絕對值**；單月波動不下結論，連 2–3 個月同向才算訊號。
-
-> 為什麼人工拉：Google Trends 無公開 API，非官方套件易斷且違反輕依賴鐵則——
-> 每月 20 分鐘是刻意選擇，不是缺陷。
+曾規劃用月快照補 Lyst 季度之間的歐美量化空窗，但需要**每月 20 分鐘人類手動拉取**
+（無公開 API、非官方套件違反輕依賴鐵則），且建立後一期都沒拉過——
+依 D7「不依賴人類定期手動勞動」原則移除。完整方法論（錨點詞正規化、anchor_ratio）存於 git 歷史，
+若未來出現可自動化的途徑可復活。歐美月度空窗由月報的 L2/L3 訊號分層誠實標示，不硬補量化。
 
 ## 檔案結構
 
 ```txt
 data/rankings/
 ├── lyst-index.yml     # 歐美：季度，最新放最上
-├── google-trends.yml  # 歐美：月度搜尋熱度（人工拉取，錨點詞正規化）
 ├── stockx.yml         # 歐美：年度/年中
 ├── mercari-jp.yml     # 日本：二手成交需求
 ├── kream.yml          # 韓國：限量/轉售成交量（韓版 StockX）

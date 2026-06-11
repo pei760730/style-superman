@@ -22,7 +22,7 @@ python scripts/generate_daily_brief.py
 依 `data/sources.yml` 巡一遍核心來源（tier 1 必看）。把值得記的丟進處理：
 - 有 RSS 的來源可半自動收集：`python scripts/collect_raw_signals.py --out /tmp/raw.yml`
   （或產 brief 時一併 `--with-rss --raw-signals-out /tmp/raw.yml`）。產出是**事實層** raw_signal_pack。
-- 每篇用 `prompts/article_to_insight.md` 把 raw signal 補上 `signal_type` / `credibility` 並榨成 insight。
+- raw_signal_pack 是事實層，由寫 brief 的主編 agent 直接判讀收斂（不經中間 insight 層）。
 - 重點放在「新訊號」與「跨來源重複出現」的東西。
 
 ### Step 3 — 整理候選趨勢
@@ -62,7 +62,7 @@ git commit -m "brief: YYYY-MM-DD"
 - **Claude Code**：負責較長程的工程任務，例如擴充 `scripts/`、補測試、批次整理 YAML / Markdown。
 - **人類**：負責最後的品牌觀點、資料可信度與發布決策。
 
-完整分工、RACI 與交接模板見 [AI Collaboration Playbook](ai_collaboration.md)。現役工程待辦由 `scripts/repo_health.py` 的 Next Actions 產生；[Codex Execution Plan](codex_execution_plan.md) 為第一輪任務卡的歷史紀錄（已封存，C1–C6 完成），只供回溯設計脈絡，不再從中複製任務卡。
+分工原則見 [AI Collaboration](ai_collaboration.md)。現役工程待辦由 `scripts/repo_health.py` 的 Next Actions 產生；第一輪工程任務卡已移除（2026-06-11 第一性原理瘦身，脈絡見 git 歷史與 CHANGELOG）。
 
 ## 2. 每週
 
@@ -74,8 +74,6 @@ git commit -m "brief: YYYY-MM-DD"
 
 ## 3. 每月
 
-- **拉 Google Trends 月度快照**（約 20 分鐘）：依 `docs/rankings.md` 的固定方法論查追蹤關鍵字，
-  記入 `data/rankings/google-trends.yml`——補 Lyst 季度之間的歐美量化空窗。
 - 產出或回看 `reports/monthly/YYYY-MM-eu.md` 與 `YYYY-MM-jp.md`（日本線 2026-07 起），確認月報有標訊號來源分層、信心與抓取限制。
   （要手動產骨架：`python scripts/generate_monthly_heat_report.py --month YYYY-MM [--region jp]`；每月 1 號排程會自動產全文。）
 - 回測評分命中率（見 `trend_scoring_rules.md` §6）。

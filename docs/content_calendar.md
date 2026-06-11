@@ -88,7 +88,6 @@ Topic Analysis（每週至少一張，歐美優先）：把最強跨源趨勢寫
 
 - 當月 daily briefs。
 - 該地區量化基準：歐美 `data/rankings/lyst-index.yml`、`stockx.yml`；日本 `mercari-jp.yml`（量化弱，主榜更依賴事件與媒體共識，信心保守）。
-- `data/rankings/google-trends.yml` 的月度搜尋熱度快照（補 Lyst 季度之間的歐美空窗；每月拉一次，流程見 `docs/rankings.md`）。
 - 官方發售、聯名、秀程、pop-up、可讀全文媒體報導。
 - 電商與社群觀察（若無公開 API 或可回查證據，只能當弱訊號）。
 

@@ -40,10 +40,9 @@ signals:
 ## 怎麼被使用
 
 ```
-收集（RSS / 人工 / 未來 API）
-   → 每篇用 prompts/article_to_insight.md 榨成 signal
-   → 彙整成本檔格式的 raw_signal_pack（RAW_SIGNALS）
-   → 餵給 prompts/daily_trend_brief.md 產出 daily brief
+收集（RSS / 人工）
+   → 彙整成本檔格式的 raw_signal_pack（RAW_SIGNALS，事實層）
+   → 寫 brief 的主編 agent 直接判讀（榨乾、分層、收斂），依 prompts/daily_trend_brief.md 產出 daily brief
 ```
 
-> 註：目前收集仍為人工 / 半自動；本契約是為日後 `generate_daily_brief.py` 接真實來源預留的穩定介面（見 `docs/codex_execution_plan.md` C3）。
+> 註：中間 insight 層（逐篇榨乾的獨立 prompt）已於 2026-06-11 移除——上線一週從未實際運轉，主編 agent 直接讀 pack 效果相同。

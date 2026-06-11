@@ -67,11 +67,15 @@ git commit -m "brief: YYYY-MM-DD"
 ## 2. 每週
 
 - 從挑買 shortlist 收斂出 1–3 個真正想入手的方向。
+- **產出一張趨勢深挖卡（歐美優先）**：挑本週最強跨源趨勢，依 `templates/trend_card_template.md`
+  做「跨源查證 → 生命週期 → 全價位帶落地 → 挑買判斷」→ `reports/analysis/`（節奏規則見 Content Calendar §5）。
 - 檢查 `data/` 是否要更新（新品牌、新人物、新來源）。
 - 週挑買如何承接 daily brief，見 [Content Calendar](content_calendar.md)。
 
 ## 3. 每月
 
+- **拉 Google Trends 月度快照**（約 20 分鐘）：依 `docs/rankings.md` 的固定方法論查追蹤關鍵字，
+  記入 `data/rankings/google-trends.yml`——補 Lyst 季度之間的歐美量化空窗。
 - 產出或回看 `reports/monthly/YYYY-MM-eu.md`，確認月報有標訊號來源分層、信心與抓取限制。
   （要手動產骨架：`python scripts/generate_monthly_heat_report.py --month YYYY-MM`；每月 1 號排程會自動產全文。）
 - 回測評分命中率（見 `trend_scoring_rules.md` §6）。

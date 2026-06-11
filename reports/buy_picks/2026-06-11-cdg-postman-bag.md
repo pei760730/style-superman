@@ -23,7 +23,7 @@
 3. 球衣 + 工裝短褲——世界盃月份的 blokecore 載具（見 2026-06-11 brief 頭條 1）。
 
 ## 哪裡買 / 具體選項
-- 6/12 開賣：**CDG E-SHOP（線上）**、CDG GYRE（表參道）、CDG 丸之內、大阪 COMME des GARÇONS、CDG 福岡。
+- 6/12 開賣：[**CDG E-SHOP（線上）**](https://shop.comme-des-garcons.com)、CDG GYRE（表參道）、CDG 丸之內、大阪 COMME des GARÇONS、CDG 福岡。
 - 台灣入手：E-SHOP 是否直送台灣 `待查`（不行就代購）；台灣 CDG 門市是否同步 `待查`。
 
 ## 補哪個衣櫥缺口 / 風險
@@ -32,4 +32,4 @@
 
 ---
 
-<sub>來源：Hypebeast JP（2026-06，價格/日期/通路）· 依 prompts/buy_picks.md · 產出後不回改，後續變化寫新一天 brief</sub>
+<sub>來源：[Hypebeast JP](https://hypebeast.com/jp/2026/6/cdg-postman-bag-classic-crew-neck-sweat-with-zip-release-info)（價格/日期/通路）· 依 prompts/buy_picks.md · 產出後不回改，後續變化寫新一天 brief</sub>

@@ -23,7 +23,7 @@
 3. 軍褲 + 有出處的 graphic tee——扣回本日頭條 4 的夏季主力公式。
 
 ## 哪裡買 / 具體選項
-- 6/13 開賣：the nonnative shop（東京/大阪）、COVERCHORD（福岡 + **公式線上**）、Timberland 官網/代官山 Boutique/新宿伊勢丹 PC4/渋谷 PARCO、KITH TOKYO/OSAKA。
+- 6/13 開賣：the nonnative shop（東京/大阪）、[COVERCHORD（福岡 + **公式線上**）](https://coverchord.com)、[Timberland 官網](https://www.timberland.co.jp)/代官山 Boutique/新宿伊勢丹 PC4/渋谷 PARCO、KITH TOKYO/OSAKA。
 - 台灣入手：上列皆日本通路，需代購或轉運；發售制度（先著 or 抽選）`待查`（看 6/12 各店公告）。
 
 ## 補哪個衣櫥缺口 / 風險
@@ -32,4 +32,4 @@
 
 ---
 
-<sub>來源：Houyhnhnm 1132473、Hypebeast JP（2026-06，雙源價格/日期一致）· 依 prompts/buy_picks.md · 產出後不回改，後續變化寫新一天 brief</sub>
+<sub>來源：[Houyhnhnm](https://www.houyhnhnm.jp/news/1132473/)、[Hypebeast JP](https://hypebeast.com/jp/2026/6/nonnative-timberland-3-eye-classic-taupe-release-info)（雙源價格/日期一致）· 依 prompts/buy_picks.md · 產出後不回改，後續變化寫新一天 brief</sub>

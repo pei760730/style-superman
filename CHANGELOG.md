@@ -5,6 +5,12 @@
 ## [Unreleased]
 
 ### Added
+- **歐美來源第二輪深挖：話語層 + 社群實況（RSS 25 → 28）**（2026-06-11，擁有者拍板「歐美趨勢+值得買做到極致」；
+  us-eu 原為三區最薄）：收 `blackbird-spyplane`（美式男裝話語層指標 newsletter，tier 2）、
+  `put-this-on`（經典男裝/二手挖寶視角，tier 3）、`reddit-sneakers`（發售落地驗證，tier 3 community）。
+  另測 7 個不收：die-workwear（feed 空）、the-rake/robb-report/sole-retriever/mr-porter（擋 bot 或無 feed）、
+  reddit-streetwear（置頂 megathread 噪訊）、british-gq（全站噪訊且 GQ US 已覆蓋）。
+  全部走 repo 解析器端到端實測（28 源 56 則 / 0 警告）
 - **Daily brief 密度與行動帳規則**（2026-06-11 Kai 拍板：一天一份、25+ 來源，重複要低、密度要高）：
   - For Me 改「行動帳」：禁止重述 headline（引用寫「見頭條 N」）；值得入手每項必含
     單品｜價格(或待查+去哪查)｜通路｜時點｜下一步，且**同日**依 prompts/buy_picks.md 開完整挑買卡

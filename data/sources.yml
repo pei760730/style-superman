@@ -93,6 +93,33 @@ sources:
     rss: https://www.heddels.com/feed/   # 2026-06-11 實測可解析
     notes: 丹寧 / workwear / 質感製衣垂直媒體；「值不值得入手」的工藝與面料判斷依據
 
+  - id: blackbird-spyplane
+    name: Blackbird Spyplane
+    region: us-eu
+    type: media
+    tier: 2
+    url: https://www.blackbirdspyplane.com/
+    rss: https://www.blackbirdspyplane.com/feed   # 2026-06-11 實測可解析（Substack）
+    notes: 美式男裝話語層指標 newsletter——「現在什麼算酷」的風向與單品推坑；觀點強烈、需與量化榜對照
+
+  - id: put-this-on
+    name: Put This On
+    region: us-eu
+    type: media
+    tier: 3
+    url: https://putthison.com/
+    rss: https://putthison.com/feed/   # 2026-06-11 實測可解析
+    notes: 美式經典男裝部落格老店：質感判斷 / 二手挖寶（eBay roundup）視角，補 discourse 層深度
+
+  - id: reddit-sneakers
+    name: Reddit r/Sneakers
+    region: us-eu
+    type: community
+    tier: 3
+    url: https://www.reddit.com/r/Sneakers/
+    rss: https://www.reddit.com/r/Sneakers/.rss   # 2026-06-11 實測可解析
+    notes: 球鞋社群實況：每週 New Releases thread + 熱門發售反應，驗證 SneakerNews/Hypebeast 訊號是否落地；community 來源走標題層 spam 過濾
+
   - id: permanent-style
     name: Permanent Style
     region: us-eu

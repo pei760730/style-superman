@@ -4,6 +4,23 @@
 
 ## [Unreleased]
 
+### Removed
+- **重定位殘留總清**（2026-06-11 擁有者拍板「深挖把拍攝相關都刪掉」，明細見 decisions.md D3 / lessons.md 第三例）：
+  - `data/trend_taxonomy.yml` 的 `content_angle` 標籤組（how-to-wear / explainer / hot-take / haul-review / listicle，
+    「適合轉成什麼內容」視角）整組移除——挑買卡的 `buy_angle` 已取代其功能；守衛 pattern 同步補上此識別字
+  - `reports/analysis/2026-us-jp-overlap.md` — 重定位前（6/4）產物，整份內容創作框架
+    （「可直接當選題」「對內容的意義」）且無歷史豁免註記，依 D3 (b) 前例刪除
+  - repo 外：「IG 漲粉週報」雲端 routine 經擁有者確認為錯置（純個人興趣、與漲粉無關），已停用
+
+### Changed
+- **排程 routine 任務卡去殭屍化**（2026-06-11）：月度歐美速報 routine 任務卡仍含「2–3 條可拍選題」
+  且直推 master（繞過 CI 全部防線）——已改為「本月挑買方向」+ 植入定位鐵則 + 分支/PR 流程；
+  Lyst Q2 watcher 同步改分支/PR。教訓記 lessons.md（殭屍任務卡第三例）
+- `docs/ai_collaboration.md` 殘留的發布者框架改寫：2.3「品牌主編 / 發布決策者」→「擁有者 / 品味終審」、
+  hot-take 審稿語言（太冒犯 / 不夠有梗 / 傷品牌）→ 趨勢判讀（炒作 vs 真趨勢）
+- `data/sources.yml` Highsnobiety note「選題深度佳」→「文化脈絡深度佳」；
+  `data/trend_taxonomy.yml` 註解兩處「選題」→「挑買判斷」
+
 ### Added
 - `reports/analysis/2026-06-11-cross-market-scan.md` — 跨市場掃描（4 並行研究 agent：JP / KR / US-EU / contemporary lane）：
   與當日 brief 互補不重複；50+ 條訊號含發售日期/價格/來源，剔除年份混淆訊號並留查證註記；

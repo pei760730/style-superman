@@ -1,6 +1,6 @@
 # trend_taxonomy.yml
 # 趨勢分類體系。每個被收集到的訊號都應被歸到一個 category + 若干 tags。
-# 這是整套系統的「語言」——評分、簡報、選題都依賴它。
+# 這是整套系統的「語言」——評分、簡報、挑買判斷都依賴它。
 
 version: 1
 
@@ -46,7 +46,7 @@ categories:
     desc: 跨越單品的文化 / 社會 / 產業現象
     examples: ["二手與 vintage 崛起", "男性美妝", "運動與時尚融合"]
 
-# 標籤：一個 trend 可掛多個 tag，用於交叉檢索與選題
+# 標籤：一個 trend 可掛多個 tag，用於交叉檢索與挑買判斷
 tag_groups:
   region:
     - jp        # 日潮
@@ -63,13 +63,6 @@ tag_groups:
     - mass          # 大眾可穿
     - enthusiast    # 潮流玩家
     - niche         # 小眾垂直
-
-  content_angle:    # 適合轉成什麼內容
-    - how-to-wear   # 教學穿搭
-    - explainer     # 趨勢科普
-    - hot-take      # 觀點 / 爭議
-    - haul-review   # 開箱 / 評測
-    - listicle      # 清單盤點
 
   lifecycle:        # 趨勢生命週期（影響評分權重）
     - emerging      # 剛冒頭

@@ -15,6 +15,11 @@
 - **對策**：拍板當天就 push（哪怕開 draft PR）；agent 執行任何既有任務卡前先比對 CLAUDE.md 定位與 decisions.md 最新拍板，矛盾就停（已寫入 CLAUDE.md 慣例）。
 - **硬化**：`data/decision_guards.yml` + `repo_health.py` 決策守衛檢查（ERROR，CI 擋）——「不可回頭」的拍板留下禁用識別字（如 `content_ideas`、`short_video`），任何把它們寫回活文件 / 程式碼的 PR 直接紅燈，**殭屍任務卡的產物進不了 master**。守衛只防識別字層；任務卡本身的時效仍靠執行前比對（流程規則）。
 
+### 2026-06-11 · 殭屍任務卡（第三例）：守衛只在 PR/CI 層生效，直推 master 的排程 agent 繞過全部防線
+- **發生什麼**：擁有者要求深掃「拍攝殘留」，發現月度排程 routine（歐美熱度速報）的任務卡仍是重定位前版本——明寫「2–3 條可拍選題」，且收尾是 `git push origin master` **直推**。直推不經 PR，決策守衛與產出契約檢查（都掛在 CI）完全攔不到；7/1 下次執行就會把可拍選題直接寫進 master。同次深掃也抓到守衛 pattern 漏字：`content_angle` 標籤組（taxonomy 內整組內容生產視角標籤）從未在禁用清單裡。
+- **對策**：repo 內的防線只護得住「走 PR 的變更」——**排程 agent 任務卡一律要求開分支 + PR，禁止直推 master**；拍板後要主動盤點 repo 外的任務指示（雲端 routine prompt），不能只改 repo。
+- **硬化**：兩個 routine（月度速報、Lyst watcher）任務卡已改為分支 + PR 流程並植入定位鐵則；`decision_guards.yml` pattern 補上 `content_angle`。
+
 ### 2026-06-10 · 殭屍任務卡（第二例）：守衛擋活文件，舊世界觀產出從 reports/ 進來
 - **發生什麼**：決策守衛上線當天，2026-06-10 的 daily brief 仍以舊世界觀產出（趨勢卡用「對創作者的意義」、結尾是「🎬 可拍選題 Content Hooks」，沒有「🛒 對我有用 For Me」）並進了 master。守衛沒抓到，因為 `reports/` 是封存快照、刻意不在守衛 scope（歷史快照本來就含舊識別字，掃全部會誤殺）——但「重定位之後才產的 brief」不是歷史，是產出端（排程 / 外部 agent 的任務指示）還沒換腦。
 - **對策**：守衛的「活文件」邊界要照**產出日期**切，不是照目錄切：拍板日之後產的報告也算活的。產出端的任務指示（repo 外的排程 agent prompt）要跟著拍板一起更新。

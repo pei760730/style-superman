@@ -1,0 +1,35 @@
+# 挑買卡 Buy Pick — nonnative × Timberland 3 EYE CLASSIC "TAUPE"
+
+> 一張挑買卡 = 一個值得認真考慮入手的單品 / 方向。給「個人挑買決策」用，不是導購文。
+
+| 欄位 | 內容 |
+|------|------|
+| **來源趨勢** | 夏季莫卡辛／帆船鞋輪廓（2026-06-11 brief 頭條 2；JP 兩媒體同日報導 + POPEYE 推原版 3-Eye 夏日穿法） |
+| **buy_angle** | seasonal <!-- 夏季輪廓需求頂點 + 檔期復刻 --> |
+| **預算帶** | mid（¥30,800 含稅） |
+| **優先度** | now（6/13 開賣；2024 首發完售前科 = 開賣日就要行動） |
+
+## 是什麼
+2024 春夏賣到大反響的 nonnative × Timberland 3 EYE CLASSIC 帆船鞋復活，這次以 TAUPE 單色重構：長毛 suede 鞋面 + saddle 部位 nubuck 切替、白色車線、霧銀眼孔、sole 加厚。尺寸 25–30cm。2026-06-13（六）發售，¥30,800 含稅。
+
+## 為什麼值得入手（對我）
+- 版型已被市場驗證（2024 首發完售），復刻 = 低風險入手點；TAUPE 比首發更百搭。
+- 正值夏季 moc 需求頂點，Houyhnhnm 直接定調「夏天想穿的那雙」——媒體交叉驗證（Houyhnhnm + Hypebeast JP 同日 + POPEYE 側面）。
+- 免綁帶、襪套式輪廓，夏天出門摩擦成本最低的一雙。
+
+## 怎麼搭（2–3 種）
+1. 短褲 + 白色中筒襪——日系 camp moc 標準解，TAUPE 跟卡其/米色短褲同調。
+2. 九分寬褲 sockless——腳踝留白讓加厚 sole 出來講話。
+3. 軍褲 + 有出處的 graphic tee——扣回本日頭條 4 的夏季主力公式。
+
+## 哪裡買 / 具體選項
+- 6/13 開賣：the nonnative shop（東京/大阪）、[COVERCHORD（福岡 + **公式線上**）](https://coverchord.com)、[Timberland 官網](https://www.timberland.co.jp)/代官山 Boutique/新宿伊勢丹 PC4/渋谷 PARCO、KITH TOKYO/OSAKA。
+- 台灣入手：上列皆日本通路，需代購或轉運；發售制度（先著 or 抽選）`待查`（看 6/12 各店公告）。
+
+## 補哪個衣櫥缺口 / 風險
+- **缺口：** 夏季免綁帶便鞋（運動鞋與涼鞋之間的那一格）。
+- **風險 / 別買的情況：** 2024 完售前科 = 這次大概率也秒沒，搶不到別追轉售溢價；suede 不耐雨，6 月梅雨季要避水穿；moc 楦型挑腳背高度，能試穿最好；衣櫥已有狀態好的帆船鞋 / camp moc 就跳過——這是同格升級不是新格。
+
+---
+
+<sub>來源：[Houyhnhnm](https://www.houyhnhnm.jp/news/1132473/)、[Hypebeast JP](https://hypebeast.com/jp/2026/6/nonnative-timberland-3-eye-classic-taupe-release-info)（雙源價格/日期一致）· 依 prompts/buy_picks.md · 產出後不回改，後續變化寫新一天 brief</sub>

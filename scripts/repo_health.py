@@ -59,8 +59,11 @@ OUTPUT_BANNED_MARKS = ("對創作者的意義", "可拍選題", "Content Hooks")
 OUTPUT_CONTRACTS = (
     # (reports/ 子目錄, 檔名 glob, 現行 template 的必有段落)
     ("daily", "????-??-??.md", "## 🛒 對我有用 For Me"),
-    ("monthly", "????-??-eu.md", "## 🛒 本月挑買方向"),
+    ("monthly", "????-??-*.md", "## 🛒 本月挑買方向"),
 )
+
+# 月報地區線：後綴 → 起算月（該月起，當月缺檔才算斷更；日本線 2026-07 開跑）
+MONTHLY_REGION_SINCE = {"eu": dt.date(2026, 6, 1), "jp": dt.date(2026, 7, 1)}
 
 # 路徑掃描的「活文件」範圍；歷史紀錄不掃（允許提到已刪/規劃中的檔案）
 PATH_SCAN_EXCLUDE = {
@@ -270,16 +273,21 @@ def check_weekly_picks_freshness(today: dt.date) -> list[Finding]:
 
 
 def check_monthly_freshness(today: dt.date) -> list[Finding]:
-    expected = ROOT / "reports" / "monthly" / f"{today:%Y-%m}-eu.md"
-    if expected.exists():
-        return [Finding("info", f"當月月報已存在：{expected.name}")]
-    if today.day >= MONTHLY_GRACE_DAY:
-        return [Finding(
-            "warn",
-            f"當月月報 {expected.name} 不存在（已過每月 {MONTHLY_GRACE_DAY} 號）",
-            "確認每月 1 號的排程 agent 是否有跑；或手動 generate_monthly_heat_report.py 補產",
-        )]
-    return []
+    findings: list[Finding] = []
+    for suffix, since in MONTHLY_REGION_SINCE.items():
+        if today < since:
+            continue
+        expected = ROOT / "reports" / "monthly" / f"{today:%Y-%m}-{suffix}.md"
+        if expected.exists():
+            findings.append(Finding("info", f"當月月報已存在：{expected.name}"))
+        elif today.day >= MONTHLY_GRACE_DAY:
+            findings.append(Finding(
+                "warn",
+                f"當月月報 {expected.name} 不存在（已過每月 {MONTHLY_GRACE_DAY} 號）",
+                "確認每月 1 號的排程 agent 是否有跑；或手動 generate_monthly_heat_report.py 補產"
+                f"（--region {'jp' if suffix == 'jp' else 'us-eu'}）",
+            ))
+    return findings
 
 
 def check_lyst_staleness(today: dt.date) -> list[Finding]:

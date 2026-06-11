@@ -4,6 +4,15 @@
 
 ## [Unreleased]
 
+### Added
+- **月報日本線**（2026-06-11 擁有者拍板「月報不只歐美，再多一個日本」）：
+  - `generate_monthly_heat_report.py` 地區參數化（`--region us-eu|jp`）；template / prompt 同步改地區泛用
+    （日本量化基準 = Mercari，明標「量化弱、信心保守」，ZOZO 等即時榜照舊不硬刮）
+  - `repo_health.py`：月報產出契約 glob 涵蓋 `-jp.md`；新鮮度檢查改多地區（日本線 2026-07 起算，6 月不誤報）
+  - smoke 加 `--region jp` 探針；scripts/README、CLAUDE.md 命名、operating_manual、content_calendar 同步
+  - 雲端 routine「日本月度熱度速報」每月 1 號（分支 + PR 流程），來源：Fashionsnap / Hypebeast JP /
+    Houyhnhnm / WWD Japan / 繊研 / POPEYE，首跑 2026-07-01
+
 ### Removed
 - **重定位殘留總清**（2026-06-11 擁有者拍板「深挖把拍攝相關都刪掉」，明細見 decisions.md D3 / lessons.md 第三例）：
   - `data/trend_taxonomy.yml` 的 `content_angle` 標籤組（how-to-wear / explainer / hot-take / haul-review / listicle，

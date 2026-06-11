@@ -22,7 +22,7 @@
 - [reports/buy_shortlist/](reports/buy_shortlist/) 的週挑（`YYYY-Wnn.md`）——從頭到腳 4 區 × 3 樣 +「如果本週只買一樣」。
 - [reports/analysis/](reports/analysis/) 每週至少一張趨勢深挖卡（歐美優先；跨源查證 → 生命週期 → 全價位帶 → 挑買判斷，範本：washed denim 卡）。
 
-**每月：** [reports/monthly/](reports/monthly/) 的歐美熱度速報 +「本月挑買方向」。
+**每月：** [reports/monthly/](reports/monthly/) 的熱度速報 +「本月挑買方向」——歐美（`-eu.md`）＋日本（`-jp.md`，2026-07 起）。
 
 **想查什麼最紅：** `python scripts/track_rankings.py`（加 `--region kr|jp|us-eu` 過濾），或直接看 [data/rankings/](data/rankings/) 快照。
 
@@ -39,6 +39,7 @@
 | GitHub Actions `daily-brief.yml` | 每天台北 07:00 | 產當日 brief **骨架**（填模板 + RSS 28 源收集；無 LLM，決策 D5） | ⚠ 骨架**直推 master**（純腳本、確定性產出） |
 | 對話 / 排程 agent（內容填寫） | 骨架產出後 | 填 brief 趨勢內容、開挑買卡、週挑、深挖卡 | **分支 + PR**，內容判斷留我終審 |
 | 雲端 routine「歐美月度熱度速報」 | 每月 1 號 | 產當月歐美速報（含本月挑買方向） | **分支 + PR**（2026-06-11 起，原直推已改） |
+| 雲端 routine「日本月度熱度速報」 | 每月 1 號 | 產當月日本速報（2026-07 首跑；量化基準 Mercari，信心保守） | **分支 + PR** |
 | 雲端 routine「Lyst Q2 watcher」 | 7 月每週一 | Lyst Index Q2 出刊就 ingest 進 rankings | **分支 + PR**（同上） |
 | GitHub Actions `health.yml` | 每週一、四台北 09:00 | `repo_health --strict` 巡檢（新鮮度 + 一致性 + 守衛 + 產出契約） | 未過 → 自動開 / 更新 `repo-health` issue |
 | GitHub Actions `ci.yml` | 每個 PR | validate + smoke 測試 | 紅燈 = 不能 merge |
@@ -95,7 +96,7 @@ style-superman/
 │   ├── daily/                # 每日 brief（YYYY-MM-DD.md）
 │   ├── buy_picks/            # 單品挑買卡（YYYY-MM-DD-<slug>.md，daily「值得入手」同日觸發）
 │   ├── buy_shortlist/        # 週挑 Head-to-Toe（YYYY-Wnn.md）
-│   ├── monthly/              # 月度歐美熱度速報（YYYY-MM-eu.md）
+│   ├── monthly/              # 月度熱度速報（YYYY-MM-eu.md 歐美；YYYY-MM-jp.md 日本，2026-07 起）
 │   └── analysis/             # 趨勢深挖卡 + 主題分析（每週至少一張，歐美優先）
 ├── prompts/                  # AI 內容工作模板（與 templates 欄位互為契約）
 ├── templates/                # 產出物固定格式（格式即契約）

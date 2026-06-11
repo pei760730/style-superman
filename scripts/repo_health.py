@@ -313,12 +313,15 @@ def check_lyst_staleness(today: dt.date) -> list[Finding]:
     return [Finding("info", f"Lyst 快照：落後 {behind} 季（正常發布延遲內）")]
 
 
-def check_output_contract() -> list[Finding]:
+def check_output_contract(today: dt.date) -> list[Finding]:
     """重定位後產的報告（daily / monthly）必須符合現行契約（templates/）。
 
     決策守衛只掃活文件，reports/ 是封存快照不在 scope——排程 / 外部 agent
     拿舊任務卡「產出」的報告會從這個缺口進來（2026-06-10 daily 實際發生）。
     這裡補產出層防線：只檢查拍板日之後產的報告，歷史快照不溯及、不回改。
+
+    另防「空轉殭屍」：骨架有必有段落標題、新鮮度也綠，但內容從沒被填——
+    報告日期已過仍殘留 {{...}} 佔位 = 產線只產殼。當日的不吵（內容填寫中）。
     """
     findings: list[Finding] = []
     for subdir, pattern, required_mark in OUTPUT_CONTRACTS:
@@ -339,12 +342,14 @@ def check_output_contract() -> list[Finding]:
             hits = [mark for mark in OUTPUT_BANNED_MARKS if mark in text]
             if hits:
                 problems.append(f"含重定位前識別字 {hits}")
+            if "{{" in text and day < today:
+                problems.append("骨架未填內容（殘留 {{…}} 佔位且日期已過）")
             if problems:
                 findings.append(Finding(
                     "warn",
                     f"reports/{subdir}/{report.name} 不符現行產出契約：{'；'.join(problems)}",
-                    f"產出端還在用舊世界觀（殭屍任務卡）：更新產出該報告的排程 / 外部 agent 任務指示，"
-                    f"並依 templates/ 現行契約重產 {report.name}",
+                    f"產出端失效（舊任務卡或只產殼沒填內容）：更新產出該報告的排程 / agent 任務指示，"
+                    f"並依 templates/ 現行契約補齊 {report.name}",
                 ))
     return findings
 
@@ -383,7 +388,7 @@ def run_checks(today: dt.date, consistency_only: bool = False) -> list[Finding]:
         findings += check_weekly_picks_freshness(today)
         findings += check_monthly_freshness(today)
         findings += check_lyst_staleness(today)
-        findings += check_output_contract()
+        findings += check_output_contract(today)
         findings += check_rss_coverage()
     return findings
 

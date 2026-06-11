@@ -191,6 +191,11 @@ def main() -> int:
                          encoding="utf-8")
     bad_monthly = ROOT / "reports" / "monthly" / "2099-12-eu.md"
     bad_monthly.write_text("# 月報 probe\n\n## 🎬 可拍選題（2–3 條）\n", encoding="utf-8")
+    # 空轉殭屍探針：日期已過、有必有段落、但殘留 {{}} 佔位 = 只產殼沒填內容
+    hollow = ROOT / "reports" / "daily" / "2026-06-06.md"
+    hollow_existed = hollow.exists()
+    if not hollow_existed:
+        hollow.write_text("# probe\n\n## 🛒 對我有用 For Me\n- {{buy_pick}}\n", encoding="utf-8")
     try:
         r = run(["scripts/repo_health.py", "--strict"])
         check("產出契約抓到舊世界觀格式（daily + monthly）",
@@ -198,9 +203,15 @@ def main() -> int:
               and "daily/2099-12-31.md 不符現行產出契約" in r.stdout
               and "monthly/2099-12-eu.md 不符現行產出契約" in r.stdout,
               r.stdout + r.stderr)
+        if not hollow_existed:
+            check("產出契約抓到空轉殭屍（骨架未填）",
+                  "daily/2026-06-06.md 不符現行產出契約" in r.stdout and "骨架未填內容" in r.stdout,
+                  r.stdout)
     finally:
         bad_daily.unlink()
         bad_monthly.unlink()
+        if not hollow_existed:
+            hollow.unlink()
 
     print(f"\n{_passed} passed, {_failed} failed")
     return 1 if _failed else 0

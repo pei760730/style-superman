@@ -31,7 +31,6 @@ guards:
       - CHANGELOG.md
       - docs/decisions.md
       - docs/lessons.md
-      - docs/codex_execution_plan.md
       - data/decision_guards.yml
 
   - id: audit-rejected-over-engineering

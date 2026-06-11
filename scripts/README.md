@@ -28,7 +28,7 @@ python scripts/generate_daily_brief.py --date 2026-06-04 --with-rss --raw-signal
 ```
 
 ### `collect_raw_signals.py`
-從 `data/sources.yml` 中有 RSS 的來源收集近期文章，轉成符合 `templates/raw_signal_pack_template.md` 的 raw_signal_pack（**事實層**：只收 source/title/url/date/summary；`signal_type`、`credibility` 留 `待查`，交 `prompts/article_to_insight.md` 補）。純標準庫、抓取失敗自動跳過。
+從 `data/sources.yml` 中有 RSS 的來源收集近期文章，轉成符合 `templates/raw_signal_pack_template.md` 的 raw_signal_pack（**事實層**：只收 source/title/url/date/summary；`signal_type`、`credibility` 留 `待查`，由寫 brief 的主編 agent 判讀）。純標準庫、抓取失敗自動跳過。
 社群來源（`type: community`）有標題層 spam 過濾（盜播 / 導流模式；2026-06-10 reddit-techwear 灌版事件後加入），濾掉幾則會記 warning 不靜默；語意級離題判斷仍交 insight 層。
 
 ```bash

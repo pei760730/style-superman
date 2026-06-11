@@ -8,7 +8,7 @@ collect_raw_signals.py
 C6 範圍：**只做「來源事實收集 + 格式化」**——
 不做 trend scoring、不判 headline、不呼叫 LLM。
 需要判斷的欄位（signal_type / credibility）一律留 `待查`，
-交給 prompts/article_to_insight.md（AI / 人工）後續補。
+交給寫 brief 的主編 agent 後續判讀。
 
 設計：
 - 純標準庫（urllib + xml.etree + email.utils），不加 feedparser 依賴。
@@ -161,7 +161,7 @@ def parse_feed(xml_text: str, source: dict, limit: int = DEFAULT_LIMIT) -> list[
             "title": title,
             "published": published,
             "summary": summary,
-            # 需判斷的欄位留待查，交給 prompts/article_to_insight.md
+            # 需判斷的欄位留待查，交給寫 brief 的主編 agent
             "signal_type": "待查",
             "credibility": "待查",
         })
@@ -203,7 +203,7 @@ def collect(sources: list[dict], limit: int = DEFAULT_LIMIT, fetcher=fetch_feed)
 def to_yaml(signals: list[dict]) -> str:
     header = (
         "# raw_signal_pack — 由 collect_raw_signals.py 收集（事實層，未經趨勢判斷）\n"
-        "# signal_type / credibility 為『待查』，交給 prompts/article_to_insight.md 補。\n"
+        "# signal_type / credibility 為『待查』，由寫 brief 的主編 agent 判讀。\n"
         "# 此檔為中間產物，不入長期版控（見 templates/raw_signal_pack_template.md）。\n"
     )
     body = yaml.dump({"signals": signals}, sort_keys=False, allow_unicode=True)

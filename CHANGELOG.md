@@ -4,7 +4,24 @@
 
 ## [Unreleased]
 
+### Removed
+- **D7 第一性原理瘦身**（2026-06-11 擁有者拍板「砍掉沒用的——什麼是我下個月就不用了」；
+  依據：3 並行 agent 審計 + git 證據「7 天 110 commit 中 76% 是自我維護、僅 14% 是情報產出」。
+  判準三問與完整理由見 docs/decisions.md D7）：
+  - `prompts/article_to_insight.md` — 「待查交給它補」迴圈上線一週從未運轉；主編 agent 直接判讀 raw pack。
+    連動更新：system_design 管線圖、operating_manual Step 2、raw_signal_pack_template、
+    collect_raw_signals / generate_daily_brief 的註解字串、scripts/README、sources.yml 註解
+  - `docs/codex_execution_plan.md`（315 行）— 已封存任務卡，git 歷史即檔案館；
+    repo_health PATH_SCAN_EXCLUDE 與 decision_guards exclude 同步移除
+  - `data/rankings/google-trends.yml` + 每月 20 分鐘手動拉取流程 — 人類定期手動勞動依賴、建立後零執行；
+    推翻同日上午拍板（錯了快認）；rankings.md 留移除紀錄（同 ZOZO 前例）
+  - `docs/ai_collaboration.md` 259 → ~30 行 — 多 AI 組織儀式（交接流程/任務卡模板/RACI 全表/範例）全砍，
+    留帽子原則、自我審查偏誤控制、誰拍板三條
+  - `docs/content_strategy.md` 去重 — 刪與 content_calendar 重複的轉換流程與節奏段
+
 ### Added
+- **反熵原則**（D7，寫入 CLAUDE.md）：新流程不得依賴人類定期手動勞動；新檢查只能由重複教訓硬化而來；
+  維護/產出比為系統健康終極指標（月度回看檢查，產出必須大於維護）
 - **月報日本線**（2026-06-11 擁有者拍板「月報不只歐美，再多一個日本」）：
   - `generate_monthly_heat_report.py` 地區參數化（`--region us-eu|jp`）；template / prompt 同步改地區泛用
     （日本量化基準 = Mercari，明標「量化弱、信心保守」，ZOZO 等即時榜照舊不硬刮）

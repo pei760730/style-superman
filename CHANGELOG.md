@@ -13,6 +13,11 @@
   - repo 外：「IG 漲粉週報」雲端 routine 經擁有者確認為錯置（純個人興趣、與漲粉無關），已停用
 
 ### Changed
+- **README 全面重寫**（2026-06-11 擁有者要求「寫清楚」以利審視）：新增「自動化全貌」表
+  （誰/何時/跑什麼/**怎麼提交**——明標 daily 骨架是唯一直推 master 的例外）與「防線」章
+  （不虛構/守衛/產出契約/快照不溯及/教訓硬化）；目錄樹補漏（google-trends.yml、
+  decision_guards.yml、buy_picks/、rankings.md）；移除已刪報告的引用；
+  推送 roadmap 註明「傾向用既有據點，不加新平台」
 - **排程 routine 任務卡去殭屍化**（2026-06-11）：月度歐美速報 routine 任務卡仍含「2–3 條可拍選題」
   且直推 master（繞過 CI 全部防線）——已改為「本月挑買方向」+ 植入定位鐵則 + 分支/PR 流程；
   Lyst Q2 watcher 同步改分支/PR。教訓記 lessons.md（殭屍任務卡第三例）

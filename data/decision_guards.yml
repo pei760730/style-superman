@@ -16,7 +16,7 @@ guards:
   - id: positioning-no-content-production
     decision: "重定位（2026-06-05 拍板、2026-06-10 D3 確認移除選題池）"
     reason: "本 repo 是個人挑買決策系統，不是內容生產管線：不產可拍選題、不留內容生產識別字"
-    pattern: "content_potential|short_video|content_ideas"
+    pattern: "content_potential|short_video|content_ideas|content_angle"
     scope:
       - CLAUDE.md
       - README.md

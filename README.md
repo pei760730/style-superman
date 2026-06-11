@@ -7,6 +7,27 @@
 
 ---
 
+## 📱 每天怎麼用（擁有者手冊）
+
+**每天早上（07:00 後，手機看 GitHub 就行）：**
+
+1. 開 [reports/daily/](reports/daily/) 點今天的日期。
+2. **先看最下面的 `🛒 對我有用 For Me`**——行動帳格式：單品｜價格｜通路（可點）｜時點｜下一步。要買的點進 → 挑買卡。
+3. 「值得入手」的完整判斷（怎麼搭 / 風險 / 別買的情況）在 [reports/buy_picks/](reports/buy_picks/) 的當日挑買卡。
+4. 有空再往上讀 4 條頭條（每條都有「對我的意義」）和快訊。
+
+**每週：** [reports/buy_shortlist/](reports/buy_shortlist/) 的週挑（YYYY-Wnn.md）——從頭到腳 4 區 × 3 樣 +「如果本週只買一樣」。
+
+**每月：** [reports/monthly/](reports/monthly/) 的歐美熱度速報 +「本月挑買方向」。
+
+**想查什麼最紅：** `python scripts/track_rankings.py`（加 `--region kr|jp|us-eu` 過濾），或直接看 [data/rankings/](data/rankings/) 快照。
+
+**懷疑系統死了：** `python scripts/repo_health.py`——一切綠就沒事；daily 斷更 / 契約跑偏會被週一、四的自動巡檢抓到並**自動開 issue**，所以 GitHub 通知有 `repo-health` issue = 要處理。
+
+**叫 agent 做事的口令：** 開工先讓它跑 `repo_health.py`（守則在 [CLAUDE.md](CLAUDE.md)）；brief 內容與挑買判斷的 PR 一律留你終審，工程 PR 看 CI 綠再 merge。
+
+---
+
 ## 這套系統在做什麼
 
 | 階段 | 能力 | 產出 |
@@ -43,6 +64,7 @@ style-superman/
 │       └── musinsa.yml       #   韓國：MUSINSA 平台銷售榜（最大男裝電商）
 ├── reports/
 │   ├── daily/                # 每日 brief 產出（按日期命名）
+│   ├── buy_picks/            # 單品挑買卡（YYYY-MM-DD-<slug>.md；由 daily「值得入手」同日觸發）
 │   ├── monthly/              # 月度熱度速報（歐美，YYYY-MM-eu.md），排程自動生成
 │   ├── buy_shortlist/        # 本週最值得買 Head-to-Toe（YYYY-Wnn.md；4 區 × 3 樣）
 │   └── analysis/             # 主題分析（如跨市場交集），可累積回看
@@ -51,10 +73,12 @@ style-superman/
 │   ├── trend_analysis.md
 │   ├── article_to_insight.md
 │   ├── buy_picks.md
+│   ├── weekly_buy_picks.md
 │   ├── ranking_ingest.md
 │   └── monthly_heat_report.md
 ├── scripts/                  # 自動化腳本
 │   ├── generate_daily_brief.py          # 支援 --with-rss 收集 raw_signal_pack
+│   ├── generate_weekly_buy_picks.py     # 週挑骨架（4 區 × 3 樣）
 │   ├── generate_monthly_heat_report.py  # 月度歐美速報骨架
 │   ├── collect_raw_signals.py           # RSS → raw_signal_pack（事實層）
 │   ├── score_trends.py
@@ -70,6 +94,7 @@ style-superman/
 │   ├── daily_brief_template.md
 │   ├── trend_card_template.md
 │   ├── buy_pick_template.md
+│   ├── weekly_buy_picks_template.md
 │   ├── ranking_snapshot_template.md
 │   ├── monthly_heat_report_template.md
 │   └── raw_signal_pack_template.md  # RAW_SIGNALS 中間格式契約
@@ -81,7 +106,7 @@ style-superman/
 │   ├── operating_manual.md
 │   ├── ai_collaboration.md      # 主編 / 工程 / 人類角色手冊（model-agnostic）
 │   ├── codex_execution_plan.md  # 第一輪工程任務卡（已封存，C1–C6 完成）
-│   ├── decisions.md             # 主編決策紀錄（D1–D5 已拍板）
+│   ├── decisions.md             # 主編決策紀錄（D1–D6 已拍板）
 │   └── lessons.md               # 教訓簿（soft note → 反覆出現 → 硬化成檢查）
 └── .github/
     └── workflows/
@@ -135,7 +160,8 @@ python scripts/track_rankings.py
 - [x] RSS 收集 → raw_signal_pack（事實層；C6）
 - [x] AI 撰寫報告 — 已由排程雲端 agent 達成（不另接 repo 內 LLM API；見 docs/decisions.md D5）
 - [x] Self-Evolution Loop — `repo_health.py`（自我檢查 + Next Actions）+ `docs/lessons.md`（教訓硬化路徑）+ `CLAUDE.md` agent 工作迴圈
-- [ ] **讓每日產線真的跑起來**（目前最重要——daily 排程已於 2026-06-10 開啟，觀察實跑；斷更會被 health.yml 週期巡檢抓到並自動開 issue）
+- [x] **每日產線實跑** — 2026-06-11 首次 schedule 自動產出成功；時區 bug 已修（TZ=Asia/Taipei），斷更由 health.yml 週期巡檢自動開 issue 兜底
+- [x] Daily brief 行動帳 + 密度規則（For Me 五要素、同日開挑買卡、連續訊號增量、來源/通路超連結）
 - [ ]（視需求）接入更多來源抓取（非 RSS API / 爬蟲）
 - [ ] 推送到 Telegram / Notion（未拍板）
 - [x] 挑買 shortlist — 週挑「本週最值得買 Head-to-Toe」（reports/buy_shortlist/，4 區 × 3 樣）

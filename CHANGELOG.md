@@ -5,6 +5,13 @@
 ## [Unreleased]
 
 ### Added
+- **Daily brief 密度與行動帳規則**（2026-06-11 Kai 拍板：一天一份、25+ 來源，重複要低、密度要高）：
+  - For Me 改「行動帳」：禁止重述 headline（引用寫「見頭條 N」）；值得入手每項必含
+    單品｜價格(或待查+去哪查)｜通路｜時點｜下一步，且**同日**依 prompts/buy_picks.md 開完整挑買卡
+  - 挑買卡新增存放點 `reports/buy_picks/YYYY-MM-DD-<slug>.md`（封存快照，產出後不回改）
+  - 連續訊號增量規則：同一趨勢連續入榜只寫新增事實，讀法一行回連前日 brief，不重述邏輯
+  - 資料密度鐵則：同一事實全篇一次；headline 字數預算優先給價格/日期/規格/通路；快訊能附日期/價格就附
+  - 同步 `templates/daily_brief_template.md` For Me 結構與 `prompts/buy_picks.md` 輸出段
 - **來源深挖：RSS 自動收集覆蓋 17 → 25**（2026-06-11，擁有者拍板「日韓歐美潮流 + 國際時裝品牌來源深挖」）：
   - 國際產業：`bof`（The Business of Fashion，tier 1）、`wwd`（美版母刊，tier 2）
   - 歐美潮流：`sneakernews`（發售情報）、`fucking-young`（歐陸男裝設計師端）、

@@ -34,6 +34,8 @@
 
 依 `templates/buy_pick_template.md` 格式，一個單品 / 方向一張卡，不新增 / 刪除 template 欄位。每張卡都要能直接支撐一次「買 / 等 / 跳過」的決定。
 
+**存放**：daily brief「值得入手」觸發的卡存 `reports/buy_picks/YYYY-MM-DD-<slug>.md`（slug 小寫 kebab，例 `2026-06-11-nonnative-timberland-taupe.md`）；卡是封存快照，產出後不回改，後續變化（價格、售罄）寫進新一天的 brief 或新卡。
+
 ## 注意
 
 - 至少一張卡走「先別買 / 先觀察」的角度——挑買的價值一半在於避免亂買。

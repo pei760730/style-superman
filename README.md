@@ -13,7 +13,7 @@
 ## 系統的一天（時間軸）
 
 ```txt
-台北 07:00   GitHub Actions 產 brief 骨架（純腳本：填模板 + RSS 28 源收集）→ 直推 master
+台北 07:00   GitHub Actions 產 brief 骨架（純腳本：填模板 + 來源摘要，不收 RSS）→ 直推 master
 台北 07:30   雲端 routine「每日 brief 內容填寫」收 RSS → 濾噪音、歸類、評分
              → 填入頭條 + 三地區區塊（日/韓/歐美）+ For Me → 開分支 PR → CI 綠 → 自 merge
 我起床後     手機開 GitHub → reports/daily/ 點今天 → 先看最下面的 🛒 For Me
@@ -61,7 +61,7 @@
 
 | 執行者 | 時間 | 做什麼 | 提交方式 |
 |---|---|---|---|
-| GitHub Actions `daily-brief.yml` | 每天台北 07:00 | 產當日 brief **骨架**（填模板 + RSS 28 源收集；無 LLM，決策 D5） | ⚠ 骨架**直推 master**（純腳本、確定性產出） |
+| GitHub Actions `daily-brief.yml` | 每天台北 07:00 | 產當日 brief **骨架**（填模板 + 來源摘要；RSS 由 07:30 填寫 routine 收，無 LLM，決策 D5） | ⚠ 骨架**直推 master**（純腳本、確定性產出） |
 | 雲端 routine「每日 brief 內容填寫」 | 每天台北 07:30 | 填當日 brief（頭條 / 日韓歐美三區塊 / For Me）；已填則跳過 | **分支 + PR**，CI 綠自 merge（D8） |
 | 雲端 routine「每週挑買 Head-to-Toe 填寫」 | 每週一台北 07:40 | 產本週週挑（5 區 × 3 樣，收斂上週 briefs + rankings）；已存在則跳過 | **分支 + PR**，CI 綠自 merge（D8） |
 | 對話 agent | 需要時 | 深挖卡、臨時任務；「早安」= 端上當日 brief（週一加端週挑） | **分支 + PR**，驗證綠即自 merge（D8） |

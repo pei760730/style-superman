@@ -211,10 +211,29 @@ def check_ranking_file(path: Path) -> CheckResult:
     return CheckResult(str(path.relative_to(ROOT)), errors)
 
 
+def check_yaml_parseable(path: Path) -> CheckResult:
+    """無專屬契約的 data YAML 最低防線：可解析、頂層是 mapping。
+
+    新 data 檔（如 trend_history / decision_guards）不必逐一註冊就有
+    broken-YAML 防護；要加欄位契約時再升級成專屬 check。
+    """
+    errors: list[str] = []
+    try:
+        require_mapping(load_yaml(path), path, errors)
+    except yaml.YAMLError as exc:
+        errors.append(f"{path}: YAML 無法解析：{exc}")
+    return CheckResult(str(path.relative_to(ROOT)), errors)
+
+
 def check_data() -> list[CheckResult]:
     results = [check_sources(), check_brands(), check_people(), check_taxonomy()]
+    covered = {DATA_DIR / name for name in ("sources.yml", "brands.yml", "people.yml", "trend_taxonomy.yml")}
     for path in sorted(RANKINGS_DIR.glob("*.yml")):
         results.append(check_ranking_file(path))
+        covered.add(path)
+    for path in sorted(DATA_DIR.rglob("*.yml")):
+        if path not in covered:
+            results.append(check_yaml_parseable(path))
     return results
 
 

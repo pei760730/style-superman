@@ -5,6 +5,14 @@
 ## [Unreleased]
 
 ### Changed
+- **粉絲增長 / 內容生產殘留二次深掃**（2026-06-12 擁有者指示「整個深度再看過」）：
+  `docs/content_strategy.md` → `style_strategy.md`、`docs/content_calendar.md` → `flow_calendar.md`
+  （推翻 06-10「檔名沿用以維持連結」的便宜決定——檔名本身就是殘留識別字，連結已全鏈同步）；
+  「Brand Voice」→「調性」、深挖卡「選題條件」→「入選條件」、daily prompt「品牌調性」→「調性」；
+  守衛 positioning pattern 補 `content_strategy.md|content_calendar.md` 防回流；
+  2026-06 歐美月報（重定位前產物、含可拍選題/粉絲/受眾段）由月報 routine 手動觸發重產覆蓋
+
+### Changed
 - **配件全週期覆蓋**（2026-06-12 擁有者拍板「週挑加配件；每週有了，每天每月也要有」）：
   週挑 Head-to-Toe 4 區 → **5 區**（新增 👜 配件：包 / 飾品 / 錶 / 皮帶 / 襪；帽與墨鏡照舊歸頭部），
   12 樣 → 15 樣；validate 契約 + smoke 探針 + 骨架提示同步。daily / monthly prompt 加

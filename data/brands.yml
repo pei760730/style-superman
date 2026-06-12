@@ -313,3 +313,52 @@ brands:
     tier: 3
     watch: ["LA 製 elevated basics", "台灣 Freaky House 有現貨（可實體看）"]
     notes: T 恤/衛衣專門；entry–mid 價位帶的素材主義入口
+
+  # ---------- 名牌：2026-06-12 品牌雷達回填（見 reports/analysis/2026-06-12-brand-radar-luxury.md）----------
+  - id: dior-men
+    name: Dior Men
+    region: us-eu
+    segment: luxury
+    tier: 2
+    watch: ["JW Anderson 時代逐季評價", "prep×古典混搭比例（學不買）"]
+    notes: 首秀年連兩季驚艷;名牌男裝最被密集評論的位置
+
+  - id: hermes-men
+    name: Hermès 男裝
+    region: us-eu
+    segment: luxury
+    tier: 2
+    watch: ["Grace Wales Bonner 首秀", "Nichanian 時代定番價格走勢"]
+    notes: 素材主義名牌天花板;37 年世紀交接是 2026 男裝最大人事
+
+  - id: saint-laurent
+    name: Saint Laurent
+    region: us-eu
+    segment: luxury
+    tier: 3
+    watch: ["Lyst 頂部位置", "立領外套輪廓的平價帶翻譯"]
+    notes: 輪廓辨識度最高;與 lane 反向,當風向看
+
+  - id: jil-sander
+    name: Jil Sander
+    region: us-eu
+    segment: luxury
+    tier: 2
+    watch: ["Bellotti 極簡回歸路線", "新 logo「JIL」第一波單品"]
+    notes: 名牌中與 lane 最同頻;2026-06 換 logo 品牌重置中
+
+  - id: gucci-demna
+    name: Gucci（Demna 時代）
+    region: us-eu
+    segment: luxury
+    tier: 3
+    watch: ["首秀日期與評價", "首秀前舊款折扣窗口"]
+    notes: 高風險高報酬;首秀將定義街頭×名牌風向,必看不必買
+
+  - id: prada
+    name: Prada
+    region: us-eu
+    segment: luxury
+    tier: 3
+    watch: ["Re-Nylon 定番", "雙頭體制接班懸念"]
+    notes: 名牌中可日穿性最高;工藝敘事持續出圈（Axiom 太空服）

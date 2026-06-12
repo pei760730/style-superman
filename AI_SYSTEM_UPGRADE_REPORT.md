@@ -114,3 +114,9 @@ README 自動化描述 vs workflow 實際行為交叉比對、decision_guards / 
 - Why: 全部改動為防禦性修正與文件對齊,驗收三件套 + smoke 20 case 全綠;無行為面擴張。
 - Conditions before commit: 依 repo 慣例走 branch + 單主題 PR（建議拆兩個:workflows 假成功修正一個、
   validate/repo_health/docs 一個）;CI 綠後 merge。
+
+### Correction (2026-06-13, 同日)
+Branch cleanup candidates 一節有誤:所列 10 條「遠端 topic 分支」實為**本機過期的
+remote-tracking refs**(遠端早已刪除,`git fetch --prune` 即清掉)。遠端實況只有 master。
+已開啟 repo 設定 delete_branch_on_merge,之後 merge 即自動刪 head 分支。
+紅路徑(issue 自動開出)已於同日實彈演習驗證(run 27430529539 → issue #76,演習後關閉)。

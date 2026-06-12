@@ -219,7 +219,7 @@ def check_data() -> list[CheckResult]:
 
 
 TEMPLATE_REQUIREMENTS = {
-    "daily_brief_template.md": ["{{date}}", "## 🔥 今日重點趨勢 Headline Trends", "## 🇯🇵 日潮 JP 追蹤", "## 🇰🇷 韓潮 KR 追蹤", "## 🌍 歐美 US-EU 追蹤", "## 🛒 對我有用 For Me"],
+    "daily_brief_template.md": ["{{date}}", "## 📌 今日三行", "## 🔥 今日重點趨勢 Headline Trends", "## 🇯🇵 日潮 JP 追蹤", "## 🇰🇷 韓潮 KR 追蹤", "## 🌍 歐美 US-EU 追蹤", "## 🛒 對我有用 For Me"],
     "trend_card_template.md": ["{{trend_name}}", "## 評分（0–5", "{{heat}}", "{{growth}}"],
     "weekly_buy_picks_template.md": ["{{week}}", "## 🧢 頭部", "## 👕 上身", "## 👖 下身", "## 👟 足部", "## 👜 配件", "## 🎯 如果本週只買一樣"],
     "ranking_snapshot_template.md": ["Lyst Index", "StockX", "snapshots:"],

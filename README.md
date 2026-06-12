@@ -18,7 +18,7 @@
 
 **每週：**
 
-- [reports/buy_shortlist/](reports/buy_shortlist/) 的週挑（`YYYY-Wnn.md`）——從頭到腳 4 區 × 3 樣 +「如果本週只買一樣」。
+- [reports/buy_shortlist/](reports/buy_shortlist/) 的週挑（`YYYY-Wnn.md`）——從頭到腳 5 區（頭/上/下/足/配件）× 3 樣 +「如果本週只買一樣」。
 - [reports/analysis/](reports/analysis/) 每週至少一張趨勢深挖卡（歐美優先；跨源查證 → 生命週期 → 全價位帶 → 挑買判斷，範本：washed denim 卡）。
 
 **每月：** [reports/monthly/](reports/monthly/) 的熱度速報 +「本月挑買方向」——歐美（`-eu.md`）＋日本（`-jp.md`，2026-07 起）。

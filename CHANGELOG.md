@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+### Changed
+- **配件全週期覆蓋**（2026-06-12 擁有者拍板「週挑加配件；每週有了，每天每月也要有」）：
+  週挑 Head-to-Toe 4 區 → **5 區**（新增 👜 配件：包 / 飾品 / 錶 / 皮帶 / 襪；帽與墨鏡照舊歸頭部），
+  12 樣 → 15 樣；validate 契約 + smoke 探針 + 骨架提示同步。daily / monthly prompt 加
+  「配件與服裝同等納入」規則（headline / 快訊 / For Me / 單品 Top 5 不漏配件訊號）
+
 ### Removed
 - **D9 挑買卡停產**（2026-06-12 擁有者拍板「單純推薦就好，有不錯的我自己會去查、自己會去買」）：
   - `prompts/buy_picks.md`、`templates/buy_pick_template.md` 刪除；validate_repo 的 template 契約同步移除

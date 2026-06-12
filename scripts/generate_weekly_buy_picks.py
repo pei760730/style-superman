@@ -110,7 +110,7 @@ def main() -> None:
         raise SystemExit(1)
     out.write_text(body, encoding="utf-8")
     print(f"✅ 已產出骨架：{out.relative_to(ROOT)}")
-    print("   下一步：依 prompts/weekly_buy_picks.md 填入 4 區 × 3 樣與理由。")
+    print("   下一步：依 prompts/weekly_buy_picks.md 填入 5 區 × 3 樣與理由。")
 
 
 if __name__ == "__main__":

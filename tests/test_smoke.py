@@ -173,7 +173,7 @@ def main() -> int:
           r.stdout + r.stderr)
     if draft.exists():
         text = draft.read_text(encoding="utf-8")
-        check("週挑骨架含 4 區與週期", "2099-W02" in text and "🧢 頭部" in text and "👟 足部" in text,
+        check("週挑骨架含 5 區與週期", "2099-W02" in text and "🧢 頭部" in text and "👟 足部" in text and "👜 配件" in text,
               text[:200])
         draft.unlink()
 

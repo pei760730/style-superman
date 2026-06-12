@@ -61,7 +61,7 @@ Topic Analysis（每週至少一張，歐美優先）：把最強跨源趨勢寫
 
 **建議節奏**：每週收斂 1–3 個方向，依預算與衣櫥缺口調整。
 
-**固定產物**：「本週最值得買 Head-to-Toe」→ `reports/buy_shortlist/YYYY-Wnn.md`（4 區 × 各 3 樣 + 為什麼是本週）。
+**固定產物**：「本週最值得買 Head-to-Toe」→ `reports/buy_shortlist/YYYY-Wnn.md`（5 區 × 各 3 樣 + 為什麼是本週）。
 跑 `python scripts/generate_weekly_buy_picks.py` 產骨架，依 `prompts/weekly_buy_picks.md` 填內容。
 
 **週度整理清單**：

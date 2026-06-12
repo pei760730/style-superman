@@ -40,7 +40,7 @@ python scripts/collect_raw_signals.py --out /tmp/raw.yml --limit 5
 
 ### `generate_weekly_buy_picks.py`
 產出「本週最值得買 Head-to-Toe」骨架，寫到 `reports/buy_shortlist/YYYY-Wnn.md`（ISO 週）。
-自動帶入週期、本週 daily briefs 清單、各排行快照最新 period；4 區 × 3 樣的挑買內容由 AI（`prompts/weekly_buy_picks.md`）或人工補上。
+自動帶入週期、本週 daily briefs 清單、各排行快照最新 period；5 區 × 3 樣的挑買內容由 AI（`prompts/weekly_buy_picks.md`）或人工補上。
 
 ```bash
 python scripts/generate_weekly_buy_picks.py                  # 本週

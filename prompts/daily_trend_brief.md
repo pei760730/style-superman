@@ -20,6 +20,7 @@
 1. 從 `RAW_SIGNALS` 中濾掉重複、廣告、無關噪音。
 2. 將每個有效訊號歸類到 taxonomy 的 category，掛上 region / lifecycle / buy_angle 標籤。
 3. 挑出 **今日 3–5 個最值得關注的趨勢**（headline trends），其餘歸入 quick hits；訊號弱時可少於 3 個，不硬湊。
+   **配件（包 / 眼鏡 / 飾品 / 錶 / 皮帶 / 襪）與服裝鞋款同等對待**——headline / 快訊 / For Me 都不要漏配件訊號。
 4. 對每個 headline trend：說明「是什麼 / 為什麼現在 / 對我的意義（值不值得追、能不能穿 / 買）」。
 5. 固定填寫 `## 🇰🇷 韓潮 KR 追蹤`，依 template 的三小項逐項填（**K-pop / 名人造型**、**韓系設計師 / 零售**、**跨市場外溢**，一項不漏）：追 MUSINSA / Hypebeast KR / 韓系設計師 / K-pop 造型等 KR 訊號；某小項當日沒有可驗證訊號就在該項明寫「今日無可驗證訊號」，不得為了填欄位編熱度。
 6. 標出 **1–2 個明日值得追蹤的伏筆**（watchlist）。

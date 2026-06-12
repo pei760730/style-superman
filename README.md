@@ -6,28 +6,53 @@
 **這套系統服務的對象只有我自己**：一個追男裝潮流、會親手挑單品入手的玩家。
 它**不是**內容生產 / 拍片管線，與 IG 漲粉 / 創作者經營**完全無關**——產出永遠不含「可拍選題」「content hooks」類東西（2026-06-05 拍板，守衛強制，見[防線](#防線怎麼防止系統跑偏)）。
 
+**我唯一的工作是兩件事：讀，和買不買。** 系統其餘環節全自動（D8：驗證綠即自 merge，沒有任何一步等我點按鈕）。覺得哪天判斷錯了，跟 agent 講一句——反饋會記進 [docs/decisions.md](docs/decisions.md) / [docs/lessons.md](docs/lessons.md)，產線修正。
+
 ---
 
-## 每天怎麼用（擁有者手冊）
+## 系統的一天（時間軸）
 
-**每天早上（07:00 後，手機看 GitHub 就行）：**
+```txt
+台北 07:00   GitHub Actions 產 brief 骨架（純腳本：填模板 + RSS 28 源收集）→ 直推 master
+07:00 之後   agent 讀 raw signals → 濾噪音、歸類、評分 → 填入頭條/快訊/KR/For Me
+             → 開分支 PR → CI 驗證綠 → 自 merge
+我起床後     手機開 GitHub → reports/daily/ 點今天 → 先看最下面的 🛒 For Me
+```
 
-1. 開 [reports/daily/](reports/daily/) 點今天的日期。
-2. **先看最下面的 `🛒 對我有用 For Me`**——行動帳格式：單品｜價格｜通路（可點）｜時點｜一句為什麼。推薦只到這裡（D9）：有興趣的我自己查、自己買。
-3. 有空再往上讀 4 條頭條（每條都有「對我的意義」）和快訊。
+**每週一**：週挑 Head-to-Toe 收斂上週 7 天情報；每週至少一張趨勢深挖卡（歐美優先）。
+**每月 1 號**：兩個雲端 routine 各自跑歐美、日本月報（日本線 2026-07 首跑）；7 月起每週一另有 Lyst Q2 watcher 盯榜。
+**每週一、四 09:00**：自動健檢巡檢——daily 斷更、格式跑偏會**自動開 `repo-health` issue**，所以 GitHub 通知出現它 = 系統出事了，其他時候不用管。
 
-**每週：**
+---
 
-- [reports/buy_shortlist/](reports/buy_shortlist/) 的週挑（`YYYY-Wnn.md`）——從頭到腳 5 區（頭/上/下/足/配件）× 3 樣 +「如果本週只買一樣」。
-- [reports/analysis/](reports/analysis/) 每週至少一張趨勢深挖卡（歐美優先；跨源查證 → 生命週期 → 全價位帶 → 挑買判斷，範本：washed denim 卡）。
+## 產出說明書（你會收到什麼、怎麼讀）
 
-**每月：** [reports/monthly/](reports/monthly/) 的熱度速報 +「本月挑買方向」——歐美（`-eu.md`）＋日本（`-jp.md`，2026-07 起）。
+### 📅 Daily Brief — [reports/daily/](reports/daily/)（每天）
 
-**想查什麼最紅：** `python scripts/track_rankings.py`（加 `--region kr|jp|us-eu` 過濾），或直接看 [data/rankings/](data/rankings/) 快照。
+- **先看最下面 `🛒 對我有用 For Me`**——行動帳格式：**單品｜價格｜通路（可點）｜時點｜一句為什麼（或別買的條件）**。推薦只到這行為止（D9）：有興趣的我自己查、自己買。
+- 有空再往上讀 3–5 條頭條（每條固定回答「是什麼 / 為什麼是現在 / 對我的意義」）、快訊、🇰🇷 KR 追蹤、明日 watchlist。
+- **讀法慣例**：連續趨勢用增量寫法——同一件事第二天只寫新增事實，背景用「讀法見 YYYY-MM-DD brief」回連，所以看到回連別當漏寫，是防止每天重講一遍。
+- 訊號弱的日子會誠實寫「今日訊號偏弱」，不硬湊。
 
-**懷疑系統死了：** `python scripts/repo_health.py`——一切綠就沒事；daily 斷更 / 契約跑偏會被週一、四的自動巡檢抓到並**自動開 issue**，所以 GitHub 通知出現 `repo-health` issue = 要處理。
+### 🛍 週挑 Head-to-Toe — [reports/buy_shortlist/](reports/buy_shortlist/)（每週）
 
-**叫 agent 做事：** 守則在 [CLAUDE.md](CLAUDE.md)（開工先跑 `repo_health.py`）。例行產出（brief / 週挑 / 月報）與工程 PR 驗證綠即自 merge（D8）——我的終審是事後反饋（判斷錯就講，記入 decisions / lessons），買不買的決策在現實世界，不在 git。
+- 從頭到腳 **5 區（頭部 / 上身 / 下身 / 足部 / 配件）× 各 3 樣**，每樣含 buy_angle、預算帶、優先度、「為什麼是本週」、「風險 / 別買的情況」。
+- 直接跳 **「🎯 如果本週只買一樣」**——15 樣裡風險最低 × 依據最硬的那個。
+- 預算帶強制分佈（entry / mid / splurge 都要有），不會整張都是貴貨。
+
+### 📊 月度熱度速報 — [reports/monthly/](reports/monthly/)（每月，歐美 `-eu` + 日本 `-jp`）
+
+- 主榜固定**品牌 Top 5 + 單品 Top 5**（含配件），收尾是「🛒 本月挑買方向」2–3 條。
+- **信心標示怎麼讀**：每條掛訊號層級——L1 硬數據（Lyst / StockX 榜）＞ L2 已確認事件（官方公告、發售）＞ L3 多源媒體共識 ＞ L4 弱訊號（只能當觀察）。**L4 撐不起「熱賣 / 爆紅」這種話**，看到「待查」就是真的查不到，不是偷懶。
+- 日本線量化基準弱（ZOZO 不可自動收），信心刻意保守，是特性不是缺陷。
+
+### 🔬 趨勢深挖卡 — [reports/analysis/](reports/analysis/)（每週至少一張，歐美優先）
+
+- 把連續 2–4 週出現的最強跨源趨勢寫成長線資產：跨源查證 → 生命週期 → 全價位帶落地 → 挑買判斷。範本：washed denim 卡。一年累積 ≈50 張 = 自己的趨勢資料庫。
+
+### 📈 想查什麼最紅（隨時）
+
+`python scripts/track_rankings.py`（加 `--region kr|jp|us-eu` 過濾），或直接看 [data/rankings/](data/rankings/) 五榜快照（Lyst / StockX / Mercari / KREAM / MUSINSA，最新在上、可比對名次演化）。
 
 ---
 
@@ -37,13 +62,33 @@
 |---|---|---|---|
 | GitHub Actions `daily-brief.yml` | 每天台北 07:00 | 產當日 brief **骨架**（填模板 + RSS 28 源收集；無 LLM，決策 D5） | ⚠ 骨架**直推 master**（純腳本、確定性產出） |
 | 對話 / 排程 agent（內容填寫） | 骨架產出後 | 填 brief 趨勢內容、週挑、深挖卡 | **分支 + PR**，驗證綠即自 merge（D8） |
-| 雲端 routine「歐美月度熱度速報」 | 每月 1 號 | 產當月歐美速報（含本月挑買方向） | **分支 + PR**（2026-06-11 起，原直推已改） |
-| 雲端 routine「日本月度熱度速報」 | 每月 1 號 | 產當月日本速報（2026-07 首跑；量化基準 Mercari，信心保守） | **分支 + PR** |
-| 雲端 routine「Lyst Q2 watcher」 | 7 月每週一 | Lyst Index Q2 出刊就 ingest 進 rankings | **分支 + PR**（同上） |
+| 雲端 routine「歐美月度熱度速報」 | 每月 1 號 | 產當月歐美速報（含本月挑買方向） | **分支 + PR**，CI 綠自 merge |
+| 雲端 routine「日本月度熱度速報」 | 每月 1 號 | 產當月日本速報（2026-07 首跑；量化基準 Mercari，信心保守） | **分支 + PR**，CI 綠自 merge |
+| 雲端 routine「Lyst Q2 watcher」 | 7 月每週一 | Lyst Index Q2 出刊就 ingest 進 rankings | **分支 + PR**，CI 綠自 merge |
 | GitHub Actions `health.yml` | 每週一、四台北 09:00 | `repo_health --strict` 巡檢（新鮮度 + 一致性 + 守衛 + 產出契約） | 未過 → 自動開 / 更新 `repo-health` issue |
 | GitHub Actions `ci.yml` | 每個 PR | validate + smoke 測試 | 紅燈 = 不能 merge |
 
 **鐵則：除了 daily 骨架，所有自動產出一律走分支 + PR。** 直推 master 會繞過 CI 上的全部防線——這是殭屍任務卡第三例的教訓（[docs/lessons.md](docs/lessons.md)）。
+
+**叫 agent 做事：** 守則在 [CLAUDE.md](CLAUDE.md)（開工先跑 `repo_health.py`）。例行產出與工程 PR 驗證綠即自 merge（D8）——我的終審是事後反饋，買不買的決策在現實世界，不在 git。
+
+---
+
+## 九個拍板（系統為什麼長這樣）
+
+完整背景與選項見 [docs/decisions.md](docs/decisions.md)，這裡是速覽：
+
+| # | 拍板 | 一句話 |
+|---|------|--------|
+| D1 | 韓潮不開獨立月報 | daily 固定 KR 追蹤 + 月報 cross-market 小節；KR 訊號量達門檻才升級 |
+| D2 | 月報主榜固定 Top 5 | 另列浮動觀察名單收早期訊號——主榜只收高信心 |
+| D3 | 挑買 shortlist 取代選題池 | 個人挑買重定位（2026-06-05）的落地，內容生產視角全面移除 |
+| D4 | 來源 tier 不批量改 | 重分級走資料 PR 逐筆說明，來源可信度是內容判斷 |
+| D5 | repo 內不接 LLM API | AI 撰寫走對話 / 雲端 agent；腳本只做確定性工作、不管 API key |
+| D6 | 審計四提案全否決 | 共用模組 / 設定外部化等「看起來專業」的工程一律不做，守衛防回流 |
+| D7 | 第一性原理瘦身 | 砍死迴圈與手動勞動依賴；立反熵三原則（新流程不得依賴人類定期手動勞動） |
+| D8 | 終審 ≠ merge | 例行產出驗證綠即自 merge；main 是系統記憶不是批准章，我的終審是事後反饋 |
+| D9 | 挑買卡停產 | 推薦只寫在 brief For Me / 週挑，深度功課我自己做 |
 
 ---
 
@@ -54,19 +99,6 @@
 3. **產出契約檢查**（WARN / 巡檢盯）：重定位（2026-06-05）之後產的 daily / monthly 必含現行段落（`🛒 對我有用 For Me`／`🛒 本月挑買方向`）、不得含舊世界觀識別字；日期已過仍殘留 `{{…}}` 佔位 = 空轉殭屍 WARN。
 4. **歷史快照不溯及**：`reports/` 是封存快照，產出後不回改；重定位前的舊報告掛豁免註記保留原樣，**不要**把它們改寫成新格式。
 5. **教訓硬化路徑**：踩坑先記 [docs/lessons.md](docs/lessons.md)（soft note），反覆出現才硬化成檢查——不為單次事故加終身檢查。
-
----
-
-## 系統管線
-
-| 階段 | 能力 | 產出 |
-|------|------|------|
-| 1. 收集 | RSS 28 源自動收集（42 來源清單，含不可自動收的榜單站） | raw_signal_pack（事實層） |
-| 2. 分類 | 依 taxonomy 歸類（單品 / 輪廓 / 配色 / 品牌 / 人物 / 文化） | 結構化 trend cards |
-| 3. 評分 | 熱度 / 成長性 / **可駕馭度 wearability** 打分 | 排序後的 trend 清單 |
-| 4. 簡報 | 轉成可閱讀的 Daily Brief（行動帳收尾） | `reports/daily/YYYY-MM-DD.md` |
-| 5. 挑買 | 推薦直接寫在 brief For Me / 週挑（D9：不開獨立卡，有興趣的擁有者自己查） | brief For Me / 週挑 / 深挖卡 |
-| 6. 累積 | 長期沉澱：季度榜快照可比對名次演化 | `data/` + `reports/` 歷史 |
 
 ---
 
@@ -117,7 +149,7 @@ style-superman/
 │   ├── operating_manual.md      # 營運手冊
 │   ├── ai_collaboration.md      # 帽子原則 + 不自我終審 + 誰拍板（D7 已瘦身）
 │   ├── rankings.md              # 排行快照方法論（口徑分開、不硬湊）
-│   ├── decisions.md             # 方向決策紀錄（D1–D7）
+│   ├── decisions.md             # 方向決策紀錄（D1–D9）
 │   └── lessons.md               # 教訓簿（殭屍任務卡三例都在這）
 └── .github/workflows/
     ├── ci.yml                # PR validate + smoke
@@ -149,11 +181,12 @@ python scripts/repo_health.py --consistency
 
 ## 設計理念
 
-1. **資料與內容分離** — `data/` 是長期知識底層，`reports/` 是封存快照，互不污染。
+1. **資料與內容分離** — `data/` 是長期知識底層（複利資本），`reports/` 是封存快照，互不污染。
 2. **人機協作** — 腳本負責確定性工作（骨架、評分、檔案管理），AI 負責語意整理與挑買建議，人（我）負責品味與買不買。
 3. **格式即契約** — 所有產出走 `templates/`；改欄位必須同步 prompts / docs / 腳本。
 4. **輕依賴、先輕後重** — 標準庫 + pyyaml；不在 repo 內接 LLM API（D5），AI 撰寫走對話 / 雲端 agent。
-5. **產出有沒有持續發生，比工程漂不漂亮重要。**
+5. **反熵**（D7）— 新流程不得依賴人類定期手動勞動；維護/產出比是系統健康的終極指標。
+6. **產出有沒有持續發生，比工程漂不漂亮重要。**
 
 詳見 [docs/system_design.md](docs/system_design.md)；節奏見 [docs/flow_calendar.md](docs/flow_calendar.md)；決策見 [docs/decisions.md](docs/decisions.md)。
 
@@ -171,6 +204,7 @@ python scripts/repo_health.py --consistency
 - [x] 重定位殘留總清（2026-06-11：內容生產視角標籤組移除、routine 任務卡去殭屍化、全自動產出改分支+PR）
 - [x] 第一性原理瘦身（2026-06-11 D7：砍死迴圈 prompt、封存任務卡、手動月拉流程；立反熵原則）
 - [x] 終審 ≠ merge（2026-06-12 D8）；挑買卡停產、推薦回歸 brief 內（2026-06-12 D9）
+- [x] 配件全週期覆蓋（週挑第 5 區；daily / monthly 配件同等納入）；粉絲增長殘留二次深掃
 - [ ] 推送通知（未拍板；傾向用既有據點，不加新平台）
 - [ ] 更多非 RSS 來源（視需求，不硬刮反爬站）
 

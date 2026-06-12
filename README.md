@@ -20,7 +20,7 @@
              （或跟 agent 說「早安」，直接端上來）
 ```
 
-**每週一**：週挑 Head-to-Toe 收斂上週 7 天情報；每週至少一張趨勢深挖卡（歐美優先）。
+**每週一 07:40**：雲端 routine 產週挑 Head-to-Toe（收斂上週 7 天情報，5 區 × 3 樣）——**週一說「早安」= daily + 週挑一起端上**。每週至少一張趨勢深挖卡（歐美優先，對話觸發）。
 **每月 1 號**：兩個雲端 routine 各自跑歐美、日本月報（日本線 2026-07 首跑）；7 月起每週一另有 Lyst Q2 watcher 盯榜。
 **每週一、四 09:00**：自動健檢巡檢——daily 斷更、格式跑偏會**自動開 `repo-health` issue**，所以 GitHub 通知出現它 = 系統出事了，其他時候不用管。
 
@@ -63,7 +63,8 @@
 |---|---|---|---|
 | GitHub Actions `daily-brief.yml` | 每天台北 07:00 | 產當日 brief **骨架**（填模板 + RSS 28 源收集；無 LLM，決策 D5） | ⚠ 骨架**直推 master**（純腳本、確定性產出） |
 | 雲端 routine「每日 brief 內容填寫」 | 每天台北 07:30 | 填當日 brief（頭條 / 日韓歐美三區塊 / For Me）；已填則跳過 | **分支 + PR**，CI 綠自 merge（D8） |
-| 對話 agent | 需要時 | 週挑、深挖卡、臨時任務；「早安」= 端上當日 brief | **分支 + PR**，驗證綠即自 merge（D8） |
+| 雲端 routine「每週挑買 Head-to-Toe 填寫」 | 每週一台北 07:40 | 產本週週挑（5 區 × 3 樣，收斂上週 briefs + rankings）；已存在則跳過 | **分支 + PR**，CI 綠自 merge（D8） |
+| 對話 agent | 需要時 | 深挖卡、臨時任務；「早安」= 端上當日 brief（週一加端週挑） | **分支 + PR**，驗證綠即自 merge（D8） |
 | 雲端 routine「歐美月度熱度速報」 | 每月 1 號 | 產當月歐美速報（含本月挑買方向） | **分支 + PR**，CI 綠自 merge |
 | 雲端 routine「日本月度熱度速報」 | 每月 1 號 | 產當月日本速報（2026-07 首跑；量化基準 Mercari，信心保守） | **分支 + PR**，CI 綠自 merge |
 | 雲端 routine「Lyst Q2 watcher」 | 7 月每週一 | Lyst Index Q2 出刊就 ingest 進 rankings | **分支 + PR**，CI 綠自 merge |

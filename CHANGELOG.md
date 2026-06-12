@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+### Added
+- **品牌雷達 Brand Radar（D11）**（2026-06-12 擁有者需求「給關鍵字→當下 10 大最紅品牌（全品項從頭到腳＋配件）」，
+  四設計點討論後拍板）：對話觸發「深挖 <關鍵字>」→ `prompts/brand_radar.md` →
+  `reports/analysis/YYYY-MM-DD-brand-radar-<slug>.md`；分 tier 不排序、三層證據各牌至少兩層、
+  lane 相容度對 brands.yml、入手點只給定番（D10 相容）、結尾留回測鉤；不排程、不新增 template
+
 ### Changed
 - **可購性門檻（D10）**（2026-06-12 擁有者拍板「推薦的都是最紅的，根本短時間買不到」）：
   daily「值得入手」與週挑 15 樣只推現在買得到、且下個月還買得到的（定番／原版／GR 常販／穩定補貨款）；

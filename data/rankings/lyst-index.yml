@@ -64,3 +64,84 @@ snapshots:
       - "Saint Laurent 立領外套 + Butterfly 墨鏡 — 男裝亦適用"
       - "Stone Island (#17)、Moncler (#13) — 男性機能/outerwear 指標"
       - "Ralph Lauren (#6)、Burberry (#9) — prep/heritage 男裝呼應 SS2026 學院風趨勢"
+
+  # ---------- 以下三季為 2026-06-12 歷史回填（媒體轉載口徑，Top 10 為主、非官方完整 Top 20）----------
+  - period: "2025-Q4"
+    published: "2026-02"
+    coverage: "partial（媒體轉載 Top 10；#6 缺漏）"
+    notes: >
+      主題「Un-Revolution」：消費轉向穩定與熟悉而非求新。Saint Laurent 衛冕；
+      Ralph Lauren 升 5 名（需求 +24%，「Ralph Lauren Christmas」聖誕美學帶動）；
+      Burberry 升 5 名（+38%，Nova check 喀什米爾圍巾搜尋 +307%）；
+      Massimo Dutti 首次入榜（+59%）。
+      出處：https://ouispeakfashion.com/the-lyst-index-q4-2025/ 、
+      https://hypebae.com/2026/2/lyst-index-hottest-brands-items-q4-chloe-ugg-burberry-saint-laurent 、
+      https://www.fibre2fashion.com/news/fashion-news/saint-laurent-retains-top-spot-as-hottest-brand-in-q4-2025-lyst-index-308210-newsdetails.htm
+    brands:
+      - { rank: 1,  name: Saint Laurent,  move: "=" }
+      - { rank: 2,  name: Miu Miu,        move: "=" }
+      - { rank: 3,  name: COS,            move: "=" }
+      - { rank: 4,  name: Ralph Lauren,   move: "+5" }
+      - { rank: 5,  name: Prada,          move: "+1" }
+      - { rank: 7,  name: The Row,        move: "-3" }
+      - { rank: 8,  name: Burberry,       move: "+5" }
+      - { rank: 9,  name: Gucci,          move: "待查" }
+      - { rank: 10, name: Moncler,        move: "待查" }
+    products:
+      - { rank: 1, brand: Polo Ralph Lauren, item: "Cable-Knit Quarter-Zip Sweater", note: "需求 QoQ +75%" }
+      - { rank: 待查, brand: "Arc'teryx", item: "Beanie", note: "需求 +1,058% 史上峰值；Frank Ocean / Timothée Chalamet 帶動" }
+    menswear_focus:
+      - "男裝單品罕見登頂全榜（Polo RL 麻花織半拉鏈）— prep/heritage 主導的一季"
+      - "Arc'teryx 毛帽 +1,058% — gorpcore 配件化的量化證據"
+      - "「Un-Revolution」主題與 quiet/定番路線互為印證 — 與 D10 可購性門檻同方向"
+
+  - period: "2025-Q3"
+    published: "2025-11"
+    coverage: "partial（媒體轉載 Top 10）"
+    notes: >
+      Saint Laurent 史上首次登頂（擠下 Miu Miu）——Fortune 稱其為「版圖移轉的訊號」。
+      Havaianas 平價夾腳拖成全季最熱單品（需求 +34%）。
+      出處：https://fashionista.com/2025/11/lyst-index-q3-2025-top-popular-brands-products-saint-laurent 、
+      https://wwd.com/fashion-news/fashion-features/saint-laurent-top-lyst-hottest-brands-ranking-1238335572/ 、
+      https://fortune.com/2025/11/11/yves-saint-laurent-hottest-luxury-brand-of-year/
+    brands:
+      - { rank: 1,  name: Saint Laurent,   move: "+2" }
+      - { rank: 2,  name: Miu Miu,         move: "-1" }
+      - { rank: 3,  name: COS,             move: "待查" }
+      - { rank: 4,  name: The Row,         move: "+2" }
+      - { rank: 5,  name: Coach,           move: "=" }
+      - { rank: 6,  name: Prada,           move: "-2" }
+      - { rank: 7,  name: Bottega Veneta,  move: "待查" }
+      - { rank: 8,  name: Loewe,           move: "-6" }
+      - { rank: 9,  name: Ralph Lauren,    move: "待查" }
+      - { rank: 10, name: Chloé,           move: "待查" }
+    products:
+      - { rank: 1, brand: Havaianas,      item: "Top Flip-Flops", note: "需求 +34%；$30 平價單品登頂" }
+      - { rank: 2, brand: Saint Laurent,  item: "Le Loafer",      note: "搜尋 MoM +66%" }
+    menswear_focus:
+      - "SL 首登頂靠的是 Le Loafer 等男女通用單品 — loafer 週期的市場面證據"
+      - "Havaianas 夾腳拖登頂 — 涼鞋/拖鞋品類的大眾需求底盤（與 2026-06 非運動鞋週期接上）"
+      - "Loewe 8 名（JW Anderson 離任過渡期）— 換帥真空的量化樣本"
+
+  - period: "2025-Q2"
+    published: "2025-07"
+    coverage: "partial（媒體轉載 Top 6 + 亮點）"
+    notes: >
+      Miu Miu 重回第一（升 1 名擠下 Loewe）；三件 Miu Miu 單品進單品榜前 10
+      （任一品牌史上首次）；The Row 升至 #6 創當時新高；Burberry 一年來首次重返榜內
+      （「cool Britannia」+ 音樂節企劃）。
+      出處：https://www.fashiondive.com/news/lyst-index-q2-2025-miumiu-loewe-row-burberry/756639/ 、
+      https://hypebae.com/2025/7/hottest-fashion-items-lyst-index-q2-miu-miu-adidas-skims 、
+      https://www.fibre2fashion.com/news/fashion-news/miu-miu-tops-lyst-index-q2-2025-as-world-s-hottest-brand-304309-newsdetails.htm
+    brands:
+      - { rank: 1, name: Miu Miu,        move: "+1" }
+      - { rank: 2, name: Loewe,          move: "-1" }
+      - { rank: 3, name: Saint Laurent,  move: "待查" }
+      - { rank: 4, name: Prada,          move: "待查" }
+      - { rank: 5, name: Coach,          move: "待查" }
+      - { rank: 6, name: The Row,        move: "待查" }
+    products:
+      - { rank: 4, brand: Miu Miu, item: "Logo-Embossed Suede Loafers", note: "preppy 懷舊×當代；當季三件 Miu Miu 進前 10" }
+    menswear_focus:
+      - "麂皮 loafer 進單品榜前段 — 非運動鞋週期在精品端的早期訊號"
+      - "Loewe 讓位（JWA 末期）— 與 2026-Q1 跌至 #16 連成換帥下行曲線"

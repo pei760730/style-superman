@@ -1,0 +1,140 @@
+# trend_history.yml — 趨勢生命週期歷史（系統的「出生前記憶」）
+# 2026-06-12 一次性回填（「鞏固三源頭」配套）。系統 2026-06 誕生,但趨勢是 3–5 年週期——
+# 「這個趨勢在週期的哪個位置」是炒作 vs 真趨勢的判別軸,雷達 / 深挖 / 月報引用本檔當基準。
+#
+# 規則:
+#   - 年份不確定標「約」;查無依據標 待查;status_2026 用 trend_taxonomy.yml 的 lifecycle 詞彙
+#   - 每條附證據連結(evidence);repo 內部產出可當證據(briefs / radar)
+#   - 新趨勢成形時由雷達 / 深挖順手補一條;不做定期維護(非 D7 手動勞動)
+
+version: 1
+backfilled: "2026-06-12"
+
+trends:
+  - id: gorpcore
+    name: "Gorpcore 機能戶外進城"
+    category: style
+    started: "2017(The Cut 造詞;名人帶動更早)"
+    peak: "2020–2022(疫情戶外需求引爆;2022 出現飽和訕笑梗)"
+    status_2026: mainstream
+    arc: >
+      2017 年 The Cut 造詞起算,疫情期間爆發成男裝主導趨勢;2022 達飽和點
+      (「穿千鎊極地裝備出門淋雨」梗圖),之後未崩盤而是轉性——2026 年從美學驅動
+      轉為價值驅動(實穿、耐用、永續),從 trend 變 philosophy。
+    evidence:
+      - https://en.wikipedia.org/wiki/Gorpcore
+      - https://www.mrporter.com/en-us/journal/fashion/what-comes-after-gorpcore-trend-outdoor-gear-10655708
+      - https://www.wyldpeak.com/blogs/hiking-insights-tips-trails-and-gear/what-is-gorpcore
+    menswear_read: "高峰已過=機能單品買功能不買潮;Arc'teryx 等溢價回歸理性中,等折扣不追款"
+
+  - id: quiet-luxury
+    name: "Quiet Luxury 靜奢"
+    category: style
+    started: "約2022(老錢風鋪墊)→ 2023 成名"
+    peak: "2023(Succession S4 + Gwyneth Paltrow 出庭造型雙引爆)"
+    status_2026: mainstream
+    arc: >
+      2023 年因 Succession 與 Paltrow 法庭造型爆紅;2024 年初一度被判退燒
+      (巴黎時裝週轉向張揚),結果是誤判——2025–2026 固化為奢侈品主敘事:
+      「luxury shame」讓富裕客群棄 logo 取工藝,Lyst 2026 男裝預測定調 craft+安靜。
+    evidence:
+      - https://en.wikipedia.org/wiki/Quiet_luxury
+      - https://www.thedrum.com/opinion/quiet-luxury-all-you-need-know-about-the-2023-trend
+      - https://www.lyst.com/stories/menswear-trend-predictions-2026/
+    menswear_read: "已大眾化=「安靜」本身不再是賣點;買布料與版型的真貨(lane 內品牌),避開「平價靜奢」話術"
+
+  - id: blokecore-football
+    name: "Blokecore 足球文化時尚"
+    category: style
+    started: "約2022(TikTok 帶動+卡達世界盃;起點待查)"
+    peak: "2026(北美世界盃 6/11–7/19 正賽期,品牌全面跟進)"
+    status_2026: peak
+    arc: >
+      約 2022 年 TikTok 世代把復古球衣穿進日常;2026 北美世界盃把它推到頂——
+      開幕前後聯名 drop、正裝合作、平價在地球衣全面開花(repo 06-11/06-12 brief 記錄完整)。
+      高峰即頂點:7/19 決賽後熱度大概率回落,球衣回歸常備單品位。
+    evidence:
+      - ../reports/daily/2026-06-11.md
+      - ../reports/daily/2026-06-12.md
+    menswear_read: "正處高峰=最危險的買點;原版球衣>聯名溢價(Kai 06-11 拍板),賽後撿折扣比賽中追款聰明"
+
+  - id: non-sneaker-footwear
+    name: "非運動鞋週期(loafer→帆船鞋→涼鞋/moc)"
+    category: item
+    started: "約2023(球鞋疲乏,loafer 回歸)"
+    peak: "進行中(2025 sneaker-loafer 混血→2026 帆船鞋/涼鞋/moc 多點開花)"
+    status_2026: rising
+    arc: >
+      球鞋市場疲乏後,腳下去運動化約 2023 年從 loafer 起步;2025 年球鞋圈以
+      sneaker-loafer 混血回應(SneakerNews 口徑);2026 年夏擴成品類週期——
+      帆船鞋(Sperry×Mifland、nonnative×Timberland)、涼鞋(Teva×N.HOOLYWOOD、
+      BBSP 專文)、moc(Mizuno)同日多點開花(repo 06-12 雷達)。
+    evidence:
+      - https://sneakernews.com/2026/06/11/nike-air-force-1-low-croc-black-metallic-dark-grey-iv6306-010/
+      - ../reports/daily/2026-06-12.md
+      - ../reports/daily/2026-06-11.md
+    menswear_read: "rising=現在進場合理;選經典原型(帆船鞋/軍涼鞋的原版),這波的聯名溢價可跳過"
+
+  - id: workwear-military-revival
+    name: "Workwear / 軍裝復刻(日系 Americana 長週期)"
+    category: style
+    started: "長週期常青(單點起算不適用;Nigel Cabourn 等耕耘數十年)"
+    peak: "波段式(近一波:2022–2025 vintage-rooted 精修化,A.PRESSE 領頭)"
+    status_2026: mainstream
+    arc: >
+      非單一趨勢而是男裝常青底盤,以 5–10 年波段輪迴。近一波由「古著工法×西裝級
+      精修」推動(A.PRESSE 2022 後竄起、CIOTA 等日系工藝跟進);2026-06 Cabourn
+      逝世(英日美媒同日訃聞)標記第一代考古者世代交替,archive 行情進入觀察期。
+    evidence:
+      - https://www.highsnobiety.com/p/a-presse-profile/
+      - https://www.businessoffashion.com/news/luxury/menswear-designer-nigel-cabourn-dies-at-77/
+      - ../reports/analysis/2026-06-12-brand-radar-jp-contemporary.md
+    menswear_read: "常青=任何時點買經典款都不算追高;唯 vintage-rooted 熱牌(A.PRESSE)有波段溢價,跳過即可"
+
+  - id: y2k-street
+    name: "Y2K 街頭(寬褲/做舊/低腰)"
+    category: style
+    started: "約2020–2021"
+    peak: "約2022–2023(待查)"
+    status_2026: mainstream
+    arc: >
+      約 2020 年起的千禧復古,2022–23 攻頂。2026 年呈「分化」而非退燒:
+      大眾市場規模仍在成長(產業預估持續),但核心單品搜尋量下滑、潮流前沿
+      已移往 anti-trend / 安靜方向——典型的「大眾化尾段」形態。
+    evidence:
+      - https://www.accio.com/business/y2k-revival-2025-trend
+      - https://www.deedsmag.com/stories/shifting-perceptions-of-y2k-fashion-early-2020s-vs-2025
+      - https://www.cnn.com/2026/01/15/style/what-men-will-be-wearing-in-2026
+    menswear_read: "大眾化尾段=別再進場;寬版輪廓已脫離 Y2K 標籤成為常態,留輪廓、棄符號"
+
+  - id: techwear-dark
+    name: "Techwear 暗黑機能"
+    category: style
+    started: "約2013–2016(ACRONYM 影響圈成形;起點待查)"
+    peak: "2019–2021(主流化高峰)"
+    status_2026: declining
+    arc: >
+      2019–2021 主流化高峰後,美學跟風者散場、剩核心圈層;但「機能」本身
+      未死——被 gorpcore 與日常服吸收(面料/口袋/防水變成常識而非造型)。
+      2026-06 Salomon 新 CD 放話「永遠不該變成 fashion brand」正是這個
+      週期位置的註腳:機能品牌主動與時尚化切割。
+    evidence:
+      - https://wear2am.com/blog/what-is-techwear-explained-2026
+      - https://pausemag.co.uk/2025/11/the-fashion-of-function-how-techwear-is-shaping-urban-identity-in-2025/
+      - ../reports/daily/2026-06-12.md
+    menswear_read: "退潮=全身 techwear 造型過時;單件機能(鞋/外套)混進日常衣櫥才是現在式"
+
+  - id: sneaker-luxe-material
+    name: "球鞋高級素材化(suede/croc/皮革)"
+    category: material
+    started: "2025(sneaker-loafer 混血開路)"
+    peak: "未到(剛起步)"
+    status_2026: emerging
+    arc: >
+      球鞋疲乏的另一個出口:不換品類、換素材。2025 sneaker-loafer 混血開路,
+      2026-06 Nike 把鱷魚紋/水洗丹寧/麂皮放上最大眾的 AF1 GR 線,美日同日雙報,
+      SneakerNews 定調「低調的高級素材軍備競賽」——質感化下沉到入門價位帶。
+    evidence:
+      - https://sneakernews.com/2026/06/11/nike-air-force-1-low-croc-black-metallic-dark-grey-iv6306-010/
+      - ../reports/daily/2026-06-12.md
+    menswear_read: "emerging=最便宜的進場點;GR 線不用搶,等實物看皮質,這波買得到是特性不是 bug"

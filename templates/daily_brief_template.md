@@ -55,10 +55,10 @@
 ## 🛒 對我有用 For Me
 
 <!-- 行動帳，不是感想區：禁止重述 headline（引用寫「見頭條 N」）。
-     值得入手每項 = 單品｜價格(或 待查+去哪查)｜通路｜時點｜下一步；
-     並同日依 prompts/buy_picks.md 開挑買卡存 reports/buy_picks/，此處連卡。
+     值得入手每項 = 單品｜價格(或 待查+去哪查)｜通路｜時點｜一句為什麼(或別買的條件)；
+     推薦只到這行為止（D9：不開獨立挑買卡，有興趣的擁有者自己查、自己買）。
      訊號弱時只填有把握的項，不硬湊。 -->
-- **值得入手：** {{item}} ｜ {{price_or_tbd}} ｜ {{channel}} ｜ {{timing}} ｜ {{next_action}} → [挑買卡]({{buy_pick_card_path}})
+- **值得入手：** {{item}} ｜ {{price_or_tbd}} ｜ {{channel}} ｜ {{timing}} ｜ {{why_or_skip_condition}}
 - **想試的穿搭：** {{styling_to_try}}
 - **想深入了解：** {{topic_to_dig}}
 

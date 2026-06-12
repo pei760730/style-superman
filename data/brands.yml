@@ -143,6 +143,63 @@ brands:
     watch: ["極簡配色", "設計細節"]
     notes: 韓系設計師街頭
 
+  # ---------- 韓國：2026-06-12 品牌雷達回填（見 reports/analysis/2026-06-12-brand-radar-kr.md）----------
+  - id: post-archive-faction
+    name: POST ARCHIVE FACTION
+    region: kr
+    segment: techwear
+    tier: 2
+    watch: ["Pitti Uomo 後的出圈速度", "On 等運動聯名", "溢價警報"]
+    notes: 韓國設計力出海代表（BoF 點名）；機能解構,當風向看不當衣櫥買
+
+  - id: wooyoungmi
+    name: Wooyoungmi
+    region: kr
+    segment: luxury
+    tier: 2
+    watch: ["巴黎男裝週檔期", "tailoring×技術外套"]
+    notes: 韓國 tailoring 國際門面;FW26 與 Juun.J 撐起韓國在巴黎的檔期
+
+  - id: le17septembre
+    name: Le17septembre
+    region: kr
+    segment: contemporary
+    tier: 2
+    watch: ["SSENSE 男裝線聲量", "歐美話語層是否點名"]
+    notes: 韓系 quiet 的 AURALEE 位;首爾小量製造,本 lane 最對味的韓牌
+
+  - id: juun-j
+    name: Juun.J
+    region: kr
+    segment: luxury
+    tier: 3
+    watch: ["巴黎 20 年後的方向", "Alpinestars 等 motocore 聯名"]
+    notes: street couture 老將;熱度是穩不是漲
+
+  - id: projekt-produkt
+    name: Projekt Produkt
+    region: kr
+    segment: contemporary
+    tier: 3
+    watch: ["歐洲通路擴張", "K-pop 造型滲透"]
+    notes: 配件位（眼鏡）;GM 之外的安靜一極,日常可戴
+
+  - id: amomento
+    name: AMOMENTO
+    region: kr
+    segment: contemporary
+    tier: 3
+    watch: ["男裝線成熟度", "SSENSE 之外的通路"]
+    notes: 韓系 quiet 第二席;男裝線 2021 起仍早期
+
+  - id: solid-homme
+    name: Solid Homme
+    region: kr
+    segment: luxury
+    tier: 3
+    watch: ["SS27 巴黎檔期後的國際通路", "單源待確認"]
+    notes: 禹英美本線;與 Wooyoungmi 衣櫥位重疊,觀察用
+
   # ---------- 歐美 / 全球 ----------
   - id: aime-leon-dore
     name: Aimé Leon Dore

@@ -28,7 +28,7 @@
 
 **懷疑系統死了：** `python scripts/repo_health.py`——一切綠就沒事；daily 斷更 / 契約跑偏會被週一、四的自動巡檢抓到並**自動開 issue**，所以 GitHub 通知出現 `repo-health` issue = 要處理。
 
-**叫 agent 做事：** 守則在 [CLAUDE.md](CLAUDE.md)（開工先跑 `repo_health.py`）。brief 內容與挑買判斷的 PR 一律留我終審；工程 PR 看 CI 綠再 merge。
+**叫 agent 做事：** 守則在 [CLAUDE.md](CLAUDE.md)（開工先跑 `repo_health.py`）。例行產出（brief / 挑買卡 / 月報）與工程 PR 驗證綠即自 merge（D8）——我的終審是事後反饋（判斷錯就講，記入 decisions / lessons），買不買的決策在現實世界，不在 git。
 
 ---
 
@@ -37,7 +37,7 @@
 | 執行者 | 時間 | 做什麼 | 提交方式 |
 |---|---|---|---|
 | GitHub Actions `daily-brief.yml` | 每天台北 07:00 | 產當日 brief **骨架**（填模板 + RSS 28 源收集；無 LLM，決策 D5） | ⚠ 骨架**直推 master**（純腳本、確定性產出） |
-| 對話 / 排程 agent（內容填寫） | 骨架產出後 | 填 brief 趨勢內容、開挑買卡、週挑、深挖卡 | **分支 + PR**，內容判斷留我終審 |
+| 對話 / 排程 agent（內容填寫） | 骨架產出後 | 填 brief 趨勢內容、開挑買卡、週挑、深挖卡 | **分支 + PR**，驗證綠即自 merge（D8） |
 | 雲端 routine「歐美月度熱度速報」 | 每月 1 號 | 產當月歐美速報（含本月挑買方向） | **分支 + PR**（2026-06-11 起，原直推已改） |
 | 雲端 routine「日本月度熱度速報」 | 每月 1 號 | 產當月日本速報（2026-07 首跑；量化基準 Mercari，信心保守） | **分支 + PR** |
 | 雲端 routine「Lyst Q2 watcher」 | 7 月每週一 | Lyst Index Q2 出刊就 ingest 進 rankings | **分支 + PR**（同上） |

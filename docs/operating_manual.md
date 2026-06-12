@@ -46,7 +46,7 @@ python scripts/score_trends.py --input trends.json
 用 `prompts/daily_trend_brief.md` 把排序結果寫成完整 brief，填回 `reports/daily/YYYY-MM-DD.md`。
 
 ### Step 6 — 出挑買方向
-對 headline 趨勢用 `prompts/buy_picks.md` 生 2–3 張挑買卡（值不值得買 / 怎麼搭 / 在哪買 / 補哪個缺口），丟進挑買 shortlist。
+挑買推薦直接寫在 brief 的 `🛒 對我有用 For Me`（D9：不開獨立挑買卡）；週度收斂走週挑 `reports/buy_shortlist/`。
 
 ### Step 7 — 封存
 ```bash

@@ -5,6 +5,12 @@
 ## [Unreleased]
 
 ### Removed
+- **D9 挑買卡停產**（2026-06-12 擁有者拍板「單純推薦就好，有不錯的我自己會去查、自己會去買」）：
+  - `prompts/buy_picks.md`、`templates/buy_pick_template.md` 刪除；validate_repo 的 template 契約同步移除
+  - daily brief「值得入手」不再同日開卡——For Me 行動帳第五件事改「一句為什麼 / 別買的條件」
+  - 已產 3 張卡（reports/buy_picks/）原地封存不刪；週挑 / 月報挑買方向照舊
+  - 守衛 `d9-no-buy-pick-cards`；連動：CLAUDE.md 定位、README、system_design、operating_manual、
+    content_calendar、content_strategy、ai_collaboration（D8 清單去掉挑買卡）
 - **D7 第一性原理瘦身**（2026-06-11 擁有者拍板「砍掉沒用的——什麼是我下個月就不用了」；
   依據：3 並行 agent 審計 + git 證據「7 天 110 commit 中 76% 是自我維護、僅 14% 是情報產出」。
   判準三問與完整理由見 docs/decisions.md D7）：

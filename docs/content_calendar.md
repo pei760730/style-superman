@@ -67,10 +67,10 @@ Topic Analysis（每週至少一張，歐美優先）：把最強跨源趨勢寫
 **週度整理清單**：
 
 1. 回看過去 7 天 daily briefs，列出重複出現或分數高的趨勢。
-2. 用 `prompts/buy_picks.md` 為每個候選趨勢產 2–3 張挑買卡（值不值得買、怎麼搭、在哪買、補哪個缺口）。
+2. 為每個候選趨勢給一段挑買判斷（值不值得買、在哪買、別買的情況），直接寫進週挑清單（D9：不開獨立挑買卡）。
 3. 依 buy_angle 分類：staple 基本款 / upgrade 升級替換 / statement 亮點 / seasonal 當季 / experiment 嘗試。
 4. 優先選 entry / mid 預算、好駕馭、能融入現有衣櫥的選項；splurge 要額外說清楚為什麼值得一次到位。
-5. 對每張卡做冷靜審核：有可驗證來源、價格合理、不是衣櫥已有的重複、不是被假稀缺推著買。
+5. 對每項推薦做冷靜審核：有可驗證來源、價格合理、不是衣櫥已有的重複、不是被假稀缺推著買。
 
 **輸出**：
 
@@ -153,7 +153,7 @@ Topic Analysis（每週至少一張，歐美優先）：把最強跨源趨勢寫
 | 階段 | 主導 | 工具 / AI | 我（人）|
 |------|------|-----------|---------|
 | Daily brief 判斷 | AI 整理 | `prompts/daily_trend_brief.md` | 最終採用 |
-| 每週挑買 | AI 產挑買卡 | `prompts/buy_picks.md` | 決定買 / 等 / 跳過 |
+| 每週挑買 | AI 產週挑清單 | `prompts/weekly_buy_picks.md` | 決定買 / 等 / 跳過 |
 | Monthly report | AI 分層判斷 | `prompts/monthly_heat_report.md` | 確認信心、決定入手 |
 | Topic analysis | AI 整合 | 工程 / 格式輔助 | 拍板 |
 

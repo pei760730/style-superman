@@ -13,9 +13,8 @@
 **每天早上（07:00 後，手機看 GitHub 就行）：**
 
 1. 開 [reports/daily/](reports/daily/) 點今天的日期。
-2. **先看最下面的 `🛒 對我有用 For Me`**——行動帳格式：單品｜價格｜通路（可點）｜時點｜下一步。
-3. 「值得入手」的完整判斷（怎麼搭 / 風險 / 別買的情況）在 [reports/buy_picks/](reports/buy_picks/) 的當日挑買卡。
-4. 有空再往上讀 4 條頭條（每條都有「對我的意義」）和快訊。
+2. **先看最下面的 `🛒 對我有用 For Me`**——行動帳格式：單品｜價格｜通路（可點）｜時點｜一句為什麼。推薦只到這裡（D9）：有興趣的我自己查、自己買。
+3. 有空再往上讀 4 條頭條（每條都有「對我的意義」）和快訊。
 
 **每週：**
 
@@ -28,7 +27,7 @@
 
 **懷疑系統死了：** `python scripts/repo_health.py`——一切綠就沒事；daily 斷更 / 契約跑偏會被週一、四的自動巡檢抓到並**自動開 issue**，所以 GitHub 通知出現 `repo-health` issue = 要處理。
 
-**叫 agent 做事：** 守則在 [CLAUDE.md](CLAUDE.md)（開工先跑 `repo_health.py`）。例行產出（brief / 挑買卡 / 月報）與工程 PR 驗證綠即自 merge（D8）——我的終審是事後反饋（判斷錯就講，記入 decisions / lessons），買不買的決策在現實世界，不在 git。
+**叫 agent 做事：** 守則在 [CLAUDE.md](CLAUDE.md)（開工先跑 `repo_health.py`）。例行產出（brief / 週挑 / 月報）與工程 PR 驗證綠即自 merge（D8）——我的終審是事後反饋（判斷錯就講，記入 decisions / lessons），買不買的決策在現實世界，不在 git。
 
 ---
 
@@ -37,7 +36,7 @@
 | 執行者 | 時間 | 做什麼 | 提交方式 |
 |---|---|---|---|
 | GitHub Actions `daily-brief.yml` | 每天台北 07:00 | 產當日 brief **骨架**（填模板 + RSS 28 源收集；無 LLM，決策 D5） | ⚠ 骨架**直推 master**（純腳本、確定性產出） |
-| 對話 / 排程 agent（內容填寫） | 骨架產出後 | 填 brief 趨勢內容、開挑買卡、週挑、深挖卡 | **分支 + PR**，驗證綠即自 merge（D8） |
+| 對話 / 排程 agent（內容填寫） | 骨架產出後 | 填 brief 趨勢內容、週挑、深挖卡 | **分支 + PR**，驗證綠即自 merge（D8） |
 | 雲端 routine「歐美月度熱度速報」 | 每月 1 號 | 產當月歐美速報（含本月挑買方向） | **分支 + PR**（2026-06-11 起，原直推已改） |
 | 雲端 routine「日本月度熱度速報」 | 每月 1 號 | 產當月日本速報（2026-07 首跑；量化基準 Mercari，信心保守） | **分支 + PR** |
 | 雲端 routine「Lyst Q2 watcher」 | 7 月每週一 | Lyst Index Q2 出刊就 ingest 進 rankings | **分支 + PR**（同上） |
@@ -66,7 +65,7 @@
 | 2. 分類 | 依 taxonomy 歸類（單品 / 輪廓 / 配色 / 品牌 / 人物 / 文化） | 結構化 trend cards |
 | 3. 評分 | 熱度 / 成長性 / **可駕馭度 wearability** 打分 | 排序後的 trend 清單 |
 | 4. 簡報 | 轉成可閱讀的 Daily Brief（行動帳收尾） | `reports/daily/YYYY-MM-DD.md` |
-| 5. 挑買 | 轉成「該不該買 / 怎麼搭 / 在哪買 / 別買的情況」 | 挑買卡 / 週挑 / 深挖卡 |
+| 5. 挑買 | 推薦直接寫在 brief For Me / 週挑（D9：不開獨立卡，有興趣的擁有者自己查） | brief For Me / 週挑 / 深挖卡 |
 | 6. 累積 | 長期沉澱：季度榜快照可比對名次演化 | `data/` + `reports/` 歷史 |
 
 ---
@@ -93,7 +92,7 @@ style-superman/
 │       └── musinsa.yml       #   韓國：MUSINSA 銷售榜
 ├── reports/                  # 封存快照（產出後不回改）
 │   ├── daily/                # 每日 brief（YYYY-MM-DD.md）
-│   ├── buy_picks/            # 單品挑買卡（YYYY-MM-DD-<slug>.md，daily「值得入手」同日觸發）
+│   ├── buy_picks/            # （封存）2026-06-11~12 的單品挑買卡——D9 已停產，推薦改寫在 brief 內
 │   ├── buy_shortlist/        # 週挑 Head-to-Toe（YYYY-Wnn.md）
 │   ├── monthly/              # 月度熱度速報（YYYY-MM-eu.md 歐美；YYYY-MM-jp.md 日本，2026-07 起）
 │   └── analysis/             # 趨勢深挖卡 + 主題分析（每週至少一張，歐美優先）
@@ -168,9 +167,10 @@ python scripts/repo_health.py --consistency
 - [x] AI 撰寫走排程雲端 agent（D5：不接 repo 內 LLM API）
 - [x] Self-Evolution Loop（repo_health Next Actions + lessons 硬化路徑 + 決策守衛）
 - [x] 每日產線實跑（時區 bug 已修；斷更有看門狗）
-- [x] Daily brief 行動帳 + 密度規則；挑買卡 / 週挑 / 週趨勢深挖卡節奏
+- [x] Daily brief 行動帳 + 密度規則；週挑 / 週趨勢深挖卡節奏
 - [x] 重定位殘留總清（2026-06-11：內容生產視角標籤組移除、routine 任務卡去殭屍化、全自動產出改分支+PR）
 - [x] 第一性原理瘦身（2026-06-11 D7：砍死迴圈 prompt、封存任務卡、手動月拉流程；立反熵原則）
+- [x] 終審 ≠ merge（2026-06-12 D8）；挑買卡停產、推薦回歸 brief 內（2026-06-12 D9）
 - [ ] 推送通知（未拍板；傾向用既有據點，不加新平台）
 - [ ] 更多非 RSS 來源（視需求，不硬刮反爬站）
 

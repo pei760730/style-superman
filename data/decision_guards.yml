@@ -63,3 +63,23 @@ guards:
       - .github/
     exclude:
       - data/decision_guards.yml
+
+  - id: d9-no-buy-pick-cards
+    decision: "D9（2026-06-12 拍板）"
+    reason: "挑買卡停產：推薦直接寫在 brief For Me / 週挑，擁有者自己查自己買；開卡流程不得寫回活文件（已封存的 reports/buy_picks/ 舊卡不受影響——scope 不含 reports/）"
+    pattern: 'prompts/buy_picks\.md|buy_pick_template|reports/buy_picks/'
+    scope:
+      - CLAUDE.md
+      - README.md
+      - docs/
+      - prompts/
+      - templates/
+      - scripts/
+      - tests/
+      - data/
+      - .github/
+    exclude:
+      - CHANGELOG.md
+      - docs/decisions.md
+      - docs/lessons.md
+      - data/decision_guards.yml

@@ -28,20 +28,30 @@
 
 ---
 
-## ⚡ 快訊 Quick Hits
+## 🇯🇵 日潮 JP 追蹤
 
-<!-- 次要訊號，一行一則 -->
-- {{region}} · {{one_liner}} — {{source}}
+<!-- 6–10 條，一行一則：發售日 / 價格 / 通路能給就給；已進頭條的不重複。
+     訊號弱可少於 6 條，但要明寫「今日 JP 訊號偏弱（N 條）」，不硬湊。 -->
+- {{jp_one_liner}} — {{jp_source}}
 - …
 
 ---
 
 ## 🇰🇷 韓潮 KR 追蹤
 
-<!-- 固定保留 KR 訊號位；若當日無高信心訊號，寫「今日無可驗證 KR 訊號」，不可補熱度。 -->
-- **K-pop / 名人造型：** {{kr_kpop_styling}} — {{kr_kpop_source}}
-- **韓系設計師 / 零售：** {{kr_designer_retail}} — {{kr_retail_source}}
-- **跨市場外溢：** {{kr_cross_market}} — {{kr_cross_market_source}}
+<!-- 4–8 條，每條開頭標維度：造型（K-pop/名人）／設計師·零售／跨市場外溢；
+     三維度都要照看，某維度當日無可驗證訊號就明寫一行，不可補熱度。 -->
+- {{kr_dimension}} · {{kr_one_liner}} — {{kr_source}}
+- …
+
+---
+
+## 🌍 歐美 US-EU 追蹤
+
+<!-- 6–10 條（global 訊號歸此區），一行一則含日期 / 價格；已進頭條的不重複。
+     訊號弱可少於 6 條，但要明寫「今日 US-EU 訊號偏弱（N 條）」。 -->
+- {{useu_one_liner}} — {{useu_source}}
+- …
 
 ---
 

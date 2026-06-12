@@ -207,3 +207,52 @@ brands:
     tier: 2
     watch: ["工裝大眾化", "聯名"]
     notes: workwear 入門首選，大眾接受度高
+
+  # ---------- 歐美：素材主義 / contemporary（2026-06-12 品牌雷達回填，見 reports/analysis/2026-06-12-brand-radar-us-eu-contemporary.md）----------
+  - id: lemaire
+    name: LEMAIRE
+    region: us-eu
+    segment: contemporary
+    tier: 1
+    watch: ["quiet 週期成長指標（Lyst 2026 點名）", "定番價格年年上修", "croissant bag 配件線"]
+    notes: lane 的西側錨點；Lemaire 本人公開推崇 AURALEE/COMOLI/Kaptain Sunshine，品味同源
+
+  - id: evan-kinori
+    name: Evan Kinori
+    region: us-eu
+    segment: contemporary
+    tier: 2
+    watch: ["Big Shirt / Two Pleat Pants 定番", "小批量回補節奏", "是否出圈上大媒體"]
+    notes: 舊金山 slow clothes；BBSP 長期最愛，媒體稱「全球最熱設計師之一」
+
+  - id: stoffa
+    name: Stòffa
+    region: us-eu
+    segment: contemporary
+    tier: 2
+    watch: ["麂皮外套 / 訂製褲", "SoHo 旗艦後的擴張"]
+    notes: Permanent Style 連載推崇；古典與潮流話語層雙背書，正式度比 lane 高半級
+
+  - id: jacques-marie-mage
+    name: Jacques Marie Mage
+    region: us-eu
+    segment: contemporary
+    tier: 3
+    watch: ["定番框型 vs 聯名限量", "名人滲透"]
+    notes: 配件位（眼鏡）；日/義製小批量，2026 聯名連發（Goldblum、Haider Ackermann）
+
+  - id: mfpen
+    name: mfpen
+    region: us-eu
+    segment: contemporary
+    tier: 3
+    watch: ["單源待確認（僅 BBSP/Neighbour roster）", "通路廣度待查"]
+    notes: 哥本哈根極簡、再生布料；lane 的 entry 友善入口候選
+
+  - id: lady-white-co
+    name: Lady White Co.
+    region: us-eu
+    segment: contemporary
+    tier: 3
+    watch: ["LA 製 elevated basics", "台灣 Freaky House 有現貨（可實體看）"]
+    notes: T 恤/衛衣專門；entry–mid 價位帶的素材主義入口

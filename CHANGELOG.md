@@ -4,6 +4,12 @@
 
 ## [Unreleased]
 
+### Fixed
+- **health.yml 巡檢假成功**（2026-06-13 sleep-mode 巡檢發現）：`repo_health --strict | tee` 在
+  Actions 預設 shell（`bash -e`、無 pipefail）下，失敗 exit code 被 tee 吃掉——看門狗永遠綠、
+  issue 永遠不會開。補 `set -o pipefail`；同步修 issue 查詢 `--jq` 無開啟 issue 時印出
+  字面 "null" 導致新 issue 開不出來（補 `// empty`）
+
 ### Changed
 - **品牌雷達六欄化（D11 格式修正）**（2026-06-12 擁有者反饋「為了一句話去描述，沒辦法好好描述亮點」）：
   每牌「為什麼現在紅（一句）」拆成「是什麼（一句）＋為什麼現在紅（1–3 句亮點講滿）」，

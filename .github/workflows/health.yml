@@ -42,7 +42,11 @@ jobs:
         id: health
         env:
           PYTHONIOENCODING: utf-8
-        run: python scripts/repo_health.py --strict | tee health-report.txt
+        # ⚠ 未顯式 shell: bash 時 Actions 用 `bash -e {0}`（無 pipefail）：
+        #   repo_health 失敗會被 tee 的 exit 0 吃掉 → 巡檢永遠綠 = 看門狗假成功。
+        run: |
+          set -o pipefail
+          python scripts/repo_health.py --strict | tee health-report.txt
 
       - name: File or update health issue
         if: failure()
@@ -61,7 +65,9 @@ jobs:
             echo "處理方式見 CLAUDE.md 的 Self-Evolution Loop；修好後關閉本 issue。"
             echo "若同類警告反覆出現且兩週無人處理，依 docs/lessons.md：要嘛修產線，要嘛調整節奏宣告（daily→weekly），不要讓警告衰退成噪音。"
           } > issue-body.md
-          existing=$(gh issue list --label repo-health --state open --json number --jq '.[0].number' || echo "")
+          # `// empty`：無開啟 issue 時 .[0].number 為 null，沒有 fallback 會印出字面 "null"
+          # → 走進 comment 分支對 issue "null" 留言而失敗，新 issue 永遠開不出來。
+          existing=$(gh issue list --label repo-health --state open --json number --jq '.[0].number // empty' || echo "")
           if [ -n "$existing" ]; then
             gh issue comment "$existing" --body-file issue-body.md
           else

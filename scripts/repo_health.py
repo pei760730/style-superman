@@ -68,6 +68,7 @@ MONTHLY_REGION_SINCE = {"eu": dt.date(2026, 6, 1), "jp": dt.date(2026, 7, 1)}
 # 路徑掃描的「活文件」範圍；歷史紀錄不掃（允許提到已刪/規劃中的檔案）
 PATH_SCAN_EXCLUDE = {
     "CHANGELOG.md",                    # 演進史，會提到已移除的檔案
+    "AI_SYSTEM_UPGRADE_REPORT.md",     # 點時審計紀錄（sleep-mode 巡檢），同屬歷史紀錄
 }
 PATH_RE = re.compile(
     r"(?:data|docs|prompts|scripts|templates|tests|\.github)/[A-Za-z0-9_\-./]*\.(?:md|py|yml|yaml|xml|txt)"
@@ -260,7 +261,12 @@ def check_weekly_picks_freshness(today: dt.date) -> list[Finding]:
                         "想開始的話：generate_weekly_buy_picks.py 產骨架")]
     iso = today.isocalendar()
     latest = max(weeks)
-    behind = (iso[0] - latest[0]) * 52 + (iso[1] - latest[1])
+    # 以 ISO 週一日期相減算落後週數——ISO 年有 52/53 週（2026 即 53 週），
+    # 用「×52」跨年會少算一週，warning 晚一週才響。
+    behind = (
+        dt.date.fromisocalendar(iso[0], iso[1], 1)
+        - dt.date.fromisocalendar(latest[0], latest[1], 1)
+    ).days // 7
     if behind >= 2:
         return [Finding(
             "warn",

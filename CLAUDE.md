@@ -78,6 +78,7 @@ Next      → repo_health.py 的 Next Actions 就是下一輪 TODO
 ## 常見坑（詳見 docs/lessons.md）
 
 - Windows 終端 cp950：腳本都要 `sys.stdout.reconfigure(encoding="utf-8")`；CI 設 `PYTHONIOENCODING`。
+- 擁有者的 Mac 沒有 `python` 只有 `python3`（3.9）：文件範例的 `python` 自行代換；新語法要相容 3.9（`X | Y` 型別註記靠 `from __future__ import annotations` 才活著）。
 - workflow 檔在 GitHub 上的註冊可能無聲消失（帳號風控後遺症）：「檔案在 ≠ 在跑」，要看 run 紀錄。
 - 反爬網站（ZOZO / KREAM / MUSINSA 即時榜）不硬刮；用官方公開數據手動建快照。
 - `reports/daily/*.draft.md`、`reports/monthly/*.draft.md` 不入版控。

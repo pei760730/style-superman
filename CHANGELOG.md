@@ -9,6 +9,15 @@
   Actions 預設 shell（`bash -e`、無 pipefail）下，失敗 exit code 被 tee 吃掉——看門狗永遠綠、
   issue 永遠不會開。補 `set -o pipefail`；同步修 issue 查詢 `--jq` 無開啟 issue 時印出
   字面 "null" 導致新 issue 開不出來（補 `// empty`）
+- **repo_health 週挑落後週數跨年少算**：ISO 年有 52/53 週（2026 即 53 週），「×52」公式
+  跨年會少算一週使 WARN 晚響；改用 ISO 週一日期相減
+- **README 自動化描述錯置**：07:00 Actions 骨架不收 RSS（無 `--with-rss`），RSS 由 07:30
+  內容填寫 routine 收——時間軸與自動化全貌表已更正
+
+### Changed
+- **validate_repo 補 data/ YAML 最低防線**：無專屬契約的 data 檔（trend_history /
+  decision_guards 及未來新檔）自動納入「可解析 + 頂層 mapping」檢查——先前完全無人驗，
+  壞 YAML 會沉默存在直到消費端炸掉（非新增檢查類別，是補 validate_repo docstring 既有承諾的洞）
 
 ### Changed
 - **品牌雷達六欄化（D11 格式修正）**（2026-06-12 擁有者反饋「為了一句話去描述，沒辦法好好描述亮點」）：

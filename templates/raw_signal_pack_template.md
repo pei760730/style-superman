@@ -4,7 +4,7 @@
 讓 `prompts/daily_trend_brief.md` 的 `RAW_SIGNALS` 每天吃到一樣的形狀，不會因來源不同而亂。
 
 > 這是**契約**，不是內容判斷。一筆 raw signal = 一條「來源說了什麼」，**還沒**經過 Style Superman 的趨勢判斷。
-> 判斷在 daily brief / trend card 那層做（見 `docs/content_strategy.md`、`prompts/`）。
+> 判斷在 daily brief / trend card 那層做（見 `docs/style_strategy.md`、`prompts/`）。
 
 ## 格式（YAML，list of signals）
 

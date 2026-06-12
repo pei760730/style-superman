@@ -111,8 +111,8 @@ style-superman/
 ├── tests/                    # smoke 測試（無需 pytest）
 ├── docs/
 │   ├── system_design.md         # 架構設計
-│   ├── content_strategy.md      # 情報支柱與個人成功指標（檔名沿用，定位已是個人挑買）
-│   ├── content_calendar.md      # daily → weekly → monthly → analysis 節奏
+│   ├── style_strategy.md        # 情報支柱、調性與個人成功指標
+│   ├── flow_calendar.md         # daily → weekly → monthly → analysis 節奏
 │   ├── trend_scoring_rules.md   # 評分規則（wearability 等維度）
 │   ├── operating_manual.md      # 營運手冊
 │   ├── ai_collaboration.md      # 帽子原則 + 不自我終審 + 誰拍板（D7 已瘦身）
@@ -155,7 +155,7 @@ python scripts/repo_health.py --consistency
 4. **輕依賴、先輕後重** — 標準庫 + pyyaml；不在 repo 內接 LLM API（D5），AI 撰寫走對話 / 雲端 agent。
 5. **產出有沒有持續發生，比工程漂不漂亮重要。**
 
-詳見 [docs/system_design.md](docs/system_design.md)；節奏見 [docs/content_calendar.md](docs/content_calendar.md)；決策見 [docs/decisions.md](docs/decisions.md)。
+詳見 [docs/system_design.md](docs/system_design.md)；節奏見 [docs/flow_calendar.md](docs/flow_calendar.md)；決策見 [docs/decisions.md](docs/decisions.md)。
 
 ---
 

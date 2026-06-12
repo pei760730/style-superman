@@ -70,7 +70,7 @@ git commit -m "brief: YYYY-MM-DD"
 - **產出一張趨勢深挖卡（歐美優先）**：挑本週最強跨源趨勢，依 `templates/trend_card_template.md`
   做「跨源查證 → 生命週期 → 全價位帶落地 → 挑買判斷」→ `reports/analysis/`（節奏規則見 Content Calendar §5）。
 - 檢查 `data/` 是否要更新（新品牌、新人物、新來源）。
-- 週挑買如何承接 daily brief，見 [Content Calendar](content_calendar.md)。
+- 週挑買如何承接 daily brief，見 [Flow Calendar](flow_calendar.md)。
 
 ## 3. 每月
 

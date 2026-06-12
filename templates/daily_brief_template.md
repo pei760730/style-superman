@@ -74,6 +74,7 @@
      推薦只到這行為止（D9：不開獨立挑買卡，有興趣的擁有者自己查、自己買）。
      訊號弱時只填有把握的項，不硬湊。 -->
 - **值得入手：** {{item}} ｜ {{price_or_tbd}} ｜ {{channel}} ｜ {{timing}} ｜ {{why_or_skip_condition}}
+- **⏰ 行動日：** {{action_deadlines}}
 - **想試的穿搭：** {{styling_to_try}}
 - **想深入了解：** {{topic_to_dig}}
 

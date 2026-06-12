@@ -4,6 +4,11 @@
 
 ## [Unreleased]
 
+### Added
+- **每日 brief 內容填寫 routine**（2026-06-12 擁有者拍板）：每天台北 07:30 雲端 agent 自動把
+  07:00 骨架填成完整 brief（收 RSS → 頭條/快訊/KR/For Me → 分支+PR → CI 綠自 merge；已填則跳過）。
+  補上產線最後一塊人類手動勞動依賴（先前內容填寫靠擁有者每天開對話觸發，違反 D7 反熵原則）
+
 ### Changed
 - **粉絲增長 / 內容生產殘留二次深掃**（2026-06-12 擁有者指示「整個深度再看過」）：
   `docs/content_strategy.md` → `style_strategy.md`、`docs/content_calendar.md` → `flow_calendar.md`

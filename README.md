@@ -14,9 +14,10 @@
 
 ```txt
 台北 07:00   GitHub Actions 產 brief 骨架（純腳本：填模板 + RSS 28 源收集）→ 直推 master
-07:00 之後   agent 讀 raw signals → 濾噪音、歸類、評分 → 填入頭條/快訊/KR/For Me
-             → 開分支 PR → CI 驗證綠 → 自 merge
+台北 07:30   雲端 routine「每日 brief 內容填寫」收 RSS → 濾噪音、歸類、評分
+             → 填入頭條/快訊/KR/For Me → 開分支 PR → CI 驗證綠 → 自 merge
 我起床後     手機開 GitHub → reports/daily/ 點今天 → 先看最下面的 🛒 For Me
+             （或跟 agent 說「早安」，直接端上來）
 ```
 
 **每週一**：週挑 Head-to-Toe 收斂上週 7 天情報；每週至少一張趨勢深挖卡（歐美優先）。
@@ -61,7 +62,8 @@
 | 執行者 | 時間 | 做什麼 | 提交方式 |
 |---|---|---|---|
 | GitHub Actions `daily-brief.yml` | 每天台北 07:00 | 產當日 brief **骨架**（填模板 + RSS 28 源收集；無 LLM，決策 D5） | ⚠ 骨架**直推 master**（純腳本、確定性產出） |
-| 對話 / 排程 agent（內容填寫） | 骨架產出後 | 填 brief 趨勢內容、週挑、深挖卡 | **分支 + PR**，驗證綠即自 merge（D8） |
+| 雲端 routine「每日 brief 內容填寫」 | 每天台北 07:30 | 填當日 brief（頭條 / 快訊 / KR / For Me）；已填則跳過 | **分支 + PR**，CI 綠自 merge（D8） |
+| 對話 agent | 需要時 | 週挑、深挖卡、臨時任務；「早安」= 端上當日 brief | **分支 + PR**，驗證綠即自 merge（D8） |
 | 雲端 routine「歐美月度熱度速報」 | 每月 1 號 | 產當月歐美速報（含本月挑買方向） | **分支 + PR**，CI 綠自 merge |
 | 雲端 routine「日本月度熱度速報」 | 每月 1 號 | 產當月日本速報（2026-07 首跑；量化基準 Mercari，信心保守） | **分支 + PR**，CI 綠自 merge |
 | 雲端 routine「Lyst Q2 watcher」 | 7 月每週一 | Lyst Index Q2 出刊就 ingest 進 rankings | **分支 + PR**，CI 綠自 merge |

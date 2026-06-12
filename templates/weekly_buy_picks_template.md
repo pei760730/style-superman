@@ -11,16 +11,19 @@
 
 ### 1. {{h1_item}}
 - **buy_angle：** {{h1_angle}} ｜ **預算帶：** {{h1_budget}} ｜ **優先度：** {{h1_priority}}
+- **價格 / 通路：** {{h1_price_channel}}
 - **為什麼是本週：** {{h1_why}}
 - **風險 / 別買的情況：** {{h1_risk}}
 
 ### 2. {{h2_item}}
 - **buy_angle：** {{h2_angle}} ｜ **預算帶：** {{h2_budget}} ｜ **優先度：** {{h2_priority}}
+- **價格 / 通路：** {{h2_price_channel}}
 - **為什麼是本週：** {{h2_why}}
 - **風險 / 別買的情況：** {{h2_risk}}
 
 ### 3. {{h3_item}}
 - **buy_angle：** {{h3_angle}} ｜ **預算帶：** {{h3_budget}} ｜ **優先度：** {{h3_priority}}
+- **價格 / 通路：** {{h3_price_channel}}
 - **為什麼是本週：** {{h3_why}}
 - **風險 / 別買的情況：** {{h3_risk}}
 
@@ -28,16 +31,19 @@
 
 ### 1. {{t1_item}}
 - **buy_angle：** {{t1_angle}} ｜ **預算帶：** {{t1_budget}} ｜ **優先度：** {{t1_priority}}
+- **價格 / 通路：** {{t1_price_channel}}
 - **為什麼是本週：** {{t1_why}}
 - **風險 / 別買的情況：** {{t1_risk}}
 
 ### 2. {{t2_item}}
 - **buy_angle：** {{t2_angle}} ｜ **預算帶：** {{t2_budget}} ｜ **優先度：** {{t2_priority}}
+- **價格 / 通路：** {{t2_price_channel}}
 - **為什麼是本週：** {{t2_why}}
 - **風險 / 別買的情況：** {{t2_risk}}
 
 ### 3. {{t3_item}}
 - **buy_angle：** {{t3_angle}} ｜ **預算帶：** {{t3_budget}} ｜ **優先度：** {{t3_priority}}
+- **價格 / 通路：** {{t3_price_channel}}
 - **為什麼是本週：** {{t3_why}}
 - **風險 / 別買的情況：** {{t3_risk}}
 
@@ -45,16 +51,19 @@
 
 ### 1. {{b1_item}}
 - **buy_angle：** {{b1_angle}} ｜ **預算帶：** {{b1_budget}} ｜ **優先度：** {{b1_priority}}
+- **價格 / 通路：** {{b1_price_channel}}
 - **為什麼是本週：** {{b1_why}}
 - **風險 / 別買的情況：** {{b1_risk}}
 
 ### 2. {{b2_item}}
 - **buy_angle：** {{b2_angle}} ｜ **預算帶：** {{b2_budget}} ｜ **優先度：** {{b2_priority}}
+- **價格 / 通路：** {{b2_price_channel}}
 - **為什麼是本週：** {{b2_why}}
 - **風險 / 別買的情況：** {{b2_risk}}
 
 ### 3. {{b3_item}}
 - **buy_angle：** {{b3_angle}} ｜ **預算帶：** {{b3_budget}} ｜ **優先度：** {{b3_priority}}
+- **價格 / 通路：** {{b3_price_channel}}
 - **為什麼是本週：** {{b3_why}}
 - **風險 / 別買的情況：** {{b3_risk}}
 
@@ -62,16 +71,19 @@
 
 ### 1. {{f1_item}}
 - **buy_angle：** {{f1_angle}} ｜ **預算帶：** {{f1_budget}} ｜ **優先度：** {{f1_priority}}
+- **價格 / 通路：** {{f1_price_channel}}
 - **為什麼是本週：** {{f1_why}}
 - **風險 / 別買的情況：** {{f1_risk}}
 
 ### 2. {{f2_item}}
 - **buy_angle：** {{f2_angle}} ｜ **預算帶：** {{f2_budget}} ｜ **優先度：** {{f2_priority}}
+- **價格 / 通路：** {{f2_price_channel}}
 - **為什麼是本週：** {{f2_why}}
 - **風險 / 別買的情況：** {{f2_risk}}
 
 ### 3. {{f3_item}}
 - **buy_angle：** {{f3_angle}} ｜ **預算帶：** {{f3_budget}} ｜ **優先度：** {{f3_priority}}
+- **價格 / 通路：** {{f3_price_channel}}
 - **為什麼是本週：** {{f3_why}}
 - **風險 / 別買的情況：** {{f3_risk}}
 
@@ -79,16 +91,19 @@
 
 ### 1. {{a1_item}}
 - **buy_angle：** {{a1_angle}} ｜ **預算帶：** {{a1_budget}} ｜ **優先度：** {{a1_priority}}
+- **價格 / 通路：** {{a1_price_channel}}
 - **為什麼是本週：** {{a1_why}}
 - **風險 / 別買的情況：** {{a1_risk}}
 
 ### 2. {{a2_item}}
 - **buy_angle：** {{a2_angle}} ｜ **預算帶：** {{a2_budget}} ｜ **優先度：** {{a2_priority}}
+- **價格 / 通路：** {{a2_price_channel}}
 - **為什麼是本週：** {{a2_why}}
 - **風險 / 別買的情況：** {{a2_risk}}
 
 ### 3. {{a3_item}}
 - **buy_angle：** {{a3_angle}} ｜ **預算帶：** {{a3_budget}} ｜ **優先度：** {{a3_priority}}
+- **價格 / 通路：** {{a3_price_channel}}
 - **為什麼是本週：** {{a3_why}}
 - **風險 / 別買的情況：** {{a3_risk}}
 

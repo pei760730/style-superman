@@ -123,6 +123,11 @@ Topic Analysis（每週至少一張，歐美優先）：把最強跨源趨勢寫
 - 對我有明確實穿價值或挑買決策價值。
 - 需要釐清市場誤解，例如「媒體在講，但我真的穿得上嗎、值得買嗎？」
 
+**品牌雷達（對話觸發，D11，2026-06-12）**：擁有者丟「深挖 <關鍵字>」→ 依 `prompts/brand_radar.md`
+產 `reports/analysis/YYYY-MM-DD-brand-radar-<關鍵字slug>.md`——該關鍵字下當下最值得關注的 ≤10 個品牌，
+分 tier（🔥領跑／📈升溫／👀早期）、三層證據、每牌附 lane 相容度與「定番不踩雷入手點」（D10 相容）、
+全品項覆蓋含配件。不排程、不定期——有關鍵字才開挖。
+
 **輸出位置**：`reports/analysis/`
 
 **分析重點**：
@@ -155,5 +160,6 @@ Topic Analysis（每週至少一張，歐美優先）：把最強跨源趨勢寫
 | 每週挑買 | AI 產週挑清單 | `prompts/weekly_buy_picks.md` | 決定買 / 等 / 跳過 |
 | Monthly report | AI 分層判斷 | `prompts/monthly_heat_report.md` | 確認信心、決定入手 |
 | Topic analysis | AI 整合 | 工程 / 格式輔助 | 拍板 |
+| 品牌雷達 | AI 深挖 | `prompts/brand_radar.md` | 給關鍵字、讀完決定追誰 |
 
 工程腳本負責確定性工作（填模板、算分、排序、檔案管理）；AI 負責語意整理與挑買建議；我負責品味與買不買。

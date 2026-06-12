@@ -146,6 +146,8 @@ Topic Analysis（每週至少一張，歐美優先）：把最強跨源趨勢寫
 
 - `data/sources.yml`：是否有新來源值得加入？舊來源是否失效？
 - `data/trend_taxonomy.yml`：是否有分類裝不下的新現象？
+- `data/trend_history.yml`：lifecycle 判斷的歷史基準（出生前記憶，2026-06-12 回填）——
+  雷達／深挖／月報判斷「炒作 vs 真趨勢」時先查這裡的週期位置；新趨勢成形時順手補一條。
 - `docs/trend_scoring_rules.md`：評分權重是否符合實際命中率（買了之後真的穿）？
 - `prompts/`：是否出現固定弱點，需要回頭硬化提示詞？
 - `reports/`：是否留下可回看的證據鏈，而不是只留結論？

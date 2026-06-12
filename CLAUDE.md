@@ -25,7 +25,7 @@
 ```
 Observe   → python scripts/repo_health.py        # 系統還活著嗎、文件↔程式碼有沒有漂移
 Diagnose  → 看 ERROR（一致性壞了）/ WARN（產線停了）；判斷類型與優先級
-Propose   → 中改以上先描述方案；涉及內容判斷 / 品牌觀點 / 費用 → 留給人類拍板
+Propose   → 工程問題看到就修、修的人負責到底（D12）；涉及內容判斷 / 品牌觀點 / 費用 → 留給人類拍板
 Patch     → 實際修改（branch + 單主題 PR）
 Validate  → python scripts/validate_repo.py && python tests/test_smoke.py && python scripts/repo_health.py --consistency
 Record    → 能力變更記 CHANGELOG.md；方向決策記 docs/decisions.md

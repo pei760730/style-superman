@@ -27,6 +27,10 @@
   **不開每日 EU 區**（實測 Numéro EN ≈0.2、Dazed ≈0.8 條男裝/天，多天為 0，肥料不足）——歐洲深度改由 `flow_calendar.md §5` 每週深挖位承載（優先男裝週/Pitti/歐洲品牌），Dazed / The Rake / nss / 032c 列人工參考源、不進每日自動源。詳見 `docs/decisions.md` D13
 
 ### Fixed
+- **daily-brief.yml push race**（2026-06-14 修;上輪巡檢記錄的已知洞）：23:00Z checkout 與 `git push`
+  之間若 master 有他人 commit,原本單發 `git push` 會 non-fast-forward 失敗、需手動重跑。改成
+  push 被拒就 `git pull --rebase origin master` 再試,最多 3 次（reports/daily 為唯一 per-date 檔,
+  rebase 不會衝突）。屬產線可靠性修正,無行為面擴張。
 - **清掉 D14 後殘留的「評分」文件漂移**（2026-06-14 sleep-mode 巡檢發現，補 #86 漏網）：score_trends 已於 D14 移除、趨勢挑選回歸主編判斷,但 8 個檔仍把「評分」寫成現行管線步驟/能力——
   `CLAUDE.md` + `README.md` 一句話使命的「分類→評分」改「分類→主編判斷」;README 時間軸「歸類、評分」改「主編判讀」、人機協作「骨架、評分」改「骨架、排行追蹤」、roadmap 去掉「評分規則」;
   `system_design.md` 設計原則「可解釋的評分／分數」改「可解釋的判斷／結論（不走自動評分,D14）」、輸出描述去掉「可評分」;`operating_manual.md` 刪掉指向不存在 `trends.json` 的「評分缺維度警告」疑難排解列;

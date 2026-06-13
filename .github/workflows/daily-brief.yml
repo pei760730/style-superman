@@ -68,7 +68,15 @@ jobs:
           if [ -n "$(git status --porcelain reports/daily)" ]; then
             git add reports/daily
             git commit -m "brief: auto skeleton + RSS signals ${{ steps.briefdate.outputs.date }}"
-            git push
+            # push race 防護:checkout→push 間隔內若 master 有他人 commit,原 git push 會
+            # non-fast-forward 失敗。先試 push,被拒就 rebase 到最新 master 再試,最多 3 次。
+            n=0
+            until git push; do
+              n=$((n+1))
+              if [ "$n" -ge 3 ]; then echo "push failed after ${n} attempts"; exit 1; fi
+              echo "push rejected (concurrent update?); rebasing onto origin/master (attempt ${n})…"
+              git pull --rebase origin master
+            done
           else
             echo "No new brief to commit."
           fi

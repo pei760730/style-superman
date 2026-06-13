@@ -29,7 +29,7 @@
 
 ## 輸出
 
-依 `templates/trend_card_template.md` 格式輸出，不新增 / 刪除 template 欄位。各欄位需有實質判斷，不可只填標籤。對 score 相關欄位（heat / growth / longevity / wearability / accessibility）給 0–5 的初步建議分，並一句話說明理由——這會餵給 score_trends.py。語氣要像編輯判斷，不像品牌新聞稿：有觀點、但實用優先；不確定處標 `待查`。
+依 `templates/trend_card_template.md` 格式輸出，不新增 / 刪除 template 欄位。各欄位需有實質判斷，不可只填標籤。語氣要像編輯判斷，不像品牌新聞稿：有觀點、但實用優先；不確定處標 `待查`。
 
 ## 注意
 

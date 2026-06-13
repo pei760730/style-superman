@@ -61,24 +61,6 @@ python scripts/generate_monthly_heat_report.py --month 2026-06 --draft   # 產 *
 
 對照每月 1 號的遠端排程（全自動產全文），這支是「本地手動產骨架」的入口。內容判斷見 `prompts/monthly_heat_report.md`。
 
-### `score_trends.py`
-對趨勢清單做加權評分與排序。權重與分級門檻見 [docs/trend_scoring_rules.md](../docs/trend_scoring_rules.md)。
-
-```bash
-python scripts/score_trends.py --demo                  # 用內建範例驗證
-python scripts/score_trends.py --input trends.json     # 讀外部清單
-python scripts/score_trends.py --demo --json           # 輸出 JSON
-```
-
-輸入 JSON 格式：
-
-```json
-[
-  {"name": "barrel jeans", "heat": 4, "growth": 5,
-   "longevity": 3, "wearability": 4, "accessibility": 3}
-]
-```
-
 ### `repo_health.py`
 Repo 自我健康檢查（Self-Evolution Loop 的 Observe / Diagnose / Next Action 層）。
 檢查**一致性**（每支腳本有沒有文件、文件提到的路徑存不存在、孤兒檔、workflow 引用、
@@ -139,10 +121,7 @@ python scripts/track_rankings.py --json              # 輸出 JSON
 # 1. 產出今天的骨架
 python scripts/generate_daily_brief.py
 
-# 2. 收集訊號 → 用 prompts/ 讓 AI 整理 → 填進 brief
-# 3. 把候選趨勢整理成 trends.json
-# 4. 評分排序，決定主打哪幾個
-python scripts/score_trends.py --input trends.json
+# 2. 收集訊號 → 用 prompts/ 讓 AI 整理 → 填進 brief（趨勢挑選由主編判斷，見 prompts/daily_trend_brief.md）
 ```
 
 ## 驗收 / 測試

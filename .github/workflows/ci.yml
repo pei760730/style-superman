@@ -25,7 +25,7 @@ jobs:
       - name: Compile Python scripts
         run: python -m py_compile scripts/*.py
 
-      # 單一驗收入口：validate_repo / repo_health / score_trends / track_rankings /
+      # 單一驗收入口：validate_repo / repo_health / track_rankings /
       # generate_* 全部由 test_smoke 內部執行——不在這裡重複跑（同樣的事兩遍 = 浪費 + 雙處維護）。
       - name: Acceptance smoke tests
         env:

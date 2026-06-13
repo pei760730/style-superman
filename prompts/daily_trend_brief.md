@@ -16,7 +16,6 @@
   #   在 egress 正常環境收好、落檔在 `reports/daily/<date>.signals.yml`**——優先讀這個檔當 RAW_SIGNALS，
   #   不要只靠自己現抓 RSS。填完 brief 後在同一個 PR 內 `git rm` 掉該 .signals.yml（中間產物，不留 master）。
 - `TAXONOMY`: 見 data/trend_taxonomy.yml
-- `SCORED_TRENDS`: {{scored_trends}}  # score_trends.py 的輸出（可選）
 
 ## 任務
 

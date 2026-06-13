@@ -138,7 +138,6 @@ style-superman/
 │   ├── generate_weekly_buy_picks.py     # 週挑骨架
 │   ├── generate_monthly_heat_report.py  # 月報骨架
 │   ├── collect_raw_signals.py           # RSS → raw_signal_pack
-│   ├── score_trends.py                  # 趨勢評分
 │   ├── track_rankings.py                # 排行檢視 + 名次演化
 │   ├── ingest_ranking_snapshot.py       # 安全加入排行快照
 │   ├── validate_repo.py                 # 格式契約檢查（CI）
@@ -148,7 +147,6 @@ style-superman/
 │   ├── system_design.md         # 架構設計
 │   ├── style_strategy.md        # 情報支柱、調性與個人成功指標
 │   ├── flow_calendar.md         # daily → weekly → monthly → analysis 節奏
-│   ├── trend_scoring_rules.md   # 評分規則（wearability 等維度）
 │   ├── operating_manual.md      # 營運手冊
 │   ├── ai_collaboration.md      # 帽子原則 + 不自我終審 + 誰拍板（D7 已瘦身）
 │   ├── rankings.md              # 排行快照方法論（口徑分開、不硬湊）

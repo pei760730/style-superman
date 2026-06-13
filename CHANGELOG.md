@@ -4,6 +4,13 @@
 
 ## [Unreleased]
 
+### Removed
+- **趨勢加權評分框架 score_trends（D14，2026-06-14）**：刪 `scripts/score_trends.py` + `docs/trend_scoring_rules.md`；
+  趨勢卡移除 `## 評分（0–5）` 段（`trend_card_template.md` / `validate_repo.py` 必含字串 / `prompts/trend_analysis.md` 同步）；
+  `prompts/daily_trend_brief.md` 移除 SCORED_TRENDS input；`system_design.md` 管線移除「評分」階、`operating_manual.md` 移除評分步驟、
+  `flow_calendar.md` / `rankings.md` / `scripts/README.md` / `README.md` / `ci.yml` / `tests/test_smoke.py` 一併清除引用。
+  根因：腳本只在 smoke 空跑、產線從不餵真資料、趨勢挑選實際全靠主編判斷（沒人用＝0，反熵）。排行快照仍保留為 L1 佐證。
+
 ### Changed
 - **月報自動帶入 Lyst 季對季名次變動**（2026-06-14 啟用既有但從未用過的 `track_rankings --compare`）：
   `compare_lyst` 抽出可回傳字串的 `lyst_comparison_text()`；`generate_monthly_heat_report.py` 在 us-eu 骨架的

@@ -36,20 +36,6 @@
 
 ---
 
-## 評分（0–5，餵給 score_trends.py）
-
-| 維度 | 分數 | 理由 |
-|------|:----:|------|
-| 熱度 heat | {{heat}} | {{heat_reason}} |
-| 成長性 growth | {{growth}} | {{growth_reason}} |
-| 持續性 longevity | {{longevity}} | {{longevity_reason}} |
-| 可駕馭度 wearability | {{wearability}} | {{wearability_reason}} |
-| 落地度 accessibility | {{accessibility}} | {{acc_reason}} |
-
-**綜合分（由腳本計算）：** {{total_score}}
-
----
-
 ## 相關
 - **品牌：** {{related_brands}}
 - **人物：** {{related_people}}

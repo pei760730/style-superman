@@ -102,9 +102,9 @@ python scripts/track_rankings.py --source lyst --compare
 ```
 會用我們自己的歷史算出每個品牌名次的 ↑ / ↓ / 新進 / 掉榜，而非只看來源標示。
 
-## 與評分系統的關係
+## 在判斷裡的角色
 
-Rankings 是 `score_trends.py` 的**外部佐證輸入**：一個趨勢若同時出現在 Lyst 上升品牌或 StockX 熱銷榜，它的 `heat` / `growth` 分就有客觀依據，而非純主觀判斷。
+Rankings 是**唯一的 L1 硬數據佐證**：一個趨勢若同時出現在 Lyst 上升品牌或 StockX 熱銷榜，主編判斷它在升溫就有客觀依據，而非純主觀。月報 `## 🆚 對照量化基準` 段會自動帶入 Lyst 季對季變動（見 `track_rankings.py --compare`）。
 
 ## 目前資料
 

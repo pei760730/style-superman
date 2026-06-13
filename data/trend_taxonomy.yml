@@ -1,6 +1,6 @@
 # trend_taxonomy.yml
 # 趨勢分類體系。每個被收集到的訊號都應被歸到一個 category + 若干 tags。
-# 這是整套系統的「語言」——評分、簡報、挑買判斷都依賴它。
+# 這是整套系統的「語言」——簡報、挑買判斷都依賴它。
 
 version: 1
 
@@ -64,7 +64,7 @@ tag_groups:
     - enthusiast    # 潮流玩家
     - niche         # 小眾垂直
 
-  lifecycle:        # 趨勢生命週期（影響評分權重）
+  lifecycle:        # 趨勢生命週期（炒作 vs 真趨勢的判別軸；基準見 data/trend_history.yml）
     - emerging      # 剛冒頭
     - rising        # 快速升溫
     - peak          # 高峰

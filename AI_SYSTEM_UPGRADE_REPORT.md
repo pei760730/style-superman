@@ -120,3 +120,104 @@ Branch cleanup candidates 一節有誤:所列 10 條「遠端 topic 分支」實
 remote-tracking refs**(遠端早已刪除,`git fetch --prune` 即清掉)。遠端實況只有 master。
 已開啟 repo 設定 delete_branch_on_merge,之後 merge 即自動刪 head 分支。
 紅路徑(issue 自動開出)已於同日實彈演習驗證(run 27430529539 → issue #76,演習後關閉)。
+
+---
+
+## Run 2026-06-14 (HEAD b8036c7)
+
+### Base
+- Branch / HEAD / Repo root / Time: `master` / `b8036c7` / `C:/Users/user/projects/style-superman` / 2026-06-14 01:52 CST
+- Working tree before changes: clean（與 origin/master 同步）
+- Working tree after changes: 12 個 modified（見 Change ledger）；無 commit / push / branch
+- Pre-existing modified files: 無
+- Pre-existing untracked files: 無
+
+### Project snapshot
+- Project type: 個人男裝潮流情報 + 挑買決策系統（AI agent 長期維護；docs/config/automation 複合型）
+- Primary language: Python（標準庫 + pyyaml）
+- Entrypoints: `scripts/`（generate_ / collect_ / track_ / validate_ / repo_health / ingest_）
+- Automation: 3 個 workflows（ci / daily-brief / health）+ 雲端排程 routine
+- Validation: `validate_repo.py`、`tests/test_smoke.py`（**18** cases，score_trends 砍後從 20 降）、`repo_health.py --consistency|--strict`
+- AI instruction files: `CLAUDE.md`（成熟）；本輪修正其使命句殘留漂移
+- High-risk areas: `daily-brief.yml` 直推 master；`data/decision_guards.yml` 守衛；`reports/` 封存快照不回改
+
+### What I inspected
+自上次巡檢（06-13）後新增 4 個 merge（#84 月報 compare、#85 people 10→3、#86 全砍 score_trends/D14、#87 啟用 trend_history）。
+本輪聚焦「被移除元件是否仍被文件描述成現行」這類一致性檢查器抓不到的 prose 漂移：
+全 repo grep `評分/加權/score`、`insight`、`trends.json`、people 數量宣稱；交叉比對 D14（score_trends 砍）
+與 2026-06-11（insight 層砍）的實況。未深讀 reports/ 內容層（內容判斷屬主編/人類）。
+
+### System-level issues found
+#### High risk
+無。working tree 乾淨、驗收三件套全綠、無 conflict residue、無 secrets 疑慮。
+
+#### Medium risk
+1. **D14 後「評分」文件漂移（補 #86 漏網）**：score_trends 已砍、趨勢挑選回歸主編判斷,但 9 處 prose
+   仍把「評分」寫成現行管線步驟/能力（含 `CLAUDE.md` + `README.md` 的一句話使命）。一致性檢查器只抓
+   dir-prefixed 路徑,抓不到這類概念性 prose → 下個 agent/人讀了會去找不存在的 score_trends 或誤以為有評分步驟。
+2. **insight 層殘留引用（補 2026-06-11 漏網）**：中間 insight 層 06-11 已移除,但 3 處（2 個 code 註解 +
+   scripts/README）仍把「語意級離題判斷」寫成交給 insight 層 → 同類「移除元件仍被描述成 live 下游」。
+
+#### Low risk
+3. `docs/operating_manual.md` 疑難排解列指向不存在的 `trends.json`（score_trends 配套,已不存在）→ dead reference。
+
+### Change ledger
+| File | Change | Reason | Risk | Verification |
+|---|---|---|---|---|
+| CLAUDE.md | 使命句「分類→評分」→「分類→主編判斷」 | D14:無自動評分 | low(文字) | grep clean + triad 綠 |
+| README.md | 使命句/時間軸/人機協作/roadmap 4 處去評分 | 同上 | low(文字) | 同上 |
+| docs/system_design.md | 設計原則「可解釋的評分」→「可解釋的判斷(不走自動評分,D14)」;輸出去「可評分」 | 同上 | low(文字) | 同上 |
+| docs/operating_manual.md | 刪「評分缺維度警告/trends.json」疑難排解列 | dead ref | low(刪列) | 同上 |
+| docs/flow_calendar.md | 回饋迴路去「評分規則/權重」 | 同上 | low(文字) | 同上 |
+| docs/style_strategy.md | 「校準評分」→「校準挑買判斷」 | 同上 | low(文字) | 同上 |
+| prompts/trend_analysis.md | 標頭「供評分」→「供簡報」 | 評分段#86已移除 | low(prose,非判斷規則) | 同上 |
+| templates/trend_card_template.md | 標頭「供評分」→「供簡報」 | 同上 | low(prose,非欄位token) | validate 綠 |
+| data/trend_taxonomy.yml | 2 處 YAML 註解去評分字眼 | 同上 | low(註解) | YAML 可解析 |
+| scripts/collect_raw_signals.py | 2 處註解 insight 層→主編 agent | 06-11 移除 | low(註解) | smoke 18 綠 + compileall |
+| scripts/README.md | insight 層→主編 agent | 同上 | low(文字) | 同上 |
+| CHANGELOG.md | 記 2 條 Fixed | repo 慣例 | low | — |
+
+### Files changed
+`CLAUDE.md`、`README.md`、`docs/system_design.md`、`docs/operating_manual.md`、`docs/flow_calendar.md`、
+`docs/style_strategy.md`、`prompts/trend_analysis.md`、`templates/trend_card_template.md`、
+`data/trend_taxonomy.yml`、`scripts/collect_raw_signals.py`、`scripts/README.md`、`CHANGELOG.md`、
+`AI_SYSTEM_UPGRADE_REPORT.md`（本檔）。共 12 檔 +21/-17（不含本報告）。
+
+### Verification run
+| Check | Command | Result | Notes |
+|---|---|---|---|
+| 契約驗證 | `python scripts/validate_repo.py` | ✅ 全綠 | 改動後 |
+| 煙霧測試 | `python tests/test_smoke.py` | ✅ 18 passed, 0 failed | 含改過的 collect_raw_signals |
+| 健檢一致性 | `python scripts/repo_health.py --consistency` | ✅ 一切健康,無待辦 | |
+| 編譯 | `python -m compileall -q scripts tests` | ✅ | |
+| YAML 可解析 | `yaml.safe_load(trend_taxonomy.yml)` | ✅ | 確認改註解未壞 YAML |
+| 殘留 grep | `git grep 評分/加權/insight 層 live` | ✅ CLEAN（剩的全是「不走自動評分」/D14 移除註記） | |
+
+### Issues fixed (with evidence)
+1–3 全部對應 Verification run；最終 grep 確認 live prose 中已無把評分/insight 層當現行步驟的描述,
+僅存正確的「已移除」歷史註記。所有改動皆為文字/註解,零邏輯。
+
+### Existing issues not fixed
+- `daily-brief.yml` push race（上輪已記,行為變更不在低風險範圍）。
+- 上輪 gh `// empty` 修正仍待下次 health patrol 真紅一次時觀察（已於 06-13 實彈演習驗過紅路徑,見上一 Run）。
+
+### Remaining risks
+- 無新增風險。本輪純文件對齊,不影響任何產線行為;最壞情況是文字描述,不會讓能動的東西壞掉。
+
+### Branch cleanup candidates
+#### Possibly safe to delete after human review
+- 本機分支（merged-by-ancestry,確認可刪）：`brief/2026-06-10`、`brief/2026-06-11-v2-action-ledger`、
+  `buy-pick/2026-06-12-teva-nhoolywood`。
+- 本機過期 remote-tracking refs：`git fetch --prune` 即清（repo 已開 delete_branch_on_merge,遠端實況僅 master）。
+  注意 squash-merge 的分支不會被 `--merged` 認出,勿據此誤判未 merge。
+#### Do not delete yet
+- 無 ancestry 上真正未 merge 的分支。
+
+### Recommended next actions
+1. 走 branch + 單主題 PR 提交本輪（建議單一 PR：純文件漂移清理,主題一致）;CI 綠後 merge。
+2. （選配）`git fetch --prune` + 刪 3 條本機 merged 分支,清掉 stale 視圖。
+
+### Safe to commit?
+- Yes
+- Why: 12 檔全為文件/註解文字對齊,零邏輯;驗收三件套 + smoke 18 全綠;無行為擴張、無 secrets、可逆。
+- Conditions before commit: 依 repo 慣例 branch + 單主題 PR（主題：清 D14/insight 移除後的殘留 prose 漂移）。

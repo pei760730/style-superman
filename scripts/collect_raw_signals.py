@@ -48,7 +48,7 @@ ATOM = "{http://www.w3.org/2005/Atom}"
 
 # 社群來源（type: community）的標題層 spam 過濾。
 # 背景：2026-06-10 brief 收集備註——reddit-techwear 被盜播 spam 灌版（8 則中 5 則）。
-# 只攔「明顯非時尚」的盜播 / 導流模式，寧可漏放給 insight 層判斷，不誤殺正常貼文；
+# 只攔「明顯非時尚」的盜播 / 導流模式，寧可漏放給主編 agent 判斷，不誤殺正常貼文；
 # 濾掉幾則一律記 warning（不靜默，見 CLAUDE.md 誠實原則）。
 SPAM_RE = re.compile(
     r"(?i)"
@@ -61,7 +61,7 @@ SPAM_RE = re.compile(
 
 
 def is_spam(title: str, summary: str = "") -> bool:
-    """標題層 spam 判定（盜播 / 導流類）。語意級的離題判斷仍交 insight 層。"""
+    """標題層 spam 判定（盜播 / 導流類）。語意級的離題判斷仍交主編 agent（讀 pack 時）。"""
     return bool(SPAM_RE.search(f"{title} {summary}"))
 
 

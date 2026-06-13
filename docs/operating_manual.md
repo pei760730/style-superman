@@ -97,5 +97,4 @@ python scripts/repo_health.py
 |------|------|
 | `ModuleNotFoundError: yaml` | `pip install pyyaml` |
 | brief 已存在不覆蓋 | 故意的防呆；要重產先刪檔或用 `--draft` |
-| 評分缺維度警告 | `trends.json` 補齊五個維度 |
 | 中文在終端機亂碼 (Windows) | 設 `PYTHONIOENCODING=utf-8` |

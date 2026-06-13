@@ -77,7 +77,7 @@
 
 ---
 
-## 九個拍板（系統為什麼長這樣）
+## 十四個拍板（系統為什麼長這樣）
 
 完整背景與選項見 [docs/decisions.md](docs/decisions.md)，這裡是速覽：
 
@@ -92,6 +92,11 @@
 | D7 | 第一性原理瘦身 | 砍死迴圈與手動勞動依賴；立反熵三原則（新流程不得依賴人類定期手動勞動） |
 | D8 | 終審 ≠ merge | 例行產出驗證綠即自 merge；main 是系統記憶不是批准章，我的終審是事後反饋 |
 | D9 | 挑買卡停產 | 推薦只寫在 brief For Me / 週挑，深度功課我自己做 |
+| D10 | 可購性門檻 | 推薦位只推「隨時買得到」的定番款；限定聯名只當訊號、不當入手點 |
+| D11 | 品牌雷達 | 「深挖 <關鍵字>」對話觸發，產 ≤10 大品牌雷達（分 tier + lane 相容度）；不排程 |
+| D12 | 看到問題就修 | 工程修正不需事前請示、修的人負責到底；內容判斷仍留人類 |
+| D13 | 歐美不拆每日兩區 | 歐洲男裝肥料不足，深度走每週深挖位；順手收 Drapers 當零售 intel |
+| D14 | score_trends 停用 | 砍加權評分框架，趨勢挑選回歸主編判斷（評分從未真正驅動挑選） |
 
 ---
 
@@ -114,8 +119,9 @@ style-superman/
 ├── CLAUDE.md                 # agent 執行守則（定位鐵則 + Self-Evolution Loop）
 ├── requirements.txt          # Python 相依（標準庫 + pyyaml）
 ├── data/                     # 知識底層（長期維護，不是快照）
-│   ├── sources.yml           # 情報來源 42 個（28 個可 RSS 自動收）
+│   ├── sources.yml           # 情報來源 42 個（29 個可 RSS 自動收）
 │   ├── trend_taxonomy.yml    # 趨勢分類體系（系統的「語言」）
+│   ├── trend_history.yml     # 趨勢生命週期基準（炒作 vs 真趨勢；雷達 / 深挖 prompt 引用）
 │   ├── brands.yml            # 追蹤品牌（含 contemporary lane 錨點）
 │   ├── people.yml            # 追蹤人物
 │   ├── decision_guards.yml   # 決策守衛：禁用識別字（CI 強制）
@@ -150,7 +156,7 @@ style-superman/
 │   ├── operating_manual.md      # 營運手冊
 │   ├── ai_collaboration.md      # 帽子原則 + 不自我終審 + 誰拍板（D7 已瘦身）
 │   ├── rankings.md              # 排行快照方法論（口徑分開、不硬湊）
-│   ├── decisions.md             # 方向決策紀錄（D1–D9）
+│   ├── decisions.md             # 方向決策紀錄（D1–D14）
 │   └── lessons.md               # 教訓簿（殭屍任務卡三例都在這）
 └── .github/workflows/
     ├── ci.yml                # PR validate + smoke

@@ -25,30 +25,17 @@ python scripts/generate_daily_brief.py
 - raw_signal_pack 是事實層，由寫 brief 的主編 agent 直接判讀收斂（不經中間 insight 層）。
 - 重點放在「新訊號」與「跨來源重複出現」的東西。
 
-### Step 3 — 整理候選趨勢
-把當天 insight 收斂成幾個候選趨勢，每個用 `prompts/trend_analysis.md` 做成 trend card，
-並給五維度初步分。整理成 `trends.json`：
+### Step 3 — 挑出今日趨勢
+把當天訊號收斂成幾個候選趨勢，**由主編判斷**挑出今日 headline（哪些值得追、能不能穿 / 買）。
+值得長線深挖的題目用 `prompts/trend_analysis.md` 做成 trend card（週深挖旁支，不是每日必做）。
 
-```json
-[
-  {"name": "...", "heat": 4, "growth": 5,
-   "longevity": 3, "wearability": 4, "accessibility": 3}
-]
-```
+### Step 4 — 寫 brief
+用 `prompts/daily_trend_brief.md` 把挑選結果寫成完整 brief，填回 `reports/daily/YYYY-MM-DD.md`。
 
-### Step 4 — 評分排序
-```bash
-python scripts/score_trends.py --input trends.json
-```
-看哪些落在 🔥 主打 / ✅ 採用，決定今天 brief 的 headline。
-
-### Step 5 — 寫 brief
-用 `prompts/daily_trend_brief.md` 把排序結果寫成完整 brief，填回 `reports/daily/YYYY-MM-DD.md`。
-
-### Step 6 — 出挑買方向
+### Step 5 — 出挑買方向
 挑買推薦直接寫在 brief 的 `🛒 對我有用 For Me`（D9：不開獨立挑買卡）；週度收斂走週挑 `reports/buy_shortlist/`。
 
-### Step 7 — 封存
+### Step 6 — 封存
 ```bash
 git add reports/daily/YYYY-MM-DD.md
 git commit -m "brief: YYYY-MM-DD"
@@ -76,8 +63,6 @@ git commit -m "brief: YYYY-MM-DD"
 
 - 產出或回看 `reports/monthly/YYYY-MM-eu.md` 與 `YYYY-MM-jp.md`（日本線 2026-07 起），確認月報有標訊號來源分層、信心與抓取限制。
   （要手動產骨架：`python scripts/generate_monthly_heat_report.py --month YYYY-MM [--region jp]`；每月 1 號排程會自動產全文。）
-- 回測評分命中率（見 `trend_scoring_rules.md` §6）。
-- 視數據調整評分權重 / 情報支柱佔比，並記到 `CHANGELOG.md`。
 - 若月報暴露固定弱點（例如電商即時 best-seller 訊號不足），回頭硬化相關 prompts / templates。
 
 ## 4. 維護 data/

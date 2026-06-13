@@ -7,7 +7,6 @@ test_smoke.py — 核心腳本的最小穩定驗收（C5）
 
 涵蓋：
 - validate_repo（契約）
-- score_trends --demo
 - track_rankings --json
 - generate_daily_brief --draft（產後即刪）
 - generate_monthly_heat_report --draft（產後即刪）
@@ -55,28 +54,7 @@ def main() -> int:
     r = run(["scripts/validate_repo.py"])
     check("validate_repo exit 0", r.returncode == 0, r.stdout + r.stderr)
 
-    # 2. score_trends demo
-    r = run(["scripts/score_trends.py", "--demo"])
-    check("score_trends --demo", r.returncode == 0 and "主打" in r.stdout, r.stderr)
-
-    # 2b. 計分公式已知答案：washed-denim 趨勢卡的 4/4/4/5/4 = 85.0（reports/analysis/2026-washed-denim.md）。
-    #     權重若被改而沒同步 docs/trend_scoring_rules.md，這裡會先紅。
-    sys.path.insert(0, str(ROOT / "scripts"))
-    import score_trends as st  # noqa: E402
-
-    known = {"heat": 4, "growth": 4, "longevity": 4, "wearability": 5, "accessibility": 4}
-    ok_score = (
-        st.score_one(dict(known)) == 85.0
-        and st.score_one({d: 5 for d in st.DIMENSIONS}) == 100.0
-        and st.tier_of(75.0) == "🔥 主打 (push)"      # 分級門檻是閉區間下界
-        and st.tier_of(74.9) == "✅ 採用 (use)"
-        and st.tier_of(54.9) == "👀 觀察 (watch)"
-        and st.tier_of(39.9) == "🧊 暫存 (park)"
-        and abs(sum(st.WEIGHTS.values()) - 1.0) < 1e-9   # 權重總和必為 1
-    )
-    check("score_trends 計分公式 + 分級門檻", ok_score, str(st.score_one(dict(known))))
-
-    # 3. track_rankings json — 不只「長得像 JSON」，要真的可解析且含 lyst 榜結構
+    # 2. track_rankings json — 不只「長得像 JSON」，要真的可解析且含 lyst 榜結構
     import json as _json
 
     r = run(["scripts/track_rankings.py", "--json"])

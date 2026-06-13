@@ -1,10 +1,16 @@
 name: Daily Brief
 
-# 每日自動產出 Daily Brief 骨架。
+# 每日自動產出 Daily Brief 骨架 + 當日 RSS 訊號包。
 #
-# 現階段只跑 generate_daily_brief.py（填模板 + 來源摘要），
-# 把骨架 commit 回 repo。趨勢內容由對話中的 agent / 排程雲端 agent 補上
-# ——不在 workflow 內呼叫 LLM API（決策 D5，見 docs/decisions.md）。
+# 跑 generate_daily_brief.py --with-rss：填模板骨架 + 在 egress 正常的 Actions
+# 環境收集當日 RSS 訊號，寫成 reports/daily/<date>.signals.yml 一併 commit。
+# 趨勢內容由對話中的 agent / 排程雲端 agent 補上——不在 workflow 內呼叫 LLM API（D5）。
+#
+# 為什麼在這裡收 RSS（2026-06-13）：雲端填寫 routine 的 sandbox 連不到 feed
+# （PR #78 自述「RSS 28 源全降級」、退回 WebSearch 只湊 17 條），但 GitHub Actions
+# 的 ubuntu runner egress 正常（本機同腳本可收 200+ 則）。把收集搬到這層、訊號落檔交棒，
+# 寫手只負責「讀 signals + WebFetch 補內文 + 寫」，不再自己抓 RSS。
+# signals 檔是中間產物：寫手填完 brief 後在同 PR 刪掉它（見 prompts/daily_trend_brief.md）。
 #
 # 觸發方式：
 #   - workflow_dispatch：手動觸發
@@ -46,18 +52,22 @@ jobs:
           echo "date=$d" >> "$GITHUB_OUTPUT"
           echo "Brief date (Taipei): $d / runner UTC: $(date -u +%FT%TZ)"
 
-      - name: Generate daily brief skeleton
+      - name: Generate daily brief skeleton + collect RSS signals
         env:
           PYTHONIOENCODING: utf-8
-        run: python scripts/generate_daily_brief.py --date "${{ steps.briefdate.outputs.date }}"
+        run: |
+          python scripts/generate_daily_brief.py \
+            --date "${{ steps.briefdate.outputs.date }}" \
+            --with-rss \
+            --raw-signals-out "reports/daily/${{ steps.briefdate.outputs.date }}.signals.yml"
 
-      - name: Commit brief if changed
+      - name: Commit brief + signals if changed
         run: |
           git config user.name "style-superman-bot"
           git config user.email "actions@github.com"
           if [ -n "$(git status --porcelain reports/daily)" ]; then
             git add reports/daily
-            git commit -m "brief: auto skeleton ${{ steps.briefdate.outputs.date }}"
+            git commit -m "brief: auto skeleton + RSS signals ${{ steps.briefdate.outputs.date }}"
             git push
           else
             echo "No new brief to commit."

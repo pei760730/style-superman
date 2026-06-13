@@ -1,6 +1,6 @@
 # Prompt — Trend Analysis
 
-對單一趨勢做深度拆解，產出一張結構化的 trend card，供評分與挑買使用。
+對單一趨勢做深度拆解，產出一張結構化的 trend card，供簡報與挑買使用。
 
 ---
 

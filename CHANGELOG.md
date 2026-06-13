@@ -27,6 +27,11 @@
   **不開每日 EU 區**（實測 Numéro EN ≈0.2、Dazed ≈0.8 條男裝/天，多天為 0，肥料不足）——歐洲深度改由 `flow_calendar.md §5` 每週深挖位承載（優先男裝週/Pitti/歐洲品牌），Dazed / The Rake / nss / 032c 列人工參考源、不進每日自動源。詳見 `docs/decisions.md` D13
 
 ### Fixed
+- **清掉 D14 後殘留的「評分」文件漂移**（2026-06-14 sleep-mode 巡檢發現，補 #86 漏網）：score_trends 已於 D14 移除、趨勢挑選回歸主編判斷,但 8 個檔仍把「評分」寫成現行管線步驟/能力——
+  `CLAUDE.md` + `README.md` 一句話使命的「分類→評分」改「分類→主編判斷」;README 時間軸「歸類、評分」改「主編判讀」、人機協作「骨架、評分」改「骨架、排行追蹤」、roadmap 去掉「評分規則」;
+  `system_design.md` 設計原則「可解釋的評分／分數」改「可解釋的判斷／結論（不走自動評分,D14）」、輸出描述去掉「可評分」;`operating_manual.md` 刪掉指向不存在 `trends.json` 的「評分缺維度警告」疑難排解列;
+  `flow_calendar.md` 回饋迴路去掉「評分規則／權重」;`style_strategy.md` 衣櫥回饋「校準評分」改「校準挑買判斷」;`trend_card_template.md` / `trend_analysis.md` 標頭「供評分」改「供簡報」（評分段已於 #86 移除）;`trend_taxonomy.yml` 兩處註解去掉評分字眼。純文件/註解,無邏輯改動。
+- **清掉 insight 層殘留引用**（同輪巡檢,補 2026-06-11 移除漏網）：中間 insight 層 06-11 已移除(主編 agent 直接讀 pack),但 `scripts/collect_raw_signals.py` 兩處註解 + `scripts/README.md` 仍把「語意級離題判斷」寫成交給 insight 層——改為「交主編 agent（讀 pack 時判讀）」。純註解/文件,無邏輯改動。
 - **health.yml 巡檢假成功**（2026-06-13 sleep-mode 巡檢發現）：`repo_health --strict | tee` 在
   Actions 預設 shell（`bash -e`、無 pipefail）下，失敗 exit code 被 tee 吃掉——看門狗永遠綠、
   issue 永遠不會開。補 `set -o pipefail`；同步修 issue 查詢 `--jq` 無開啟 issue 時印出

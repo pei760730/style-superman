@@ -4,6 +4,11 @@
 
 ## [Unreleased]
 
+### Added
+- **Drapers 來源 + 歐洲深度走每週深挖位（D13）**（2026-06-13 擁有者問「歐美能不能拆兩區」，評估＋2 週實測後拍板）：
+  收 Drapers（英國時裝零售日報）進 `data/sources.yml`（us-eu / media / tier2，RSS 實測可解析），定位零售/通路 intel、餵 brief「值得買｜通路」軸、不當 headline 來源；
+  **不開每日 EU 區**（實測 Numéro EN ≈0.2、Dazed ≈0.8 條男裝/天，多天為 0，肥料不足）——歐洲深度改由 `flow_calendar.md §5` 每週深挖位承載（優先男裝週/Pitti/歐洲品牌），Dazed / The Rake / nss / 032c 列人工參考源、不進每日自動源。詳見 `docs/decisions.md` D13
+
 ### Fixed
 - **health.yml 巡檢假成功**（2026-06-13 sleep-mode 巡檢發現）：`repo_health --strict | tee` 在
   Actions 預設 shell（`bash -e`、無 pipefail）下，失敗 exit code 被 tee 吃掉——看門狗永遠綠、

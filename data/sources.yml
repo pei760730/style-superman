@@ -129,6 +129,15 @@ sources:
     rss: https://www.permanentstyle.com/feed   # 注意：無尾斜線（/feed/ 會失敗）；2026-06-11 實測可解析
     notes: 倫敦 tailoring / craft 權威獨立媒體；經典男裝品質判斷的深度參照，更新頻率低但篇篇紮實
 
+  - id: drapers
+    name: Drapers
+    region: us-eu
+    type: media
+    tier: 2
+    url: https://www.drapersonline.com/
+    rss: https://www.drapersonline.com/feed   # 2026-06-13 實測可解析（2 週 sitemap 驗證、高量穩定）
+    notes: 英國時裝零售產業日報；零售/通路 intel（品牌動向、人事、漲價、零售布局），非消費趨勢——餵「值得買｜通路」軸，不當 trend headline 來源（D13）
+
   # ---------- 日潮 ----------
   - id: hypebeast-jp
     name: Hypebeast JP

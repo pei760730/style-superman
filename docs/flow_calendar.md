@@ -116,6 +116,8 @@ Topic Analysis（每週至少一張，歐美優先）：把最強跨源趨勢寫
 直連挑買判斷（範本見 `reports/analysis/2026-washed-denim.md`）。一年累積 ≈50 張卡＝自己的歐美趨勢資料庫。
 訊號真的弱的週可以停一次，但要在週挑 shortlist 註明「本週無值得深挖的跨源趨勢」，不硬寫。
 
+**歐洲深度走這裡，不開每日 EU 區（D13，2026-06-13）**：實測歐洲男裝 RSS 肥料不足（Numéro EN ≈0.2 條/天、Dazed ≈0.8 條/天，多天為 0），不足以撐每日 EU 區。歐洲男裝是「事件驅動」——故 EU 深度由**這個每週深挖位**承載，優先輪替男裝週（SS27 Milan / Paris MFW·PFW）、Pitti Uomo、歐洲品牌題；訊號跨現有全球源（BoF / Hypebeast / Highsnobiety）＋**人工參考源 Dazed `/fashion`、The Rake、nss、032c**（這些無可用 RSS 或被擠出 feed，不進每日自動源，深挖週手動查）。
+
 **入選條件**（符合任一即可）：
 
 - 同一趨勢連續 2–4 週出現在 daily / monthly 產物。

@@ -367,3 +367,24 @@ PR #73/#74 CI 綠後，merge 卡在授權模糊：「你修你負責的」被權
   改 template 契約、花錢、對外發布、開新排程仍留人類拍板。本決策只解放工程修正的
   「請示 → 等人」這一步。
 - 同步：CLAUDE.md Self-Evolution Loop 的 Propose 行。
+
+---
+
+## D13 — 歐美不拆每日兩區；歐洲深度走每週深挖位 + 收 Drapers（2026-06-13）
+
+### 背景
+
+擁有者問「歐洲跟美國資訊量夠不夠分開兩區」。先評估後實測：
+- 近兩日 us-eu+global 訊號 美:歐 ≈ 40:6，歐洲專屬可用 RSS 來源實際只有 2 個（fucking-young、permanent-style）。
+- 兩輪共測 40 個歐洲來源候選 URL（用 repo 自己的 parser 驗）：最對味的純男裝源（The Rake / nss / 032c / Pause / Mr Porter / SHOWstudio）無可用 RSS 或 parser 讀不到；能抓的多是音樂誌或 GQ 各國版（gq-korea 等級的生活風格稀釋），Hypebeast 法/德版是翻譯重複。
+- 對 Numéro EN / Dazed 做 2 週 sitemap 產量量測：**Numéro EN 男裝 ≈0.21 條/天（且含泳裝誤判，真男裝近 0）、Dazed ≈0.8 條/天，多天為 0**。
+- 關鍵洞察：**來源國籍 ≠ 內容地理**（permanent-style 英國卻在寫「What I wore in LA」）；歐洲男裝真訊號住在「全球源的歐洲覆蓋」+「事件驅動的男裝週」，不住在能抓的國別 feed 裡。
+
+### 拍板
+
+- **不開每日 EU 區、不拆歐美兩區**：肥料不足以撐每日一區，硬開會生出比 KR 更弱的慢性空區（撞 D7 反熵與「產出持續發生」）。
+- **歐洲深度由 flow_calendar §5 每週深挖位承載**：優先輪替男裝週（SS27 Milan/Paris）、Pitti、歐洲品牌題；跨現有全球源 + 人工參考源（Dazed `/fashion`、The Rake、nss、032c）。
+- **收 Drapers 進 `data/sources.yml`**（us-eu / media / tier2，RSS 實測可解析）：定位「零售/通路 intel」非 trend，餵 brief「值得買｜通路」軸，不當 headline 來源。
+- **Dazed 不進每日自動源**：產量 ~0.8/天 + 女裝/文化稀釋，只當每週深挖位的人工參考源；Numéro EN 否決（~0.2/天、女裝/藝術/法文為主）。
+- **不做**：加 GQ UK/IT/FR/DE、Esquire IT（gq-korea 稀釋陷阱）、Hypebeast 翻譯版（重複）。
+- 待時間解鎖：若哪天歐洲男裝專源（nss/032c）願開可解析 feed，或每週深挖位連續數週都被歐洲題餵滿（=需求被證實），再重啟「是否獨立 EU 區」討論——先看 metric 再加，不先建空殼。

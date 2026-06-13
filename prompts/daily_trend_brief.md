@@ -12,6 +12,9 @@
 
 - `DATE`: {{date}}
 - `RAW_SIGNALS`: {{raw_signals}}   # 當日收集到的訊號清單（格式見 templates/raw_signal_pack_template.md）
+  # ⚠ 雲端 sandbox 抓不到 RSS feed（會「全降級」退 WebSearch、訊號變薄）。**當日訊號由 GitHub Actions
+  #   在 egress 正常環境收好、落檔在 `reports/daily/<date>.signals.yml`**——優先讀這個檔當 RAW_SIGNALS，
+  #   不要只靠自己現抓 RSS。填完 brief 後在同一個 PR 內 `git rm` 掉該 .signals.yml（中間產物，不留 master）。
 - `TAXONOMY`: 見 data/trend_taxonomy.yml
 - `SCORED_TRENDS`: {{scored_trends}}  # score_trends.py 的輸出（可選）
 
@@ -30,6 +33,7 @@
    - `## 🇰🇷 韓潮 KR 追蹤` **4–8 條**，每條開頭標維度（造型／設計師·零售／跨市場外溢），三維度都要照看：MUSINSA / Hypebeast KR / GQ·W Korea / K-pop 造型等；某維度當日無可驗證訊號就明寫一行，不得編熱度。
    - `## 🌍 歐美 US-EU 追蹤` **6–10 條**（global 訊號歸此區）：Hypebeast / Highsnobiety / SneakerNews / GQ / Esquire / BoF 等。
    - 任一區訊號弱可低於下限，但要明寫「今日 XX 訊號偏弱（N 條）」，不硬湊。
+   - **roundup / N選 / 指南 / best-of / 추천 / おすすめ 類清單報導**：**不能只貼標題**——要挖出文章裡的**實際品牌＋單品名（＋價格）**寫進簡介行，至少 top 4–6 項、更多的標「等十餘項」並點分類。`RAW_SIGNALS` 只含標題＋短摘要、不含內文，遇清單型標題要 fetch 原文補 picks（擁有者 2026-06-13 反饋：「你都給我這題目了，為什麼不給確切哪些品牌」——只給標題＝空殼）。
 6. 標出 **1–2 個明日值得追蹤的伏筆**（watchlist）。
 7. 固定填寫 `## 🛒 對我有用 For Me`——**這是行動帳，不是感想區**（2026-06-11 Kai 拍板）：
    - **禁止重述** headline 已講過的內容；引用用「見頭條 N」一筆帶過。
@@ -65,5 +69,6 @@
 
 ## 注意
 
+- **推薦的證據門檻（擁有者 2026-06-13，凌駕全文）**：要把一條訊號寫進推薦位（For Me 值得入手）或寫出「對我的意義／為什麼」，**前提是讀過原文**——「沒讀完憑什麼推薦、又怎麼知道為什麼推薦」。判斷標準：簡介行 / 對我意義必須帶**至少一個原文事實**（價格、型號、材質、發售日、具體主張、roundup 的實際品牌名）當「讀過的證明」。`RAW_SIGNALS` 只有標題＋短摘要、不含內文，所以**寫推薦／寫「為什麼」前要 fetch 原文**。**讀不到具體事實的，不准進推薦位、不准編「為什麼」，只能降到訊號層報標題＋ `待查`**（同 D10「買不到的降訊號層」邏輯：證據不足的也降層）。
 - 寧可少而準，不要多而雜。一份好 brief 的價值在於幫人省時間。
 - 若當日訊號太弱，誠實說「今日訊號偏弱」，並聚焦在 1–2 個趨勢的延伸觀察。

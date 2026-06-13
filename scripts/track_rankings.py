@@ -126,31 +126,40 @@ def fmt_move(move) -> str:
     return str(move)
 
 
-def compare_lyst(data: dict) -> None:
-    """比對最新兩季品牌名次（用我們自己的歷史，而非來源標示）。"""
+def lyst_comparison_text(data: dict, top: int | None = None) -> str | None:
+    """比對最新兩季品牌名次（用我們自己的歷史，而非來源標示），回傳格式化字串。
+    快照不足 2 筆回傳 None。top 限制顯示前 N 名（None＝全部）。供 CLI 與月報骨架共用。"""
     snaps = snapshots(data)
     if len(snaps) < 2:
-        print("\n⚠️  只有 1 筆快照，還無法比對。等下一季新增後再 --compare。")
-        print("    （目前先看來源標示的 move 欄位即可。）\n")
-        return
+        return None
 
     new, old = snaps[0], snaps[1]
     old_rank = {b["name"]: b["rank"] for b in old.get("brands", [])}
-    print(f"\n📊  Lyst 品牌名次：{old.get('period')} → {new.get('period')}")
-    print("  " + "-" * 48)
-    for b in new.get("brands", []):
+    lines = [f"📊  Lyst 品牌名次：{old.get('period')} → {new.get('period')}", "  " + "-" * 48]
+    brands = new.get("brands", [])
+    for b in brands[: top or len(brands)]:
         name, rank = b["name"], b["rank"]
         if name not in old_rank:
             change = "🆕 新進榜"
         else:
             diff = old_rank[name] - rank  # 名次變小 = 上升
             change = "— 持平" if diff == 0 else (f"↑ {diff}" if diff > 0 else f"↓ {abs(diff)}")
-        print(f"  {rank:>2}. {name:<18} {change}")
+        lines.append(f"  {rank:>2}. {name:<18} {change}")
 
-    dropped = [n for n in old_rank if n not in {b["name"] for b in new.get("brands", [])}]
+    dropped = [n for n in old_rank if n not in {b["name"] for b in brands}]
     if dropped:
-        print(f"\n  掉出榜外：{', '.join(dropped)}")
-    print()
+        lines.append(f"\n  掉出榜外：{', '.join(dropped)}")
+    return "\n".join(lines)
+
+
+def compare_lyst(data: dict) -> None:
+    """CLI：印出 Lyst 季對季名次比對（薄包裝 lyst_comparison_text）。"""
+    text = lyst_comparison_text(data)
+    if text is None:
+        print("\n⚠️  只有 1 筆快照，還無法比對。等下一季新增後再 --compare。")
+        print("    （目前先看來源標示的 move 欄位即可。）\n")
+        return
+    print("\n" + text + "\n")
 
 
 # ---------- 顯示：StockX ----------

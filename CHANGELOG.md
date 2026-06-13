@@ -4,6 +4,13 @@
 
 ## [Unreleased]
 
+### Changed
+- **月報自動帶入 Lyst 季對季名次變動**（2026-06-14 啟用既有但從未用過的 `track_rankings --compare`）：
+  `compare_lyst` 抽出可回傳字串的 `lyst_comparison_text()`；`generate_monthly_heat_report.py` 在 us-eu 骨架的
+  `## 🆚 對照量化基準` 段自動嵌入 Lyst 自有歷史的季對季變動（從 `data/rankings/lyst-index.yml` 算,非來源 move 欄）。
+  月報 prompt 改為「升溫/退燒 + 對照基準優先引這塊 L1 客觀數據,別只憑體感」。template / 生成器 / prompt 同步（格式即契約）。
+  jp 區因 Mercari 為歷史區間、無季變動可比,自動標註說明。
+
 ### Added
 - **Drapers 來源 + 歐洲深度走每週深挖位（D13）**（2026-06-13 擁有者問「歐美能不能拆兩區」，評估＋2 週實測後拍板）：
   收 Drapers（英國時裝零售日報）進 `data/sources.yml`（us-eu / media / tier2，RSS 實測可解析），定位零售/通路 intel、餵 brief「值得買｜通路」軸、不當 headline 來源；

@@ -66,7 +66,11 @@
 
 ## 🆚 對照量化基準（{{baseline_label}}）
 
-<!-- 跟 repo 內 data/rankings/ 該地區最新基準榜比：誰本月特別動、基準榜沒抓到的本月新訊號 -->
+<!-- 跟 repo 內 data/rankings/ 該地區最新基準榜比：誰本月特別動、基準榜沒抓到的本月新訊號。
+     下方程式碼區塊由 generate_monthly_heat_report.py 自動算入（Lyst 季對季變動），是客觀依據。 -->
+
+{{baseline_movement}}
+
 - 與 {{baseline_label}} 一致：{{consistent}}
 - 季榜沒有、但本月在動：{{new_this_month}}
 - 季榜殘熱、非本月新訊號：{{baseline_carryover}}

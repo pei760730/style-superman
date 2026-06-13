@@ -78,6 +78,31 @@ def baseline_label(region: dict) -> str:
     return "・".join(f"{label} {latest_period(fn)}" for fn, label in region["baselines"])
 
 
+def baseline_movement(region: dict) -> str:
+    """量化基準的季對季名次變動，嵌進骨架供寫手填 🆚/📈 時當客觀依據。
+    只有 Lyst 有多季快照可算（us-eu）；StockX 年度、Mercari 歷史區間、日本即時榜不可自動收。"""
+    if yaml is None:
+        return "（缺 pyyaml，無法計算基準變動）"
+    if region["suffix"] != "eu":
+        return "（本地區量化基準為年度／歷史區間，無季對季名次可比；即時榜不可自動收，見 `docs/rankings.md`）"
+    path = RANKINGS_DIR / "lyst-index.yml"
+    if not path.exists():
+        return "（無 lyst-index.yml）"
+    try:
+        import track_rankings  # 同在 scripts/，run 時 scripts/ 在 sys.path
+        data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        text = track_rankings.lyst_comparison_text(data, top=20)
+    except Exception as e:  # pragma: no cover
+        return f"（基準變動計算失敗：{e}）"
+    if text is None:
+        return "（Lyst 僅 1 筆快照，尚無季對季可比；下季發布後自動帶入）"
+    return (
+        "```\n" + text + "\n```\n"
+        "*（↑ 上方為 `data/rankings/lyst-index.yml` 自有歷史的季對季計算，非來源標示的 move 欄；"
+        "填 🆚 對照基準 / 📈 升溫退燒時以此為客觀依據，別只憑體感。）*"
+    )
+
+
 def source_summary(region: dict) -> str:
     """該地區來源摘要，放進報告底部供參考。"""
     if yaml is None:
@@ -100,6 +125,7 @@ def build(month: str, region: dict) -> str:
     body = body.replace("{{region_name}}", region["name"])
     body = body.replace("{{generated_date}}", dt.date.today().isoformat())
     body = body.replace("{{baseline_label}}", baseline_label(region))
+    body = body.replace("{{baseline_movement}}", baseline_movement(region))
     body = body.replace("{{signal_strength}}", "待填")
     body = body.replace("{{collection_limits}}", "待填（若 403 / 無 API，在此降級說明）")
 

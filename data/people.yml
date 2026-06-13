@@ -1,5 +1,8 @@
 # people.yml
 # 追蹤中的關鍵人物。帶動風向的人，是趨勢最早的訊號源之一。
+# 2026-06-14 精簡（#4）：從 10 人縮到 3 個 lane 最相關的——大咖的大動作本來就會從 RSS 新聞源進來
+# （例：A$AP Rocky 靠 Knicks 那條自然入榜），這份清單只當「被動參考 context」，不做每日主動人物掃描
+# （那會花工又易飄八卦、離「歐美趨勢+值得買」主線）。需要再加人時點名補。
 # 欄位：
 #   id        代號
 #   name      名字
@@ -10,65 +13,22 @@
 #   notes     備註
 
 people:
-  # ---------- 設計師 ----------
   - id: jonathan-anderson
     name: Jonathan Anderson
     role: designer
     region: us-eu
     influence: 1
     watch: ["品牌任職動向", "個人選品影響"]
-    notes: 一舉一動牽動高端男裝
+    notes: 一舉一動牽動高端男裝；設計師端的早期方向訊號
 
-  - id: nigo
-    name: NIGO
-    role: designer
-    region: jp
-    influence: 1
-    watch: ["KENZO 系列", "聯名"]
-    notes: 連結日潮與高端的橋樑
-
-  - id: matthew-williams
-    name: Matthew M. Williams
-    role: designer
-    region: us-eu
-    influence: 2
-    watch: ["機能 x 高端", "個人品牌 1017 ALYX"]
-    notes: techwear 與奢華交界
-
-  # ---------- 音樂人 ----------
   - id: asap-rocky
     name: A$AP Rocky
     role: musician
     region: us-eu
     influence: 1
     watch: ["紅毯與街拍", "帶火的單品"]
-    notes: 帶貨能力現象級
+    notes: 帶貨能力現象級；街頭單品早期訊號
 
-  - id: tyler-the-creator
-    name: Tyler, The Creator
-    role: musician
-    region: us-eu
-    influence: 1
-    watch: ["Le Fleur 風格", "復古 prep"]
-    notes: 帶動 prep / 復古美式
-
-  - id: bts-rm
-    name: RM (BTS)
-    role: musician
-    region: kr
-    influence: 1
-    watch: ["機場時尚", "高端聯名"]
-    notes: K-pop 帶貨指標
-
-  - id: jung-kook
-    name: Jung Kook
-    role: musician
-    region: kr
-    influence: 2
-    watch: ["品牌大使", "街拍"]
-    notes: 年輕族群影響力大
-
-  # ---------- 運動員 ----------
   - id: nba-tunnel
     name: NBA Tunnel Fits（群體）
     role: athlete
@@ -76,21 +36,3 @@ people:
     influence: 1
     watch: ["球員入場穿搭", "造型師選擇"]
     notes: 男性運動 x 時尚最大流量入口之一
-
-  # ---------- 造型師 / 編輯 ----------
-  - id: jerry-lorenzo
-    name: Jerry Lorenzo
-    role: designer
-    region: us-eu
-    influence: 2
-    watch: ["Fear of God 輪廓", "adidas 聯名"]
-    notes: 影響 elevated basics 風潮
-
-  # ---------- KOL / 創作者 ----------
-  - id: menswear-creators
-    name: Menswear Creators（群體追蹤）
-    role: kol
-    region: global
-    watch: ["IG / TikTok 穿搭創作者群", "誰先穿了什麼"]
-    influence: 2
-    notes: 不追單一人，追整體創作者群的共同訊號

@@ -12,6 +12,9 @@
   根因：腳本只在 smoke 空跑、產線從不餵真資料、趨勢挑選實際全靠主編判斷（沒人用＝0，反熵）。排行快照仍保留為 L1 佐證。
 
 ### Changed
+- **啟用 trend_history.yml 進判斷迴圈**（2026-06-14 第二輪殭屍盤點：trend_history 06-12 回填後成孤兒——只有 `flow_calendar` 文件嘴上說要查、`validate_repo` 驗格式，**沒有任何 prompt 實際讀它**）：
+  `prompts/brand_radar.md` 把它列進 repo 存量輸入、風險欄的「炒作週期位置」改成先查 trend_history 對照 `status_2026` / `menswear_read`、新增規則 7「挖到已成形但未收錄的趨勢順手補一條」；
+  `prompts/trend_analysis.md` 加 `HISTORY` 輸入、生命週期判斷改成先對照 trend_history（已收錄引用 `arc` 當基準、未收錄順手補）。讀＋寫回都進 prompt，從孤兒資產變防炒作誤判的錨。非定期維護（D7）。
 - **月報自動帶入 Lyst 季對季名次變動**（2026-06-14 啟用既有但從未用過的 `track_rankings --compare`）：
   `compare_lyst` 抽出可回傳字串的 `lyst_comparison_text()`；`generate_monthly_heat_report.py` 在 us-eu 骨架的
   `## 🆚 對照量化基準` 段自動嵌入 Lyst 自有歷史的季對季變動（從 `data/rankings/lyst-index.yml` 算,非來源 move 欄）。

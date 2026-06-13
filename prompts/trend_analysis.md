@@ -14,6 +14,7 @@
 - `CONTEXT`: {{context}}        # 相關訊號 / 連結 / 觀察
 - `TAXONOMY`: 見 data/trend_taxonomy.yml
 - `BRANDS / PEOPLE`: 見 data/brands.yml, data/people.yml
+- `HISTORY`: 見 data/trend_history.yml — 趨勢生命週期基準（判斷週期位置先對照）
 
 ## 任務：逐項分析
 
@@ -21,7 +22,7 @@
 2. **歸類** — category + tags（region / season / audience / lifecycle）。
 3. **起源** — 它最早從哪裡 / 誰開始冒頭？
 4. **驅動力** — 是什麼在推它？（品牌、人物、平台演算法、季節、宏觀文化）
-5. **生命週期判斷** — emerging / rising / peak / mainstream / declining，並說明依據。
+5. **生命週期判斷** — emerging / rising / peak / mainstream / declining，並說明依據。**先對照 `data/trend_history.yml`**：已收錄就引用其 `status_2026` / `arc` 當基準，再判斷現況有無移動；未收錄且這個趨勢已成形，分析完在同 PR 順手補一條（格式見該檔頂部註解，非定期維護 D7）。
 6. **持續性** — 是短期病毒，還是會沉澱成常態？給出你的賭注。
 7. **落地度** — 一般男性能不能穿 / 買得到嗎？價格與取得門檻多高？
 8. **可駕馭度** — 我能不能駕馭 / 融入現有衣櫥？適合哪些穿搭切入（styling angle）？為什麼？

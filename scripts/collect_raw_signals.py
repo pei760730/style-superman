@@ -26,6 +26,8 @@ from __future__ import annotations
 import argparse
 import re
 import sys
+import time
+import urllib.error
 import urllib.request
 from email.utils import parsedate_to_datetime
 from pathlib import Path
@@ -168,14 +170,24 @@ def parse_feed(xml_text: str, source: dict, limit: int = DEFAULT_LIMIT) -> list[
     return signals
 
 
-def fetch_feed(url: str, timeout: int = 15) -> str | None:
-    """抓 feed；失敗回 None（不丟例外）。"""
-    try:
-        req = urllib.request.Request(url, headers={"User-Agent": UA})
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
-            return resp.read().decode("utf-8", errors="replace")
-    except Exception:  # noqa: BLE001 — 任何網路/解碼錯誤都降級
-        return None
+def fetch_feed(url: str, timeout: int = 15, sleep=time.sleep) -> str | None:
+    """抓 feed；失敗回 None（不丟例外）。
+    對 429（Too Many Requests）退避重試一次——reddit old 域對連續/bot 請求限速兇，
+    批次跑 31 源時相鄰的 reddit 會被連打吃 429（2026-06-15 dogfood 抓到），單發退避後就過。
+    sleep 可注入以便測試不真的等。"""
+    for attempt in range(2):  # 最多 1 次重試
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": UA})
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                return resp.read().decode("utf-8", errors="replace")
+        except urllib.error.HTTPError as e:
+            if e.code == 429 and attempt == 0:
+                sleep(3)  # 禮貌退避後再試一次
+                continue
+            return None
+        except Exception:  # noqa: BLE001 — 任何網路/解碼錯誤都降級
+            return None
+    return None
 
 
 def collect(sources: list[dict], limit: int = DEFAULT_LIMIT, fetcher=fetch_feed) -> tuple[list[dict], list[str]]:

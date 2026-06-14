@@ -65,7 +65,7 @@ python scripts/generate_monthly_heat_report.py --month 2026-06 --draft   # 產 *
 Repo 自我健康檢查（Self-Evolution Loop 的 Observe / Diagnose / Next Action 層）。
 檢查**一致性**（每支腳本有沒有文件、文件提到的路徑存不存在、孤兒檔、workflow 引用、
 **決策守衛** `data/decision_guards.yml`——已拍板決策的禁用識別字不得回到活文件 / 程式碼）與
-**新鮮度 / 產線**（daily 斷更幾天、當月月報缺不缺、Lyst 快照是否落後、
+**新鮮度 / 產線**（週挑 / 當月月報缺不缺、Lyst 快照是否落後、
 重定位後產的 daily / monthly 是否符合現行契約——殭屍任務卡的產出層防線），並輸出 Next Actions。
 
 ```bash
@@ -73,7 +73,10 @@ python scripts/repo_health.py                # 人讀報告 + Next Actions
 python scripts/repo_health.py --json         # 給 agent / 自動化吃
 python scripts/repo_health.py --consistency  # 只跑一致性（CI 用；新鮮度不擋 PR）
 python scripts/repo_health.py --strict       # WARN 也算失敗（手動巡檢）
+python scripts/repo_health.py --liveness     # 連網打每個 RSS，揪死源（慢、需網路，不入 CI）
 ```
+
+`--liveness` 解決「設定在、卻每次默默 403/逾時/0 則的死源躲在『N 個 RSS』數字裡沒人發現」（Mercari 陳貨 D17、reddit www 域 403 都是這類）；因需外網、會被外站抖動影響，刻意不入預設 / CI `--strict`，當手動稽核用。
 
 一致性問題（ERROR）會讓 CI 紅；新鮮度（WARN）不擋 PR，但 `.github/workflows/health.yml`
 每週一、四排程跑 `--strict` 巡檢，未通過會自動開 / 更新 `repo-health` issue。每次開工先跑這支。

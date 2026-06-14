@@ -131,7 +131,7 @@ sources:
     type: community
     tier: 3
     url: https://www.reddit.com/r/Sneakers/
-    rss: https://www.reddit.com/r/Sneakers/.rss   # 2026-06-11 實測可解析
+    rss: https://old.reddit.com/r/Sneakers/.rss   # www 域 .rss 已轉 403（reddit API 封鎖），改 old.reddit（2026-06-15 --liveness 抓到、實測可收）
     notes: 球鞋社群實況：每週 New Releases thread + 熱門發售反應，驗證 SneakerNews/Hypebeast 訊號是否落地；community 來源走標題層 spam 過濾
 
   - id: permanent-style
@@ -363,7 +363,7 @@ sources:
     type: community
     tier: 2
     url: https://www.reddit.com/r/malefashionadvice/
-    rss: https://www.reddit.com/r/malefashionadvice/.rss
+    rss: https://old.reddit.com/r/malefashionadvice/.rss  # www 域 .rss 一律 403（reddit API 封鎖），old.reddit 仍開放（2026-06-15 實測 25 則）
     notes: 歐美素人討論，驗證趨勢是否真的落地
 
   - id: reddit-techwear
@@ -372,7 +372,7 @@ sources:
     type: community
     tier: 3
     url: https://www.reddit.com/r/techwearclothing/
-    rss: https://www.reddit.com/r/techwearclothing/.rss
+    rss: https://old.reddit.com/r/techwearclothing/.rss  # 同上：www .rss 403，改 old.reddit（2026-06-15 實測 25 則）
     notes: >
       機能風垂直社群。品質警訊（2026-06-10）：盜播 spam 灌版（8 則中 5 則），
       collect 層已對 community 來源加標題層 spam 過濾；若髒訊號持續穿透，下一步降級或移除。

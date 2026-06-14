@@ -360,6 +360,72 @@ def check_rss_coverage() -> list[Finding]:
     )]
 
 
+def _probe_rss(url: str, timeout: int = 15) -> tuple[str, int]:
+    """打一次 rss，回 (狀態類別, http_code)。
+    狀態類別：ok / empty(200但解析0則) / dead(403/404/410) / ratelimited(429) / unreachable。
+    刻意分開 429——那是『活著但被限速』,不是死源,不該跟永久 403 混為一談（2026-06-15 dogfood 教訓：
+    舊版單看『0 則』把被限速的 reddit 誤判成死源）。"""
+    import urllib.error
+    import urllib.request
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import collect_raw_signals as c
+    req = urllib.request.Request(url, headers={"User-Agent": c.UA})
+    try:
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            xml = resp.read().decode("utf-8", errors="replace")
+        n = len(c.parse_feed(xml, {"id": "_probe", "url": url}))
+        return ("ok", 200) if n > 0 else ("empty", 200)
+    except urllib.error.HTTPError as e:
+        if e.code == 429:
+            return ("ratelimited", 429)
+        if e.code in (403, 404, 410):
+            return ("dead", e.code)
+        return ("unreachable", e.code)
+    except Exception:  # noqa: BLE001 — timeout / DNS / decode 都歸連不上
+        return ("unreachable", 0)
+
+
+def check_source_liveness() -> list[Finding]:
+    """實際連網打每個 rss URL，揪出『設定在、但每次都默默 403/404/0 則』的死源。
+    需網路、慢，故只在 --liveness 手動跑（不入預設 / CI --strict，否則 CI 會因外站抖動變 flaky）。
+    根因：collect_raw_signals 對抓取失敗優雅降級——死源會永遠躲在『31 個 RSS』的數字裡沒人發現
+    （Mercari 陳貨 D17、reddit www 域 403 都是這類）。此檢查把『宣稱 ≠ 實際』顯性化。
+    429（限速）單獨標示、不算死源——活著但被擋，是『調抓取節奏』而非『撤源』的訊號。"""
+    try:
+        import yaml
+    except ImportError:
+        return [Finding("warn", "缺 pyyaml，無法跑來源死活檢查", "pip install pyyaml")]
+    data = yaml.safe_load((ROOT / "data" / "sources.yml").read_text(encoding="utf-8")) or {}
+    rssable = [s for s in data.get("sources", []) if s.get("rss")]
+    detail: list[Finding] = []
+    ok = dead = limited = 0
+    for s in rssable:
+        status, code = _probe_rss(s["rss"])
+        if status == "ok":
+            ok += 1
+        elif status == "ratelimited":
+            limited += 1
+            detail.append(Finding(
+                "warn",
+                f"限速（非死源）：{s.get('id')} 回 429——活著但被擋，調抓取節奏（退避/間隔）而非撤源",
+            ))
+        else:  # dead / empty / unreachable
+            dead += 1
+            detail.append(Finding(
+                "warn",
+                f"死源：{s.get('id')}（{s.get('rss')}）→ {status}"
+                + (f" HTTP {code}" if code else ""),
+                "確認可否換域名/端點修復；真的無解就比照 D17 撤源、改 sources.yml + 記 decisions",
+            ))
+    summary = Finding(
+        "info" if (dead == 0 and limited == 0) else "warn",
+        f"來源死活：{ok}/{len(rssable)} 個 RSS 實際收得到料"
+        + (f"，{dead} 死源" if dead else "")
+        + (f"，{limited} 被限速（非死，見下）" if limited else ""),
+    )
+    return [summary, *detail]
+
+
 # ---------- 輸出 ----------
 
 def run_checks(today: dt.date, consistency_only: bool = False) -> list[Finding]:
@@ -387,11 +453,15 @@ def main() -> None:
     parser.add_argument("--json", action="store_true", help="輸出 JSON（給 agent / 自動化吃）")
     parser.add_argument("--strict", action="store_true", help="WARN 也算失敗")
     parser.add_argument("--consistency", action="store_true", help="只跑一致性檢查（CI 用，不含新鮮度）")
+    parser.add_argument("--liveness", action="store_true", help="實際連網打每個 RSS，揪出死源（慢、需網路，不入 CI）")
     parser.add_argument("--date", help="以指定日期計算新鮮度（YYYY-MM-DD，測試用）")
     args = parser.parse_args()
 
     today = dt.date.fromisoformat(args.date) if args.date else dt.date.today()
-    findings = run_checks(today, consistency_only=args.consistency)
+    if args.liveness:
+        findings = check_source_liveness()
+    else:
+        findings = run_checks(today, consistency_only=args.consistency)
 
     errors = [f for f in findings if f.level == "error"]
     warns = [f for f in findings if f.level == "warn"]

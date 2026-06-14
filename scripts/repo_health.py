@@ -57,9 +57,10 @@ LYST_STALE_QUARTERS = 2       # Lyst 快照落後 >= 這個季數就警告（落
 OUTPUT_CONTRACT_SINCE = dt.date(2026, 6, 5)
 OUTPUT_BANNED_MARKS = ("對創作者的意義", "可拍選題", "Content Hooks")  # 重定位前的欄位 / 段落識別字
 OUTPUT_CONTRACTS = (
-    # (reports/ 子目錄, 檔名 glob, 現行 template 的必有段落)
-    ("daily", "????-??-??.md", "## 🛒 對我有用 For Me"),
-    ("monthly", "????-??-*.md", "## 🛒 本月挑買方向"),
+    # (reports/ 子目錄, 檔名 glob, 必有段落；tuple = 任一即可，含過渡期舊名)
+    # daily 段落 2026-06-14 由「🛒 對我有用」改名「🎯 對我最相關」(D15)；舊名續收以免凍結舊 brief 變不合規
+    ("daily", "????-??-??.md", ("## 🎯 對我最相關 For Me", "## 🛒 對我有用 For Me")),
+    ("monthly", "????-??-*.md", ("## 🛒 本月挑買方向",)),
 )
 
 # 月報地區線：後綴 → 起算月（該月起，當月缺檔才算斷更；日本線 2026-07 開跑）
@@ -337,7 +338,7 @@ def check_output_contract(today: dt.date) -> list[Finding]:
     報告日期已過仍殘留 {{...}} 佔位 = 產線只產殼。當日的不吵（內容填寫中）。
     """
     findings: list[Finding] = []
-    for subdir, pattern, required_mark in OUTPUT_CONTRACTS:
+    for subdir, pattern, required_marks in OUTPUT_CONTRACTS:
         for report in sorted((ROOT / "reports" / subdir).glob(pattern)):
             m = re.match(r"^(\d{4})-(\d{2})(?:-(\d{2}))?", report.stem)
             if not m:
@@ -350,8 +351,8 @@ def check_output_contract(today: dt.date) -> list[Finding]:
                 continue
             text = report.read_text(encoding="utf-8")
             problems = []
-            if required_mark not in text:
-                problems.append(f"缺必有段落「{required_mark}」")
+            if not any(rm in text for rm in required_marks):
+                problems.append(f"缺必有段落「{required_marks[0]}」")
             hits = [mark for mark in OUTPUT_BANNED_MARKS if mark in text]
             if hits:
                 problems.append(f"含重定位前識別字 {hits}")

@@ -407,3 +407,20 @@ PR #73/#74 CI 綠後，merge 卡在授權模糊：「你修你負責的」被權
 - **產線文件同步**：`system_design.md`（管線移除「評分」階，trend cards 改週深挖旁支）、`operating_manual.md`（移除評分步驟並 renumber）、`flow_calendar.md`、`rankings.md`（「排行＝評分輸入」改為「排行＝L1 硬數據佐證」）、`scripts/README.md`、`README.md`、`prompts/daily_trend_brief.md`（移除 SCORED_TRENDS）、`daily_brief_template.md` footer、`ci.yml` 註解、`tests/test_smoke.py`（移除評分測試）。
 - **不變**：趨勢挑選回歸主編判斷（本來就是現況，只是把沒接線的評分機制正式拿掉）。排行快照（Lyst/StockX…）仍是 L1 硬數據佐證，與評分無關、保留。
 - 封存報告（reports/ 內舊趨勢卡、舊 daily）含評分段者不回改（封存快照原則）。
+
+---
+
+## D15 — 推薦框架從「買清單」改「在紅單品情報」（2026-06-14）
+
+### 背景
+
+擁有者質疑每日推薦的邏輯：① 他是**低頻買家**（repo lane 自己寫的），但系統每天硬擠「值得入手」買決策 → 沒買的堆成死重；「我沒買的那一堆要幹嘛？」② news-driven＝推最新貨，而最新＝限定/抽選/海外/當天死線＝**結構性難買**，跟他「重質感、定番、預算理性」的買法本質相反。釐清後擁有者點出真正想要的：**單品層是趨勢的具體化、是最直接的情報**——他要知道「現在歐美日韓在紅什麼單品」，**不一定要買**。所以問題不在「有單品推薦」，在把它**包裝成買決策**（值得入手｜價格｜通路｜時點｜死線）。
+
+### 拍板
+
+- **daily `🛒 對我有用 For Me`（行動帳/買清單）→ `🎯 對我最相關 For Me`（在紅單品情報層）**：每項＝**單品｜是什麼｜在哪紅（歐美/日/韓）｜對我衣櫥的意義｜價格/型號（辨識用）**。
+- **目的是「知道」不是「買」**：價格/型號只是辨識；**砍掉死線/搶/別買條件等買壓力**；**難不難買不再是門檻**——最新/限定/海外的在紅單品照列（那正是「現在在紅什麼」的情報）。`⏰ 行動日` 子項移除。三行 `③ 要買嗎` → `③ 要記住`（今日最該記住的在紅單品）。
+- **D10 重新界定 scope**：「推薦位只推買得到的定番」規範的是**真要入手那條**（擁有者開口才做的定番調研），不是這個每日情報位。日常 brief 不 push 買。
+- **格式即契約同步**：`daily_brief_template.md`、`prompts/daily_trend_brief.md`、`validate_repo.py`、`repo_health.py`（產出契約段落改名、舊名續收以免凍結舊 brief 變紅）、`tests/test_smoke.py`、雲端填寫 routine、README / CLAUDE / flow_calendar / operating_manual / system_design / style_strategy。
+- **週挑 Head-to-Toe（5 區×3 樣買清單）同理待轉**（同一框架問題的極致版，下一個 PR 處理）。
+- 封存報告（舊 daily 含 🛒 For Me 段）不回改；repo_health 產出契約以 tuple 同收新舊段落名。

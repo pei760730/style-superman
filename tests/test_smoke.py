@@ -180,7 +180,7 @@ def main() -> int:
     hollow = ROOT / "reports" / "daily" / "2026-06-06.md"
     hollow_existed = hollow.exists()
     if not hollow_existed:
-        hollow.write_text("# probe\n\n## 🛒 對我有用 For Me\n- {{buy_pick}}\n", encoding="utf-8")
+        hollow.write_text("# probe\n\n## 🎯 對我最相關 For Me\n- {{hot_item}}\n", encoding="utf-8")
     try:
         r = run(["scripts/repo_health.py", "--strict"])
         check("產出契約抓到舊世界觀格式（daily + monthly）",

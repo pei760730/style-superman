@@ -64,6 +64,7 @@
 - **發生什麼**：repo 工程全綠（CI ✅、決策全拍板），但 daily brief 只產過一次。工程完成度掩蓋了「產線停擺」的事實。
 - **對策**：`repo_health.py` 新鮮度檢查讓停擺可見；agent 每次開工先跑 health（見 `CLAUDE.md`）。
 - **硬化進度（2026-06-10）**：「警告無人看見」的環節已硬化（health.yml 排程巡檢 + 自動 issue，見上方）。**仍在觀察**：daily 排程 6/10 才開、issue 機制是否真的讓警告被處理——若 repo-health issue 開著超過兩週沒動作，回到原判斷：修產線或承認 daily 改 weekly。
+- **結案（2026-06-14，D16/D17）**：「daily 改 weekly」的觀察有結論了，但走的是**第三條路**——daily brief 改**對話觸發、不入 `reports/daily/`**（D16）。既然產出不存檔、無檔可監控，`repo_health` 的 daily 斷更檢查（`check_daily_freshness`）與 `DAILY_STALE_DAYS` 一併移除；health.yml 巡檢改只盯週挑/月報/一致性/守衛/產出契約，**不再是 daily 的看門狗**。⚠ 上方 2026-06-10 條描述的「daily 斷更看門狗 / daily-brief.yml 排程」機制**已不適用**（保留原文為歷史記錄）。
 
 ### Windows 終端機 cp950 編碼
 - 所有腳本已加 `sys.stdout.reconfigure(encoding="utf-8")`；新腳本記得照抄，CI 端配 `PYTHONIOENCODING: utf-8`。PowerShell 5.1 的 `Get-Content` 讀 UTF-8 檔會亂碼，讀檔用支援 UTF-8 的工具。

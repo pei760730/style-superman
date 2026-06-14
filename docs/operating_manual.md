@@ -33,7 +33,7 @@ python scripts/generate_daily_brief.py
 用 `prompts/daily_trend_brief.md` 把挑選結果寫成完整 brief，填回 `reports/daily/YYYY-MM-DD.md`。
 
 ### Step 5 — 出挑買方向
-挑買推薦直接寫在 brief 的 `🛒 對我有用 For Me`（D9：不開獨立挑買卡）；週度收斂走週挑 `reports/buy_shortlist/`。
+brief 的 `🎯 對我最相關 For Me` 是**在紅單品情報**（D15：知道現在在紅什麼,非買清單;不開獨立挑買卡 D9）；真要入手隨選再做。週度收斂走週挑 `reports/buy_shortlist/`。
 
 ### Step 6 — 封存
 ```bash

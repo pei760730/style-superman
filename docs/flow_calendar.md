@@ -12,7 +12,7 @@
 原始來源 / 排行快照 / 社群與媒體訊號
         │
         ▼
-Daily Brief（每日）：整理今日 3–5 個 headline trends + 🛒 對我有用
+Daily Brief（每日）：整理今日 3–5 個 headline trends + 🎯 對我最相關（在紅單品）
         │
         ├──► 每週挑買 shortlist：收斂 1–3 個真正想入手的方向
         │
@@ -40,7 +40,7 @@ Topic Analysis（每週至少一張，歐美優先）：把最強跨源趨勢寫
 
 **輸出**：
 
-- `reports/daily/YYYY-MM-DD.md`（含 `🛒 對我有用 For Me`）。
+- `reports/daily/YYYY-MM-DD.md`（含 `🎯 對我最相關 For Me`）。
 - 1–3 個可進入本週挑買 shortlist 的候選方向。
 - 1–2 個 watchlist 伏筆。
 

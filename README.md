@@ -78,7 +78,7 @@
 
 ---
 
-## 十四個拍板（系統為什麼長這樣）
+## 關鍵拍板（系統為什麼長這樣）
 
 完整背景與選項見 [docs/decisions.md](docs/decisions.md)，這裡是速覽：
 
@@ -98,6 +98,10 @@
 | D12 | 看到問題就修 | 工程修正不需事前請示、修的人負責到底；內容判斷仍留人類 |
 | D13 | 歐美不拆每日兩區 | 歐洲男裝肥料不足，深度走每週深挖位；順手收 Drapers 當零售 intel |
 | D14 | score_trends 停用 | 砍加權評分框架，趨勢挑選回歸主編判斷（評分從未真正驅動挑選） |
+| D15 | 推薦改在紅情報、非買清單 | brief For Me / 週挑從「買清單」轉「現在在紅什麼單品」；不催買、不附死線 |
+| D16 | 砍雲端排程 routine | daily 連週挑 / 月報全對話觸發（說「早安」當場跑）；0 routine、省額度、品質更高 |
+| D17 | 撤 Mercari 日本量化板 | 2013→2022 陳貨、年報已無時尚榜、替代源全 bot 擋；日本看 daily 日潮質化 |
+| D18 | 新增來源兩道門 | 加來源前先驗 ① 近 30 天持續產出 ② 夠權威（非聚合 / SEO）；仍需擁有者拍板 |
 
 ---
 
@@ -120,7 +124,7 @@ style-superman/
 ├── CLAUDE.md                 # agent 執行守則（定位鐵則 + Self-Evolution Loop）
 ├── requirements.txt          # Python 相依（標準庫 + pyyaml）
 ├── data/                     # 知識底層（長期維護，不是快照）
-│   ├── sources.yml           # 情報來源 42 個（29 個可 RSS 自動收）
+│   ├── sources.yml           # 情報來源 43 個（31 個可 RSS 自動收；撤 Mercari D17、加錶源 Fratello/Monochrome）
 │   ├── trend_taxonomy.yml    # 趨勢分類體系（系統的「語言」）
 │   ├── trend_history.yml     # 趨勢生命週期基準（炒作 vs 真趨勢；雷達 / 深挖 prompt 引用）
 │   ├── brands.yml            # 追蹤品牌（含 contemporary lane 錨點）
@@ -155,7 +159,7 @@ style-superman/
 │   ├── operating_manual.md      # 營運手冊
 │   ├── ai_collaboration.md      # 帽子原則 + 不自我終審 + 誰拍板（D7 已瘦身）
 │   ├── rankings.md              # 排行快照方法論（口徑分開、不硬湊）
-│   ├── decisions.md             # 方向決策紀錄（D1–D14）
+│   ├── decisions.md             # 方向決策紀錄（D1–D18）
 │   └── lessons.md               # 教訓簿（殭屍任務卡三例都在這）
 └── .github/workflows/
     ├── ci.yml                # PR validate + smoke
@@ -202,7 +206,7 @@ python scripts/repo_health.py --consistency
 
 - [x] 資料底層 + Rankings 模組（歐美 / 韓四榜；日本量化板 D17 撤除）
 - [x] CI（validate + smoke）+ 週期健檢巡檢（自動開 issue）
-- [x] RSS 收集事實層（17 → 25 → 28 源，三輪深挖）
+- [x] RSS 收集事實層（RSS 源擴到 31、每源抓取 10 → 25；新增來源走 D18 門檻）
 - [x] AI 撰寫走對話 agent（D5：不接 repo 內 LLM API；D16：0 排程 routine、全對話）
 - [x] Self-Evolution Loop（repo_health Next Actions + lessons 硬化路徑 + 決策守衛）
 - [x] 每日產線（時區 bug 已修）→ D16 改對話觸發、無排程；daily 斷更看門狗隨之移除（無檔可監控）

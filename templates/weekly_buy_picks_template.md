@@ -1,7 +1,7 @@
-# 本週最值得買 Head-to-Toe · {{week}}
+# 本週在紅 Head-to-Toe · {{week}}
 
-> 每週一份：從頭到腳 5 區（頭部 / 上身 / 下身 / 足部 / 配件）各挑 3 樣本週最值得入手的單品，**每樣都要講清楚為什麼是本週**。
-> 給「個人挑買決策」用，不是導購文。鐵則：每樣至少一條可驗證來源（本週 brief / rankings 快照 / analysis）；價格沒查到標 `待查`，不要編。
+> 每週一份：從頭到腳 5 區（頭部 / 上身 / 下身 / 足部 / 配件）各列 3 樣**本週在紅的單品**，讓擁有者知道「這週各部位在紅什麼」——**情報，非買清單**（D15，2026-06-14 Kai 拍板）。
+> 鐵則：每樣至少一條可驗證來源（本週 brief / rankings 快照 / analysis）；價格 / 型號是辨識用，查不到標 `待查`，不要編。難不難買不是門檻；真要入手是另一條（隨選定番調研，D10）。
 
 **週期：** {{date_range}}　·　**本週訊號依據：** {{signal_basis}}
 
@@ -10,106 +10,106 @@
 ## 🧢 頭部
 
 ### 1. {{h1_item}}
-- **buy_angle：** {{h1_angle}} ｜ **預算帶：** {{h1_budget}} ｜ **優先度：** {{h1_priority}}
-- **價格 / 通路：** {{h1_price_channel}}
-- **為什麼是本週：** {{h1_why}}
-- **風險 / 別買的情況：** {{h1_risk}}
+- **是什麼：** {{h1_what}} ｜ **在哪紅：** {{h1_region}}
+- **價格 / 型號（辨識用）：** {{h1_price_sku}}
+- **為什麼這週在紅：** {{h1_why_hot}}
+- **炒作 vs 真（週期位置）：** {{h1_hype}}
 
 ### 2. {{h2_item}}
-- **buy_angle：** {{h2_angle}} ｜ **預算帶：** {{h2_budget}} ｜ **優先度：** {{h2_priority}}
-- **價格 / 通路：** {{h2_price_channel}}
-- **為什麼是本週：** {{h2_why}}
-- **風險 / 別買的情況：** {{h2_risk}}
+- **是什麼：** {{h2_what}} ｜ **在哪紅：** {{h2_region}}
+- **價格 / 型號（辨識用）：** {{h2_price_sku}}
+- **為什麼這週在紅：** {{h2_why_hot}}
+- **炒作 vs 真（週期位置）：** {{h2_hype}}
 
 ### 3. {{h3_item}}
-- **buy_angle：** {{h3_angle}} ｜ **預算帶：** {{h3_budget}} ｜ **優先度：** {{h3_priority}}
-- **價格 / 通路：** {{h3_price_channel}}
-- **為什麼是本週：** {{h3_why}}
-- **風險 / 別買的情況：** {{h3_risk}}
+- **是什麼：** {{h3_what}} ｜ **在哪紅：** {{h3_region}}
+- **價格 / 型號（辨識用）：** {{h3_price_sku}}
+- **為什麼這週在紅：** {{h3_why_hot}}
+- **炒作 vs 真（週期位置）：** {{h3_hype}}
 
 ## 👕 上身
 
 ### 1. {{t1_item}}
-- **buy_angle：** {{t1_angle}} ｜ **預算帶：** {{t1_budget}} ｜ **優先度：** {{t1_priority}}
-- **價格 / 通路：** {{t1_price_channel}}
-- **為什麼是本週：** {{t1_why}}
-- **風險 / 別買的情況：** {{t1_risk}}
+- **是什麼：** {{t1_what}} ｜ **在哪紅：** {{t1_region}}
+- **價格 / 型號（辨識用）：** {{t1_price_sku}}
+- **為什麼這週在紅：** {{t1_why_hot}}
+- **炒作 vs 真（週期位置）：** {{t1_hype}}
 
 ### 2. {{t2_item}}
-- **buy_angle：** {{t2_angle}} ｜ **預算帶：** {{t2_budget}} ｜ **優先度：** {{t2_priority}}
-- **價格 / 通路：** {{t2_price_channel}}
-- **為什麼是本週：** {{t2_why}}
-- **風險 / 別買的情況：** {{t2_risk}}
+- **是什麼：** {{t2_what}} ｜ **在哪紅：** {{t2_region}}
+- **價格 / 型號（辨識用）：** {{t2_price_sku}}
+- **為什麼這週在紅：** {{t2_why_hot}}
+- **炒作 vs 真（週期位置）：** {{t2_hype}}
 
 ### 3. {{t3_item}}
-- **buy_angle：** {{t3_angle}} ｜ **預算帶：** {{t3_budget}} ｜ **優先度：** {{t3_priority}}
-- **價格 / 通路：** {{t3_price_channel}}
-- **為什麼是本週：** {{t3_why}}
-- **風險 / 別買的情況：** {{t3_risk}}
+- **是什麼：** {{t3_what}} ｜ **在哪紅：** {{t3_region}}
+- **價格 / 型號（辨識用）：** {{t3_price_sku}}
+- **為什麼這週在紅：** {{t3_why_hot}}
+- **炒作 vs 真（週期位置）：** {{t3_hype}}
 
 ## 👖 下身
 
 ### 1. {{b1_item}}
-- **buy_angle：** {{b1_angle}} ｜ **預算帶：** {{b1_budget}} ｜ **優先度：** {{b1_priority}}
-- **價格 / 通路：** {{b1_price_channel}}
-- **為什麼是本週：** {{b1_why}}
-- **風險 / 別買的情況：** {{b1_risk}}
+- **是什麼：** {{b1_what}} ｜ **在哪紅：** {{b1_region}}
+- **價格 / 型號（辨識用）：** {{b1_price_sku}}
+- **為什麼這週在紅：** {{b1_why_hot}}
+- **炒作 vs 真（週期位置）：** {{b1_hype}}
 
 ### 2. {{b2_item}}
-- **buy_angle：** {{b2_angle}} ｜ **預算帶：** {{b2_budget}} ｜ **優先度：** {{b2_priority}}
-- **價格 / 通路：** {{b2_price_channel}}
-- **為什麼是本週：** {{b2_why}}
-- **風險 / 別買的情況：** {{b2_risk}}
+- **是什麼：** {{b2_what}} ｜ **在哪紅：** {{b2_region}}
+- **價格 / 型號（辨識用）：** {{b2_price_sku}}
+- **為什麼這週在紅：** {{b2_why_hot}}
+- **炒作 vs 真（週期位置）：** {{b2_hype}}
 
 ### 3. {{b3_item}}
-- **buy_angle：** {{b3_angle}} ｜ **預算帶：** {{b3_budget}} ｜ **優先度：** {{b3_priority}}
-- **價格 / 通路：** {{b3_price_channel}}
-- **為什麼是本週：** {{b3_why}}
-- **風險 / 別買的情況：** {{b3_risk}}
+- **是什麼：** {{b3_what}} ｜ **在哪紅：** {{b3_region}}
+- **價格 / 型號（辨識用）：** {{b3_price_sku}}
+- **為什麼這週在紅：** {{b3_why_hot}}
+- **炒作 vs 真（週期位置）：** {{b3_hype}}
 
 ## 👟 足部
 
 ### 1. {{f1_item}}
-- **buy_angle：** {{f1_angle}} ｜ **預算帶：** {{f1_budget}} ｜ **優先度：** {{f1_priority}}
-- **價格 / 通路：** {{f1_price_channel}}
-- **為什麼是本週：** {{f1_why}}
-- **風險 / 別買的情況：** {{f1_risk}}
+- **是什麼：** {{f1_what}} ｜ **在哪紅：** {{f1_region}}
+- **價格 / 型號（辨識用）：** {{f1_price_sku}}
+- **為什麼這週在紅：** {{f1_why_hot}}
+- **炒作 vs 真（週期位置）：** {{f1_hype}}
 
 ### 2. {{f2_item}}
-- **buy_angle：** {{f2_angle}} ｜ **預算帶：** {{f2_budget}} ｜ **優先度：** {{f2_priority}}
-- **價格 / 通路：** {{f2_price_channel}}
-- **為什麼是本週：** {{f2_why}}
-- **風險 / 別買的情況：** {{f2_risk}}
+- **是什麼：** {{f2_what}} ｜ **在哪紅：** {{f2_region}}
+- **價格 / 型號（辨識用）：** {{f2_price_sku}}
+- **為什麼這週在紅：** {{f2_why_hot}}
+- **炒作 vs 真（週期位置）：** {{f2_hype}}
 
 ### 3. {{f3_item}}
-- **buy_angle：** {{f3_angle}} ｜ **預算帶：** {{f3_budget}} ｜ **優先度：** {{f3_priority}}
-- **價格 / 通路：** {{f3_price_channel}}
-- **為什麼是本週：** {{f3_why}}
-- **風險 / 別買的情況：** {{f3_risk}}
+- **是什麼：** {{f3_what}} ｜ **在哪紅：** {{f3_region}}
+- **價格 / 型號（辨識用）：** {{f3_price_sku}}
+- **為什麼這週在紅：** {{f3_why_hot}}
+- **炒作 vs 真（週期位置）：** {{f3_hype}}
 
 ## 👜 配件
 
 ### 1. {{a1_item}}
-- **buy_angle：** {{a1_angle}} ｜ **預算帶：** {{a1_budget}} ｜ **優先度：** {{a1_priority}}
-- **價格 / 通路：** {{a1_price_channel}}
-- **為什麼是本週：** {{a1_why}}
-- **風險 / 別買的情況：** {{a1_risk}}
+- **是什麼：** {{a1_what}} ｜ **在哪紅：** {{a1_region}}
+- **價格 / 型號（辨識用）：** {{a1_price_sku}}
+- **為什麼這週在紅：** {{a1_why_hot}}
+- **炒作 vs 真（週期位置）：** {{a1_hype}}
 
 ### 2. {{a2_item}}
-- **buy_angle：** {{a2_angle}} ｜ **預算帶：** {{a2_budget}} ｜ **優先度：** {{a2_priority}}
-- **價格 / 通路：** {{a2_price_channel}}
-- **為什麼是本週：** {{a2_why}}
-- **風險 / 別買的情況：** {{a2_risk}}
+- **是什麼：** {{a2_what}} ｜ **在哪紅：** {{a2_region}}
+- **價格 / 型號（辨識用）：** {{a2_price_sku}}
+- **為什麼這週在紅：** {{a2_why_hot}}
+- **炒作 vs 真（週期位置）：** {{a2_hype}}
 
 ### 3. {{a3_item}}
-- **buy_angle：** {{a3_angle}} ｜ **預算帶：** {{a3_budget}} ｜ **優先度：** {{a3_priority}}
-- **價格 / 通路：** {{a3_price_channel}}
-- **為什麼是本週：** {{a3_why}}
-- **風險 / 別買的情況：** {{a3_risk}}
+- **是什麼：** {{a3_what}} ｜ **在哪紅：** {{a3_region}}
+- **價格 / 型號（辨識用）：** {{a3_price_sku}}
+- **為什麼這週在紅：** {{a3_why_hot}}
+- **炒作 vs 真（週期位置）：** {{a3_hype}}
 
 ---
 
-## 🎯 如果本週只買一樣
+## 🎯 本週最該記住的一個
 
 {{one_pick}}
 
@@ -119,4 +119,4 @@
 
 ---
 
-<sub>Generated by Style Superman · 挑買規則見 prompts/weekly_buy_picks.md · 不虛構鐵則見 CLAUDE.md</sub>
+<sub>Generated by Style Superman · 在紅單品規則見 prompts/weekly_buy_picks.md · 不虛構鐵則見 CLAUDE.md</sub>

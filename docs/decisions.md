@@ -422,5 +422,5 @@ PR #73/#74 CI 綠後，merge 卡在授權模糊：「你修你負責的」被權
 - **目的是「知道」不是「買」**：價格/型號只是辨識；**砍掉死線/搶/別買條件等買壓力**；**難不難買不再是門檻**——最新/限定/海外的在紅單品照列（那正是「現在在紅什麼」的情報）。`⏰ 行動日` 子項移除。三行 `③ 要買嗎` → `③ 要記住`（今日最該記住的在紅單品）。
 - **D10 重新界定 scope**：「推薦位只推買得到的定番」規範的是**真要入手那條**（擁有者開口才做的定番調研），不是這個每日情報位。日常 brief 不 push 買。
 - **格式即契約同步**：`daily_brief_template.md`、`prompts/daily_trend_brief.md`、`validate_repo.py`、`repo_health.py`（產出契約段落改名、舊名續收以免凍結舊 brief 變紅）、`tests/test_smoke.py`、雲端填寫 routine、README / CLAUDE / flow_calendar / operating_manual / system_design / style_strategy。
-- **週挑 Head-to-Toe（5 區×3 樣買清單）同理待轉**（同一框架問題的極致版，下一個 PR 處理）。
+- **週挑 Head-to-Toe（5 區×3 樣）同步轉**：「本週最值得買」→「本週在紅 Head-to-Toe」；每樣 buy_angle/預算帶/優先度/別買條件 → 是什麼/在哪紅/價格型號辨識用/為什麼這週在紅/炒作 vs 真；「🎯 如果本週只買一樣」→「🎯 本週最該記住的一個」。`weekly_buy_picks_template.md` / `prompts/weekly_buy_picks.md` / `validate_repo.py` / `generate_weekly_buy_picks.py` / README / flow_calendar 同步。檔/目錄名（buy_shortlist、weekly_buy_picks）保留以省 churn（內部識別字，語意已轉），屬已知小債。
 - 封存報告（舊 daily 含 🛒 For Me 段）不回改；repo_health 產出契約以 tuple 同收新舊段落名。

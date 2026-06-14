@@ -13,7 +13,8 @@
   根因：腳本只在 smoke 空跑、產線從不餵真資料、趨勢挑選實際全靠主編判斷（沒人用＝0，反熵）。排行快照仍保留為 L1 佐證。
 
 ### Changed
-- **daily 推薦框架:買清單 → 在紅單品情報（D15，2026-06-14）**：擁有者點出每日「值得入手」買決策對低頻買家是死重、且最新貨結構性難買。`🛒 對我有用 For Me`（單品｜價格｜通路｜時點｜為什麼/別買）→ `🎯 對我最相關 For Me`（單品｜是什麼｜在哪紅｜對我衣櫥的意義｜價格/型號辨識用）;砍 `⏰ 行動日` 與死線/搶話術;三行 `③ 要買嗎`→`③ 要記住`。目的是「知道現在在紅什麼」,不催買;真要買走隨選定番調研。同步 `daily_brief_template.md` / `prompts/daily_trend_brief.md` / `validate_repo.py` / `repo_health.py`（產出契約 tuple 同收新舊名,凍結舊 brief 不變紅）/ `tests/test_smoke.py` / 雲端填寫 routine / README / CLAUDE / 4 份 docs。週挑 Head-to-Toe 同框架待下一 PR 轉。
+- **daily 推薦框架:買清單 → 在紅單品情報（D15，2026-06-14）**：擁有者點出每日「值得入手」買決策對低頻買家是死重、且最新貨結構性難買。`🛒 對我有用 For Me`（單品｜價格｜通路｜時點｜為什麼/別買）→ `🎯 對我最相關 For Me`（單品｜是什麼｜在哪紅｜對我衣櫥的意義｜價格/型號辨識用）;砍 `⏰ 行動日` 與死線/搶話術;三行 `③ 要買嗎`→`③ 要記住`。目的是「知道現在在紅什麼」,不催買;真要買走隨選定番調研。同步 `daily_brief_template.md` / `prompts/daily_trend_brief.md` / `validate_repo.py` / `repo_health.py`（產出契約 tuple 同收新舊名,凍結舊 brief 不變紅）/ `tests/test_smoke.py` / 雲端填寫 routine / README / CLAUDE / 4 份 docs。
+- **週挑 Head-to-Toe 同框架轉（D15，2026-06-14）**：「本週最值得買」→「本週在紅 Head-to-Toe」;每樣 buy_angle/預算帶/優先度/別買條件 → 是什麼/在哪紅/價格型號辨識用/為什麼這週在紅/炒作 vs 真;「🎯 如果本週只買一樣」→「🎯 本週最該記住的一個」。同步 template / prompt / `validate_repo.py` / `generate_weekly_buy_picks.py` / README / flow_calendar。檔/目錄名（buy_shortlist）保留省 churn,語意已轉。
 - **啟用 trend_history.yml 進判斷迴圈**（2026-06-14 第二輪殭屍盤點：trend_history 06-12 回填後成孤兒——只有 `flow_calendar` 文件嘴上說要查、`validate_repo` 驗格式，**沒有任何 prompt 實際讀它**）：
   `prompts/brand_radar.md` 把它列進 repo 存量輸入、風險欄的「炒作週期位置」改成先查 trend_history 對照 `status_2026` / `menswear_read`、新增規則 7「挖到已成形但未收錄的趨勢順手補一條」；
   `prompts/trend_analysis.md` 加 `HISTORY` 輸入、生命週期判斷改成先對照 trend_history（已收錄引用 `arc` 當基準、未收錄順手補）。讀＋寫回都進 prompt，從孤兒資產變防炒作誤判的錨。非定期維護（D7）。

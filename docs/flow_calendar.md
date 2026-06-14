@@ -59,21 +59,21 @@ Topic Analysis（每週至少一張，歐美優先）：把最強跨源趨勢寫
 
 **建議節奏**：每週收斂 1–3 個方向，依預算與衣櫥缺口調整。
 
-**固定產物**：「本週最值得買 Head-to-Toe」→ `reports/buy_shortlist/YYYY-Wnn.md`（5 區 × 各 3 樣 + 為什麼是本週）。
+**固定產物**：「本週在紅 Head-to-Toe」→ `reports/buy_shortlist/YYYY-Wnn.md`（5 區 × 各 3 樣在紅單品 + 為什麼這週在紅 + 炒作 vs 真；D15：情報非買清單）。
 跑 `python scripts/generate_weekly_buy_picks.py` 產骨架，依 `prompts/weekly_buy_picks.md` 填內容。
 
 **週度整理清單**：
 
 1. 回看過去 7 天 daily briefs，列出重複出現或分數高的趨勢。
 2. 為每個候選趨勢給一段挑買判斷（值不值得買、在哪買、別買的情況），直接寫進週挑清單（D9：不開獨立挑買卡）。
-3. 依 buy_angle 分類：staple 基本款 / upgrade 升級替換 / statement 亮點 / seasonal 當季 / experiment 嘗試。
+3. 每樣標：是什麼、在哪紅（歐美 / 日 / 韓）、炒作 vs 真（對照 trend_history 週期位置）。
 4. 優先選 entry / mid 預算、好駕馭、能融入現有衣櫥的選項；splurge 要額外說清楚為什麼值得一次到位。
 5. 對每項推薦做冷靜審核：有可驗證來源、價格合理、不是衣櫥已有的重複、不是被假稀缺推著買。
 
 **輸出**：
 
 - 本週 1–3 個想入手的方向（挑買 shortlist）。
-- 每個方向的 buy_angle、預算帶、優先度、搭配方向。
+- 每樣的「是什麼 / 在哪紅 / 為什麼這週在紅 / 炒作 vs 真」。
 - 下週要追的 watchlist。
 
 ---
@@ -159,7 +159,7 @@ Topic Analysis（每週至少一張，歐美優先）：把最強跨源趨勢寫
 | 階段 | 主導 | 工具 / AI | 我（人）|
 |------|------|-----------|---------|
 | Daily brief 判斷 | AI 整理 | `prompts/daily_trend_brief.md` | 最終採用 |
-| 每週挑買 | AI 產週挑清單 | `prompts/weekly_buy_picks.md` | 決定買 / 等 / 跳過 |
+| 每週在紅 Head-to-Toe | AI 產各部位在紅單品清單 | `prompts/weekly_buy_picks.md` | 知道在紅什麼；要買再隨選 |
 | Monthly report | AI 分層判斷 | `prompts/monthly_heat_report.md` | 確認信心、決定入手 |
 | Topic analysis | AI 整合 | 工程 / 格式輔助 | 拍板 |
 | 品牌雷達 | AI 深挖 | `prompts/brand_radar.md` | 給關鍵字、讀完決定追誰 |

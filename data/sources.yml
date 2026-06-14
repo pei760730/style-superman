@@ -417,14 +417,5 @@ sources:
       穿搭社群男裝時榜（wear.jp 可存取，非 Akamai 擋）。給的是「熱門穿搭貼文」，
       非單品銷售榜，且品牌/單品需逐篇再抓 → metric 與 EC 榜不同。目前僅列為來源，未建 rankings 快照。
 
-  - id: mercari-jp
-    name: Mercari（メルカリ）
-    region: jp
-    type: ranking
-    tier: 2
-    url: https://about.mercari.com/press/
-    rss: null
-    cadence: report         # 報告不定期；平台數據即時
-    notes: >
-      日本最大二手平台，成交=需求訊號。品牌榜 10 年來 #1 從 Chanel→Uniqlo。
-      日本版的 StockX，但更廣、非球鞋導向。快照見 data/rankings/mercari-jp.yml
+  # mercari-jp 已於 2026-06-14 撤除（D17）：唯一乾淨品牌榜是 2013→2022 十週年回顧、已陳貨，
+  # 之後年報轉趨勢詞無時尚榜；替代日本榜（ZOZO/Rakuten/2nd STREET）實測全 bot 擋。日本看媒體街拍。

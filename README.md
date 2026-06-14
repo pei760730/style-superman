@@ -56,7 +56,7 @@
 
 ### 📈 想查什麼最紅（隨時）
 
-`python scripts/track_rankings.py`（加 `--region kr|jp|us-eu` 過濾），或直接看 [data/rankings/](data/rankings/) 五榜快照（Lyst / StockX / Mercari / KREAM / MUSINSA，最新在上、可比對名次演化）。
+`python scripts/track_rankings.py`（加 `--region kr|jp|us-eu` 過濾），或直接看 [data/rankings/](data/rankings/) 四榜快照（Lyst / StockX / KREAM / MUSINSA，最新在上、可比對名次演化）。日本量化板 2026-06-14 撤除（Mercari 陳貨、即時榜 bot 擋，D17），日本看 daily brief 日潮區。
 
 ---
 
@@ -129,7 +129,6 @@ style-superman/
 │   └── rankings/             # 量化排行快照（最新在上，可比對演化）
 │       ├── lyst-index.yml    #   歐美：Lyst Index 季度
 │       ├── stockx.yml        #   歐美：StockX 年度
-│       ├── mercari-jp.yml    #   日本：Mercari 二手成交
 │       ├── kream.yml         #   韓國：KREAM 轉售
 │       └── musinsa.yml       #   韓國：MUSINSA 銷售榜
 ├── reports/                  # 封存快照（產出後不回改）
@@ -201,7 +200,7 @@ python scripts/repo_health.py --consistency
 
 ## Roadmap
 
-- [x] 資料底層 + Rankings 模組（歐美 / 日 / 韓五榜）
+- [x] 資料底層 + Rankings 模組（歐美 / 韓四榜；日本量化板 D17 撤除）
 - [x] CI（validate + smoke）+ 週期健檢巡檢（自動開 issue）
 - [x] RSS 收集事實層（17 → 25 → 28 源，三輪深挖）
 - [x] AI 撰寫走排程雲端 agent（D5：不接 repo 內 LLM API）

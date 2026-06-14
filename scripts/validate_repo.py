@@ -190,13 +190,6 @@ def check_ranking_file(path: Path) -> CheckResult:
         for idx, snapshot in enumerate(snapshots, start=1):
             if isinstance(snapshot, dict) and "ranking" in snapshot:
                 errors.append(f"{path}: snapshots[{idx}] must not collapse StockX data into a single ranking list")
-    elif source == "mercari-jp" and snapshots:
-        latest = snapshots[0]
-        if isinstance(latest, dict):
-            if "brand_top" not in latest:
-                errors.append(f"{path}: latest Mercari snapshot missing brand_top")
-            if "menswear_read" not in latest:
-                errors.append(f"{path}: latest Mercari snapshot missing menswear_read")
     elif source == "musinsa" and snapshots:
         latest = snapshots[0]
         if isinstance(latest, dict):

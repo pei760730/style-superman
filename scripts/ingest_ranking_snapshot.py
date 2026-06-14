@@ -4,7 +4,7 @@ ingest_ranking_snapshot.py
 ==========================
 安全地把「一筆新的排行快照」加進 data/rankings/<source>.yml。
 
-目的：降低手填 Lyst / StockX / Mercari / KREAM / MUSINSA 快照的出錯風險。
+目的：降低手填 Lyst / StockX / KREAM / MUSINSA 快照的出錯風險。
 先 **dry-run** 檢查（預設行為，不寫檔），確認格式與契約都對，再加 `--write` 真正寫入。
 寫入時用**文字插入**把新快照放到 `snapshots:` 最上面，**不重新序列化整個檔**，
 所以既有快照的註解與排版都不會被破壞。
@@ -45,7 +45,6 @@ RANKINGS_DIR = ROOT / "data" / "rankings"
 SOURCES = {
     "lyst": "lyst-index.yml",
     "stockx": "stockx.yml",
-    "mercari": "mercari-jp.yml",
     "kream": "kream.yml",
     "musinsa": "musinsa.yml",
 }
@@ -53,7 +52,6 @@ SOURCES = {
 SOURCE_FIELD = {
     "lyst": "lyst-index",
     "stockx": "stockx",
-    "mercari": "mercari-jp",
     "kream": "kream",
     "musinsa": "musinsa",
 }
@@ -145,13 +143,6 @@ def validate_snapshot(source: str, snap: dict) -> tuple[list[str], list[str]]:
             errors.append("StockX snapshot 沒有任何已知欄位（best_seller_sneaker 等）")
         else:
             info.append(f"欄位：{', '.join(known)}")
-    elif source == "mercari":
-        for required in ("brand_top", "menswear_read"):
-            if required not in snap:
-                errors.append(f"Mercari snapshot 缺 {required}")
-        bt = snap.get("brand_top")
-        if isinstance(bt, dict) and bt.get("name"):
-            info.append(f"brand_top = {bt['name']}")
     elif source == "kream":
         # 與 validate_repo 對齊：KREAM 以 brand_top 為頭、必帶男裝視角
         for required in ("brand_top", "menswear_read"):

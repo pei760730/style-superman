@@ -51,8 +51,9 @@ REGIONS = {
     "jp": {
         "suffix": "jp",
         "name": "日本",
-        # 日本可自動比對的量化基準只有 Mercari（ZOZO 等即時榜不可自動收，見 docs/rankings.md）
-        "baselines": (("mercari-jp.yml", "Mercari"),),
+        # 日本無可自動收的量化基準（2026-06-14：Mercari 撤除、ZOZO/Rakuten/2nd STREET bot 擋，
+        # 見 docs/rankings.md）。日本主榜全依事件確認（L2）+ 媒體共識（L3），信心保守。
+        "baselines": (),
         "source_regions": ("jp", "global"),
     },
 }
@@ -74,13 +75,16 @@ def latest_period(filename: str) -> str:
 
 
 def baseline_label(region: dict) -> str:
-    """該地區的量化基準標籤，例：「Lyst 2026-Q1・StockX 2025-annual」。"""
+    """該地區的量化基準標籤，例：「Lyst 2026-Q1・StockX 2025-annual」。
+    無可自動收基準的地區（如日本）回傳明確說明，不留空白。"""
+    if not region["baselines"]:
+        return "無可自動收的量化基準（即時榜 bot 擋，見 docs/rankings.md）"
     return "・".join(f"{label} {latest_period(fn)}" for fn, label in region["baselines"])
 
 
 def baseline_movement(region: dict) -> str:
     """量化基準的季對季名次變動，嵌進骨架供寫手填 🆚/📈 時當客觀依據。
-    只有 Lyst 有多季快照可算（us-eu）；StockX 年度、Mercari 歷史區間、日本即時榜不可自動收。"""
+    只有 Lyst 有多季快照可算（us-eu）；StockX 年度、日本即時榜不可自動收（日本已無量化基準）。"""
     if yaml is None:
         return "（缺 pyyaml，無法計算基準變動）"
     if region["suffix"] != "eu":

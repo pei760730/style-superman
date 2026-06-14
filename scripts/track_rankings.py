@@ -11,9 +11,10 @@ track_rankings.py
 資料源：
     data/rankings/lyst-index.yml   歐美：Lyst Index（季度，最紅品牌+單品）
     data/rankings/stockx.yml       歐美：StockX（年度/年中，熱銷實數）
-    data/rankings/mercari-jp.yml   日本：Mercari（二手成交需求）
     data/rankings/kream.yml        韓國：KREAM（限量/轉售成交量，韓版 StockX）
     data/rankings/musinsa.yml      韓國：MUSINSA（平台銷售榜，最大男裝電商）
+    （日本量化榜 2026-06-14 撤除：Mercari 年報已無時尚品牌榜、ZOZO/Rakuten/2nd STREET
+      皆 bot 擋，無可自動收的當期日本榜。--region jp 會回報暫缺，見 docs/rankings.md）
 
 用法：
     python scripts/track_rankings.py                 # 全部來源，最新榜
@@ -46,15 +47,22 @@ RANKINGS_DIR = ROOT / "data" / "rankings"
 SOURCES = {
     "lyst": "lyst-index.yml",       # 歐美：季度威望榜
     "stockx": "stockx.yml",         # 歐美：轉售熱銷實數
-    "mercari": "mercari-jp.yml",    # 日本：二手成交需求
     "kream": "kream.yml",           # 韓國：限量/轉售成交量（韓版 StockX）
     "musinsa": "musinsa.yml",       # 韓國：平台銷售榜（最大男裝電商）
 }
 
+# 日本量化榜暫缺說明（2026-06-14 撤除 Mercari，無可自動收的替代源）
+JP_BOARD_RETIRED = (
+    "\n♻  日本當期量化榜暫缺"
+    "\n    Mercari 年報已無時尚品牌榜（轉趨勢詞）、ZOZO / Rakuten / 2nd STREET 皆 bot 擋"
+    "（403 / timeout，2026-06-14 實測）——無可自動收的當期日本榜。"
+    "\n    日本當期熱度請看 daily brief 的「日潮」區（質化）。\n"
+)
+
 # 顯示分組：依地區，方便 --source all 時排版
 REGION_GROUPS = {
     "🇺🇸🇪🇺 歐美": ["lyst", "stockx"],
-    "🇯🇵 日本": ["mercari"],
+    "🇯🇵 日本": [],   # Mercari 撤除後暫無日本量化源
     "🇰🇷 韓國": ["kream", "musinsa"],
 }
 
@@ -201,33 +209,6 @@ def show_stockx_latest(data: dict) -> None:
     print()
 
 
-# ---------- 顯示：Mercari ----------
-
-def show_mercari_latest(data: dict) -> None:
-    snaps = snapshots(data)
-    if not snaps:
-        print("（Mercari 無快照）")
-        return
-    s = snaps[0]
-    print(f"\n♻  Mercari（二手成交）· {s.get('period')}（{s.get('report', '')}）")
-
-    bt = s.get("brand_top")
-    if bt:
-        note = f"  — {bt['note']}" if bt.get("note") else ""
-        print(f"\n  成交品牌 #1   {bt['name']}{note}")
-    if s.get("cross_gen_brands"):
-        print(f"  跨世代保值   {', '.join(s['cross_gen_brands'])}")
-    if s.get("category_shift"):
-        print("\n  品類結構變化")
-        for c in s["category_shift"]:
-            print(f"     · {c}")
-    if s.get("menswear_read"):
-        print("\n  👔 男裝視角")
-        for m in s["menswear_read"]:
-            print(f"     · {m}")
-    print()
-
-
 # ---------- 顯示：KREAM（韓國，限量/轉售成交） ----------
 
 def show_kream_latest(data: dict) -> None:
@@ -288,7 +269,6 @@ def show_musinsa_latest(data: dict) -> None:
 SHOW = {
     "lyst": show_lyst_latest,
     "stockx": show_stockx_latest,
-    "mercari": show_mercari_latest,
     "kream": show_kream_latest,
     "musinsa": show_musinsa_latest,
 }
@@ -298,7 +278,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="排行快照檢視與比對")
     parser.add_argument(
         "--source",
-        choices=["lyst", "stockx", "mercari", "kream", "musinsa", "all"],
+        choices=["lyst", "stockx", "kream", "musinsa", "all"],
         default="all",
     )
     parser.add_argument("--region", choices=["us-eu", "jp", "kr"], help="只看某地區（覆蓋 --source）")
@@ -312,6 +292,11 @@ def main() -> None:
         targets = list(SOURCES)
     else:
         targets = [args.source]
+
+    # --region jp（Mercari 撤除後無源）：誠實回報暫缺，不靜默空白
+    if args.region == "jp" and not targets:
+        print(JP_BOARD_RETIRED if not args.json else json.dumps({}, ensure_ascii=False))
+        return
 
     if args.json:
         out = {k: (snapshots(load(k))[:1] or [None])[0] for k in targets}

@@ -41,10 +41,17 @@ import datetime as dt
 import json
 import re
 import sys
+import urllib.error
+import urllib.request
 from pathlib import Path
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
+
+# 讓 _probe_rss 能 import 同層的 collect_raw_signals；模組載入時設一次（不在每次 probe 時重插，避免 sys.path 污染）
+_SCRIPTS_DIR = str(Path(__file__).resolve().parent)
+if _SCRIPTS_DIR not in sys.path:
+    sys.path.insert(0, _SCRIPTS_DIR)
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -365,10 +372,7 @@ def _probe_rss(url: str, timeout: int = 15) -> tuple[str, int]:
     狀態類別：ok / empty(200但解析0則) / dead(403/404/410) / ratelimited(429) / unreachable。
     刻意分開 429——那是『活著但被限速』,不是死源,不該跟永久 403 混為一談（2026-06-15 dogfood 教訓：
     舊版單看『0 則』把被限速的 reddit 誤判成死源）。"""
-    import urllib.error
-    import urllib.request
-    sys.path.insert(0, str(Path(__file__).resolve().parent))
-    import collect_raw_signals as c
+    import collect_raw_signals as c  # 同層；路徑已於模組載入時設好
     req = urllib.request.Request(url, headers={"User-Agent": c.UA})
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
@@ -376,11 +380,13 @@ def _probe_rss(url: str, timeout: int = 15) -> tuple[str, int]:
         n = len(c.parse_feed(xml, {"id": "_probe", "url": url}))
         return ("ok", 200) if n > 0 else ("empty", 200)
     except urllib.error.HTTPError as e:
-        if e.code == 429:
+        code = e.code
+        e.close()  # urlopen 拋錯時 with 沒進去，error response 要自己關（否則連線開到 GC）
+        if code == 429:
             return ("ratelimited", 429)
-        if e.code in (403, 404, 410):
-            return ("dead", e.code)
-        return ("unreachable", e.code)
+        if code in (403, 404, 410):
+            return ("dead", code)
+        return ("unreachable", code)
     except Exception:  # noqa: BLE001 — timeout / DNS / decode 都歸連不上
         return ("unreachable", 0)
 

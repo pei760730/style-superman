@@ -181,7 +181,9 @@ def fetch_feed(url: str, timeout: int = 15, sleep=time.sleep) -> str | None:
             with urllib.request.urlopen(req, timeout=timeout) as resp:
                 return resp.read().decode("utf-8", errors="replace")
         except urllib.error.HTTPError as e:
-            if e.code == 429 and attempt == 0:
+            code = e.code
+            e.close()  # urlopen 拋錯時 with 沒進去，先關掉 error response 再退避/返回
+            if code == 429 and attempt == 0:
                 sleep(3)  # 禮貌退避後再試一次
                 continue
             return None

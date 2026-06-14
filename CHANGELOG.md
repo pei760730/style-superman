@@ -4,6 +4,9 @@
 
 ## [Unreleased]
 
+### Fixed
+- **`track_rankings --compare` 假「新進榜」bug（2026-06-14）**：`lyst_comparison_text` 拿「完整 Top20(2026-Q1)」比「殘缺 Top10(2025-Q4，coverage: partial、只存 9 個)」時,凡不在殘缺榜上的全標「🆕 新進榜」(20 個裡 10 個假陽性)——但 Coach/BV 等只是沒被轉載、非真新進。修:偵測前季 `coverage: partial` → 標警告橫幅、未匹配的改標「前季殘缺無法判定」(不再假新進榜)、略過「掉出榜外」(殘缺榜本就沒列全),提示改看快照內建 move 欄。月報 🆚 段共用此函式一併受惠。完整跑 track_rankings 時發現、擁有者當時被 Mercari 話題蓋過沒選,事後新鮮度核對補修。
+
 ### Changed
 - **收尾 D16:清掉殘留假排程 + 移除失效的 daily 斷更看門狗（2026-06-14，擁有者新鮮度稽核:「還有沒有過時資料還在引用」）**：深掃發現 D16(砍 routine)沒傳播乾淨——8 處活檔仍宣稱「每月1號排程/daily 每日 schedule/Lyst 已設排程」(全不存在),且 `repo_health.py` 的 daily 斷更檢查在 D16 後會永遠誤報(daily brief 改對話觸發、不入 reports/daily/,無檔可數,health.yml 週一四會據此開假 issue)。修:① `repo_health.py` 移除 `check_daily_freshness` + `DAILY_STALE_DAYS` + 呼叫(週挑/月報檢查保留,監控的是有存檔的產物),月報檢查訊息改「對話觸發」;② 假排程文字全改對話觸發——`docs/system_design.md`(排程列)、`docs/operating_manual.md`(月報+daily)、`scripts/generate_monthly_heat_report.py`(docstring)、`scripts/README.md`、`docs/rankings.md`(Lyst Q2「已設排程」→對話補);③ README 順手掃:D5 表/原則/roadmap 的「排程雲端 agent」→「對話 agent」、roadmap「斷更看門狗」改為已移除;④ `CLAUDE.md` D5 同步。資料層稽核結論:ranking 板 Lyst/MUSINSA 當期、StockX/KREAM 年度已標明、trend_history 多年期基準,無第二個 Mercari 級陳貨。
 

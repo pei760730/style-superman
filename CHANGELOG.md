@@ -5,6 +5,7 @@
 ## [Unreleased]
 
 ### Changed
+- **`trend_analysis` 加範圍門檻:單一趨勢 vs 一季大盤（2026-06-15，dogfood 跑 trend_analysis 抓到、擁有者選硬化）**：擁有者下「男性秋冬穿搭趨勢」跑 `trend_analysis`,但該工具產的是**一張**單一趨勢卡(「定義」要一句話說清楚是什麼),一整季塞不進。本次靠「先研究 AW26→收斂成最定義性的單一趨勢(廓形收窄)→給選項」臨場補上,但 prompt 沒擋。硬化:`prompts/trend_analysis.md` 開頭加「範圍門檻」——收到一季/品類大盤/廣主題時,先收斂成最定義性的單一趨勢並回報理由再動工,或建議改用月報(多趨勢全貌工具),不硬塞一張卡。`docs/lessons.md` 記 soft note。
 - **立「管線是底盤，不是答案邊界」規則（2026-06-14，擁有者「寫進去」）**：根因——擁有者問「6 月 head-to-toe 什麼最紅」,我只按關鍵字分桶 RSS、回報「頭部沒源」交白卷,把管線覆蓋當答案天花板(其實對話手上有 WebSearch/WebFetch,一查每格都填得滿)。硬化:`CLAUDE.md` 新增該節(治理**對話 ad-hoc 行為**,因為該失誤發生在沒走 prompt 的對話場景);`prompts/weekly_buy_picks.md` + `prompts/monthly_heat_report.md` 加「某部位×地區可信訊號 < 3 條 → 必須主動 WebSearch/WebFetch 補滿才出稿,禁止回報該區無源交差」;`docs/lessons.md` 記事(已硬化)。
 
 ### Added

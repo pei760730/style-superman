@@ -8,6 +8,7 @@
 #   tier      1=核心必看  2=常態追蹤  3=輔助/驗證
 #   url       主站
 #   rss       RSS（若有，未來自動抓取用；無則留 null）
+#   body_fetchable  false=網站封鎖 crawler 或付費牆，WebFetch 讀不到內文（如 GQ gq.com）→ roundup 不挖、直接不列；省略/true=可讀（2026-06-14 加，D：roundup 一定要挖出 picks）
 #   notes     用途備註
 
 sources:
@@ -37,6 +38,7 @@ sources:
     tier: 2
     url: https://www.gq.com/style
     rss: https://www.gq.com/feed/rss   # 全站 feed（含非 style 內容，篩選交 brief 主編 agent）；2026-06-10 實測可解析
+    body_fetchable: false   # gq.com 封鎖 crawler，WebFetch 讀不到內文（2026-06-14 實測）→ roundup 不列
     notes: 主流男裝、紅毯與名人穿搭
 
   - id: esquire-style
@@ -46,6 +48,7 @@ sources:
     tier: 3
     url: https://www.esquire.com/style/
     rss: https://www.esquire.com/rss/all.xml   # 全站 feed（含非 style 內容）；2026-06-10 實測可解析
+    body_fetchable: false   # esquire.com 封鎖 crawler，WebFetch 讀不到內文（2026-06-14 實測）→ roundup 不列
     notes: 經典男裝、tailoring 角度
 
   - id: bof
@@ -55,6 +58,7 @@ sources:
     tier: 1
     url: https://www.businessoffashion.com/
     rss: https://www.businessoffashion.com/arc/outboundfeeds/rss/?outputType=xml   # 2026-06-11 實測可解析
+    body_fetchable: false   # 正文付費牆 + 403，WebFetch 讀不到內文（2026-06-14 實測）→ roundup 不列；title+summary 仍收
     notes: 國際時裝產業情報的最高標來源（品牌併購 / 人事 / 策略）；正文部分付費牆，事實層收 title+summary 已足
 
   - id: wwd
@@ -73,6 +77,7 @@ sources:
     tier: 2
     url: https://sneakernews.com/
     rss: https://sneakernews.com/feed/   # 2026-06-11 實測可解析
+    body_fetchable: false   # sneakernews.com 回 403、WebFetch 讀不到內文（2026-06-14 實測）→ roundup 不列；RSS summary 含 SKU/價格仍可當單則
     notes: 球鞋發售情報垂直媒體（日期 / 定價 / SKU 密度高）；與 Hypebeast 交叉驗證發售訊號
 
   - id: fucking-young
@@ -109,6 +114,7 @@ sources:
     tier: 3
     url: https://putthison.com/
     rss: https://putthison.com/feed/   # 2026-06-11 實測可解析
+    body_fetchable: false   # putthison.com 回 403、WebFetch 讀不到內文（2026-06-14 實測）→ roundup 不列
     notes: 美式經典男裝部落格老店：質感判斷 / 二手挖寶（eBay roundup）視角，補 discourse 層深度
 
   - id: reddit-sneakers
@@ -136,6 +142,7 @@ sources:
     tier: 2
     url: https://www.drapersonline.com/
     rss: https://www.drapersonline.com/feed   # 2026-06-13 實測可解析（2 週 sitemap 驗證、高量穩定）
+    body_fetchable: false   # drapersonline.com 回 403、WebFetch 讀不到內文（2026-06-14 實測）→ roundup 不列
     notes: 英國時裝零售產業日報；零售/通路 intel（品牌動向、人事、漲價、零售布局），非消費趨勢——餵「值得買｜通路」軸，不當 trend headline 來源（D13）
 
   # ---------- 日潮 ----------
@@ -164,6 +171,7 @@ sources:
     tier: 2
     url: https://www.wwdjapan.com/
     rss: https://www.wwdjapan.com/feed   # 2026-06-10 實測可解析
+    body_fetchable: false   # wwdjapan.com 回 403、WebFetch 讀不到內文（2026-06-14 實測；母刊 wwd.com 反而可讀）→ roundup 不列
     notes: 產業 / 品牌營運 / 秀場
 
   - id: mens-nonno

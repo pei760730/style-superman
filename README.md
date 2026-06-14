@@ -131,7 +131,6 @@ style-superman/
 │       └── musinsa.yml       #   韓國：MUSINSA 銷售榜
 ├── reports/                  # 封存快照（產出後不回改）
 │   ├── daily/                # 每日 brief（YYYY-MM-DD.md）
-│   ├── buy_picks/            # （封存）2026-06-11~12 的單品挑買卡——D9 已停產，推薦改寫在 brief 內
 │   ├── buy_shortlist/        # 週挑 Head-to-Toe（YYYY-Wnn.md）
 │   ├── monthly/              # 月度熱度速報（YYYY-MM-eu.md 歐美；YYYY-MM-jp.md 日本，2026-07 起）
 │   └── analysis/             # 趨勢深挖卡 + 主題分析（每週至少一張，歐美優先）

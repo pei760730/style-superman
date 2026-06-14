@@ -6,19 +6,22 @@
 **這套系統服務的對象只有我自己**：一個追男裝潮流、會親手挑單品入手的玩家。
 它**不是**內容生產 / 拍片管線，與 IG 漲粉 / 創作者經營**完全無關**——產出永遠不含「可拍選題」「content hooks」類東西（2026-06-05 拍板，守衛強制，見[防線](#防線怎麼防止系統跑偏)）。
 
-**我唯一的工作是兩件事：讀，和買不買。** 系統其餘環節全自動（D8：驗證綠即自 merge，沒有任何一步等我點按鈕）。覺得哪天判斷錯了，跟 agent 講一句——反饋會記進 [docs/decisions.md](docs/decisions.md) / [docs/lessons.md](docs/lessons.md)，產線修正。
+**我唯一的工作是兩件事：讀，和買不買。** 每日 brief 由我說「早安」、agent 在對話當場跑出來（D16，2026-06-14：比排程 routine 品質高又省額度）；工程 / 健檢環節全自動（D8：驗證綠即自 merge）。覺得哪天判斷錯了，跟 agent 講一句——反饋會記進 [docs/decisions.md](docs/decisions.md) / [docs/lessons.md](docs/lessons.md)，產線修正。
 
 ---
 
 ## 系統的一天（時間軸）
 
 ```txt
-台北 05:00   GitHub Actions 產 brief 骨架 + 收 RSS signals（純腳本，不判讀）→ 直推 master
-台北 07:30   雲端 routine「每日 brief 內容填寫」讀 signals → 濾噪音、歸類、主編判讀
-             → 填入頭條 + 三地區區塊（日/韓/歐美）+ For Me → 開分支 PR → CI 綠 → 自 merge
-我起床後     手機開 GitHub → reports/daily/ 點今天 → 先看最下面的 🎯 For Me（對我最相關的在紅單品）
-             （或跟 agent 說「早安」，直接端上來）
+我起床後     跟 agent 說「早安」→ agent 當場跑：本機收當日 RSS 訊號（每源 25 則、四區 400+）
+             → 濾噪音、歸類、主編判讀 → roundup 逐條 WebFetch 挖出實際 picks
+             → 在對話端上完整 brief（頭條 + 日/韓/歐美三區塊 + 🎯 For Me）
+             → 我直接讀，先看最下面的 🎯 For Me（對我最相關的在紅單品）
 ```
+
+> **2026-06-14 起：每日 brief 全對話觸發,沒有排程 routine（D16）。** 雲端 routine 在無人盯時會
+> 退化成「只有標題的空殼 roundup」；對話裡 agent 認真跑(真收訊號 + 真 WebFetch 挖 picks)品質更高、
+> 又省 routine 額度。產出在對話讀,不入 `reports/daily/`(要封存再說)。
 
 **每週一**：說「早安」= daily + 週挑 Head-to-Toe 一起端上（5 區 × 3 樣，收斂上週 7 天情報；**對話觸發，不是排程**）。每週至少一張趨勢深挖卡（歐美優先，對話觸發）。
 **每月初**：說一聲跑歐美 / 日本月報（**對話觸發**；日本線 2026-07 起）。Lyst Q2 出刊（7 月）時說一聲 ingest 進 rankings。
@@ -61,15 +64,15 @@
 
 | 執行者 | 時間 | 做什麼 | 提交方式 |
 |---|---|---|---|
-| GitHub Actions `daily-brief.yml` | 每天台北 05:00 | 產當日 brief **骨架** + `--with-rss` 收當日 RSS signals 落檔（純腳本、無 LLM，D5） | ⚠ 骨架 + signals **直推 master**（確定性產出） |
-| 雲端 routine「每日 brief 內容填寫」 | 每天台北 07:30 | 讀 Actions 收的 signals → 填當日 brief（頭條 / 日韓歐美三區塊 / For Me）；已填則跳過 | **分支 + PR**，CI 綠自 merge（D8） |
-| 對話 agent（**唯一的非排程入口**） | 需要時 | 深挖卡；**週挑**（週一說「早安」一起端）；**月報**（月初說一聲，歐美 / 日本，日本線 2026-07 起）；**Lyst Q2 ingest**（7 月榜出說一聲）；臨時任務 | **分支 + PR**，驗證綠即自 merge（D8） |
+| 對話 agent（**唯一的內容入口**） | 說「早安」/ 需要時 | **每日 brief**（本機收訊號 → 判讀 → roundup 真 WebFetch 挖 picks → 對話端上）；深挖卡；**週挑**（週一說「早安」一起端）；**月報**（月初說一聲，歐美 / 日本，日本線 2026-07 起）；**Lyst Q2 ingest**（7 月榜出說一聲）；臨時任務 | 內容在對話讀（不入版控）；需封存 / 工程改動才走**分支 + PR**，驗證綠自 merge（D8） |
+| GitHub Actions `daily-brief.yml` | **手動備援**（已移除排程，D16） | `--with-rss` 在 egress 正常的 runner 收訊號 / 產骨架——僅本機 collect 失靈時手動 dispatch | （平時不跑） |
 | GitHub Actions `health.yml` | 每週一、四台北 09:00 | `repo_health --strict` 巡檢（新鮮度 + 一致性 + 守衛 + 產出契約） | 未過 → 自動開 / 更新 `repo-health` issue |
 | GitHub Actions `ci.yml` | 每個 PR | validate + smoke 測試 | 紅燈 = 不能 merge |
 
-> **只有 daily 一支雲端 routine**（起床前要備好，值得排程）。週挑 / 月報 / Lyst Q2 一律**對話觸發**——低頻產物不開常駐 routine（省額度、合反熵 D7）。
+> **0 支雲端 routine（D16，2026-06-14）。** 每日 brief 連同週挑 / 月報 / Lyst Q2 全部**對話觸發**——
+> 排程 routine 在無人盯時品質退化（空殼 roundup），對話跑品質更高又省額度（合反熵 D7）。
 
-**鐵則：除了 daily 骨架 + signals，所有產出一律走分支 + PR。** 直推 master 會繞過 CI 上的全部防線——這是殭屍任務卡第三例的教訓（[docs/lessons.md](docs/lessons.md)）。
+**鐵則：所有內容產出由對話 agent 跑；要封存或工程改動一律走分支 + PR。** 直推 master 會繞過 CI 上的全部防線——這是殭屍任務卡第三例的教訓（[docs/lessons.md](docs/lessons.md)）。
 
 **叫 agent 做事：** 守則在 [CLAUDE.md](CLAUDE.md)（開工先跑 `repo_health.py`）。例行產出與工程 PR 驗證綠即自 merge（D8）——我的終審是事後反饋，買不買的決策在現實世界，不在 git。
 
@@ -157,7 +160,7 @@ style-superman/
 │   └── lessons.md               # 教訓簿（殭屍任務卡三例都在這）
 └── .github/workflows/
     ├── ci.yml                # PR validate + smoke
-    ├── daily-brief.yml       # 每日骨架 + 收 RSS signals（台北 05:00；日期以 Asia/Taipei 顯式計算）
+    ├── daily-brief.yml       # 收 RSS signals + 產骨架（手動備援；排程已於 D16 移除）
     └── health.yml            # 週一、四 --strict 巡檢，未過自動開 issue
 ```
 

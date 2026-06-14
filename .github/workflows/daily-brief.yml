@@ -12,23 +12,21 @@ name: Daily Brief
 # 寫手只負責「讀 signals + WebFetch 補內文 + 寫」，不再自己抓 RSS。
 # signals 檔是中間產物：寫手填完 brief 後在同 PR 刪掉它（見 prompts/daily_trend_brief.md）。
 #
-# 觸發方式：
-#   - workflow_dispatch：手動觸發
-#   - schedule：每日 UTC 21:00（台灣時間隔日 05:00）自動產骨架（2026-06-10 由 Kai 拍板開啟；
-#     2026-06-14 由 07:00 提早至 05:00——GitHub 排程慢性延遲 60–78 分,原與 07:30 填寫 routine 只差
-#     30 分,Actions 一延遲就跑在 routine 後面、signals 來不及交棒。提早拉開間距至 ~150 分修競態。）
+# 觸發方式（2026-06-14 起）：
+#   - workflow_dispatch：手動備援，唯一入口。
+#   - ~~schedule~~：已移除。每日 brief 改全對話觸發（D16）——雲端填寫 routine 在無人盯時會
+#     退化成「只有標題的空殼 roundup」，對話裡 agent 認真跑（本機真收 400+ 訊號 + 逐條 WebFetch
+#     挖 picks）品質更高、又省 routine 額度。schedule 留著只會每天 commit 沒人填的空骨架。
 #
 # ⚠ 2026-06-10：本檔曾在 GitHub 端「註冊消失」（帳號風控後遺症，連 dispatch 都不可用）。
 #   檔案內容變更並 push 即可重新註冊；「檔案在 ≠ 在跑」，要看 Actions run 紀錄（docs/lessons.md）。
 
 on:
+  # 2026-06-14：移除 schedule。每日 brief 改全對話觸發（D16），雲端填寫 routine 已停用，
+  # 此 workflow 不再需要每天自動收訊號 / 產骨架（否則會每天 commit 沒人填的空骨架 = 垃圾）。
+  # 保留 workflow_dispatch 當手動備援：本機 collect_raw_signals.py 萬一失靈時，可手動在 egress
+  # 正常的 runner 收一次訊號 / 產骨架。平時對話流程由 agent 在本機收訊號，不需要這層。
   workflow_dispatch:
-  schedule:
-    # 每天 UTC 21:00（台灣時間隔日 05:00）跑。提早至 05:00 是為了和 07:30 填寫 routine 拉開
-    # 間距（GitHub 排程慢性延遲 60–78 分；30 分間距會讓 signals 交棒落在 routine 之後）。
-    # ⚠ runner 的「今天」是 UTC：21:00Z 時 UTC 日期仍是台灣的昨天（21:00Z = 台北隔日 05:00），
-    #   故日期必須以 Asia/Taipei 計算（見 Compute brief date step），不能讓腳本吃預設值。
-    - cron: "0 21 * * *"
 
 permissions:
   contents: write

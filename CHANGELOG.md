@@ -4,6 +4,9 @@
 
 ## [Unreleased]
 
+### Changed
+- **砍掉雲端排程 routine，每日 brief 改全對話觸發（D16，2026-06-14，擁有者:「routine 拿掉阿 我們再這對話我問你你再認真看」）**：實跑暴露排程 routine（sonnet，台北 07:30）在無人盯時品質退化——連不到 RSS feed 退 WebSearch、roundup 只填標題不挖 picks;同日對話裡 agent（opus）認真跑(本機收 427 訊號、4 條 roundup WebFetch 挖 26 單品、NB/Nike 收斂、看膩款下架)明顯更詳細,擁有者拍板「詳細多了」。停用雲端 routine `Style Superman — Daily Brief Fill`（RemoteTrigger `enabled:false`,API 無 delete）;`daily-brief.yml` 移除 `schedule:` cron 保留 `workflow_dispatch` 當手動備援(不刪檔);每日 brief 改對話觸發、產出在對話讀不入 `reports/daily/`。0 支雲端 routine,合反熵 D7 + 省額度。同步 README（時間軸 / 自動化表 / 檔案樹）+ docs/decisions.md D16。可逆(還原 cron + `enabled:true`),故不寫進 decision_guards。
+
 ### Removed
 - **3 張封存挑買卡 + `reports/buy_picks/` 目錄（2026-06-14，擁有者反轉 D9 封存決定）**：D9 當時把 cdg-postman-bag / nonnative-timberland-taupe / teva-nhoolywood-hurricane 三卡列為「封存保留」,擁有者後判定獨立挑買卡是設計錯誤,全數刪除、目錄收掉。同步:`reports/daily/2026-06-11.md` 移除連到卡的兩個 `→ 挑買卡` 尾連結（For Me 內容不動,只拿掉死指標——一次性破例改凍結 brief）;`README.md` 結構移除 buy_picks 列;`docs/decisions.md` D9 標註反轉;`data/decision_guards.yml` 守衛 pattern 保留續擋重開卡流程、reason 更新。
 - **趨勢加權評分框架 score_trends（D14，2026-06-14）**：刪 `scripts/score_trends.py` + `docs/trend_scoring_rules.md`；

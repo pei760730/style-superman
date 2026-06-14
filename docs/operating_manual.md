@@ -62,7 +62,7 @@ git commit -m "brief: YYYY-MM-DD"
 ## 3. 每月
 
 - 產出或回看 `reports/monthly/YYYY-MM-eu.md` 與 `YYYY-MM-jp.md`（日本線 2026-07 起），確認月報有標訊號來源分層、信心與抓取限制。
-  （要手動產骨架：`python scripts/generate_monthly_heat_report.py --month YYYY-MM [--region jp]`；每月 1 號排程會自動產全文。）
+  （月報改對話觸發，無排程，D16：月初說一聲，agent 跑 `python scripts/generate_monthly_heat_report.py --month YYYY-MM [--region jp]` 產骨架 → 補內容。）
 - 若月報暴露固定弱點（例如電商即時 best-seller 訊號不足），回頭硬化相關 prompts / templates。
 
 ## 4. 維護 data/
@@ -76,8 +76,8 @@ git commit -m "brief: YYYY-MM-DD"
 
 ## 5. 自動化開關
 
-- **GitHub Actions**：`.github/workflows/daily-brief.yml` 每天台灣時間 07:00 自動跑 Step 1（產骨架並 commit；2026-06-10 起開啟），也可 `workflow_dispatch` 手動觸發。
-  AI 撰寫全文由對話中的 agent / 排程雲端 agent 做，**不接 repo 內 LLM API**（決策 D5，見 `docs/decisions.md`）。
+- **GitHub Actions**：`.github/workflows/daily-brief.yml` 的自動 schedule 已於 D16 移除，僅留 `workflow_dispatch`（本機收 RSS 失靈時的手動備援）。每日 brief 改對話觸發。
+  AI 撰寫全文由對話中的 agent 做，**不接 repo 內 LLM API**（決策 D5，見 `docs/decisions.md`）。
 - **推送（Telegram / Notion 等）**：未拍板。先手動跑順、確認有價值，再自動化；不要為了自動化而自動化。
 
 ## 5.5 系統自我檢查

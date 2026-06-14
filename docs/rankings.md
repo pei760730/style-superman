@@ -114,7 +114,7 @@ Rankings 是**唯一的 L1 硬數據佐證**：一個趨勢若同時出現在 Ly
 | KREAM | 2025 年度（Nike 成交 #1；平台去球鞋化 50%→37%）＋ 2026-01（中古精品 +203%、Rolex +363%）|
 | MUSINSA | 2026-02（무신사 스탠다드 連 5 月 #1、adidas #2）＋ 2025-12（#1 PB、#2 TNF）|
 
-下一期：Lyst Q2 2026（已設排程）、StockX 2026 年中、KREAM/MUSINSA 官方月榜更新時補一期。
+下一期（皆對話觸發補，無排程，D16）：Lyst Q2 2026（約 7 月發布；發布後說一聲跑 ingest + `--compare`）、StockX 2026 年中、KREAM/MUSINSA 官方月榜更新時補一期。
 
 ## 🚫 ZOZOTOWN：評估後不採用（紀錄）
 

@@ -59,7 +59,7 @@ python scripts/generate_monthly_heat_report.py --month 2026-07 --region jp
 python scripts/generate_monthly_heat_report.py --month 2026-06 --draft   # 產 *.draft.md
 ```
 
-對照每月 1 號的遠端排程（全自動產全文），這支是「本地手動產骨架」的入口。內容判斷見 `prompts/monthly_heat_report.md`。
+月報改對話觸發（D16，無排程）：月初說一聲，agent 跑這支產骨架 → 補內容。內容判斷見 `prompts/monthly_heat_report.md`。
 
 ### `repo_health.py`
 Repo 自我健康檢查（Self-Evolution Loop 的 Observe / Diagnose / Next Action 層）。

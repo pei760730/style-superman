@@ -49,7 +49,8 @@ if hasattr(sys.stdout, "reconfigure"):
 ROOT = Path(__file__).resolve().parent.parent
 
 # 新鮮度門檻
-DAILY_STALE_DAYS = 3          # daily brief 超過這天數沒產出就警告
+# （daily 斷更檢查已於 2026-06-14 移除：D16 後 daily brief 改對話觸發、不入 reports/daily/，
+#   用「檔案新鮮度」監控對話產出只會永遠誤報，見 docs/decisions.md D16）
 MONTHLY_GRACE_DAY = 3         # 每月 N 號後仍無當月月報就警告
 LYST_STALE_QUARTERS = 2       # Lyst 快照落後 >= 這個季數就警告（落後 1 季屬正常發布延遲）
 
@@ -221,35 +222,6 @@ def check_workflow_scripts() -> list[Finding]:
 
 # ---------- 新鮮度檢查（WARN） ----------
 
-def check_daily_freshness(today: dt.date) -> list[Finding]:
-    findings: list[Finding] = []
-    dates = []
-    for report in (ROOT / "reports" / "daily").glob("????-??-??.md"):
-        try:
-            dates.append(dt.date.fromisoformat(report.stem))
-        except ValueError:
-            continue
-    if not dates:
-        findings.append(Finding(
-            "warn", "reports/daily/ 沒有任何 daily brief",
-            "跑 python scripts/generate_daily_brief.py 啟動每日產線",
-        ))
-        return findings
-    latest = max(dates)
-    gap = (today - latest).days
-    if gap > DAILY_STALE_DAYS:
-        findings.append(Finding(
-            "warn",
-            f"daily brief 已 {gap} 天沒產出（最新：{latest.isoformat()}）",
-            "重啟每日產線：generate_daily_brief.py --with-rss 產骨架 → AI/人工補內容；"
-            "daily-brief.yml 的 schedule 已開啟（2026-06-10）仍斷更＝排程死了或註冊消失，"
-            "去看 GitHub Actions run 紀錄（檔案在 ≠ 在跑，見 docs/lessons.md）",
-        ))
-    else:
-        findings.append(Finding("info", f"daily brief 最新：{latest.isoformat()}（{gap} 天前）"))
-    return findings
-
-
 def check_weekly_picks_freshness(today: dt.date) -> list[Finding]:
     """週挑（buy_shortlist）斷更檢查。目錄空 = 還沒開始，只提示不警告。"""
     weeks = []
@@ -290,7 +262,7 @@ def check_monthly_freshness(today: dt.date) -> list[Finding]:
             findings.append(Finding(
                 "warn",
                 f"當月月報 {expected.name} 不存在（已過每月 {MONTHLY_GRACE_DAY} 號）",
-                "確認每月 1 號的排程 agent 是否有跑；或手動 generate_monthly_heat_report.py 補產"
+                "月報改對話觸發（D16，無排程）：說一聲跑 generate_monthly_heat_report.py 產骨架 → 補內容"
                 f"（--region {'jp' if suffix == 'jp' else 'us-eu'}）",
             ))
     return findings
@@ -398,7 +370,7 @@ def run_checks(today: dt.date, consistency_only: bool = False) -> list[Finding]:
     findings += check_workflow_scripts()
     findings += check_decision_guards()
     if not consistency_only:
-        findings += check_daily_freshness(today)
+        # daily 斷更檢查已移除（D16：daily brief 對話觸發、不入 reports/daily/，無檔可監控）
         findings += check_weekly_picks_freshness(today)
         findings += check_monthly_freshness(today)
         findings += check_lyst_staleness(today)

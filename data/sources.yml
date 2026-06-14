@@ -153,6 +153,26 @@ sources:
     body_fetchable: false   # drapersonline.com 回 403、WebFetch 讀不到內文（2026-06-14 實測）→ roundup 不列
     notes: 英國時裝零售產業日報；零售/通路 intel（品牌動向、人事、漲價、零售布局），非消費趨勢——餵「值得買｜通路」軸，不當 trend headline 來源（D13）
 
+  # ---------- 高級鐘錶（配件位：錶與服裝同等對待）----------
+  # 2026-06-14 加（擁有者:錶適合學習）：過 D18 三關（持續產出 + 權威 + 我們自己的 parser 實測各收 10 則）。
+  # 最權威的 Hodinkee / SJX / aBlogtoWatch / Worn&Wound 全被 bot 擋（feed 403），改收 WordPress 系的這兩個。
+  - id: fratello-watches
+    name: Fratello Watches
+    region: global
+    type: media
+    tier: 2
+    url: https://www.fratellowatches.com/
+    rss: https://www.fratellowatches.com/feed/   # 2026-06-14 實測：repo parser 收得到、每日多篇、含型號/價格
+    notes: 全球前段錶媒，平價到高級全覆蓋、語氣偏教學（Sunday Morning Showdown 等對比款）；餵配件位錶訊、辨識用型號價格
+  - id: monochrome-watches
+    name: Monochrome Watches
+    region: global
+    type: media
+    tier: 2
+    url: https://monochrome-watches.com/
+    rss: https://monochrome-watches.com/feed/   # 2026-06-14 實測：repo parser 收得到、2-3 篇/日
+    notes: 獨立製錶 / 高級向錶媒，訊噪比高；hands-on 與聯名報導，補高端鐘錶鑑賞角度
+
   # ---------- 日潮 ----------
   - id: hypebeast-jp
     name: Hypebeast JP

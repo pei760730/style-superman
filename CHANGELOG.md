@@ -5,6 +5,7 @@
 ## [Unreleased]
 
 ### Added
+- **新增 2 個高級鐘錶來源:Fratello + Monochrome（2026-06-14，擁有者:錶適合學習）**：錶是配件、系統本來就把錶與服裝同等對待,但先前無專門錶源。依 D18 實測候選——最權威的 Hodinkee/SJX/aBlogtoWatch/Worn&Wound 全被 bot 擋(feed 403/站點擋),WordPress 系的 **Fratello**(平價到高級全覆蓋、教學語氣)與 **Monochrome**(獨立製錶/高端鑑賞)過三關:RSS 有效 + 每日多篇 + **用 repo 自己的 parser 實測各收 10 則**(不只信 WebFetch)。`region: global / type: media / tier: 2` 進 RSS 自動收;來源 41→43、RSS 29→31、collect 427→476 則。餵 brief 配件位錶訊 + 型號/價格辨識用。
 - **新增來源前的兩道門檻（D18，2026-06-14，擁有者拍板）**：加任何新日本/歐美來源前要先確認 ① **持續產出**(近 30 天至少每週數篇,只在大事件才更新/半停更的不收——避免變死權重,cf. Mercari/google-trends)② **夠權威**(編輯判斷/一手/行業地位,非聚合或 SEO 農場)。門檻寫進 `data/sources.yml` 表頭 + `CLAUDE.md`「你不應該單獨做」+ `docs/decisions.md` D18。配套:仍需擁有者拍板(內容判斷)、tier 不批量改(D4)、加前 WebFetch 實測可讀否則標 body_fetchable:false。
 
 ### Fixed

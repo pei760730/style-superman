@@ -76,17 +76,22 @@ def latest_period(filename: str) -> str:
 
 def baseline_label(region: dict) -> str:
     """該地區的量化基準標籤，例：「Lyst 2026-Q1・StockX 2025-annual」。
-    無可自動收基準的地區（如日本）回傳明確說明，不留空白。"""
+    無基準的地區（如日本）回傳短字「無」——這個值會塞進標題括號、「與 X 一致」等
+    短名詞槽，回傳整句會變成「對照量化基準（無可自動收的量化基準（…））」雙重括號 + 壞文法，
+    所以保持短；完整原因由 baseline_movement 在 🆚 段內文交代。"""
     if not region["baselines"]:
-        return "無可自動收的量化基準（即時榜 bot 擋，見 docs/rankings.md）"
+        return "無"
     return "・".join(f"{label} {latest_period(fn)}" for fn, label in region["baselines"])
 
 
 def baseline_movement(region: dict) -> str:
     """量化基準的季對季名次變動，嵌進骨架供寫手填 🆚/📈 時當客觀依據。
-    只有 Lyst 有多季快照可算（us-eu）；StockX 年度、日本即時榜不可自動收（日本已無量化基準）。"""
+    只有 Lyst 有多季快照可算（us-eu）；StockX 年度、日本無量化基準（即時榜 bot 擋、Mercari 已撤）。"""
     if yaml is None:
         return "（缺 pyyaml，無法計算基準變動）"
+    if not region["baselines"]:
+        return ("（本地區無可自動收的量化基準：即時榜 bot 擋、Mercari 已撤，見 `docs/rankings.md`；"
+                "本月不做季對季對照，熱度全靠 L2 事件 + L3 媒體共識，撐不起的標 `待查`）")
     if region["suffix"] != "eu":
         return "（本地區量化基準為年度／歷史區間，無季對季名次可比；即時榜不可自動收，見 `docs/rankings.md`）"
     path = RANKINGS_DIR / "lyst-index.yml"

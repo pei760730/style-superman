@@ -5,6 +5,7 @@
 ## [Unreleased]
 
 ### Removed
+- **3 張封存挑買卡 + `reports/buy_picks/` 目錄（2026-06-14，擁有者反轉 D9 封存決定）**：D9 當時把 cdg-postman-bag / nonnative-timberland-taupe / teva-nhoolywood-hurricane 三卡列為「封存保留」,擁有者後判定獨立挑買卡是設計錯誤,全數刪除、目錄收掉。同步:`reports/daily/2026-06-11.md` 移除連到卡的兩個 `→ 挑買卡` 尾連結（For Me 內容不動,只拿掉死指標——一次性破例改凍結 brief）;`README.md` 結構移除 buy_picks 列;`docs/decisions.md` D9 標註反轉;`data/decision_guards.yml` 守衛 pattern 保留續擋重開卡流程、reason 更新。
 - **趨勢加權評分框架 score_trends（D14，2026-06-14）**：刪 `scripts/score_trends.py` + `docs/trend_scoring_rules.md`；
   趨勢卡移除 `## 評分（0–5）` 段（`trend_card_template.md` / `validate_repo.py` 必含字串 / `prompts/trend_analysis.md` 同步）；
   `prompts/daily_trend_brief.md` 移除 SCORED_TRENDS input；`system_design.md` 管線移除「評分」階、`operating_manual.md` 移除評分步驟、

@@ -4,6 +4,9 @@
 
 ## [Unreleased]
 
+### Added
+- **新增來源前的兩道門檻（D18，2026-06-14，擁有者拍板）**：加任何新日本/歐美來源前要先確認 ① **持續產出**(近 30 天至少每週數篇,只在大事件才更新/半停更的不收——避免變死權重,cf. Mercari/google-trends)② **夠權威**(編輯判斷/一手/行業地位,非聚合或 SEO 農場)。門檻寫進 `data/sources.yml` 表頭 + `CLAUDE.md`「你不應該單獨做」+ `docs/decisions.md` D18。配套:仍需擁有者拍板(內容判斷)、tier 不批量改(D4)、加前 WebFetch 實測可讀否則標 body_fetchable:false。
+
 ### Fixed
 - **`track_rankings --compare` 假「新進榜」bug（2026-06-14）**：`lyst_comparison_text` 拿「完整 Top20(2026-Q1)」比「殘缺 Top10(2025-Q4，coverage: partial、只存 9 個)」時,凡不在殘缺榜上的全標「🆕 新進榜」(20 個裡 10 個假陽性)——但 Coach/BV 等只是沒被轉載、非真新進。修:偵測前季 `coverage: partial` → 標警告橫幅、未匹配的改標「前季殘缺無法判定」(不再假新進榜)、略過「掉出榜外」(殘缺榜本就沒列全),提示改看快照內建 move 欄。月報 🆚 段共用此函式一併受惠。完整跑 track_rankings 時發現、擁有者當時被 Mercari 話題蓋過沒選,事後新鮮度核對補修。
 

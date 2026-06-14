@@ -10,7 +10,7 @@ generate_monthly_heat_report.py
   3. 其餘品牌 / 單品判斷留 `待填`，交給 prompts/monthly_heat_report.md（AI / 人工）
 
 對照 generate_daily_brief.py：同樣是「填骨架」，內容判斷不在這裡做。
-每月 1 號的遠端排程是「全自動產全文」；這支是「本地手動產骨架」的入口。
+月報改對話觸發（D16，無排程）：月初說一聲，agent 跑這支產骨架 → 依 prompt 補內容。
 
 用法：
     python scripts/generate_monthly_heat_report.py --month 2026-06

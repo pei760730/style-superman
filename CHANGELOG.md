@@ -4,6 +4,9 @@
 
 ## [Unreleased]
 
+### Changed
+- **收尾 D16:清掉殘留假排程 + 移除失效的 daily 斷更看門狗（2026-06-14，擁有者新鮮度稽核:「還有沒有過時資料還在引用」）**：深掃發現 D16(砍 routine)沒傳播乾淨——8 處活檔仍宣稱「每月1號排程/daily 每日 schedule/Lyst 已設排程」(全不存在),且 `repo_health.py` 的 daily 斷更檢查在 D16 後會永遠誤報(daily brief 改對話觸發、不入 reports/daily/,無檔可數,health.yml 週一四會據此開假 issue)。修:① `repo_health.py` 移除 `check_daily_freshness` + `DAILY_STALE_DAYS` + 呼叫(週挑/月報檢查保留,監控的是有存檔的產物),月報檢查訊息改「對話觸發」;② 假排程文字全改對話觸發——`docs/system_design.md`(排程列)、`docs/operating_manual.md`(月報+daily)、`scripts/generate_monthly_heat_report.py`(docstring)、`scripts/README.md`、`docs/rankings.md`(Lyst Q2「已設排程」→對話補);③ README 順手掃:D5 表/原則/roadmap 的「排程雲端 agent」→「對話 agent」、roadmap「斷更看門狗」改為已移除;④ `CLAUDE.md` D5 同步。資料層稽核結論:ranking 板 Lyst/MUSINSA 當期、StockX/KREAM 年度已標明、trend_history 多年期基準,無第二個 Mercari 級陳貨。
+
 ### Removed
 - **撤除 Mercari 日本量化板（D17，2026-06-14，擁有者:「這數據也太舊」→「先找替代沒有就砍」）**：`track_rankings` 完整跑時發現 Mercari 板是 2013→2022 十週年回顧、已 4 年陳貨;查證 Mercari 之後年報(2025 官方)全轉趨勢搜尋詞無時尚品牌榜。替代源 WebFetch 實測全擋(ZOZO timeout / Rakuten 403 / 2nd STREET 403 / BUYMA 404)。刪 `data/rankings/mercari-jp.yml` + 孤兒 fixture `tests/fixtures/mercari_snapshot.yml`;`track_rankings.py`(移除 source/region/show/choice,`--region jp` 改回報暫缺+原因)、`ingest_ranking_snapshot.py`、`validate_repo.py` 移除 mercari 分支;`generate_monthly_heat_report.py` 日本 baseline 改空(baseline_label 優雅處理)。日本月報改全依 L2/L3、信心保守。同步 README(四榜)/docs/rankings.md/scripts/README.md/flow_calendar.md/prompts(monthly_heat_report+brand_radar)/sources.yml + decisions.md D17。可逆(有可解析的日本榜再重建)。reports/ 凍結不動、其他 yml 的 Mercari 歷史事實引述保留。
 

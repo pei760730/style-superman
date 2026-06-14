@@ -88,7 +88,7 @@
 | D2 | 月報主榜固定 Top 5 | 另列浮動觀察名單收早期訊號——主榜只收高信心 |
 | D3 | 挑買 shortlist 取代選題池 | 個人挑買重定位（2026-06-05）的落地，內容生產視角全面移除 |
 | D4 | 來源 tier 不批量改 | 重分級走資料 PR 逐筆說明，來源可信度是內容判斷 |
-| D5 | repo 內不接 LLM API | AI 撰寫走對話 / 雲端 agent；腳本只做確定性工作、不管 API key |
+| D5 | repo 內不接 LLM API | AI 撰寫走對話 agent；腳本只做確定性工作、不管 API key |
 | D6 | 審計四提案全否決 | 共用模組 / 設定外部化等「看起來專業」的工程一律不做，守衛防回流 |
 | D7 | 第一性原理瘦身 | 砍死迴圈與手動勞動依賴；立反熵三原則（新流程不得依賴人類定期手動勞動） |
 | D8 | 終審 ≠ merge | 例行產出驗證綠即自 merge；main 是系統記憶不是批准章，我的終審是事後反饋 |
@@ -190,7 +190,7 @@ python scripts/repo_health.py --consistency
 1. **資料與內容分離** — `data/` 是長期知識底層（複利資本），`reports/` 是封存快照，互不污染。
 2. **人機協作** — 腳本負責確定性工作（骨架、排行追蹤、檔案管理），AI 負責語意整理與挑買建議，人（我）負責品味與買不買。
 3. **格式即契約** — 所有產出走 `templates/`；改欄位必須同步 prompts / docs / 腳本。
-4. **輕依賴、先輕後重** — 標準庫 + pyyaml；不在 repo 內接 LLM API（D5），AI 撰寫走對話 / 雲端 agent。
+4. **輕依賴、先輕後重** — 標準庫 + pyyaml；不在 repo 內接 LLM API（D5），AI 撰寫走對話 agent。
 5. **反熵**（D7）— 新流程不得依賴人類定期手動勞動；維護/產出比是系統健康的終極指標。
 6. **產出有沒有持續發生，比工程漂不漂亮重要。**
 
@@ -203,9 +203,9 @@ python scripts/repo_health.py --consistency
 - [x] 資料底層 + Rankings 模組（歐美 / 韓四榜；日本量化板 D17 撤除）
 - [x] CI（validate + smoke）+ 週期健檢巡檢（自動開 issue）
 - [x] RSS 收集事實層（17 → 25 → 28 源，三輪深挖）
-- [x] AI 撰寫走排程雲端 agent（D5：不接 repo 內 LLM API）
+- [x] AI 撰寫走對話 agent（D5：不接 repo 內 LLM API；D16：0 排程 routine、全對話）
 - [x] Self-Evolution Loop（repo_health Next Actions + lessons 硬化路徑 + 決策守衛）
-- [x] 每日產線實跑（時區 bug 已修；斷更有看門狗）
+- [x] 每日產線（時區 bug 已修）→ D16 改對話觸發、無排程；daily 斷更看門狗隨之移除（無檔可監控）
 - [x] Daily brief 行動帳 + 密度規則；週挑 / 週趨勢深挖卡節奏
 - [x] 重定位殘留總清（2026-06-11：內容生產視角標籤組移除、routine 任務卡去殭屍化、全自動產出改分支+PR）
 - [x] 第一性原理瘦身（2026-06-11 D7：砍死迴圈 prompt、封存任務卡、手動月拉流程；立反熵原則）

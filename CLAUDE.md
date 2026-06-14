@@ -16,7 +16,7 @@
 1. **不虛構**：沒來源就標 `待查`。不補排名、百分比、銷量、「爆紅」結論。
 2. **資料與內容分離**：`data/` 是長期知識底層；`reports/` 是封存快照（產出後不回改）。
 3. **格式即契約**：產出走 `templates/`；改 template 欄位必須同步改 `prompts/` + `docs/` + 相關腳本。
-4. **不接 repo 內 LLM API**（決策 D5）：AI 撰寫由對話中的 agent 或排程雲端 agent 做，不在腳本裡呼叫 LLM、不管 API key。
+4. **不接 repo 內 LLM API**（決策 D5）：AI 撰寫由對話中的 agent 做（D16 後 0 排程 routine），不在腳本裡呼叫 LLM、不管 API key。
 5. **輕依賴**：標準庫 + pyyaml。新增依賴需人類同意。
 6. **排行快照**：最新放 `snapshots:` 最上方；不同口徑分開記，不硬湊榜（細則見 `docs/rankings.md`）。
 

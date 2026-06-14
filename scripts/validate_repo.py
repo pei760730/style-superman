@@ -271,6 +271,10 @@ def check_reports() -> list[CheckResult]:
             errors.append(f"{path}: missing directory")
         else:
             for report in sorted(path.glob("*.md")):
+                # *.draft.md 是 gitignored 的中間產物（產骨架→填→改名/刪），不入版控、
+                # 跟 .gitignore 一致地略過，否則本機產 draft 就誤報檔名不符。
+                if report.name.endswith(".draft.md"):
+                    continue
                 if not pattern.match(report.name):
                     errors.append(f"{report}: filename does not match {pattern.pattern}")
                 text = report.read_text(encoding="utf-8").strip()

@@ -9,6 +9,7 @@
 - **新增來源前的兩道門檻（D18，2026-06-14，擁有者拍板）**：加任何新日本/歐美來源前要先確認 ① **持續產出**(近 30 天至少每週數篇,只在大事件才更新/半停更的不收——避免變死權重,cf. Mercari/google-trends)② **夠權威**(編輯判斷/一手/行業地位,非聚合或 SEO 農場)。門檻寫進 `data/sources.yml` 表頭 + `CLAUDE.md`「你不應該單獨做」+ `docs/decisions.md` D18。配套:仍需擁有者拍板(內容判斷)、tier 不批量改(D4)、加前 WebFetch 實測可讀否則標 body_fetchable:false。
 
 ### Fixed
+- **月報無-baseline 地區(日本)骨架壞字 + validate 誤報 draft 檔名（2026-06-14，dogfood 跑月報生成器抓到）**：① D17 把 `baseline_label` 改成回傳整句「無可自動收的量化基準（即時榜 bot 擋…）」,但這值被塞進標題括號、「與 X 一致」等短名詞槽 → 變成「對照量化基準（無可自動收的量化基準（…））」雙重括號 + 壞文法。改 `baseline_label` 無基準時回短字「無」、完整原因移到 `baseline_movement` 的 🆚 段內文(且更正:日本是「無基準」非「年度/歷史區間」)。② `validate_repo` 掃 reports/ 時把 gitignored 的 `*.draft.md` 也檢查 → 本機產 draft 就誤報檔名不符;改成跟 .gitignore 一致略過 `*.draft.md`。(順帶記錄:`generate_*_report --draft` 對已存在的 draft 不覆寫——重生前要先刪舊 draft。)
 - **`track_rankings --compare` 假「新進榜」bug（2026-06-14）**：`lyst_comparison_text` 拿「完整 Top20(2026-Q1)」比「殘缺 Top10(2025-Q4，coverage: partial、只存 9 個)」時,凡不在殘缺榜上的全標「🆕 新進榜」(20 個裡 10 個假陽性)——但 Coach/BV 等只是沒被轉載、非真新進。修:偵測前季 `coverage: partial` → 標警告橫幅、未匹配的改標「前季殘缺無法判定」(不再假新進榜)、略過「掉出榜外」(殘缺榜本就沒列全),提示改看快照內建 move 欄。月報 🆚 段共用此函式一併受惠。完整跑 track_rankings 時發現、擁有者當時被 Mercari 話題蓋過沒選,事後新鮮度核對補修。
 
 ### Changed

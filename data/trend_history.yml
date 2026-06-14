@@ -138,3 +138,23 @@ trends:
       - https://sneakernews.com/2026/06/11/nike-air-force-1-low-croc-black-metallic-dark-grey-iv6306-010/
       - ../reports/daily/2026-06-12.md
     menswear_read: "emerging=最便宜的進場點;GR 線不用搶,等實物看皮質,這波買得到是特性不是 bug"
+
+  - id: retro-low-profile-sneaker
+    name: "低筒復古運動鞋(terrace + 日系慢跑)——球鞋疲乏中的逆勢線"
+    category: item
+    started: "約2023(adidas Samba/Gazelle 引爆 terrace)"
+    peak: "進行中(2026 低筒接棒:SL72/Taekwondo 超車 Samba;日系慢跑第二波 Mizuno/Onitsuka)"
+    status_2026: rising
+    arc: >
+      球鞋大盤 2023 起疲乏(見 non-sneaker-footwear),但「低筒乾淨復古」這條逆勢續燒:
+      2023–25 adidas Samba/Gazelle 把 terrace 做成定番,2026 更低更薄的 SL72/Taekwondo(Mei)
+      被多家點名接棒、超車 Samba(WWD/造型師口徑);同時日系慢跑第二波撐住 retro runner——
+      Mizuno(StockX 球鞋成長 +124%、社群 +30%)、Onitsuka(Q1 +34%、ASICS 分拆上市)、
+      ASICS GEL 復古、NB 990 系。退的是 chunky dad 鞋/純白/限量炒鞋;進的是 slim profile
+      + muted tone + heritage。retro trainer 大盤雖緩仍逆勢預測 2026 約 +7%。
+    evidence:
+      - https://wwd.com/shop/shop-shoes/adidas-taekwondo-shoes-1237703110/
+      - https://www.aol.com/news/stylists-reveal-5-sneaker-trends-123801695.html
+      - https://wwd.com/footwear-news/shoe-industry-news/mizuno-on-onitsuka-tiger-sneaker-social-media-visibility-1238928693/
+      - ../reports/analysis/2026-06-15-brand-radar-mens-sneakers.md
+    menswear_read: "rising=這條逆勢可進;選低筒定番(SL72/Mexico66/990)+ 日系慢跑經典原型,跳過 chunky/純白/限量聯名(那幾條在退)"

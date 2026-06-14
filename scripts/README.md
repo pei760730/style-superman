@@ -39,7 +39,7 @@ python scripts/collect_raw_signals.py --out /tmp/raw.yml --limit 5
 > raw_signal_pack 是中間產物，**不入長期版控**（見 `templates/raw_signal_pack_template.md`）。
 
 ### `generate_weekly_buy_picks.py`
-產出「本週最值得買 Head-to-Toe」骨架，寫到 `reports/buy_shortlist/YYYY-Wnn.md`（ISO 週）。
+產出「本週在紅 Head-to-Toe」骨架（在紅單品情報，非買清單，D15），寫到 `reports/buy_shortlist/YYYY-Wnn.md`（ISO 週）。
 自動帶入週期、本週 daily briefs 清單、各排行快照最新 period；5 區 × 3 樣的挑買內容由 AI（`prompts/weekly_buy_picks.md`）或人工補上。
 
 ```bash

@@ -2,7 +2,7 @@
 """
 generate_weekly_buy_picks.py
 ============================
-產出「本週最值得買 Head-to-Toe」的骨架草稿。
+產出「本週在紅 Head-to-Toe」的骨架草稿（在紅單品情報，非買清單，D15）。
 
 這支腳本不做 AI 撰寫（決策 D5），它負責：
   1. 算出 ISO 週期與日期範圍（週一～週日）
@@ -94,7 +94,7 @@ def build(day: dt.date) -> tuple[str, str]:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="產出本週 Head-to-Toe 挑買榜骨架")
+    parser = argparse.ArgumentParser(description="產出本週 Head-to-Toe 在紅單品骨架")
     parser.add_argument("--date", help="以該日期所屬 ISO 週產出（YYYY-MM-DD）")
     parser.add_argument("--draft", action="store_true", help="輸出 *.draft.md（不入版控）")
     args = parser.parse_args()

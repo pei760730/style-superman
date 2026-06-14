@@ -13,15 +13,15 @@
 ## 系統的一天（時間軸）
 
 ```txt
-台北 07:00   GitHub Actions 產 brief 骨架（純腳本：填模板 + 來源摘要，不收 RSS）→ 直推 master
-台北 07:30   雲端 routine「每日 brief 內容填寫」收 RSS → 濾噪音、歸類、主編判讀
+台北 05:00   GitHub Actions 產 brief 骨架 + 收 RSS signals（純腳本，不判讀）→ 直推 master
+台北 07:30   雲端 routine「每日 brief 內容填寫」讀 signals → 濾噪音、歸類、主編判讀
              → 填入頭條 + 三地區區塊（日/韓/歐美）+ For Me → 開分支 PR → CI 綠 → 自 merge
 我起床後     手機開 GitHub → reports/daily/ 點今天 → 先看最下面的 🛒 For Me
              （或跟 agent 說「早安」，直接端上來）
 ```
 
-**每週一 07:40**：雲端 routine 產週挑 Head-to-Toe（收斂上週 7 天情報，5 區 × 3 樣）——**週一說「早安」= daily + 週挑一起端上**。每週至少一張趨勢深挖卡（歐美優先，對話觸發）。
-**每月 1 號**：兩個雲端 routine 各自跑歐美、日本月報（日本線 2026-07 首跑）；7 月起每週一另有 Lyst Q2 watcher 盯榜。
+**每週一**：說「早安」= daily + 週挑 Head-to-Toe 一起端上（5 區 × 3 樣，收斂上週 7 天情報；**對話觸發，不是排程**）。每週至少一張趨勢深挖卡（歐美優先，對話觸發）。
+**每月初**：說一聲跑歐美 / 日本月報（**對話觸發**；日本線 2026-07 起）。Lyst Q2 出刊（7 月）時說一聲 ingest 進 rankings。
 **每週一、四 09:00**：自動健檢巡檢——daily 斷更、格式跑偏會**自動開 `repo-health` issue**，所以 GitHub 通知出現它 = 系統出事了，其他時候不用管。
 
 ---
@@ -61,17 +61,15 @@
 
 | 執行者 | 時間 | 做什麼 | 提交方式 |
 |---|---|---|---|
-| GitHub Actions `daily-brief.yml` | 每天台北 07:00 | 產當日 brief **骨架**（填模板 + 來源摘要；RSS 由 07:30 填寫 routine 收，無 LLM，決策 D5） | ⚠ 骨架**直推 master**（純腳本、確定性產出） |
-| 雲端 routine「每日 brief 內容填寫」 | 每天台北 07:30 | 填當日 brief（頭條 / 日韓歐美三區塊 / For Me）；已填則跳過 | **分支 + PR**，CI 綠自 merge（D8） |
-| 雲端 routine「每週挑買 Head-to-Toe 填寫」 | 每週一台北 07:40 | 產本週週挑（5 區 × 3 樣，收斂上週 briefs + rankings）；已存在則跳過 | **分支 + PR**，CI 綠自 merge（D8） |
-| 對話 agent | 需要時 | 深挖卡、臨時任務；「早安」= 端上當日 brief（週一加端週挑） | **分支 + PR**，驗證綠即自 merge（D8） |
-| 雲端 routine「歐美月度熱度速報」 | 每月 1 號 | 產當月歐美速報（含本月挑買方向） | **分支 + PR**，CI 綠自 merge |
-| 雲端 routine「日本月度熱度速報」 | 每月 1 號 | 產當月日本速報（2026-07 首跑；量化基準 Mercari，信心保守） | **分支 + PR**，CI 綠自 merge |
-| 雲端 routine「Lyst Q2 watcher」 | 7 月每週一 | Lyst Index Q2 出刊就 ingest 進 rankings | **分支 + PR**，CI 綠自 merge |
+| GitHub Actions `daily-brief.yml` | 每天台北 05:00 | 產當日 brief **骨架** + `--with-rss` 收當日 RSS signals 落檔（純腳本、無 LLM，D5） | ⚠ 骨架 + signals **直推 master**（確定性產出） |
+| 雲端 routine「每日 brief 內容填寫」 | 每天台北 07:30 | 讀 Actions 收的 signals → 填當日 brief（頭條 / 日韓歐美三區塊 / For Me）；已填則跳過 | **分支 + PR**，CI 綠自 merge（D8） |
+| 對話 agent（**唯一的非排程入口**） | 需要時 | 深挖卡；**週挑**（週一說「早安」一起端）；**月報**（月初說一聲，歐美 / 日本，日本線 2026-07 起）；**Lyst Q2 ingest**（7 月榜出說一聲）；臨時任務 | **分支 + PR**，驗證綠即自 merge（D8） |
 | GitHub Actions `health.yml` | 每週一、四台北 09:00 | `repo_health --strict` 巡檢（新鮮度 + 一致性 + 守衛 + 產出契約） | 未過 → 自動開 / 更新 `repo-health` issue |
 | GitHub Actions `ci.yml` | 每個 PR | validate + smoke 測試 | 紅燈 = 不能 merge |
 
-**鐵則：除了 daily 骨架，所有自動產出一律走分支 + PR。** 直推 master 會繞過 CI 上的全部防線——這是殭屍任務卡第三例的教訓（[docs/lessons.md](docs/lessons.md)）。
+> **只有 daily 一支雲端 routine**（起床前要備好，值得排程）。週挑 / 月報 / Lyst Q2 一律**對話觸發**——低頻產物不開常駐 routine（省額度、合反熵 D7）。
+
+**鐵則：除了 daily 骨架 + signals，所有產出一律走分支 + PR。** 直推 master 會繞過 CI 上的全部防線——這是殭屍任務卡第三例的教訓（[docs/lessons.md](docs/lessons.md)）。
 
 **叫 agent 做事：** 守則在 [CLAUDE.md](CLAUDE.md)（開工先跑 `repo_health.py`）。例行產出與工程 PR 驗證綠即自 merge（D8）——我的終審是事後反饋，買不買的決策在現實世界，不在 git。
 
@@ -160,7 +158,7 @@ style-superman/
 │   └── lessons.md               # 教訓簿（殭屍任務卡三例都在這）
 └── .github/workflows/
     ├── ci.yml                # PR validate + smoke
-    ├── daily-brief.yml       # 每日骨架（台北 07:00；日期以 Asia/Taipei 顯式計算）
+    ├── daily-brief.yml       # 每日骨架 + 收 RSS signals（台北 05:00；日期以 Asia/Taipei 顯式計算）
     └── health.yml            # 週一、四 --strict 巡檢，未過自動開 issue
 ```
 

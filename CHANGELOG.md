@@ -27,6 +27,7 @@
   **不開每日 EU 區**（實測 Numéro EN ≈0.2、Dazed ≈0.8 條男裝/天，多天為 0，肥料不足）——歐洲深度改由 `flow_calendar.md §5` 每週深挖位承載（優先男裝週/Pitti/歐洲品牌），Dazed / The Rake / nss / 032c 列人工參考源、不進每日自動源。詳見 `docs/decisions.md` D13
 
 ### Fixed
+- **README 自動化全貌對齊實況**（2026-06-14）：API 查得實際只有 **1 支雲端 routine**（daily brief 填寫），但 README 列了 5 支（多出週挑 / 歐美月報 / 日本月報 / Lyst Q2 watcher——全不存在）。改為實況:週挑 / 月報 / Lyst 一律**對話觸發**（低頻不開常駐 routine,省額度 + 合 D7）。同步修:① daily Actions 時間 07:00→**05:00**（cron 提早後 README 漏改）;② RSS 收集歸屬更正——Actions 走 `--with-rss` 收 signals、routine 是**讀** signals（原寫「RSS 由 routine 收」與 workflow 實際相反）。
 - **daily-brief 排程競態:Actions 提早至 UTC 21:00**（2026-06-14 早安巡檢發現,06-14 首次無人值守裸跑當場爆）：
   Actions（產 skeleton + 收 RSS signals）原 cron UTC 23:00（台北 07:00）,與 07:30 填寫 routine 只差 30 分;
   但 GitHub 排程慢性延遲 60–78 分（實測 06-11~14 皆 +63~78 分）,Actions 一延遲就跑在 routine 之後——

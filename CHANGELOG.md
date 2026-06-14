@@ -4,6 +4,9 @@
 
 ## [Unreleased]
 
+### Removed
+- **撤除 Mercari 日本量化板（D17，2026-06-14，擁有者:「這數據也太舊」→「先找替代沒有就砍」）**：`track_rankings` 完整跑時發現 Mercari 板是 2013→2022 十週年回顧、已 4 年陳貨;查證 Mercari 之後年報(2025 官方)全轉趨勢搜尋詞無時尚品牌榜。替代源 WebFetch 實測全擋(ZOZO timeout / Rakuten 403 / 2nd STREET 403 / BUYMA 404)。刪 `data/rankings/mercari-jp.yml` + 孤兒 fixture `tests/fixtures/mercari_snapshot.yml`;`track_rankings.py`(移除 source/region/show/choice,`--region jp` 改回報暫缺+原因)、`ingest_ranking_snapshot.py`、`validate_repo.py` 移除 mercari 分支;`generate_monthly_heat_report.py` 日本 baseline 改空(baseline_label 優雅處理)。日本月報改全依 L2/L3、信心保守。同步 README(四榜)/docs/rankings.md/scripts/README.md/flow_calendar.md/prompts(monthly_heat_report+brand_radar)/sources.yml + decisions.md D17。可逆(有可解析的日本榜再重建)。reports/ 凍結不動、其他 yml 的 Mercari 歷史事實引述保留。
+
 ### Changed
 - **砍掉雲端排程 routine，每日 brief 改全對話觸發（D16，2026-06-14，擁有者:「routine 拿掉阿 我們再這對話我問你你再認真看」）**：實跑暴露排程 routine（sonnet，台北 07:30）在無人盯時品質退化——連不到 RSS feed 退 WebSearch、roundup 只填標題不挖 picks;同日對話裡 agent（opus）認真跑(本機收 427 訊號、4 條 roundup WebFetch 挖 26 單品、NB/Nike 收斂、看膩款下架)明顯更詳細,擁有者拍板「詳細多了」。停用雲端 routine `Style Superman — Daily Brief Fill`（RemoteTrigger `enabled:false`,API 無 delete）;`daily-brief.yml` 移除 `schedule:` cron 保留 `workflow_dispatch` 當手動備援(不刪檔);每日 brief 改對話觸發、產出在對話讀不入 `reports/daily/`。0 支雲端 routine,合反熵 D7 + 省額度。同步 README（時間軸 / 自動化表 / 檔案樹）+ docs/decisions.md D16。可逆(還原 cron + `enabled:true`),故不寫進 decision_guards。
 

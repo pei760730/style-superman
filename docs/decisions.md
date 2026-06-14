@@ -441,3 +441,25 @@ PR #73/#74 CI 綠後，merge 卡在授權模糊：「你修你負責的」被權
 - **0 支雲端 routine**：daily 連同週挑 / 月報 / Lyst Q2 全部對話觸發,合反熵 D7（不依賴常駐排程）、省額度。
 - **文件同步**：README（系統的一天時間軸、自動化全貌表、檔案樹）、CHANGELOG。
 - **可逆**：要重開排程只需還原 `daily-brief.yml` 的 cron + RemoteTrigger `enabled:true`；故不寫進 decision_guards.yml（非不可回頭的識別字）。
+
+---
+
+## D17 — 撤除 Mercari 日本量化板（2026-06-14）
+
+### 背景
+
+`track_rankings` 完整跑一次時,擁有者發現 Mercari 板是 **2013→2022 十週年回顧**,到 2026 已 **4 年陳貨**。查證:Mercari 唯一一次出乾淨「品牌成交榜」就是那份十週年回顧,之後官方年報(實查 2025 年報,涵蓋 2025-01-01~11-15)全轉成趨勢「搜尋詞」(LABUBU/動漫/K-pop),**無時尚品牌榜**。它當初被收只是 ZOZO(Akamai 擋)抓不到時的「退而求其次」。擁有者指示「先找替代,沒有就砍」。
+
+### 替代源實測(2026-06-14,全擋)
+
+WebFetch 實測 5 個當期日本榜:**ZOZO timeout、Rakuten 403、2nd STREET 403、BUYMA 404×2**——日本商業榜普遍 Akamai/bot 防護,無 headless 瀏覽器抓不到。WEAR 給穿搭貼文非銷售榜,metric 不同。**無可自動收的當期日本時尚榜。**
+
+### 拍板
+
+- **撤除 Mercari 板**:刪 `mercari-jp.yml`(data/rankings 層)+ 孤兒 fixture `mercari_snapshot.yml`(tests/fixtures 層,無測試引用)。
+- **`track_rankings.py`**:移除 mercari source/region/show/choice;`--region jp` 改回報「日本量化板暫缺 + 原因」,不靜默空白。
+- **`ingest_ranking_snapshot.py` / `validate_repo.py`**:移除 mercari 分支。
+- **`generate_monthly_heat_report.py`**:日本 baseline 改空 tuple,`baseline_label` 優雅處理空基準(回報「無可自動收的量化基準」)。
+- **日本月報定位**:全依 L2 事件確認 + L3 媒體共識,信心保守,撐不起標 `待查`。日本當期熱度看 daily brief「日潮」區(質化)。
+- **文件同步**:README(四榜)、docs/rankings.md、scripts/README.md、flow_calendar.md、prompts/monthly_heat_report.md、prompts/brand_radar.md、data/sources.yml。
+- **可逆**:哪天有可解析的當期日本時尚榜,重建 yml + 還原 track_rankings 即可。其他 ranking yml 內「與 Mercari 結構互相印證」的分析引述保留(引的是 Chanel→Uniqlo 歷史事實,非板的存在);reports/ 凍結快照不動。

@@ -85,7 +85,7 @@ Topic Analysis（每週至少一張，歐美優先）：把最強跨源趨勢寫
 **輸入**：
 
 - 當月 daily briefs。
-- 該地區量化基準：歐美 `data/rankings/lyst-index.yml`、`stockx.yml`；日本 `mercari-jp.yml`（量化弱，主榜更依賴事件與媒體共識，信心保守）。
+- 該地區量化基準：歐美 `data/rankings/lyst-index.yml`、`stockx.yml`；日本**無量化基準**（2026-06-14 Mercari 撤除、即時榜 bot 擋），主榜全依事件與媒體共識，信心保守。
 - 官方發售、聯名、秀程、pop-up、可讀全文媒體報導。
 - 電商與社群觀察（若無公開 API 或可回查證據，只能當弱訊號）。
 

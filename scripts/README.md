@@ -51,7 +51,7 @@ python scripts/generate_weekly_buy_picks.py --draft          # 產 *.draft.md（
 已存在的正式檔不覆寫（封存快照不回改）。
 
 ### `generate_monthly_heat_report.py`
-產出當月「熱度速報」骨架（`--region us-eu|jp`，預設歐美），寫到 `reports/monthly/YYYY-MM-eu.md` / `YYYY-MM-jp.md`。自動帶入該地區量化基準（歐美：Lyst / StockX；日本：Mercari）的最新 period 與來源摘要，其餘判斷留 `待填`。
+產出當月「熱度速報」骨架（`--region us-eu|jp`，預設歐美），寫到 `reports/monthly/YYYY-MM-eu.md` / `YYYY-MM-jp.md`。自動帶入該地區量化基準（歐美：Lyst / StockX；**日本無量化基準**，2026-06-14 撤 Mercari）的最新 period 與來源摘要，其餘判斷留 `待填`。
 
 ```bash
 python scripts/generate_monthly_heat_report.py --month 2026-06
@@ -100,17 +100,17 @@ cat /tmp/lyst_q2.yml | python scripts/ingest_ranking_snapshot.py --source lyst  
 python scripts/ingest_ranking_snapshot.py --source lyst --input /tmp/lyst_q2.yml --write
 ```
 
-支援來源：`lyst` / `stockx` / `mercari` / `kream` / `musinsa`。檢查項：period 必填且不可與既有重複；Lyst rank 不重複/為整數；StockX 不可壓成單一 `ranking`；Mercari / KREAM 必含 `brand_top` / `menswear_read`；MUSINSA 的 `brands` rank 不重複/為整數。輸入格式見 [templates/ranking_snapshot_template.md](../templates/ranking_snapshot_template.md)，範例見 `tests/fixtures/*_snapshot.yml`。
+支援來源：`lyst` / `stockx` / `kream` / `musinsa`。檢查項：period 必填且不可與既有重複；Lyst rank 不重複/為整數；StockX 不可壓成單一 `ranking`；KREAM 必含 `brand_top` / `menswear_read`；MUSINSA 的 `brands` rank 不重複/為整數。輸入格式見 [templates/ranking_snapshot_template.md](../templates/ranking_snapshot_template.md)，範例見 `tests/fixtures/*_snapshot.yml`。
 
 ### `track_rankings.py`
-讀取 `data/rankings/` 的排行快照（歐美 Lyst+StockX / 日本 Mercari / 韓國 KREAM+MUSINSA），顯示最新榜並比對名次演化。模組說明見 [docs/rankings.md](../docs/rankings.md)。
+讀取 `data/rankings/` 的排行快照（歐美 Lyst+StockX / 韓國 KREAM+MUSINSA；日本量化板 2026-06-14 撤除），顯示最新榜並比對名次演化。模組說明見 [docs/rankings.md](../docs/rankings.md)。
 
 ```bash
-python scripts/track_rankings.py                    # 全部（歐美 + 日本 + 韓國）
-python scripts/track_rankings.py --region jp         # 只看日本（Mercari）
+python scripts/track_rankings.py                    # 全部（歐美 + 韓國）
+python scripts/track_rankings.py --region jp         # 日本：回報量化板暫缺 + 原因
 python scripts/track_rankings.py --region us-eu      # 只看歐美（Lyst + StockX）
 python scripts/track_rankings.py --region kr         # 只看韓國（KREAM + MUSINSA）
-python scripts/track_rankings.py --source lyst       # 單一來源：lyst/stockx/mercari/kream/musinsa
+python scripts/track_rankings.py --source lyst       # 單一來源：lyst/stockx/kream/musinsa
 python scripts/track_rankings.py --source lyst --compare   # 比對最新兩季名次（目前僅 Lyst）
 python scripts/track_rankings.py --json              # 輸出 JSON
 ```

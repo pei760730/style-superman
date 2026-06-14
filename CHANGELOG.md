@@ -13,6 +13,7 @@
   根因：腳本只在 smoke 空跑、產線從不餵真資料、趨勢挑選實際全靠主編判斷（沒人用＝0，反熵）。排行快照仍保留為 L1 佐證。
 
 ### Changed
+- **拉高來源量 + 每區輸出（2026-06-14，擁有者反映「來源太少、hypebeast 一天就比我多」）**：根因是 `collect_raw_signals.py` `DEFAULT_LIMIT=10` 把每源砍到 10 則（hypebeast 一天發 30+ → 丟 2/3）。改 **DEFAULT_LIMIT 10→25**（四區 raw 約 267→400+）;每區輸出目標 **日潮 6–10→10–15、韓潮 4–8→8–12、歐美 6–10→10–15**。同步 `daily_brief_template.md` / `prompts/daily_trend_brief.md`（並補一條:達 10+ 靠廣度不靠重貼,與去重並行）/ 雲端 routine（400+、新區數）。新增來源（D4 內容判斷）另議。
 - **brief 去重升級:加「過時下架 + 同品牌防疲勞」（2026-06-14，擁有者反映連看同一單品）**：既有「增量寫法」只防同一單品逐日重貼,漏了過了發售/高峰時刻沒下架、同品牌天天換型號的跳針感。`prompts/daily_trend_brief.md`（任務 8）+ `prompts/weekly_buy_picks.md`（連續性）加:① 近 7 天已列過 + 無新事實 + 已過時刻 → 整個不列;② 同品牌一天最多 1 則,只換型號要嘛跳過要嘛明寫輪替。記 `docs/lessons.md`（prompt 規則層,未寫 code,D7）。
 - **daily 推薦框架:買清單 → 在紅單品情報（D15，2026-06-14）**：擁有者點出每日「值得入手」買決策對低頻買家是死重、且最新貨結構性難買。`🛒 對我有用 For Me`（單品｜價格｜通路｜時點｜為什麼/別買）→ `🎯 對我最相關 For Me`（單品｜是什麼｜在哪紅｜對我衣櫥的意義｜價格/型號辨識用）;砍 `⏰ 行動日` 與死線/搶話術;三行 `③ 要買嗎`→`③ 要記住`。目的是「知道現在在紅什麼」,不催買;真要買走隨選定番調研。同步 `daily_brief_template.md` / `prompts/daily_trend_brief.md` / `validate_repo.py` / `repo_health.py`（產出契約 tuple 同收新舊名,凍結舊 brief 不變紅）/ `tests/test_smoke.py` / 雲端填寫 routine / README / CLAUDE / 4 份 docs。
 - **週挑 Head-to-Toe 同框架轉（D15，2026-06-14）**：「本週最值得買」→「本週在紅 Head-to-Toe」;每樣 buy_angle/預算帶/優先度/別買條件 → 是什麼/在哪紅/價格型號辨識用/為什麼這週在紅/炒作 vs 真;「🎯 如果本週只買一樣」→「🎯 本週最該記住的一個」。同步 template / prompt / `validate_repo.py` / `generate_weekly_buy_picks.py` / README / flow_calendar。檔/目錄名（buy_shortlist）保留省 churn,語意已轉。

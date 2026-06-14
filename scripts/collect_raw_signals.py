@@ -43,7 +43,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SOURCES = ROOT / "data" / "sources.yml"
 
 UA = "Mozilla/5.0 (compatible; StyleSupermanBot/0.1; +https://github.com/pei760730/style-superman)"
-DEFAULT_LIMIT = 10
+DEFAULT_LIMIT = 25  # 每來源最多收幾則（2026-06-14 由 10 提到 25：hypebeast 等高產源一天發 30+，10 上限丟掉 2/3、也壓低多樣性）
 ATOM = "{http://www.w3.org/2005/Atom}"
 
 # 社群來源（type: community）的標題層 spam 過濾。

@@ -424,3 +424,20 @@ PR #73/#74 CI 綠後，merge 卡在授權模糊：「你修你負責的」被權
 - **格式即契約同步**：`daily_brief_template.md`、`prompts/daily_trend_brief.md`、`validate_repo.py`、`repo_health.py`（產出契約段落改名、舊名續收以免凍結舊 brief 變紅）、`tests/test_smoke.py`、雲端填寫 routine、README / CLAUDE / flow_calendar / operating_manual / system_design / style_strategy。
 - **週挑 Head-to-Toe（5 區×3 樣）同步轉**：「本週最值得買」→「本週在紅 Head-to-Toe」；每樣 buy_angle/預算帶/優先度/別買條件 → 是什麼/在哪紅/價格型號辨識用/為什麼這週在紅/炒作 vs 真；「🎯 如果本週只買一樣」→「🎯 本週最該記住的一個」。`weekly_buy_picks_template.md` / `prompts/weekly_buy_picks.md` / `validate_repo.py` / `generate_weekly_buy_picks.py` / README / flow_calendar 同步。檔/目錄名（buy_shortlist、weekly_buy_picks）保留以省 churn（內部識別字，語意已轉），屬已知小債。
 - 封存報告（舊 daily 含 🛒 For Me 段）不回改；repo_health 產出契約以 tuple 同收新舊段落名。
+
+---
+
+## D16 — 砍掉雲端排程 routine，每日 brief 改全對話觸發（2026-06-14）
+
+### 背景
+
+每日 brief 原本兩段式自動化：GitHub Actions（台北 05:00）收 RSS 訊號 + 產空骨架直推 master，雲端 routine（claude-sonnet-4-6，台北 07:30）讀 signals 填內容、開 PR 自 merge。實跑暴露兩個結構問題：① **無人盯時品質退化**——routine 在 sandbox 連不到 RSS feed（PR #78 自述「28 源全降級」退 WebSearch），且 roundup/N選類清單常只填標題、不 WebFetch 挖 picks（擁有者 2026-06-13、06-14 兩度抓到「只有標題＝空殼」）。② 對照組:同一天擁有者在**對話**裡叫 agent（opus）認真跑——本機 collect 收到 427 則訊號、4 條 roundup 逐條 WebFetch 挖出 26 個單品、NB/Nike 各收斂成 1 則、看膩的款主動下架——產出明顯更詳細,擁有者明確說「我喜歡 你這次出來的東西 詳細多了」。結論:**規則硬化 ≠ 行為發生**,排程 routine 在無人值守下不會複製對話裡的品質,且每天還燒 routine 額度。
+
+### 拍板
+
+- **停用雲端 routine**「Style Superman — Daily Brief Fill」（trig_01WNyzzBQrNXL6p367UedBzY）：RemoteTrigger update `enabled:false`（API 無 delete，停用即拿掉）。
+- **每日 brief 改全對話觸發**：擁有者說「早安」/「今天」→ agent 當場跑(本機 `collect_raw_signals.py` 收當日訊號 → 主編判讀 → roundup 逐條 WebFetch 挖 picks → 在對話端上完整 brief)。產出在對話讀，**不入 `reports/daily/`**（要封存再另議）。
+- **`daily-brief.yml` 移除 `schedule:` cron**，保留 `workflow_dispatch` 當手動備援（本機 collect 失靈時，可在 egress 正常的 runner 手動收一次）。不刪檔。
+- **0 支雲端 routine**：daily 連同週挑 / 月報 / Lyst Q2 全部對話觸發,合反熵 D7（不依賴常駐排程）、省額度。
+- **文件同步**：README（系統的一天時間軸、自動化全貌表、檔案樹）、CHANGELOG。
+- **可逆**：要重開排程只需還原 `daily-brief.yml` 的 cron + RemoteTrigger `enabled:true`；故不寫進 decision_guards.yml（非不可回頭的識別字）。

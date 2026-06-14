@@ -73,3 +73,9 @@
 
 ### Windows 終端機 cp950 編碼
 - 所有腳本已加 `sys.stdout.reconfigure(encoding="utf-8")`；新腳本記得照抄，CI 端配 `PYTHONIOENCODING: utf-8`。PowerShell 5.1 的 `Get-Content` 讀 UTF-8 檔會亂碼，讀檔用支援 UTF-8 的工具。
+
+### 2026-06-15 · 設定在的 RSS 源默默 403、躲在「N 個 RSS」數字裡沒人發現
+- **發生什麼**：擁有者要我跑沒用過的功能找問題，dogfood `collect_raw_signals` 進料口（這 session 從沒真連網跑過），發現 3 個 reddit 源（malefashion / techwear / Sneakers）的 `rss:` 指向 `www.reddit.com/*.rss`——reddit 2023 API 封鎖後該域一律 403。collect 對抓取失敗「優雅降級」（跳過 + 印 warning），所以這些源**每次跑都默默回 0**，卻照樣被算進 README/repo_health 宣稱的「31 個 RSS」。實際能收的是 28，宣稱 31。同 Mercari（D17 陳貨）一個本質：**宣稱覆蓋 ≠ 實際覆蓋**，而降級設計讓它永遠無聲。
+- **對策**：① `rss:` 改 `old.reddit.com`（該域仍開放，實測各收 25 則；`url:` 人點連結維持 www）；② reddit 對 bot 連續請求限速兇 → `fetch_feed` 加 429 退避重試一次（reddit 自己要求的禮貌）；③ **403（永久死）≠ 429（活著被限速）**——除錯時一定要分清：我自己一天狂測把 reddit 打到 429，差點把「活源被我限速」誤判成「死源該撤」，靠長 cooldown + 間隔的 ground-truth 測試（各收 25 則）才確認是限速不是死。
+- **硬化（擁有者選「修好 + 加死活檢查」）**：`repo_health.py --liveness` 連網打每個 `rss:`、回報實際收得到料的比例 + 點名死源，且**把 429 單獨標「限速（非死源）」不混進死源**（這個分類就是被上面的誤判教出來的）。刻意 opt-in、不入 CI `--strict`（需外網、外站抖動會讓 CI flaky）。這檢查上線當下就立刻抓到我漏改的第 3 個源（reddit-sneakers），證明值得留。
+- **注意**：`--liveness` 自己會連打 reddit → 跑完它再馬上跑會看到 reddit 顯示 429（限速），那是檢查工具自身的副作用、不是源死了；要判死活看「長 cooldown 後單發」而非「剛跑完 liveness 的結果」。

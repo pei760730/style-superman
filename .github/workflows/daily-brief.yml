@@ -14,7 +14,9 @@ name: Daily Brief
 #
 # 觸發方式：
 #   - workflow_dispatch：手動觸發
-#   - schedule：每日 UTC 23:00（台灣時間隔日 07:00）自動產骨架（2026-06-10 由 Kai 拍板開啟）
+#   - schedule：每日 UTC 21:00（台灣時間隔日 05:00）自動產骨架（2026-06-10 由 Kai 拍板開啟；
+#     2026-06-14 由 07:00 提早至 05:00——GitHub 排程慢性延遲 60–78 分,原與 07:30 填寫 routine 只差
+#     30 分,Actions 一延遲就跑在 routine 後面、signals 來不及交棒。提早拉開間距至 ~150 分修競態。）
 #
 # ⚠ 2026-06-10：本檔曾在 GitHub 端「註冊消失」（帳號風控後遺症，連 dispatch 都不可用）。
 #   檔案內容變更並 push 即可重新註冊；「檔案在 ≠ 在跑」，要看 Actions run 紀錄（docs/lessons.md）。
@@ -22,10 +24,11 @@ name: Daily Brief
 on:
   workflow_dispatch:
   schedule:
-    # 每天 UTC 23:00（台灣時間隔日 07:00）跑。
-    # ⚠ runner 的「今天」是 UTC：23:00Z 時 UTC 日期仍是台灣的昨天，
+    # 每天 UTC 21:00（台灣時間隔日 05:00）跑。提早至 05:00 是為了和 07:30 填寫 routine 拉開
+    # 間距（GitHub 排程慢性延遲 60–78 分；30 分間距會讓 signals 交棒落在 routine 之後）。
+    # ⚠ runner 的「今天」是 UTC：21:00Z 時 UTC 日期仍是台灣的昨天（21:00Z = 台北隔日 05:00），
     #   故日期必須以 Asia/Taipei 計算（見 Compute brief date step），不能讓腳本吃預設值。
-    - cron: "0 23 * * *"
+    - cron: "0 21 * * *"
 
 permissions:
   contents: write

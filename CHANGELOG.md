@@ -27,6 +27,12 @@
   **不開每日 EU 區**（實測 Numéro EN ≈0.2、Dazed ≈0.8 條男裝/天，多天為 0，肥料不足）——歐洲深度改由 `flow_calendar.md §5` 每週深挖位承載（優先男裝週/Pitti/歐洲品牌），Dazed / The Rake / nss / 032c 列人工參考源、不進每日自動源。詳見 `docs/decisions.md` D13
 
 ### Fixed
+- **daily-brief 排程競態:Actions 提早至 UTC 21:00**（2026-06-14 早安巡檢發現,06-14 首次無人值守裸跑當場爆）：
+  Actions（產 skeleton + 收 RSS signals）原 cron UTC 23:00（台北 07:00）,與 07:30 填寫 routine 只差 30 分;
+  但 GitHub 排程慢性延遲 60–78 分（實測 06-11~14 皆 +63~78 分）,Actions 一延遲就跑在 routine 之後——
+  routine 07:45 寫 brief 時 signals 08:03 才進 master,當天 267 條真訊號全沒用上、退回 WebSearch。
+  cron 改 UTC 21:00（台北 05:00）把間距拉到 ~150 分,穩蓋過延遲;日期仍以 Asia/Taipei 算,不受影響。
+  （routine 端配套延後 + footer 死連結修正屬 cloud routine 設定,另由擁有者處理。）
 - **README 與現況同步**（2026-06-14）：拍板速覽從 D1–D9 補到 **D1–D14**（補 D10 可購性門檻 / D11 品牌雷達 / D12 看到就修 / D13 歐美不拆兩區+Drapers / D14 score_trends 停用），標題「九個拍板」改「十四個拍板」;目錄結構補上漏列的 `data/trend_history.yml`、來源「28 個可 RSS」更正為 **29**（D13 收 Drapers 後）、`decisions.md（D1–D9）` 標籤改 `D1–D14`。純文件同步。
 - **daily-brief.yml push race**（2026-06-14 修;上輪巡檢記錄的已知洞）：23:00Z checkout 與 `git push`
   之間若 master 有他人 commit,原本單發 `git push` 會 non-fast-forward 失敗、需手動重跑。改成

@@ -463,3 +463,23 @@ WebFetch 實測 5 個當期日本榜:**ZOZO timeout、Rakuten 403、2nd STREET 4
 - **日本月報定位**:全依 L2 事件確認 + L3 媒體共識,信心保守,撐不起標 `待查`。日本當期熱度看 daily brief「日潮」區(質化)。
 - **文件同步**:README(四榜)、docs/rankings.md、scripts/README.md、flow_calendar.md、prompts/monthly_heat_report.md、prompts/brand_radar.md、data/sources.yml。
 - **可逆**:哪天有可解析的當期日本時尚榜,重建 yml + 還原 track_rankings 即可。其他 ranking yml 內「與 Mercari 結構互相印證」的分析引述保留(引的是 Chanel→Uniqlo 歷史事實,非板的存在);reports/ 凍結快照不動。
+
+---
+
+## D18 — 新增來源前的兩道門：持續產出 + 權威（2026-06-14）
+
+### 背景
+
+撤掉 Mercari 板(D17)後討論補日本/歐美來源,擁有者拍板:**加任何新來源之前,要先確認**兩件事,否則別加。根因是這套系統踩過兩次「死權重」——Mercari 年報轉趨勢詞後不再出時尚榜(D17 撤)、google-trends 手動月拉建立後一期都沒拉(D7 砍)。來源不是越多越好,加錯會變維護負債、稀釋訊號。
+
+### 拍板:加來源前兩關都過才收(寧缺勿濫)
+
+1. **持續產出**:來源要「會一直出新內容」——查近 30 天更新頻率(至少每週數篇)。只在大事件才更新、或已半停更的不收(會變死權重)。
+2. **夠權威**:有編輯判斷 / 一手資訊 / 行業地位,不是聚合農場或 SEO 內容站。
+
+### 配套
+
+- 新增來源仍是**內容判斷、需擁有者拍板**(沿用 CLAUDE.md「你不應該單獨做」);tier 不批量改(D4)。
+- 加之前先 **WebFetch 實測可讀**,讀不到標 `body_fetchable: false`(roundup 不挖)。
+- 門檻寫進 `data/sources.yml` 表頭(source-adder 會看到)+ CLAUDE.md「你不應該單獨做」。
+- 反熵(D7)一致:寧缺勿濫,不堆會過時 / 半停更的來源。

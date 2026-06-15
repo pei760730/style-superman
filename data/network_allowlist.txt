@@ -1,0 +1,49 @@
+# network_allowlist.txt
+# =====================================================================
+# 用途：設定 Claude Code on the web 環境「自訂網路政策（allowlist）」時，
+#       可直接複製下列網域，讓 RSS 管線（collect_raw_signals.py）能連外抓全量訊號。
+#
+# 背景：手機 / web 環境的對外連線由「環境網路政策」決定（非 session 內可改）。
+#       受限政策下 collect_raw_signals.py 會全來源 timeout / 403，早報只能改用 WebSearch 補。
+#       改法：claude.ai/code（或 App）→ 編輯環境 → Network policy → 自訂 allowlist →
+#             貼入下列網域 → 開新 session 才生效。
+#       文件：https://code.claude.com/docs/en/claude-code-on-the-web
+#
+# 維護：此清單對應 data/sources.yml 的可 RSS 來源。新增 / 移除來源時，請同步這裡。
+#       （非程式檔，repo_health / validate 不會自動校驗，靠人工 + 此註記維持同步。）
+# =====================================================================
+
+# --- 歐美 US-EU ---
+hypebeast.com
+highsnobiety.com
+businessoffashion.com
+gq.com
+esquire.com
+sneakernews.com
+heddels.com
+fuckingyoung.es
+blackbirdspyplane.com
+putthison.com
+permanentstyle.com
+drapersonline.com
+fratellowatches.com
+monochrome-watches.com
+
+# --- 日本 JP ---
+fashionsnap.com
+houyhnhnm.jp
+wwdjapan.com
+mensnonno.jp
+popeyemagazine.jp
+senken.co.jp
+
+# --- 韓國 KR ---
+hypebeast.kr
+wwdkorea.com
+vogue.co.kr
+gqkorea.co.kr
+dazedkorea.com
+
+# --- 社群 social（tier 3，結構性訊號） ---
+reddit.com
+old.reddit.com

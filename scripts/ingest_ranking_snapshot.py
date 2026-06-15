@@ -48,7 +48,7 @@ SOURCES = {
     "kream": "kream.yml",
     "musinsa": "musinsa.yml",
 }
-# 檔案內 `source:` 欄位的值（用來核對輸入沒放錯來源）
+# 檔案內 `source:` 欄位的值（顯示用標籤；跨來源誤投由 validate_snapshot 的欄位檢查擋下）
 SOURCE_FIELD = {
     "lyst": "lyst-index",
     "stockx": "stockx",
@@ -109,7 +109,8 @@ def check_ranks(rows, label: str, errors: list[str]) -> int:
             errors.append(f"{label}[{i}] 必須是 mapping")
             continue
         rank = row.get("rank")
-        if not isinstance(rank, int):
+        # bool 是 int 的子類別——True/False 不可當名次（否則 rank: true 會被當成 1）
+        if not isinstance(rank, int) or isinstance(rank, bool):
             errors.append(f"{label}[{i}] rank 必須是整數")
         else:
             ranks.append(rank)
@@ -126,6 +127,9 @@ def validate_snapshot(source: str, snap: dict) -> tuple[list[str], list[str]]:
     period = snap.get("period")
     if not period:
         errors.append("缺 period（或為空）")
+    elif not isinstance(period, str):
+        # 非字串 period（YAML 把 2026 當 int、2026-01-01 當 date）會讓重複檢查靜默失效
+        errors.append(f"period 必須是字串（{period!r} 被 YAML 解析成 {type(period).__name__}，請加引號）")
     else:
         info.append(f"period = {period}")
 
@@ -169,7 +173,9 @@ def build_block(snap: dict) -> str:
 
 
 def write_snapshot(target_path: Path, snap: dict) -> None:
-    """把新 snapshot 文字插到 `snapshots:` 行的正下方，保留檔內既有註解與排版。"""
+    """把新 snapshot 文字插到 `snapshots:` 行的正下方，保留檔內既有註解與排版。
+    寫前先在記憶體驗證插入後仍是合法 YAML 且新 period 確實進去——這是唯一程式化寫 data 檔的點，
+    寧可放棄寫入也不把壞檔留在磁碟上。"""
     lines = target_path.read_text(encoding="utf-8").splitlines(keepends=True)
     idx = next((i for i, ln in enumerate(lines) if ln.rstrip() == "snapshots:"), None)
     if idx is None:
@@ -178,7 +184,18 @@ def write_snapshot(target_path: Path, snap: dict) -> None:
     if not block.endswith("\n"):
         block += "\n"
     lines.insert(idx + 1, block)
-    target_path.write_text("".join(lines), encoding="utf-8")
+    new_text = "".join(lines)
+
+    # 寫前自驗：插入後還能 parse、且新 period 真的在 snapshots 裡（檔案此刻尚未被動）
+    try:
+        reparsed = yaml.safe_load(new_text) or {}
+    except yaml.YAMLError as e:
+        fail(f"插入後 YAML 解析失敗，已放棄寫入（檔案未動）：{e}")
+    periods_after = [s.get("period") for s in (reparsed.get("snapshots") or []) if isinstance(s, dict)]
+    if snap.get("period") not in periods_after:
+        fail("插入後在 snapshots 找不到新 period，疑似插錯位置，已放棄寫入（檔案未動）。")
+
+    target_path.write_text(new_text, encoding="utf-8")
 
 
 def main() -> None:

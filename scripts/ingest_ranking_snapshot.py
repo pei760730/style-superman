@@ -99,7 +99,7 @@ def existing_periods(target_path: Path) -> tuple[list, dict]:
 
 # ---------- 各來源的 snapshot 契約檢查 ----------
 
-def check_ranks(rows, label: str, errors: list[str]) -> int:
+def check_ranks(rows, label: str, errors: list[str], required_fields: tuple[str, ...] = ()) -> int:
     if not isinstance(rows, list):
         errors.append(f"{label} 必須是 list")
         return 0
@@ -114,6 +114,11 @@ def check_ranks(rows, label: str, errors: list[str]) -> int:
             errors.append(f"{label}[{i}] rank 必須是整數")
         else:
             ranks.append(rank)
+        # 顯示/比對主鍵也要驗（brands→name、products→brand+item）：track_rankings 與月報直接
+        # 用 row["name"]/row["brand"] subscript，缺了會在產出時 KeyError 而非寫入時擋下。
+        for field in required_fields:
+            if not row.get(field):
+                errors.append(f"{label}[{i}] 缺 {field}")
     if len(ranks) != len(set(ranks)):
         errors.append(f"{label} 有重複 rank")
     return len(rows)
@@ -134,8 +139,8 @@ def validate_snapshot(source: str, snap: dict) -> tuple[list[str], list[str]]:
         info.append(f"period = {period}")
 
     if source == "lyst":
-        n_b = check_ranks(snap.get("brands"), "brands", errors)
-        n_p = check_ranks(snap.get("products"), "products", errors)
+        n_b = check_ranks(snap.get("brands"), "brands", errors, ("name",))
+        n_p = check_ranks(snap.get("products"), "products", errors, ("brand", "item"))
         info.append(f"brands {n_b} 筆、products {n_p} 筆")
     elif source == "stockx":
         if "ranking" in snap:
@@ -156,8 +161,8 @@ def validate_snapshot(source: str, snap: dict) -> tuple[list[str], list[str]]:
         if isinstance(bt, dict) and bt.get("name"):
             info.append(f"brand_top = {bt['name']}")
     elif source == "musinsa":
-        # 與 validate_repo 對齊：MUSINSA 是品牌銷售榜，brands rank 不可重複
-        n_b = check_ranks(snap.get("brands"), "brands", errors)
+        # 與 validate_repo 對齊：MUSINSA 是品牌銷售榜，brands rank 不可重複、name 不可缺
+        n_b = check_ranks(snap.get("brands"), "brands", errors, ("name",))
         if "menswear_read" not in snap:
             errors.append("MUSINSA snapshot 缺 menswear_read")
         info.append(f"brands {n_b} 筆")

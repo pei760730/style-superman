@@ -24,6 +24,7 @@ C6 範圍：**只做「來源事實收集 + 格式化」**——
 from __future__ import annotations
 
 import argparse
+import html
 import re
 import sys
 import time
@@ -84,6 +85,7 @@ def _clean(text: str, limit: int = 280) -> str:
     import re
 
     text = re.sub(r"<[^>]+>", " ", text or "")
+    text = html.unescape(text)  # &amp; / &#39; / &nbsp; → 實字（feeds 常雙重編碼；先解碼再壓空白）
     text = re.sub(r"\s+", " ", text).strip()
     return text[:limit]
 
@@ -160,7 +162,7 @@ def parse_feed(xml_text: str, source: dict, limit: int = DEFAULT_LIMIT) -> list[
             "source_tier": source.get("tier"),
             "region": source.get("region"),
             "url": link,
-            "title": title,
+            "title": html.unescape(title),  # 標題同樣可能雙重編碼（&amp; / &#39;）
             "published": published,
             "summary": summary,
             # 需判斷的欄位留待查，交給寫 brief 的主編 agent

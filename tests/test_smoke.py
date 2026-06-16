@@ -135,6 +135,25 @@ def main() -> int:
     )
     check("RSS parse_feed 離線解析", ok_parse, str(sigs[:1]))
 
+    # 8b. HTML entity 解碼：feeds 常雙重編碼（&amp;amp; / &amp;#39;），不該原樣漏進產出
+    #     （flash _clip 裡的 &#32; strip 是這問題的 band-aid 症狀，根治在收集層 html.unescape）
+    ent_feed = (
+        "<rss><channel>"
+        "<item><title>Nike &amp;amp; Tiffany&#39;s drop</title>"
+        "<link>http://e.example/x</link>"
+        "<description>&lt;p&gt;Rosa&amp;amp;Co. &amp;#8217;26&lt;/p&gt;</description>"
+        "<pubDate>Wed, 04 Jun 2026 10:00:00 +0000</pubDate></item>"
+        "</channel></rss>"
+    )
+    esig = crs.parse_feed(ent_feed, src)
+    ok_ent = (
+        len(esig) == 1
+        and esig[0]["title"] == "Nike & Tiffany's drop"
+        and "&amp;" not in esig[0]["summary"]
+        and "&#" not in esig[0]["summary"]
+    )
+    check("RSS HTML entity 解碼（title+summary）", ok_ent, str(esig[:1]))
+
     # collect() 注入假 fetcher：抓取失敗應降級成 warning，不丟例外
     sigs2, warns = crs.collect([src, {"id": "dead", "tier": 3, "region": "jp", "rss": "y"}],
                                fetcher=lambda url: feed_xml if url == "x" else None)

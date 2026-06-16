@@ -23,9 +23,13 @@
 > 退化成「只有標題的空殼 roundup」；對話裡 agent 認真跑(真收訊號 + 真 WebFetch 挖 picks)品質更高、
 > 又省 routine 額度。產出在對話讀,不入 `reports/daily/`(要封存再說)。
 
+> **手機在外、開不了電腦?** 從手機按一下 GitHub Actions 跑 `flash-brief.yml`,拿到 ⚡ Style 速報([reports/flash/](reports/flash/))——
+> 白名單硬資訊源**純機械抽取(零 LLM)**,回答「今天有什麼上了/漲了/併了」+ 現成 SKU/價格/發售日。
+> 趨勢判讀 + 挖 picks 仍是桌面對話深度版的活(D19,2026-06-16)。
+
 **每週一**：說「早安」= daily + 週挑 Head-to-Toe 一起端上（5 區 × 3 樣，收斂上週 7 天情報；**對話觸發，不是排程**）。每週至少一張趨勢深挖卡（歐美優先，對話觸發）。
 **每月初**：說一聲跑歐美 / 日本月報（**對話觸發**；日本線 2026-07 起）。Lyst Q2 出刊（7 月）時說一聲 ingest 進 rankings。
-**每週一、四 09:00**：自動健檢巡檢——daily 斷更、格式跑偏會**自動開 `repo-health` issue**，所以 GitHub 通知出現它 = 系統出事了，其他時候不用管。
+**每週一、四 09:00**：自動健檢巡檢——格式跑偏、文件↔程式碼漂移、週挑 / 月報斷更、**死源（liveness）**會**自動開 `repo-health` issue**，所以 GitHub 通知出現它 = 系統出事了，其他時候不用管。（daily 斷更看門狗已隨 D16 移除——brief 改對話觸發、不入 `reports/daily/`，無檔可數。）
 
 ---
 
@@ -37,6 +41,12 @@
 - 往上是 3–5 條頭條（每條固定回答「是什麼 / 為什麼是現在 / 對我的意義」）+ **三個地區區塊：🇯🇵 日潮 10–15 條、🇰🇷 韓潮 8–12 條、🌍 歐美 10–15 條**（每則兩行式：粗體標題行含日期/價格/來源 + 縮排一句簡介）+ 明日 watchlist。頭條＋區塊合計約 30–45 條/日。
 - **讀法慣例**：連續趨勢用增量寫法——同一件事第二天只寫新增事實，背景用「讀法見 YYYY-MM-DD brief」回連，所以看到回連別當漏寫，是防止每天重講一遍。
 - 訊號弱的日子會誠實寫「今日訊號偏弱」，不硬湊。
+
+### ⚡ Style 速報 — [reports/flash/](reports/flash/)（手機可觸發，D19）
+
+- **手機在外、開不了電腦時的速報層**：從手機開 GitHub Actions 手動跑 `flash-brief.yml`，白名單硬資訊源（hypebeast / sneakernews / WWD / fashionsnap / senken / 錶源…）**純機械抽取（零 LLM，守 D5）**，排成「今天有什麼上了 / 漲了 / 併了」+ 現成 SKU / 價格 / 發售日。
+- **刻意不做趨勢判讀 / 不挖 picks / 不下熱度結論**——那是桌面對話深度版（opus）的活。只做機械抽取、不讓 LLM 假裝判讀，從根上不退化成被砍掉的「空殼 roundup」（D16）。
+- 與深度版分流：速報落 `reports/flash/`、深度 brief 在對話讀（不入版控），互不踩。
 
 ### 🛍 週挑 Head-to-Toe — [reports/buy_shortlist/](reports/buy_shortlist/)（每週）
 
@@ -65,9 +75,10 @@
 | 執行者 | 時間 | 做什麼 | 提交方式 |
 |---|---|---|---|
 | 對話 agent（**唯一的內容入口**） | 說「早安」/ 需要時 | **每日 brief**（本機收訊號 → 判讀 → roundup 真 WebFetch 挖 picks → 對話端上）；深挖卡；**週挑**（週一說「早安」一起端）；**月報**（月初說一聲，歐美 / 日本，日本線 2026-07 起）；**Lyst Q2 ingest**（7 月榜出說一聲）；臨時任務 | 內容在對話讀（不入版控）；需封存 / 工程改動才走**分支 + PR**，驗證綠自 merge（D8） |
+| GitHub Actions `flash-brief.yml` | **手機手動 dispatch**（D19） | ⚡ 速報：白名單硬源純機械抽取（零 LLM），落 `reports/flash/<date>.md` | 手機按一下 = 有人盯，不違 D16 砍排程 |
 | GitHub Actions `daily-brief.yml` | **手動備援**（已移除排程，D16） | `--with-rss` 在 egress 正常的 runner 收訊號 / 產骨架——僅本機 collect 失靈時手動 dispatch | （平時不跑） |
-| GitHub Actions `health.yml` | 每週一、四台北 09:00 | `repo_health --strict` 巡檢（新鮮度 + 一致性 + 守衛 + 產出契約） | 未過 → 自動開 / 更新 `repo-health` issue |
-| GitHub Actions `ci.yml` | 每個 PR | validate + smoke 測試 | 紅燈 = 不能 merge |
+| GitHub Actions `health.yml` | 每週一、四台北 09:00 | `repo_health --strict` 巡檢（新鮮度 + 一致性 + 守衛 + 產出契約）+ `--liveness` 死源探針（continue-on-error，限速不算死） | 未過 / 偵測死源 → 自動開 / 更新 `repo-health` issue |
+| GitHub Actions `ci.yml` | 每個 PR | validate + smoke（Python **3.9 + 3.12** 雙版）+ ruff lint（py39） | 紅燈 = 不能 merge |
 
 > **0 支雲端 routine（D16，2026-06-14）。** 每日 brief 連同週挑 / 月報 / Lyst Q2 全部**對話觸發**——
 > 排程 routine 在無人盯時品質退化（空殼 roundup），對話跑品質更高又省額度（合反熵 D7）。
@@ -102,6 +113,7 @@
 | D16 | 砍雲端排程 routine | daily 連週挑 / 月報全對話觸發（說「早安」當場跑）；0 routine、省額度、品質更高 |
 | D17 | 撤 Mercari 日本量化板 | 2013→2022 陳貨、年報已無時尚榜、替代源全 bot 擋；日本看 daily 日潮質化 |
 | D18 | 新增來源兩道門 | 加來源前先驗 ① 近 30 天持續產出 ② 夠權威（非聚合 / SEO）；仍需擁有者拍板 |
+| D19 | 速報層 generate_flash | 白名單硬源純機械抽取（零 LLM）；手機可獨立 dispatch，補桌面對話 brief 手機看不到的缺口 |
 
 ---
 
@@ -137,6 +149,7 @@ style-superman/
 │       └── musinsa.yml       #   韓國：MUSINSA 銷售榜
 ├── reports/                  # 封存快照（產出後不回改）
 │   ├── daily/                # 每日 brief（YYYY-MM-DD.md）
+│   ├── flash/                # ⚡ 速報（YYYY-MM-DD.md；手機 dispatch，純機械抽取 D19）
 │   ├── buy_shortlist/        # 週挑 Head-to-Toe（YYYY-Wnn.md）
 │   ├── monthly/              # 月度熱度速報（YYYY-MM-eu.md 歐美；YYYY-MM-jp.md 日本，2026-07 起）
 │   └── analysis/             # 趨勢深挖卡 + 主題分析（每週至少一張，歐美優先）
@@ -146,11 +159,12 @@ style-superman/
 │   ├── generate_daily_brief.py          # brief 骨架（--with-rss 含收集）
 │   ├── generate_weekly_buy_picks.py     # 週挑骨架
 │   ├── generate_monthly_heat_report.py  # 月報骨架
+│   ├── generate_flash.py                # ⚡ 速報：白名單硬源純機械抽取（零 LLM，D19）
 │   ├── collect_raw_signals.py           # RSS → raw_signal_pack
 │   ├── track_rankings.py                # 排行檢視 + 名次演化
 │   ├── ingest_ranking_snapshot.py       # 安全加入排行快照
 │   ├── validate_repo.py                 # 格式契約檢查（CI）
-│   └── repo_health.py                   # 健檢：新鮮度 + 一致性 + 守衛 + 產出契約
+│   └── repo_health.py                   # 健檢：新鮮度 + 一致性 + 守衛 + 產出契約 +（--liveness 死源探針）
 ├── tests/                    # smoke 測試（無需 pytest）
 ├── docs/
 │   ├── system_design.md         # 架構設計
@@ -159,12 +173,13 @@ style-superman/
 │   ├── operating_manual.md      # 營運手冊
 │   ├── ai_collaboration.md      # 帽子原則 + 不自我終審 + 誰拍板（D7 已瘦身）
 │   ├── rankings.md              # 排行快照方法論（口徑分開、不硬湊）
-│   ├── decisions.md             # 方向決策紀錄（D1–D18）
+│   ├── decisions.md             # 方向決策紀錄（D1–D19）
 │   └── lessons.md               # 教訓簿（殭屍任務卡三例都在這）
 └── .github/workflows/
-    ├── ci.yml                # PR validate + smoke
+    ├── ci.yml                # PR validate + smoke（3.9 + 3.12）+ ruff
+    ├── flash-brief.yml       # ⚡ 速報：手機 dispatch、純機械抽取（D19）
     ├── daily-brief.yml       # 收 RSS signals + 產骨架（手動備援；排程已於 D16 移除）
-    └── health.yml            # 週一、四 --strict 巡檢，未過自動開 issue
+    └── health.yml            # 週一、四 --strict 巡檢 + 死源 liveness，未過/死源自動開 issue
 ```
 
 ---
@@ -215,6 +230,7 @@ python scripts/repo_health.py --consistency
 - [x] 第一性原理瘦身（2026-06-11 D7：砍死迴圈 prompt、封存任務卡、手動月拉流程；立反熵原則）
 - [x] 終審 ≠ merge（2026-06-12 D8）；挑買卡停產、推薦回歸 brief 內（2026-06-12 D9）
 - [x] 配件全週期覆蓋（週挑第 5 區；daily / monthly 配件同等納入）；粉絲增長殘留二次深掃
+- [x] ⚡ 速報層（D19，2026-06-16）：白名單硬源純機械抽取（零 LLM）、手機可 dispatch，補桌面深度 brief 手機看不到的缺口
 - [ ] 推送通知（未拍板；傾向用既有據點，不加新平台）
 - [ ] 更多非 RSS 來源（視需求，不硬刮反爬站）
 

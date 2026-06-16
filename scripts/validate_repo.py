@@ -263,6 +263,9 @@ def check_templates() -> list[CheckResult]:
 
 REPORT_PATTERNS = {
     "daily": re.compile(r"^\d{4}-\d{2}-\d{2}\.md$"),
+    # ⚡ flash 速報由 flash-brief.yml 機械產並 commit 進 master——之前不在任何契約掃描內，
+    #    檔名/標題跑掉不會被抓（與 daily 同日期格式 + H1）。2026-06-16 補上守門。
+    "flash": re.compile(r"^\d{4}-\d{2}-\d{2}\.md$"),
     "monthly": re.compile(r"^\d{4}-\d{2}-[a-z-]+\.md$"),
     "buy_shortlist": re.compile(r"^\d{4}-W\d{2}\.md$"),  # 週挑（ISO 週，D3）
 }

@@ -434,6 +434,34 @@ def check_source_liveness() -> list[Finding]:
 
 # ---------- 輸出 ----------
 
+def check_analysis_outputs() -> list[Finding]:
+    """reports/analysis 的 brand-radar / deep-dive 檔名/結構刻意自由（非日期），不進
+    OUTPUT_CONTRACTS 的日期契約，但仍會被 commit 進 master——之前完全無守門。
+    補最低防線（擁有者 2026-06-16 拍板：保留自由格式，只守 H1 + 禁字）：
+    ① H1 開頭 ② 不含重定位前識別字（擋舊世界觀從這個產出缺口進來，同 2026-06-10 daily 型）。"""
+    findings: list[Finding] = []
+    adir = ROOT / "reports" / "analysis"
+    if not adir.is_dir():
+        return findings
+    for report in sorted(adir.glob("*.md")):
+        if report.name.endswith(".draft.md"):
+            continue
+        text = report.read_text(encoding="utf-8")
+        problems = []
+        if not text.lstrip().startswith("# "):
+            problems.append("缺 H1 開頭")
+        hits = [mark for mark in OUTPUT_BANNED_MARKS if mark in text]
+        if hits:
+            problems.append(f"含重定位前識別字 {hits}")
+        if problems:
+            findings.append(Finding(
+                "warn",
+                f"reports/analysis/{report.name} 不符最低產出契約：{'；'.join(problems)}",
+                "analysis 格式自由但需 H1 + 不含舊世界觀識別字；補上或清掉違規識別字",
+            ))
+    return findings
+
+
 def run_checks(today: dt.date, consistency_only: bool = False) -> list[Finding]:
     findings: list[Finding] = []
     findings += check_scripts_documented()
@@ -441,6 +469,7 @@ def run_checks(today: dt.date, consistency_only: bool = False) -> list[Finding]:
     findings += check_path_references()
     findings += check_workflow_scripts()
     findings += check_decision_guards()
+    findings += check_analysis_outputs()  # consistency 層：每 PR 擋 analysis 禁字/H1 回流
     if not consistency_only:
         # daily 斷更檢查已移除（D16：daily brief 對話觸發、不入 reports/daily/，無檔可監控）
         findings += check_weekly_picks_freshness(today)

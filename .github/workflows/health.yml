@@ -48,22 +48,46 @@ jobs:
           set -o pipefail
           python scripts/repo_health.py --strict | tee health-report.txt
 
+      # 死源看門狗（2026-06-16）：--liveness 連網打每個 RSS、揪「設定在卻每次 403/0 則」的死源。
+      # 它原本 opt-in、永不排程 → 違反反熵 D7（靠人類記得手動跑）。塞進這支週期巡檢補上。
+      # 不弄 flaky 的關鍵：① continue-on-error，外站抖動絕不讓巡檢變紅；② 死源是 warn、
+      # --liveness 不帶 --strict 故 exit 0，所以下面靠 grep「死源：」判斷而非 exit code；
+      # ③ 限速(429)被 check_source_liveness 標為「非死源」，抖動造成的暫時 429 不會誤報。
+      - name: Probe source liveness (death-of-source watchdog)
+        if: always()
+        continue-on-error: true
+        env:
+          PYTHONIOENCODING: utf-8
+        run: |
+          set -o pipefail
+          python scripts/repo_health.py --liveness | tee health-liveness.txt || true
+
       - name: File or update health issue
-        if: failure()
+        if: always()
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
+          # 開 issue 條件：strict 巡檢失敗，或 liveness 偵測到死源（限速不算）。兩者皆無就不開。
+          need=0
+          [ "${{ steps.health.outcome }}" = "failure" ] && need=1
+          grep -q "死源：" health-liveness.txt 2>/dev/null && need=1
+          if [ "$need" = "0" ]; then echo "巡檢全綠、無死源，不開 issue。"; exit 0; fi
           gh label create repo-health --description "repo_health.py 巡檢警告" --color D93F0B 2>/dev/null || true
           {
-            echo "repo_health --strict 於 $(date -u +%Y-%m-%dT%H:%MZ) 巡檢未通過："
+            echo "repo_health 巡檢於 $(date -u +%Y-%m-%dT%H:%MZ)："
             echo
-            echo '```'
-            cat health-report.txt
-            echo '```'
-            echo
+            if [ "${{ steps.health.outcome }}" = "failure" ]; then
+              echo '### ❌ --strict 未通過'
+              echo '```'; cat health-report.txt; echo '```'; echo
+            fi
+            if grep -q "死源：" health-liveness.txt 2>/dev/null; then
+              echo '### 🌐 RSS 死源（--liveness）'
+              echo '```'; cat health-liveness.txt; echo '```'; echo
+            fi
             echo "處理方式見 CLAUDE.md 的 Self-Evolution Loop；修好後關閉本 issue。"
-            echo "若同類警告反覆出現且兩週無人處理，依 docs/lessons.md：要嘛修產線，要嘛調整節奏宣告（daily→weekly），不要讓警告衰退成噪音。"
+            echo "死源處理：確認可否換域名/端點修復，真的無解就比照 D17 撤源（改 sources.yml + 記 decisions）；撤不撤是內容判斷、留擁有者拍板。"
+            echo "若同類警告反覆出現且兩週無人處理，依 docs/lessons.md：要嘛修產線，要嘛調整節奏宣告，不要讓警告衰退成噪音。"
           } > issue-body.md
           # `// empty`：無開啟 issue 時 .[0].number 為 null，沒有 fallback 會印出字面 "null"
           # → 走進 comment 分支對 issue "null" 留言而失敗，新 issue 永遠開不出來。

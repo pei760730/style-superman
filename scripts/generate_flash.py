@@ -159,6 +159,11 @@ def main() -> None:
     parser.add_argument("--days", type=int, default=2, help="收近幾天（含今天），預設 2")
     args = parser.parse_args()
 
+    if args.date:  # 壞 --date 會被直接寫進報告標題與檔名
+        try:
+            dt.date.fromisoformat(args.date)
+        except ValueError:
+            parser.error(f"--date 須為合法 YYYY-MM-DD（收到 {args.date!r}）")
     date_str = args.date or dt.date.today().isoformat()
     signals = _load_signals(args.signals_in) if args.signals_in else _collect_live()
     md = extract(signals, date_str, args.days)

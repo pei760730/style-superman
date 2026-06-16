@@ -99,7 +99,13 @@ def main() -> None:
     parser.add_argument("--draft", action="store_true", help="輸出 *.draft.md（不入版控）")
     args = parser.parse_args()
 
-    day = dt.date.fromisoformat(args.date) if args.date else dt.date.today()
+    if args.date:  # 裸 fromisoformat 對壞日期會噴整片 Python traceback，不友善
+        try:
+            day = dt.date.fromisoformat(args.date)
+        except ValueError:
+            parser.error(f"--date 須為合法 YYYY-MM-DD（收到 {args.date!r}）")
+    else:
+        day = dt.date.today()
     week_label, body = build(day)
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)

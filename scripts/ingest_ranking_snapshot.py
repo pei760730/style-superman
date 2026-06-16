@@ -247,7 +247,7 @@ def main() -> None:
     write_snapshot(target_path, snap)
     print(f"✍️  已將 {period} 插入 {target_path.name} 的 snapshots 最上方。")
     print("   下一步請自驗：")
-    print(f"     python scripts/validate_repo.py --data")
+    print("     python scripts/validate_repo.py --data")
     print(f"     python scripts/track_rankings.py --source {args.source} --compare")
 
 

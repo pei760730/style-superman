@@ -157,6 +157,10 @@ def main() -> None:
 
     if not MONTH_RE.match(args.month):
         parser.error("--month 格式須為 YYYY-MM，例如 2026-06")
+    try:  # MONTH_RE 只擋格式不擋語意：2026-13 / 2026-00 會通過正則卻產出垃圾檔名的封存檔
+        dt.date(int(args.month[:4]), int(args.month[5:7]), 1)
+    except ValueError:
+        parser.error(f"--month 月份須為 01–12（收到 {args.month!r}）")
 
     region = REGIONS[args.region]
     OUT_DIR.mkdir(parents=True, exist_ok=True)

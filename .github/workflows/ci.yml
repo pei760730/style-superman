@@ -30,6 +30,14 @@ jobs:
       - name: Compile Python scripts
         run: python -m py_compile scripts/*.py
 
+      # CI-only lint：不進 requirements.txt、不上產線（擁有者 2026-06-16 放行）。
+      # 抓 AI 改碼最常見、與測試正交的回歸：未定義名稱 / 未用 import / 壞 f-string。
+      # --target-version py39 同時幫驗 3.9 相容語法。
+      - name: Lint (ruff, CI-only)
+        run: |
+          python -m pip install ruff
+          python -m ruff check --target-version py39 scripts tests
+
       # 單一驗收入口：validate_repo / repo_health / track_rankings /
       # generate_* 全部由 test_smoke 內部執行——不在這裡重複跑（同樣的事兩遍 = 浪費 + 雙處維護）。
       - name: Acceptance smoke tests

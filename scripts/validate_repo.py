@@ -151,7 +151,8 @@ def check_taxonomy() -> CheckResult:
     return CheckResult("data/trend_taxonomy.yml", errors)
 
 
-def check_rank_values(items: Any, path: Path, label: str, errors: list[str]) -> None:
+def check_rank_values(items: Any, path: Path, label: str, errors: list[str],
+                      required_fields: tuple[str, ...] = ()) -> None:
     rows = require_list(items, f"{path}: {label}", errors)
     ranks: list[Any] = []
     for idx, row in enumerate(rows, start=1):
@@ -159,10 +160,15 @@ def check_rank_values(items: Any, path: Path, label: str, errors: list[str]) -> 
             errors.append(f"{path}: {label}[{idx}] must be a mapping")
             continue
         rank = row.get("rank")
-        if not isinstance(rank, int):
+        if not isinstance(rank, int) or isinstance(rank, bool):
             errors.append(f"{path}: {label}[{idx}] rank must be an integer")
         else:
             ranks.append(rank)
+        # 顯示/比對主鍵（brands→name、products→brand+item）也要驗：track_rankings 與月報
+        # 用 row["name"]/row["brand"] 直接 subscript，缺了會在產出時 KeyError 而非寫入時擋下。
+        for field in required_fields:
+            if not row.get(field):
+                errors.append(f"{path}: {label}[{idx}] missing {field}")
     if len(ranks) != len(set(ranks)):
         errors.append(f"{path}: {label} contains duplicate ranks")
 
@@ -184,8 +190,8 @@ def check_ranking_file(path: Path) -> CheckResult:
     if source == "lyst-index" and snapshots:
         latest = snapshots[0]
         if isinstance(latest, dict):
-            check_rank_values(latest.get("brands"), path, "latest brands", errors)
-            check_rank_values(latest.get("products"), path, "latest products", errors)
+            check_rank_values(latest.get("brands"), path, "latest brands", errors, ("name",))
+            check_rank_values(latest.get("products"), path, "latest products", errors, ("brand", "item"))
     elif source == "stockx" and snapshots:
         for idx, snapshot in enumerate(snapshots, start=1):
             if isinstance(snapshot, dict) and "ranking" in snapshot:
@@ -193,7 +199,7 @@ def check_ranking_file(path: Path) -> CheckResult:
     elif source == "musinsa" and snapshots:
         latest = snapshots[0]
         if isinstance(latest, dict):
-            check_rank_values(latest.get("brands"), path, "latest brands", errors)
+            check_rank_values(latest.get("brands"), path, "latest brands", errors, ("name",))
     elif source == "kream" and snapshots:
         latest = snapshots[0]
         if isinstance(latest, dict):
@@ -276,7 +282,11 @@ def check_reports() -> list[CheckResult]:
                 if report.name.endswith(".draft.md"):
                     continue
                 if not pattern.match(report.name):
-                    errors.append(f"{report}: filename does not match {pattern.pattern}")
+                    errors.append(
+                        f"{report}: filename does not match {pattern.pattern}"
+                        f"（若為本機暫存/實驗檔請刪除該檔，不要放寬此 regex；"
+                        f"只有真要新增報告類型時才改 REPORT_PATTERNS）"
+                    )
                 text = report.read_text(encoding="utf-8").strip()
                 if not text.startswith("# "):
                     errors.append(f"{report}: report must start with a level-1 heading")

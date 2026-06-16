@@ -100,6 +100,11 @@ def main() -> int:
     r = run(["scripts/ingest_ranking_snapshot.py", "--source", "lyst"], stdin=bad)
     check("ingest dry-run 壞資料被擋", r.returncode == 1 and "重複 rank" in r.stdout, r.stdout + r.stderr)
 
+    # 7b. ingest dry-run：rank 過但缺 name（顯示/比對主鍵）應被擋——防 KeyError 從寫入延後到產出時才爆
+    nameless = '- period: "2099-Q8"\n  brands: [{rank: 1}]\n  products: [{rank: 1, brand: A, item: Y}]\n'
+    r = run(["scripts/ingest_ranking_snapshot.py", "--source", "lyst"], stdin=nameless)
+    check("ingest dry-run 缺 name 被擋", r.returncode == 1 and "缺 name" in r.stdout, r.stdout + r.stderr)
+
     # 8–9. RSS 收集（離線：用 fixture，不碰網路）
     sys.path.insert(0, str(ROOT / "scripts"))
     import collect_raw_signals as crs  # noqa: E402

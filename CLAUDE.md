@@ -43,6 +43,8 @@ Next      → repo_health.py 的 Next Actions 就是下一輪 TODO
   python scripts/repo_health.py --consistency   # 文件↔程式碼一致性
   ```
   缺 `pyyaml` 時明確回報，不要為了通過檢查改掉 YAML 依賴。
+  跑驗收前先 `git status` 清掉 `reports/` 下的未追蹤暫存檔——scratch 檔會讓 `validate_repo` 紅燈，
+  那是**環境髒、不是契約壞**：刪檔即可，別去放寬 `REPORT_PATTERNS`（會把契約弄鬆、改錯方向）。
 - **寫程式前先自問**：能用既有檢查擋嗎？能用一條文件規則講清楚嗎？都不行才寫 code。
 
 ## 慣例

@@ -38,6 +38,17 @@ python scripts/collect_raw_signals.py --out /tmp/raw.yml --limit 5
 
 > raw_signal_pack 是中間產物，**不入長期版控**（見 `templates/raw_signal_pack_template.md`）。
 
+### `generate_flash.py`
+⚡ **速報層**（D19）：對白名單硬資訊源做**純機械抽取**（零 LLM，守 D5），寫到 `reports/flash/YYYY-MM-DD.md`。回答「今天有什麼上了 / 漲了 / 併了」，帶 RSS summary 內現成的 SKU / 價格 / 發售日。只收「標題即資訊」的發售 / 新品 / 併購 / 漲價硬源（`hypebeast` 系 / `sneakernews` / `wwd` / `fashionsnap` / `senken` / 錶源），**排除**需要逐篇判讀的 roundup / editorial / clickbait（那些留對話深度版）。因為只機械抽取、不讓 LLM 假裝判讀，不會退化成 D16 砍掉的「空殼 roundup」。
+
+```bash
+python scripts/generate_flash.py                                  # 收 RSS → stdout
+python scripts/generate_flash.py --date 2026-06-16 --out reports/flash/2026-06-16.md
+python scripts/generate_flash.py --signals-in /tmp/raw.yml --out /tmp/flash.md   # 讀現成 signals（離線）
+```
+
+由 `.github/workflows/flash-brief.yml`（`workflow_dispatch`，手機 GitHub App 可手動觸發）跑；**趨勢判讀 + 挖 picks + For Me 仍是對話 opus 深度版的活，不在這層做**。
+
 ### `generate_weekly_buy_picks.py`
 產出「本週在紅 Head-to-Toe」骨架（在紅單品情報，非買清單，D15），寫到 `reports/buy_shortlist/YYYY-Wnn.md`（ISO 週）。
 自動帶入週期、本週 daily briefs 清單、各排行快照最新 period；5 區 × 3 樣的挑買內容由 AI（`prompts/weekly_buy_picks.md`）或人工補上。

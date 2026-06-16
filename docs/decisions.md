@@ -509,3 +509,37 @@ daily brief 只活在桌面 opus 對話裡（D16:全對話觸發、不入 `repor
 - 機械抽取會漏判「是不是衣服 / 是不是 roundup / 是否跨區重複」（靠關鍵字黑名單,貓抓老鼠永有漏網）→ 速報定位**接受帶一點雜訊**,精修留深度版。
 - 白名單先放 `generate_flash.py` 常數,**暫不改 `sources.yml` 加欄位**（先觀察穩定再硬化,避免過早動源契約）。
 - 可逆:刪 `generate_flash.py` + `flash-brief.yml` 即還原,故不寫 `decision_guards`。
+
+---
+
+## D20 — Google 體系整合評估：不接常設整合，YT 話語層走對話臨場查（2026-06-17）
+
+### 背景
+
+擁有者問「這邊可以接 Google CLI?」。順勢把整個 Google 體系（Gemini CLI / Google 搜尋接地 / Trends / Shopping / 多模態視覺 / Cloud）對著本 repo 的真實缺口逐項評估,避免又一次「看起來能用就接」的死權重（cf. Mercari D17、google-trends D7）。
+
+核心發現是「層」的問題,不是「Google 強弱」:本 repo 分兩層,對 agent 開放度相反——
+- **程式碼層**（腳本 / CI / 檢查）對第二個 agent 開放,所以 Codex 有位子（跨模型對抗複審,盲區不相關即使非最強也有值）。
+- **內容 / 資料層**（收訊號 / 判讀 / 挑買 / 排程）被 D5（不接 LLM）+ D7（不依賴定期自動勞動）+ D16（砍排程 routine）+ D9/D10（挑買留人）刻意封給「對話 agent + 人」。
+
+Google 體系的**所有強項**（搜尋 / Trends / Shopping / 多模態 / Cloud）**全部落在被封死的內容 / 資料層**。所以不是 Gemini 弱,是它的強項正好撞在這 repo 唯一不開放給常設 agent 的那層；換個 repo 形狀結論會反過來。
+
+### 逐項評估
+
+- **Gemini CLI 當第三個 code agent**:位子被 Claude + Codex 佔、repo 又小（stdlib 9 腳本）,冗餘。
+- **Google Trends / Shopping**:Trends 已 D7 砍（死權重、建了一期沒拉）;Shopping「哪裡買」屬 D9/D10 留人的內容判斷。
+- **Cloud 排程**:D7 / D16 封死（GitHub Actions 已足,不依賴常駐排程）。
+- **多模態視覺（看照片認單品）**:真・領域契合,但**對話 agent 已能讀圖**,是「已經有」不是缺口;塞進腳本撞 D5 精神 + 要 key + 加依賴。
+- **YouTube 創作者訊號**:唯一真候選——補「品味者怎麼穿 / 在討論什麼」的 zeitgeist 層（圖文媒體 drop 與排行給不了）,對日本視覺缺口（Mercari 形狀的洞）尤其有用。但天花板硬:影片正文 WebFetch 看不了 → 註定 `body_fetchable:false`、**挖不出 picks,只貢獻標題層質化信號**。
+
+### 拍板:不接任何 Google 常設整合；YT 話語走對話臨場查（形狀 B）
+
+- **不**新增常設 Google 來源 / 不接 Gemini CLI 進工作流 / 不接 Google API / Cloud。
+- YouTube 那層質化 zeitgeist 信號,**屬「管線是底盤不是答案邊界」判給對話臨場的那類**（同 D16 砍 sonnet routine 留對話的邏輯）:寫 brief 撞到某趨勢需要「how-worn / 討論」讀數時,對話 agent **當場 WebSearch YouTube 創作者**取讀數,當 **L3 / L4 質化訊號**處理、命中影片**標題內嵌原文連結**、查不到誠實標、不虛構「爆紅」。
+- 此舉**零新基建**:上述已在 `CLAUDE.md`「管線是底盤不是答案邊界」內,YouTube 只是其中一個搜尋標的。
+
+### 為什麼記成決策（而非什麼都不做）
+
+零成本的反射會衰退,且「要不要加 YouTube 源 / 接 Gemini」極易被未來 agent 重新提案、整段重議（cf. D6 把否決的四項工程提案寫進本檔正是為此）。本條目的就是擋重議。
+
+可逆條件:若 repo 形狀改變——大型複雜 code base 需要第三個對抗審查者、或出現「每日機械捕捉影片硬訊號」的明確需求（YT 標題能機械抽取的場景）——再重議常設整合,不在此前反覆討論。本條無禁用識別字,故不寫 `decision_guards`。

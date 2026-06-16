@@ -57,6 +57,11 @@
 
 ## Soft notes（觀察中，尚未硬化）
 
+### 2026-06-16 · liveness 跑在 Actions 美國 egress，韓源偽死（本機台灣可達）
+- **發生什麼**：把 `--liveness` 死源偵測塞進 `health.yml` 週期巡檢後首次跑（`workflow_dispatch` 驗證），報 3 死源 `gq-korea` / `w-korea` / `vogue-korea`（全 `unreachable`）並開了 `repo-health` issue #122。但這 3 個韓站對擁有者本機（台灣）是**可達的**——同日 06-16 的深度日報就收到它們的訊號（gq-korea 微品牌錶、w-korea 西裝穿搭、vogue-korea 白裙）。根因：liveness 跑在 **GitHub Actions（美國 egress）**，真實產線卻是**本機（台灣）**，韓國站對美國 runner 連不到、對台灣可達＝**Actions 視角的偽陽性**。`reddit-techwear` 的 429 則是真限速（已正確歸「非死源」、不觸發 issue）。
+- **對策**：liveness-in-health.yml 報的死源是「Actions 美國視角」，**韓/日源報 `unreachable` ≠ 本機產線收不到**——撤源前一定先在本機 `python scripts/repo_health.py --liveness` 複核（本機台灣才是真實產線視角）才算數；撤源/換域名仍是內容判斷（D17 式），別照 Actions issue 直接撤。
+- **硬化狀態**：未硬化（單例觀察）。若反覆誤判，候選硬化：① liveness 對 `region: kr/jp` 的源標「Actions 視角，需本機複核」註記；② 或改 liveness 不在 health.yml 自動開 issue（降 run summary），避免地理偽陽性噪音。先觀察 issue #122 這次怎麼收。
+
 ### 2026-06-13 · 沒讀過原文就寫「為什麼推薦」：roundup 進來只有標題
 - **發生什麼**：daily brief 把 Vogue Korea「一條牛仔褲指南」只寫成「夏季丹寧指南」，沒給任何品牌——擁有者問「你都給我這題目了，為什麼不給確切哪些品牌？要有確實讀完才能知道為什麼推薦」。根因在管線：`collect_raw_signals.py` 只抓 RSS 標題＋短摘要、不抓內文，listicle/roundup 到寫手手上本來就是空的，寫手卻照樣補了「對我的意義」＝沒讀就推薦。
 - **對策（已落地，本次 PR）**：`prompts/daily_trend_brief.md` 立「推薦的證據門檻」——進推薦位（For Me 值得入手）或寫「對我的意義」前要讀過原文，簡介行必含至少一個原文事實（價格/型號/材質/發售日/具體主張）當「讀過的證明」；清單型報導要 fetch 原文挖出 top 4–6 品牌；讀不到具體事實的降到訊號層報標題＋待查，不准編「為什麼」。

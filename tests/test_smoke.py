@@ -91,6 +91,20 @@ def main() -> int:
     check("generate_monthly_heat_report --region jp", ok, r.stderr)
     jdraft.unlink(missing_ok=True)
 
+    # 5c. 壞日期/月份反向：四支 generator 對非法輸入要非 0 退出、且不產垃圾封存檔（fail-open 缺口回歸鎖）
+    for _args, _bad in [
+        (["scripts/generate_daily_brief.py", "--date", "NOT-A-DATE"], ROOT / "reports" / "daily" / "NOT-A-DATE.md"),
+        (["scripts/generate_monthly_heat_report.py", "--month", "2026-13"], ROOT / "reports" / "monthly" / "2026-13-eu.md"),
+        (["scripts/generate_weekly_buy_picks.py", "--date", "2026-13-40"], None),
+        (["scripts/generate_flash.py", "--date", "NOT-A-DATE"], None),
+    ]:
+        r = run(_args)
+        bad_made = bool(_bad and _bad.exists())
+        check(f"壞日期被擋不產檔：{_args[0].split('/')[-1]}", r.returncode != 0 and not bad_made,
+              f"rc={r.returncode} bad_made={bad_made}")
+        if bad_made:
+            _bad.unlink()  # 萬一驗證沒擋住，清掉避免污染
+
     # 6. ingest dry-run：合法 fixture 應通過（exit 0，不寫檔）
     r = run(["scripts/ingest_ranking_snapshot.py", "--source", "lyst", "--input", str(FIX / "lyst_snapshot.yml")])
     check("ingest dry-run 合法 fixture 通過", r.returncode == 0 and "DRY RUN" in r.stdout, r.stderr)
@@ -148,6 +162,56 @@ def main() -> int:
     sigs4 = crs.parse_feed(unbound_feed, src)
     check("RSS unbound prefix fallback", len(sigs4) == 2, str(sigs4[:1]))
     check("RSS 真壞 XML 仍降級回空", crs.parse_feed("<rss><channel><item>", src) == [], "")
+
+    # 9d. ingest write_snapshot 寫入 tempdir（唯一程式化寫 data/ 的點，原本只測 dry-run）：新 period 進去且仍可解析
+    import ingest_ranking_snapshot as _ing  # noqa: E402
+    import tempfile as _tf
+    import yaml as _yaml  # noqa: E402
+    with _tf.TemporaryDirectory() as _td:
+        _tgt = Path(_td) / "lyst-index.yml"
+        _tgt.write_text('source: lyst-index\nsnapshots:\n  - period: "2099-Q1"\n    brands:\n      - {rank: 1, name: A}\n',
+                        encoding="utf-8")
+        _ing.write_snapshot(_tgt, {"period": "2099-Q2", "brands": [{"rank": 1, "name": "B"}]})
+        _periods = [s.get("period") for s in (_yaml.safe_load(_tgt.read_text(encoding="utf-8")) or {}).get("snapshots", [])]
+    check("ingest write_snapshot 新 period 進去且檔可解析", "2099-Q2" in _periods and "2099-Q1" in _periods, str(_periods))
+
+    # 9e. track_rankings --compare 前季 partial 不可假「新進榜」（commit 5fee0bf 修的 bug，留回歸鎖）
+    import track_rankings as _tr  # noqa: E402
+    _cmp = _tr.lyst_comparison_text({"snapshots": [
+        {"period": "2099-Q2", "brands": [{"rank": 1, "name": "A"}, {"rank": 2, "name": "NewBrand"}]},
+        {"period": "2099-Q1", "coverage": "partial", "brands": [{"rank": 1, "name": "A"}]},
+    ]}) or ""
+    check("compare 前季 partial 不假新進榜", "無法判定" in _cmp and "🆕 新進榜" not in _cmp, _cmp[:200])
+
+    # 9f. fetch_feed 對 429 退避重試一次（reddit 限速；sleep 可注入正是為了測，不真的等）
+    import urllib.request as _ur
+    import urllib.error as _ue
+    import io as _io
+    _calls = {"n": 0}
+
+    class _FakeResp:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *a):
+            return False
+
+        def read(self):
+            return b"<rss><channel><item><title>X</title><link>http://x</link></item></channel></rss>"
+
+    def _fake_open(req, timeout=15):
+        _calls["n"] += 1
+        if _calls["n"] == 1:
+            raise _ue.HTTPError("http://x", 429, "Too Many Requests", {}, _io.BytesIO(b""))
+        return _FakeResp()
+
+    _orig = _ur.urlopen
+    _ur.urlopen = _fake_open
+    try:
+        _xml = crs.fetch_feed("http://x", sleep=lambda s: None)
+    finally:
+        _ur.urlopen = _orig
+    check("fetch_feed 429 退避重試成功", _xml is not None and _calls["n"] == 2, f"calls={_calls['n']}")
 
     # 9d. flash 速報：純機械抽取（離線，import 直接呼叫 extract，不碰網路）
     import generate_flash as gf  # noqa: E402

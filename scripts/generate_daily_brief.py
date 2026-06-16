@@ -138,6 +138,11 @@ def main() -> None:
     )
     args = parser.parse_args()
 
+    if args.date:  # 無驗證會把 --date NOT-A-DATE 直接寫成 reports/daily/NOT-A-DATE.md（封存垃圾檔）
+        try:
+            dt.date.fromisoformat(args.date)
+        except ValueError:
+            parser.error(f"--date 須為合法 YYYY-MM-DD（收到 {args.date!r}）")
     date_str = args.date or dt.date.today().isoformat()
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 

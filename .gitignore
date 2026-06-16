@@ -32,5 +32,7 @@ scratch/
 reports/daily/*.draft.md
 reports/monthly/*.draft.md
 reports/buy_shortlist/*.draft.md
-# raw_signal_pack 中間產物，不入長期版控（見 scripts/README）
-reports/daily/*.raw_signals.yml
+# raw_signal_pack 中間產物，不入長期版控（見 scripts/README）。
+# 注意：workflow/prompt 實際產出的副檔名是 *.signals.yml（不是 *.raw_signals.yml）——
+# 兩者統一為 *.signals.yml，避免命名漂移讓 gitignore 對真實中間產物失效（2026-06-16）。
+reports/daily/*.signals.yml

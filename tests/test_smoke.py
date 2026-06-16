@@ -144,6 +144,32 @@ def main() -> int:
     check("RSS unbound prefix fallback", len(sigs4) == 2, str(sigs4[:1]))
     check("RSS 真壞 XML 仍降級回空", crs.parse_feed("<rss><channel><item>", src) == [], "")
 
+    # 9d. flash 速報：純機械抽取（離線，import 直接呼叫 extract，不碰網路）
+    import generate_flash as gf  # noqa: E402
+
+    flash_sigs = [
+        {"source_id": "hypebeast", "region": "global", "published": "2026-06-16",
+         "url": "https://hypebeast.com/2026/6/adidas-samba-mule", "title": "adidas Samba Mule Drops",
+         "summary": "Name: adidas Samba Mule SKU: HP5054 Release Date: Fall 2026"},   # 硬訊號 → 留
+        {"source_id": "hypebeast", "region": "global", "published": "2026-06-16",
+         "url": "https://x/2", "title": "The 11 Best Sneakers Right Now", "summary": "x"},  # roundup → 剔
+        {"source_id": "hypebeast", "region": "global", "published": "2026-06-16",
+         "url": "https://x/3", "title": "2026 NBA Finals Recap", "summary": "x"},          # noise → 剔
+        {"source_id": "gq-style", "region": "us-eu", "published": "2026-06-16",
+         "url": "https://x/4", "title": "New Suede Loafer", "summary": "x"},               # 白名單外 → 剔
+        {"source_id": "hypebeast", "region": "global", "published": "2026-06-01",
+         "url": "https://x/5", "title": "Stale Drop", "summary": "x"},                     # 過期 → 剔
+    ]
+    md = gf.extract(flash_sigs, "2026-06-16")
+    ok_flash = (
+        "Samba Mule" in md and "HP5054" in md         # 白名單硬訊號 + summary 事實帶出
+        and "11 Best" not in md                        # roundup 標題剔除
+        and "NBA Finals" not in md                     # noise 標題剔除
+        and "Suede Loafer" not in md                   # 白名單外源剔除
+        and "Stale Drop" not in md                     # 過期剔除
+    )
+    check("flash 速報機械抽取（白名單×去 roundup×去 noise×近期）", ok_flash, md[:200])
+
     # 9b. 週挑骨架（draft 模式，不污染版控）
     r = run(["scripts/generate_weekly_buy_picks.py", "--date", "2099-01-07", "--draft"])
     draft = ROOT / "reports" / "buy_shortlist" / "2099-W02.draft.md"

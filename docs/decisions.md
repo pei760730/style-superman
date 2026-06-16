@@ -483,3 +483,29 @@ WebFetch 實測 5 個當期日本榜:**ZOZO timeout、Rakuten 403、2nd STREET 4
 - 加之前先 **WebFetch 實測可讀**,讀不到標 `body_fetchable: false`(roundup 不挖)。
 - 門檻寫進 `data/sources.yml` 表頭(source-adder 會看到)+ CLAUDE.md「你不應該單獨做」。
 - 反熵(D7)一致:寧缺勿濫,不堆會過時 / 半停更的來源。
+
+---
+
+## D19 — 手機速報層：白名單硬資訊源純機械抽取（2026-06-16）
+
+### 背景
+
+daily brief 只活在桌面 opus 對話裡（D16:全對話觸發、不入 `reports/daily/`），手機看不到；擁有者反映「我手機打早安拿不到這些資訊」。釐清出硬約束:**高品質深度 brief（趨勢判讀 + 挖 picks + For Me）綁桌面 opus + 逐條 WebFetch,不可能搬雲端不退化**（D16 砍 routine 的正是「無人盯 sonnet 退化成空殼 roundup」）。
+
+關鍵轉念（擁有者提「為什麼不能給白名單」）:**白名單硬資訊源根本不需要 LLM 判讀**——`hypebeast` 系 / `sneakernews` / `wwd` / `fashionsnap` / `senken` / 錶源的 RSS summary 內就帶 SKU / 價格 / 發售日,純 Python 字串處理即可排成「今天有什麼上了 / 漲了 / 併了」的速報。空殼的本質是「LLM 假裝判讀其實沒料」,而機械抽取**根本不讓 LLM 判讀**,問題從根上不存在。
+
+### 拍板:分兩層，速報走機械抽取、深度走對話
+
+| | ⚡ 速報層（`generate_flash.py`，手機觸發） | 📰 深度版（對話 opus，桌面） |
+|---|---|---|
+| 任務 | 機械抽取硬資訊 | 判讀趨勢 + 挖 picks + For Me |
+| 源 | 白名單發售 / 新品 / 併購 / 漲價硬源 | 全 484 則 |
+| LLM | **零**（守 D5） | opus + 逐條 WebFetch |
+| 輸出 | `reports/flash/<date>.md` | 對話端（不入庫，D16） |
+
+### 配套
+
+- 觸發走 `flash-brief.yml` 的 `workflow_dispatch`,**手機 GitHub App 手動按 = 有人盯那一次**——不違反 D16（砍的是無人值守 `schedule`,不是 `dispatch`）。刻意不加 `schedule`。
+- 機械抽取會漏判「是不是衣服 / 是不是 roundup / 是否跨區重複」（靠關鍵字黑名單,貓抓老鼠永有漏網）→ 速報定位**接受帶一點雜訊**,精修留深度版。
+- 白名單先放 `generate_flash.py` 常數,**暫不改 `sources.yml` 加欄位**（先觀察穩定再硬化,避免過早動源契約）。
+- 可逆:刪 `generate_flash.py` + `flash-brief.yml` 即還原,故不寫 `decision_guards`。

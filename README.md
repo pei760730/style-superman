@@ -114,6 +114,7 @@
 | D17 | 撤 Mercari 日本量化板 | 2013→2022 陳貨、年報已無時尚榜、替代源全 bot 擋；日本看 daily 日潮質化 |
 | D18 | 新增來源兩道門 | 加來源前先驗 ① 近 30 天持續產出 ② 夠權威（非聚合 / SEO）；仍需擁有者拍板 |
 | D19 | 速報層 generate_flash | 白名單硬源純機械抽取（零 LLM）；手機可獨立 dispatch，補桌面對話 brief 手機看不到的缺口 |
+| D20 | Google 體系整合評估 | 不接常設源 / CLI / API / Cloud（Google 強項全落在被 D5/D7/D16 封死的內容層）；YT 話語層走對話臨場 WebSearch |
 
 ---
 
@@ -173,7 +174,7 @@ style-superman/
 │   ├── operating_manual.md      # 營運手冊
 │   ├── ai_collaboration.md      # 帽子原則 + 不自我終審 + 誰拍板（D7 已瘦身）
 │   ├── rankings.md              # 排行快照方法論（口徑分開、不硬湊）
-│   ├── decisions.md             # 方向決策紀錄（D1–D19）
+│   ├── decisions.md             # 方向決策紀錄（D1–D20）
 │   └── lessons.md               # 教訓簿（殭屍任務卡三例都在這）
 └── .github/workflows/
     ├── ci.yml                # PR validate + smoke（3.9 + 3.12）+ ruff

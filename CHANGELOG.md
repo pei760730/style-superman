@@ -5,6 +5,7 @@
 ## [Unreleased]
 
 ### Changed
+- **修掉反熵原則裡量不到的「終極指標」(2026-06-19,擁有者要「看到問題有沒有優化」)**：架構深挖(反向驗證)發現 `CLAUDE.md` 反熵節宣稱「維護/產出 commit 比例是系統健康終極指標」,但 **D16 把 daily/週挑 改對話即焚、不進 commit** → 該比例結構性量不到(實測近 40 commit 治理:產品 = 84:3,因產品根本不 commit),是 governance 自欺(且與 CLAUDE.md 同檔「產出有沒有持續發生比工程重要」自相矛盾)。修:`CLAUDE.md` 反熵節終極指標改為**「產出有沒有持續發生」**(①brief/深挖持續被產出 ②封存產物 `reports/analysis`/月報/週挑 有新鮮度;工程治理 commit 多 ≠ 不健康,產線斷才是);同步 `README.md` 設計理念、`docs/decisions.md` D7 判準加修正註記(保留原文不改史)。`CHANGELOG`(歷史 D7 紀錄)不溯改。**附帶誠實紀錄**:同次深挖我先斷言「flash/brand_radar 沒人用該砍」,實測打臉——brand_radar 用過 6 次、flash 才上線 3 天不能判,診斷大半被自己證據刪掉(沒量先斷言,正是該避免的)。
 - **`trend_analysis` 加範圍門檻:單一趨勢 vs 一季大盤（2026-06-15，dogfood 跑 trend_analysis 抓到、擁有者選硬化）**：擁有者下「男性秋冬穿搭趨勢」跑 `trend_analysis`,但該工具產的是**一張**單一趨勢卡(「定義」要一句話說清楚是什麼),一整季塞不進。本次靠「先研究 AW26→收斂成最定義性的單一趨勢(廓形收窄)→給選項」臨場補上,但 prompt 沒擋。硬化:`prompts/trend_analysis.md` 開頭加「範圍門檻」——收到一季/品類大盤/廣主題時,先收斂成最定義性的單一趨勢並回報理由再動工,或建議改用月報(多趨勢全貌工具),不硬塞一張卡。`docs/lessons.md` 記 soft note。
 - **立「管線是底盤，不是答案邊界」規則（2026-06-14，擁有者「寫進去」）**：根因——擁有者問「6 月 head-to-toe 什麼最紅」,我只按關鍵字分桶 RSS、回報「頭部沒源」交白卷,把管線覆蓋當答案天花板(其實對話手上有 WebSearch/WebFetch,一查每格都填得滿)。硬化:`CLAUDE.md` 新增該節(治理**對話 ad-hoc 行為**,因為該失誤發生在沒走 prompt 的對話場景);`prompts/weekly_buy_picks.md` + `prompts/monthly_heat_report.md` 加「某部位×地區可信訊號 < 3 條 → 必須主動 WebSearch/WebFetch 補滿才出稿,禁止回報該區無源交差」;`docs/lessons.md` 記事(已硬化)。
 

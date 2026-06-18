@@ -57,6 +57,11 @@
 
 ## Soft notes（觀察中，尚未硬化）
 
+### 2026-06-18 · 新時尚源評估：權威 ✓ 不是門檻，cadence + RSS 可解析才是
+- **發生什麼**：擁有者問「能用的好源是不是找完了」。評估兩個對其品味（日系 elevated/古著）最對的候選——**Die Workwear**（Derek Guy）與 **Sabukaru**。兩個權威都滿（D18 gate ②），但都退：Die Workwear 部落格最新文 2025-11-28（7 個月前、約季度更一次，即時產出全在 X）→ 敗 gate ①（近 30 天持續產出），`/feed/` 實測用 `parse_feed` 解析 0 則；Sabukaru 內容週級新鮮但**全無可用 RSS**（`/feed`、`/rss`、`?format=rss` 全 404，只有 10MB sitemap）→ 進不了只吃 RSS 的管線。
+- **對策**：評估新源**先過「實用門檻」再談權威**——① 近 30 天 cadence（用 repo 自己的 `parse_feed` 抓 feed 看實際 pubDate，**不只信 WebFetch「looks active」**）② RSS 能被 `parse_feed` 解析出 ≥N 則。好源常敗在這兩關（stale / no-RSS），這正是它們不在 repo 的原因。**結論：RSS 源層已成熟**；剩缺口（X-only 權威、無 RSS 新站、IG、古著店/拍賣）屬非管線 territory，走臨場 WebSearch/WebFetch（合 D20、反熵 D7），不擴常設源。
+- **硬化狀態**：未硬化（評估方法 soft note）。若「該不該加源」反覆被重議或評估再現同模式，候選硬化：把「D18 候選自動跑 `parse_feed` cadence + 可解析」做成小驗證腳本。
+
 ### 2026-06-16 · liveness 跑在 Actions 美國 egress，韓源偽死（本機台灣可達）
 - **發生什麼**：把 `--liveness` 死源偵測塞進 `health.yml` 週期巡檢後首次跑（`workflow_dispatch` 驗證），報 3 死源 `gq-korea` / `w-korea` / `vogue-korea`（全 `unreachable`）並開了 `repo-health` issue #122。但這 3 個韓站對擁有者本機（台灣）是**可達的**——同日 06-16 的深度日報就收到它們的訊號（gq-korea 微品牌錶、w-korea 西裝穿搭、vogue-korea 白裙）。根因：liveness 跑在 **GitHub Actions（美國 egress）**，真實產線卻是**本機（台灣）**，韓國站對美國 runner 連不到、對台灣可達＝**Actions 視角的偽陽性**。`reddit-techwear` 的 429 則是真限速（已正確歸「非死源」、不觸發 issue）。
 - **對策**：liveness-in-health.yml 報的死源是「Actions 美國視角」，**韓/日源報 `unreachable` ≠ 本機產線收不到**——撤源前一定先在本機 `python scripts/repo_health.py --liveness` 複核（本機台灣才是真實產線視角）才算數；撤源/換域名仍是內容判斷（D17 式），別照 Actions issue 直接撤。

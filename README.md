@@ -222,7 +222,7 @@ python scripts/repo_health.py --consistency
 2. **人機協作** — 腳本負責確定性工作（骨架、排行追蹤、檔案管理），AI 負責語意整理與挑買建議，人（我）負責品味與買不買。
 3. **格式即契約** — 所有產出走 `templates/`；改欄位必須同步 prompts / docs / 腳本。
 4. **輕依賴、先輕後重** — 標準庫 + pyyaml；不在 repo 內接 LLM API（D5），AI 撰寫走對話 agent。
-5. **反熵**（D7）— 新流程不得依賴人類定期手動勞動；維護/產出比是系統健康的終極指標。
+5. **反熵**（D7）— 新流程不得依賴人類定期手動勞動；**健康的終極指標是「產出有沒有持續發生」**（非 commit 比例——D16 後產出對話即焚、commit 比例量不到，2026-06-19 修正）。
 6. **產出有沒有持續發生，比工程漂不漂亮重要。**
 
 詳見 [docs/system_design.md](docs/system_design.md)；節奏見 [docs/flow_calendar.md](docs/flow_calendar.md)；決策見 [docs/decisions.md](docs/decisions.md)。

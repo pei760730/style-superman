@@ -64,6 +64,11 @@
 
 - 把連續 2–4 週出現的最強跨源趨勢寫成長線資產：跨源查證 → 生命週期 → 全價位帶落地 → 挑買判斷。範本：washed denim 卡。一年累積 ≈50 張 = 自己的趨勢資料庫。
 
+### 🎯 品牌雷達 — 對話觸發（D11）
+
+- 對話說 **「深挖 + 品牌 / 關鍵字」**（例：「深挖 A.PRESSE」「深挖 日系 elevated」）→ agent 產 **≤10 個品牌的雷達**：分 tier（動能 / 權威）+ **與我衣櫥的 lane 相容度** + 每個「是什麼 ＋ 為什麼現在」。把零散的品牌好奇變成結構化、可留存的情報，不再只活在對話裡。
+- 範本 `prompts/brand_radar.md`；可存進 [reports/analysis/](reports/analysis/) 當主題分析，或當對話讀。**不排程**（D11）。
+
 ### 📈 想查什麼最紅（隨時）
 
 `python scripts/track_rankings.py`（加 `--region kr|jp|us-eu` 過濾），或直接看 [data/rankings/](data/rankings/) 四榜快照（Lyst / StockX / KREAM / MUSINSA，最新在上、可比對名次演化）。日本量化板 2026-06-14 撤除（Mercari 陳貨、即時榜 bot 擋，D17），日本看 daily brief 日潮區。
@@ -74,7 +79,7 @@
 
 | 執行者 | 時間 | 做什麼 | 提交方式 |
 |---|---|---|---|
-| 對話 agent（**唯一的內容入口**） | 說「早安」/ 需要時 | **每日 brief**（本機收訊號 → 判讀 → roundup 真 WebFetch 挖 picks → 對話端上）；深挖卡；**週挑**（週一說「早安」一起端）；**月報**（月初說一聲，歐美 / 日本，日本線 2026-07 起）；**Lyst Q2 ingest**（7 月榜出說一聲）；臨時任務 | 內容在對話讀（不入版控）；需封存 / 工程改動才走**分支 + PR**，驗證綠自 merge（D8） |
+| 對話 agent（**唯一的內容入口**） | 說「早安」/ 需要時 | **每日 brief**（本機收訊號 → 判讀 → roundup 真 WebFetch 挖 picks → 對話端上）；趨勢深挖卡；**品牌雷達**（「深挖 A.PRESSE」式，D11）；**週挑**（週一說「早安」一起端）；**月報**（月初說一聲，歐美 / 日本，日本線 2026-07 起）；**Lyst Q2 ingest**（7 月榜出說一聲）；臨時任務 | 內容在對話讀（不入版控）；需封存 / 工程改動才走**分支 + PR**，驗證綠自 merge（D8） |
 | GitHub Actions `flash-brief.yml` | **手機手動 dispatch**（D19） | ⚡ 速報：白名單硬源純機械抽取（零 LLM），落 `reports/flash/<date>.md` | 手機按一下 = 有人盯，不違 D16 砍排程 |
 | GitHub Actions `daily-brief.yml` | **手動備援**（已移除排程，D16） | `--with-rss` 在 egress 正常的 runner 收訊號 / 產骨架——僅本機 collect 失靈時手動 dispatch | （平時不跑） |
 | GitHub Actions `health.yml` | 每週一、四台北 09:00 | `repo_health --strict` 巡檢（新鮮度 + 一致性 + 守衛 + 產出契約）+ `--liveness` 死源探針（continue-on-error，限速不算死） | 未過 / 偵測死源 → 自動開 / 更新 `repo-health` issue |
@@ -155,6 +160,12 @@ style-superman/
 │   ├── monthly/              # 月度熱度速報（YYYY-MM-eu.md 歐美；YYYY-MM-jp.md 日本，2026-07 起）
 │   └── analysis/             # 趨勢深挖卡 + 主題分析（每週至少一張，歐美優先）
 ├── prompts/                  # AI 內容工作模板（與 templates 欄位互為契約）
+│   ├── daily_trend_brief.md          # 每日 brief
+│   ├── weekly_buy_picks.md           # 週挑 Head-to-Toe
+│   ├── monthly_heat_report.md        # 月度熱度速報
+│   ├── trend_analysis.md             # 趨勢深挖卡
+│   ├── brand_radar.md                # 品牌雷達（「深挖 <關鍵字>」，D11）
+│   └── ranking_ingest.md             # 排行快照 ingest 指引
 ├── templates/                # 產出物固定格式（格式即契約）
 ├── scripts/                  # 自動化腳本（用法見 scripts/README.md）
 │   ├── generate_daily_brief.py          # brief 骨架（--with-rss 含收集）

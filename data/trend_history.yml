@@ -177,3 +177,24 @@ trends:
       - https://www.gentlemanwithin.com/menswear-slim-silhouette-shift-baggy-era-ends/
       - ../reports/analysis/2026-slim-silhouette.md
     menswear_read: "rising=順勢但別過頭;要 tapered/slim-straight 非 skin-tight(踩雷點),你日系 contemporary lane 本就修身精準=趨勢變主流、幾乎不用改買法,只在收腰大衣/tapered 褲加碼"
+
+  - id: aichaku-longevity
+    name: "「愛着」/ 買來長期穿(emotional durability / buy-it-for-life)"
+    category: style
+    started: "底層約2023(quiet luxury + gorpcore-philosophy + 修補文化);命名2026"
+    peak: "未到(rising 早段:2026 才被顯性命名)"
+    status_2026: rising
+    arc: >
+      不是新美學,是「心態母題」的收斂與命名:quiet-luxury(mainstream)、gorpcore
+      從美學轉 value-driven、修補/mending 主流化 三條共同的「對物長期依戀」第一次被
+      單獨拎出命名。日本 2026-06 由 WWD Japan 顯性命名為「愛着」並佐以 Anatomica 手仕事展、
+      古着店トナリ、Jun Takahashi 20年回顧;西方平行概念叫 emotional durability /
+      buy-it-for-life(Première Vision 術語化、MR PORTER「invest in fewer better」、
+      quiet luxury 的 patina「becomes more yours」敘事)。心態趨勢生命週期遠長於美學趨勢,
+      大機率循 quiet luxury 路徑從 trend 沉澱成 default。
+    evidence:
+      - https://www.wwdjapan.com/articles/2425179
+      - https://www.premierevision.com/en/articles/bd0b1d17-9f1a-f011-8b3d-000d3a236aa0/emotional-durability-the-secret-weapon-against-fast-fashion
+      - https://www.mrporter.com/en-us/journal/fashion/menswear-trends-25148076
+      - ../reports/analysis/2026-06-19-aichaku-longevity.md
+    menswear_read: "rising(概念)/mainstream(底層)=不是短期病毒;對 owner 是 lane 的哲學名、零落地門檻——真動作是少買買對養舊,不是買更多『值得愛着』的東西(讀反陷阱)。風險:詞會被行銷收編稀釋,屆時看真做工 vs 喊做工"

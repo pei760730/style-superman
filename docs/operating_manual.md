@@ -10,7 +10,9 @@ cd style-superman
 pip install pyyaml
 ```
 
-## 1. 每日流程（約 20–30 分鐘）
+## 1. 每日流程（備援 / 手動路徑）
+
+> **D16（2026-06-14）：daily brief 現在是全對話觸發**——擁有者說「早安 / 今天」→ 對話 agent 當場收訊號、判讀、上完整 brief，**在對話讀、不入 `reports/daily/`**（要封存再另議）。下面這套手動腳本 6 步是 `collect` 失靈時的備援路徑（`daily-brief.yml` 的 `workflow_dispatch`），不是日常流程。
 
 ### Step 1 — 產出今日骨架
 ```bash
@@ -35,7 +37,8 @@ python scripts/generate_daily_brief.py
 ### Step 5 — 出挑買方向
 brief 的 `🎯 對我最相關 For Me` 是**在紅單品情報**（D15：知道現在在紅什麼,非買清單;不開獨立挑買卡 D9）；真要入手隨選再做。週度收斂走週挑 `reports/buy_shortlist/`。
 
-### Step 6 — 封存
+### Step 6 — 封存（僅備援路徑）
+> 日常對話 brief 在對話讀、不落檔（D16）；只有走上面備援路徑、確實產了檔才封存。
 ```bash
 git add reports/daily/YYYY-MM-DD.md
 git commit -m "brief: YYYY-MM-DD"
@@ -53,7 +56,7 @@ git commit -m "brief: YYYY-MM-DD"
 
 ## 2. 每週
 
-- 從挑買 shortlist 收斂出 1–3 個真正想入手的方向。
+- 從週挑在紅 Head-to-Toe 收斂出 1–3 個本週最該記住的在紅方向（D15：情報層；真要入手隨選再做）。
 - **產出一張趨勢深挖卡（歐美優先）**：挑本週最強跨源趨勢，依 `templates/trend_card_template.md`
   做「跨源查證 → 生命週期 → 全價位帶落地 → 挑買判斷」→ `reports/analysis/`（節奏規則見 Content Calendar §5）。
 - 檢查 `data/` 是否要更新（新品牌、新人物、新來源）。

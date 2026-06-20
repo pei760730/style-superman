@@ -574,3 +574,30 @@ Google 體系的**所有強項**（搜尋 / Trends / Shopping / 多模態 / Clou
 ### 可逆 / guards
 
 可逆(git 還原)。本條無禁用識別字,不寫 `decision_guards`;但「不建人工操作介面」是行為準則,未來 agent 提議加 CLI / 手動鈕前先過此條。
+
+---
+
+## D22 — 採用 Firecrawl keyless 補封鎖源 roundup（對話端，限定範圍，2026-06-20）
+
+### 背景
+
+7 個封鎖源（gq/esquire/bof/sneakernews/drapers/wwd-japan/put-this-on）WebFetch 讀不到內文,roundup 規則一直是「直接不列」（見 D14 硬化、`docs/lessons.md`）。其中 GQ/Esquire 正是美式男裝旗艦 roundup,等於放掉真實覆蓋。Firecrawl keyless（2026-06 發布、免 key、1000 credits/月）平行試用。
+
+### 試用證據（贏了才落地）
+
+戰場=GQ「20 Best New Menswear to Buy This Week」（body_fetchable:false）。對照:WebFetch `unable to fetch`（硬失敗）。Firecrawl keyless REST:
+- 覆蓋:GQ 200、191k markdown、1 credit;泛化測 wwd-japan 也 200。
+- picks:**schema 結構化抽取 17 個 picks**（品牌+品名+價格),價格對得上原始 markdown=grounded、非自報。
+- 成本:plain scrape 1 credit、json extract 5 credits;trial 全程 ~9 credits / 1000 月額。
+- 邊界:只測**編輯型封鎖源**;**Akamai 級即時榜（ZOZO/KREAM/MUSINSA 逐位）未測、不宣稱解決**。
+
+### 拍板:採用，但限定「對話端、補封鎖源 roundup」
+
+- **接法 = 對話端 MCP**（`.mcp.json` keyless `https://mcp.firecrawl.dev/v2/mcp`，AI-facing 工具,同 WebFetch 那層）。**刻意不進 Python 腳本** → 不破 **輕依賴**(不加 script 依賴/不改 requirements)、不破 **D5**(腳本不接外部 API/不管 key)、不破 **D16/D21**(對話端、非排程、非人工介面)。
+- **規則改一條**:封鎖源 roundup「直接不列」→「① 先 WebFetch；② 讀不到改 Firecrawl scrape（schema 結構化抽 picks）；③ 都挖不到才不列」。同步 `prompts/daily_trend_brief.md`、`data/sources.yml`（body_fetchable 定義 + 7 源註解）、`docs/lessons.md`。
+- **不往更深接**（評估後否決,擋未來重議）:接進 collect/flash 腳本（破輕依賴/D5）、整站 crawl + 取代 RSS（破 D16/D7、最大依賴）——服務「自動化批量爬封鎖源」這個**尚未證明需要**的用途,不做。
+- **紅線**:只用 keyless 免費額度;撞 1000/月就停;**production 自動化量級要自帶 key**;只爬公開內容;Firecrawl 抽取結果一律反向驗證對原文。
+
+### 可逆 / guards
+
+可逆（移除 `.mcp.json` 的 firecrawl 條目 + 還原規則即回到「封鎖源不列」）。無禁用識別字,不寫 `decision_guards`。MCP 需重啟 session 才載入（本次落地後下個 session 生效）。

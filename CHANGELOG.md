@@ -4,6 +4,9 @@
 
 ## [Unreleased]
 
+### Added
+- **採用 Firecrawl keyless 補封鎖源 roundup（對話端 MCP，D22，2026-06-20，擁有者平行試用「贏了才落地」）**：7 個封鎖源（gq/esquire/bof/sneakernews/drapers/wwd-japan/put-this-on）WebFetch 讀不到內文,roundup 一直「直接不列」=放掉 GQ/Esquire 旗艦清單。Firecrawl keyless（免 key、1000 credits/月）平行試用,**戰場 GQ「20 Best New Menswear」**:對照組 WebFetch `unable to fetch`(硬失敗) vs Firecrawl 200+191k markdown+**schema 結構化抽 17 picks**(價格對得上原始 markdown=grounded、反向驗證過、非自報);泛化測 wwd-japan 也 200。**接法刻意限定對話端 MCP**(`.mcp.json` keyless,AI-facing 同 WebFetch 那層)——**不進 Python 腳本** → 不破輕依賴/D5/D16/D21;規則改一條「封鎖源 roundup:① WebFetch ② 讀不到改 Firecrawl scrape(schema 結構化抽) ③ 都挖不到才不列」,同步 `prompts/daily_trend_brief.md`+`data/sources.yml`+`docs/lessons.md`。成本:plain 1 / json extract 5 credits;production 自動化量級要自帶 key。邊界:Akamai 級即時榜(ZOZO/KREAM/MUSINSA 逐位)未測、不宣稱解決。否決更深接法(進 collect/flash 腳本、整站 crawl 取代 RSS)=服務尚未證明需要的用途。可逆(移 `.mcp.json` firecrawl 條目 + 還原規則)。**MCP 需重啟 session 才載入,下個 session 生效**。決策記 `docs/decisions.md` D22。
+
 ### Removed
 - **排行的人工操作介面：`ingest_ranking_snapshot.py`（存榜助手）+ `track_rankings.py` 的 CLI（看榜指令）（D21，2026-06-20，擁有者「我只在對話欄操作，code/data 都是給 AI 看的」）**：死碼稽核(call graph 全攤、反向驗證)確認——① `ingest_ranking_snapshot.py` 產線**零呼叫**(全 repo 只有 `test_smoke` 寫 tempdir 在養它);真實快照一律手填進 yaml(commit 史 + docs 自承「手動建檔比照辦理」)=從沒寫過一筆真資料的寫入器。② `track_rankings.py` 的 CLI(main/argparse/6 個 show_*/compare_lyst/json/load/fmt_move)**無 workflow 呼叫、擁有者也從不打指令看檔**(機器 0、人類 0);`--compare` 核心用途從沒真跑過。**保住唯一活路徑**:`track_rankings.lyst_comparison_text`(+`snapshots`)被 `generate_monthly_heat_report` import 產月報 🆚 段——原地保留成純函式 helper(不做有風險的 inline 搬移),月報零改動。**刪**:`ingest_ranking_snapshot.py`、`tests/fixtures/{lyst,stockx}_snapshot.yml`、`test_smoke` 的 ingest case;track_rankings 325→58 行。**改文件**(把「跑指令加快照/看榜」改寫成「AI 在對話直接編輯 yaml、月報自動帶比對」):`README.md`、`scripts/README.md`、`docs/rankings.md`。根因記 `docs/decisions.md` D21:**不建需擁有者離開對話操作的人工介面**(workflow_dispatch 手動鈕 / 看榜 CLI / 要他開檔的報告對他一律=死)。可逆(git 還原),不寫 decision_guards。validate / smoke / consistency 全綠。
 

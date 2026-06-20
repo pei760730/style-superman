@@ -94,6 +94,14 @@ brands:
     watch: ["vintage-rooted 熱度", "發售即售罄", "別注 / 聯名"]
     notes: 近年最熱的 vintage-rooted refined，熱度正高
 
+  - id: kijima-takayuki
+    name: KIJIMA TAKAYUKI
+    region: jp
+    segment: contemporary
+    tier: 1
+    watch: ["手工帽飾（草帽 / 貝雷 / cap）", "別注 / 聯名（Sunspel・FEIT 等）", "select shop 入荷"]
+    notes: 日本帽飾作家（1996 獨立、大官山 atelier 全手工）；此 lane 的帽子 / 配件錨點；Pei 品味錨點（喜歡）
+
   - id: markaware
     name: marka / MARKAWARE
     region: jp

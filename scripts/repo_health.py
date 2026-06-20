@@ -301,7 +301,8 @@ def check_lyst_staleness(today: dt.date) -> list[Finding]:
         return [Finding(
             "warn",
             f"Lyst 快照落後 {behind} 季（最新：{max(periods)}）",
-            "新一季 Lyst Index 已發布的話，跑 prompts/ranking_ingest.md → ingest_ranking_snapshot.py 補快照",
+            "新一季 Lyst Index 已發布的話，在對話請 AI 依 prompts/ranking_ingest.md 把新快照編輯進 "
+            "data/rankings/lyst-index.yml（D21：直接編 yaml，ingest_ranking_snapshot.py 已移除）",
         )]
     return [Finding("info", f"Lyst 快照：落後 {behind} 季（正常發布延遲內）")]
 

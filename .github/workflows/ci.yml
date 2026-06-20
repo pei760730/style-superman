@@ -7,6 +7,12 @@ on:
       - master
   workflow_dispatch:
 
+# 同一分支/PR 連續 push 時，取消還在跑的舊 run，只留最新——省 Actions 額度
+# （AI 高頻 push 是額度主要消耗）。master 與各 PR 是不同 ref，各自成組、互不取消。
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   smoke:
     runs-on: ubuntu-latest

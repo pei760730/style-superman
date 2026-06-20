@@ -102,32 +102,12 @@ python scripts/validate_repo.py --templates
 python scripts/validate_repo.py --reports
 ```
 
-### `ingest_ranking_snapshot.py`
-安全地把「一筆新排行快照」加進 `data/rankings/<source>.yml`。預設 **dry-run**（只檢查不寫檔），確認契約都對再加 `--write`。寫入用文字插入，**保留既有快照的註解與排版**。
+### `track_rankings.py`（純函式 helper，非 CLI）
+Lyst 季對季名次比對的 helper，僅供 `generate_monthly_heat_report.py` 月報骨架 import（`lyst_comparison_text` / `snapshots`）。**不是給人跑的指令**：擁有者只走對話，不打指令看檔。
 
-```bash
-# 檢查（不寫檔）—— 預設
-python scripts/ingest_ranking_snapshot.py --source lyst --input /tmp/lyst_q2.yml
-cat /tmp/lyst_q2.yml | python scripts/ingest_ranking_snapshot.py --source lyst   # 或 stdin
+排行快照（`data/rankings/*.yml`）由 AI 在對話中**直接編輯**——格式見 [templates/ranking_snapshot_template.md](../templates/ranking_snapshot_template.md)、排序/口徑細則見 [docs/rankings.md](../docs/rankings.md)。月報的 `## 🆚 對照量化基準` 段會自動帶入季對季變動，不需人工跑比對。
 
-# 通過檢查後真正寫入（放到 snapshots 最上方）
-python scripts/ingest_ranking_snapshot.py --source lyst --input /tmp/lyst_q2.yml --write
-```
-
-支援來源：`lyst` / `stockx` / `kream` / `musinsa`。檢查項：period 必填且不可與既有重複；Lyst rank 不重複/為整數；StockX 不可壓成單一 `ranking`；KREAM 必含 `brand_top` / `menswear_read`；MUSINSA 的 `brands` rank 不重複/為整數。輸入格式見 [templates/ranking_snapshot_template.md](../templates/ranking_snapshot_template.md)，範例見 `tests/fixtures/*_snapshot.yml`。
-
-### `track_rankings.py`
-讀取 `data/rankings/` 的排行快照（歐美 Lyst+StockX / 韓國 KREAM+MUSINSA；日本量化板 2026-06-14 撤除），顯示最新榜並比對名次演化。模組說明見 [docs/rankings.md](../docs/rankings.md)。
-
-```bash
-python scripts/track_rankings.py                    # 全部（歐美 + 韓國）
-python scripts/track_rankings.py --region jp         # 日本：回報量化板暫缺 + 原因
-python scripts/track_rankings.py --region us-eu      # 只看歐美（Lyst + StockX）
-python scripts/track_rankings.py --region kr         # 只看韓國（KREAM + MUSINSA）
-python scripts/track_rankings.py --source lyst       # 單一來源：lyst/stockx/kream/musinsa
-python scripts/track_rankings.py --source lyst --compare   # 比對最新兩季名次（目前僅 Lyst）
-python scripts/track_rankings.py --json              # 輸出 JSON
-```
+> 2026-06-20（D21）：移除人工 CLI（看榜指令）與 `ingest_ranking_snapshot.py`（存榜助手）——機器無呼叫者、人類也無使用者（擁有者只在對話操作）。詳見 `docs/decisions.md` D21。
 
 ## 日常流程（手動版）
 

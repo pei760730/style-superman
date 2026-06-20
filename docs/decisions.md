@@ -544,3 +544,33 @@ Google 體系的**所有強項**（搜尋 / Trends / Shopping / 多模態 / Clou
 零成本的反射會衰退,且「要不要加 YouTube 源 / 接 Gemini」極易被未來 agent 重新提案、整段重議（cf. D6 把否決的四項工程提案寫進本檔正是為此）。本條目的就是擋重議。
 
 可逆條件:若 repo 形狀改變——大型複雜 code base 需要第三個對抗審查者、或出現「每日機械捕捉影片硬訊號」的明確需求（YT 標題能機械抽取的場景）——再重議常設整合,不在此前反覆討論。本條無禁用識別字,故不寫 `decision_guards`。
+
+---
+
+## D21 — 不建需擁有者離開對話操作的人工介面；移除排行看榜 CLI + 存榜助手（2026-06-20）
+
+### 背景
+
+死碼稽核「設計了卻沒用過」時,擁有者一句話定調根因:**「我只在對話欄操作,不需要去哪裡打開資料夾看檔;任何跟程式還是數據有關的,都是給 AI 看的。」**
+
+### 拍板:code/data 純 AI-facing；介面只有對話一條
+
+- **不**設計任何需要擁有者「去某處按按鈕 / 跑 CLI / 讀輸出檔 / 開檔看報告」的人工操作介面——對他一律**死的(=0 使用)**。
+- 正確介面恆等式:**擁有者在對話講 → AI 跑 code / 讀 data → AI 在對話回報**。產出要嘛在對話端上(daily brief D16),要嘛 AI 自己消費(plumbing),不落在「等人類去開」的中間地帶。
+- 新功能自問:「這需要擁有者離開對話欄做任何事嗎?」→ 是 → 重新設計成對話觸發或 AI 自動,否則不做。
+
+### 本次落地:移除排行的兩個人工介面
+
+死碼稽核(call graph 全攤 + 反向驗證)確認兩者機器無呼叫者、人類也無使用者:
+
+- **`ingest_ranking_snapshot.py`（存榜助手）整支刪**:產線零呼叫,只有 `test_smoke` 寫 tempdir 在養;真實快照一律手填進 yaml(連 docs 都自承「手動建檔比照辦理」)=從沒寫過一筆真資料。
+- **`track_rankings.py` 的 CLI（看榜指令）刪**:無 workflow 呼叫、擁有者從不打指令;`--compare` 核心用途從沒真跑過。**保留**唯一活路徑 `lyst_comparison_text`(+`snapshots`)成純函式 helper——`generate_monthly_heat_report` import 它產月報 🆚 段,月報零改動。
+- 排行**資料**(`data/rankings/*.yml`)照常留著、月報照常用;新快照改由 AI 在對話直接編輯 yaml(見 `docs/rankings.md`)。
+
+### 同根因待清(本 PR 不做,各自獨立)
+
+`flash-brief.yml` 的 `workflow_dispatch` 手機鈕(D19,出生用 1 次 0 次)、`daily-brief.yml` 的 `workflow_dispatch` 備援(D16 後 0 次)——同屬「需擁有者離開對話操作」的死介面,留待各自小 PR 處理。
+
+### 可逆 / guards
+
+可逆(git 還原)。本條無禁用識別字,不寫 `decision_guards`;但「不建人工操作介面」是行為準則,未來 agent 提議加 CLI / 手動鈕前先過此條。

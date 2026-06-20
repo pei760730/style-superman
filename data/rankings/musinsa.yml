@@ -15,6 +15,43 @@ free: true
 url: https://www.musinsa.com/ranking/archive
 
 snapshots:
+  - period: 2026-06-20（무진장 여름세일・브랜드 GMV）
+    published: '2026-06-20'
+    report: 무신사 무진장 2026 여름 세일 期間 브랜드 판매(GMV) 랭킹（Firecrawl 對話端即時抓取，D23）
+    methodology: 站上品牌別 누적 판매액(GMV) 랭킹。抓取時 URL 被導向「무진장 2026 여름」대형 프로모션 페이지，gf=M 性別過濾未生效→視為全站 브랜드 GMV 榜（非純男性、非單品、非 F/W）
+    notes: 'Firecrawl keyless json 結構化抽取，TOP10 grounded、反向驗證對既有月榜一致（무신사 스탠다드 #1、adidas>Nike 延續、크록스 夏季上行）。price 欄為세일 기간 누적 GMV(원)。口徑與下方「近30일·男性」榜不同，分開記。'
+    brands:
+    - rank: 1
+      name: 무신사 스탠다드
+      note: 自有 PB；持續霸榜（GMV 약 66.7억원）
+    - rank: 2
+      name: adidas（아디다스）
+      note: 在韓持續壓 Nike（GMV 약 59.2억원）
+    - rank: 3
+      name: Nike（나이키）
+    - rank: 4
+      name: 무신사 스탠다드 우먼
+      note: PB 女裝線
+    - rank: 5
+      name: New Balance（뉴발란스）
+    - rank: 6
+      name: 디미트리블랙（dimitriblack）
+      note: 단독・國產
+    - rank: 7
+      name: Crocs（크록스）
+      note: 夏季涼鞋季節財（6月榜上行）
+    - rank: 8
+      name: PUMA（푸마）
+    - rank: 9
+      name: Salomon（살로몬）
+      note: trail/lifestyle 스니커즈 韓國放量（新進前10）
+    - rank: 10
+      name: 탄산마그네슘
+      note: 國產 신생 브랜드
+    menswear_read:
+    - 'Salomon 進前10（#9）：trail/gorpcore 機能跑鞋熱延燒到韓國平台榜，可對照 StockX 跑鞋起飛（觀察）'
+    - 'Crocs #7：夏季涼鞋季節財，6月榜符合預期（解讀）'
+    - 'PB（무신사 스탠다드）男女線雙進前4：平台自有基本款結構性霸榜延續，韓男主力仍是 CP 值 basic（延續判斷）'
   - period: 2026-06-10（近30日・男性）
     published: '2026-06-10'
     report: 무신사 랭킹（站上월간/近30日滾動）· 男性 브랜드 TOP200，本快照取 TOP20

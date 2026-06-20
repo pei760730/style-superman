@@ -15,6 +15,54 @@ free: true
 url: https://kream.co.kr/content/ranking_all-monthly
 
 snapshots:
+  - period: 2026-06（월간 전체 랭킹）
+    published: '2026-06-20'
+    report: KREAM 월간 전체 랭킹（Firecrawl 對話端即時抓取，D23）
+    methodology: 限量/轉售平台 월간 전체 카테고리 거래 랭킹（球鞋＋의류＋테크＋수집품 混合）。本快照從 전체 TOP18 摘出 male-fashion 相關品項；price 為發售/標示가(원)，非轉售價
+    notes: 'Firecrawl keyless json 結構化抽取，TOP18 grounded、反向驗證：Nike AF1 #1 與既有「Nike 街頭基本盤最硬」一致；Pokémon TCG 3 項進榜＋Casio 시계＋Ray-Ban＋Alo Yoga 백 印證「去球鞋化、往科技/수집품/配件分散」結構（見下 2025 category_shift）。'
+    brand_top:
+      rank: 1
+      name: Nike
+      note: 에어포스 1 '07 로우 화이트(96,000원) 居月榜 #1；街頭基本盤長期最硬
+    items:
+    - rank: 1
+      name: Nike 에어포스 1 '07 로우 화이트
+      note: 96,000원；街頭基本盤長期 #1
+    - rank: 2
+      name: OOFOS（우포스）오리지날 블랙
+      note: 55,000원；recovery 슬리퍼 夏季放量
+    - rank: 3
+      name: Play Comme des Garçons 레드하트 티셔츠 블랙
+      note: 82,000원；川久保玲紅心 T 韓國長紅
+    - rank: 4
+      name: Nike 에어포스 1 '07 로우 트리플 블랙
+      note: 111,000원
+    - rank: 5
+      name: Uniqlo UT 주술회전 100주년 티셔츠
+      note: 20,000원；anime 콜라보 UT 爆量（CP 값）
+    - rank: 6
+      name: adidas 아디제로 EVO SL
+      note: 134,000원；super-shoe/跑鞋熱（#6#10 兩款）
+    - rank: 7
+      name: Ray-Ban 대디-O II
+      note: 129,000원；선글라스（去球鞋化配件）
+    - rank: 8
+      name: Pokémon TCG 메가 확장팩
+      note: 42,000원；트레이딩 카드 수집 열풍（#8#11#17 三項）
+    - rank: 13
+      name: New Balance 1906A 실버
+      note: 131,000원
+    - rank: 16
+      name: New Balance 992 MADE IN USA
+      note: 234,000원；프리미엄 라이프스타일
+    - rank: 18
+      name: Jordan 1 x Travis Scott 레트로 로우 OG SP
+      note: 462,000원；高溢價 콜라보 轉售標的
+    menswear_read:
+    - 'Nike AF1（白/黑）佔 #1#4：街頭基本盤仍最硬，男裝入門押注先看 AF1（延續）'
+    - '去球鞋化具體化：Pokémon TCG 3 項＋Casio 시계＋Ray-Ban＋Alo Yoga 백 進榜 → 韓國 flex 消費往 수집품/科技/配件分散，與 2025「球鞋佔成交額 50%→37%」結構一致（解讀）'
+    - 'adidas 아디제로 EVO SL 雙款進榜（#6#10）：super-shoe/碳板跑鞋轉售熱，對照 StockX 跑鞋起飛（觀察）'
+    - 'Travis Scott×Jordan #18 462,000원：高溢價 콜라보 轉售需求仍在，但已非榜首（觀察）'
   - period: "2025（年度結算）"
     published: "2026-04"
     report: "KREAM 2025 연간 실적 + 거래 트렌드（官方稿／헤럴드·CEOSCOREDAILY 報導）"

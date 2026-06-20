@@ -7,10 +7,9 @@ test_smoke.py — 核心腳本的最小穩定驗收（C5）
 
 涵蓋：
 - validate_repo（契約）
-- track_rankings --json
+- track_rankings.lyst_comparison_text（月報 🆚 段季對季比對；CLI/ingest 已 D21 移除）
 - generate_daily_brief --draft（產後即刪）
 - generate_monthly_heat_report --draft（產後即刪）
-- ingest_ranking_snapshot dry-run：合法 fixture 通過、壞資料被擋
 - RSS 離線解析 + 降級
 - repo_health --consistency（文件↔程式碼一致性）
 - 反向探針：決策守衛抓違規識別字、產出契約（daily / monthly）抓舊世界觀格式（探針檔產後即刪）
@@ -54,23 +53,8 @@ def main() -> int:
     r = run(["scripts/validate_repo.py"])
     check("validate_repo exit 0", r.returncode == 0, r.stdout + r.stderr)
 
-    # 2. track_rankings json — 不只「長得像 JSON」，要真的可解析且含 lyst 榜結構
-    import json as _json
-
-    r = run(["scripts/track_rankings.py", "--json"])
-    try:
-        rankings = _json.loads(r.stdout)
-    except _json.JSONDecodeError:
-        rankings = None
-    ok_rank = (
-        r.returncode == 0
-        and isinstance(rankings, dict)
-        and "lyst" in rankings
-        and rankings["lyst"].get("period")
-        and isinstance(rankings["lyst"].get("brands"), list)
-        and len(rankings["lyst"]["brands"]) > 0
-    )
-    check("track_rankings --json 結構可解析", ok_rank, r.stdout[:120])
+    # 2. track_rankings 的 lyst_comparison_text（月報 🆚 段唯一在用的函式）見 9d 回歸鎖。
+    #    （CLI / --json / ingest 已於 D21 移除——擁有者只走對話，無人工指令，見 docs/rankings.md）
 
     # 4. daily brief draft（產後刪）
     draft = ROOT / "reports" / "daily" / "2099-01-01.draft.md"
@@ -105,19 +89,7 @@ def main() -> int:
         if bad_made:
             _bad.unlink()  # 萬一驗證沒擋住，清掉避免污染
 
-    # 6. ingest dry-run：合法 fixture 應通過（exit 0，不寫檔）
-    r = run(["scripts/ingest_ranking_snapshot.py", "--source", "lyst", "--input", str(FIX / "lyst_snapshot.yml")])
-    check("ingest dry-run 合法 fixture 通過", r.returncode == 0 and "DRY RUN" in r.stdout, r.stderr)
-
-    # 7. ingest dry-run：壞資料（重複 rank）應被擋（exit 1）
-    bad = '- period: "2099-Q9"\n  brands: [{rank: 1, name: A},{rank: 1, name: B}]\n  products: [{rank: 1, brand: A, item: Y}]\n'
-    r = run(["scripts/ingest_ranking_snapshot.py", "--source", "lyst"], stdin=bad)
-    check("ingest dry-run 壞資料被擋", r.returncode == 1 and "重複 rank" in r.stdout, r.stdout + r.stderr)
-
-    # 7b. ingest dry-run：rank 過但缺 name（顯示/比對主鍵）應被擋——防 KeyError 從寫入延後到產出時才爆
-    nameless = '- period: "2099-Q8"\n  brands: [{rank: 1}]\n  products: [{rank: 1, brand: A, item: Y}]\n'
-    r = run(["scripts/ingest_ranking_snapshot.py", "--source", "lyst"], stdin=nameless)
-    check("ingest dry-run 缺 name 被擋", r.returncode == 1 and "缺 name" in r.stdout, r.stdout + r.stderr)
+    # 6–7. （ingest_ranking_snapshot dry-run 測試已隨 D21 移除——存榜助手刪除，排行快照改由 AI 在對話直接編輯 yaml）
 
     # 8–9. RSS 收集（離線：用 fixture，不碰網路）
     sys.path.insert(0, str(ROOT / "scripts"))
@@ -182,19 +154,8 @@ def main() -> int:
     check("RSS unbound prefix fallback", len(sigs4) == 2, str(sigs4[:1]))
     check("RSS 真壞 XML 仍降級回空", crs.parse_feed("<rss><channel><item>", src) == [], "")
 
-    # 9d. ingest write_snapshot 寫入 tempdir（唯一程式化寫 data/ 的點，原本只測 dry-run）：新 period 進去且仍可解析
-    import ingest_ranking_snapshot as _ing  # noqa: E402
-    import tempfile as _tf
-    import yaml as _yaml  # noqa: E402
-    with _tf.TemporaryDirectory() as _td:
-        _tgt = Path(_td) / "lyst-index.yml"
-        _tgt.write_text('source: lyst-index\nsnapshots:\n  - period: "2099-Q1"\n    brands:\n      - {rank: 1, name: A}\n',
-                        encoding="utf-8")
-        _ing.write_snapshot(_tgt, {"period": "2099-Q2", "brands": [{"rank": 1, "name": "B"}]})
-        _periods = [s.get("period") for s in (_yaml.safe_load(_tgt.read_text(encoding="utf-8")) or {}).get("snapshots", [])]
-    check("ingest write_snapshot 新 period 進去且檔可解析", "2099-Q2" in _periods and "2099-Q1" in _periods, str(_periods))
-
-    # 9e. track_rankings --compare 前季 partial 不可假「新進榜」（commit 5fee0bf 修的 bug，留回歸鎖）
+    # 9d. track_rankings.lyst_comparison_text 前季 partial 不可假「新進榜」（commit 5fee0bf 修的 bug，留回歸鎖）
+    #     （月報 🆚 對照量化基準段唯一在用的函式；ingest/CLI 已於 D21 移除，見 docs/rankings.md）
     import track_rankings as _tr  # noqa: E402
     _cmp = _tr.lyst_comparison_text({"snapshots": [
         {"period": "2099-Q2", "brands": [{"rank": 1, "name": "A"}, {"rank": 2, "name": "NewBrand"}]},

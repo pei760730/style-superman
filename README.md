@@ -71,7 +71,7 @@
 
 ### 📈 想查什麼最紅（隨時）
 
-`python scripts/track_rankings.py`（加 `--region kr|jp|us-eu` 過濾），或直接看 [data/rankings/](data/rankings/) 四榜快照（Lyst / StockX / KREAM / MUSINSA，最新在上、可比對名次演化）。日本量化板 2026-06-14 撤除（Mercari 陳貨、即時榜 bot 擋，D17），日本看 daily brief 日潮區。
+在對話跟 AI 說「現在歐美/韓國什麼最紅」——AI 讀 [data/rankings/](data/rankings/) 四榜快照（Lyst / StockX / KREAM / MUSINSA，最新在上）回報。**不需打指令**（D21：人工看榜 CLI 已移除，擁有者只走對話）。日本量化板 2026-06-14 撤除（Mercari 陳貨、即時榜 bot 擋，D17），日本看 daily brief 日潮區。
 
 ---
 
@@ -173,8 +173,7 @@ style-superman/
 │   ├── generate_monthly_heat_report.py  # 月報骨架
 │   ├── generate_flash.py                # ⚡ 速報：白名單硬源純機械抽取（零 LLM，D19）
 │   ├── collect_raw_signals.py           # RSS → raw_signal_pack
-│   ├── track_rankings.py                # 排行檢視 + 名次演化
-│   ├── ingest_ranking_snapshot.py       # 安全加入排行快照
+│   ├── track_rankings.py                # 月報用的純函式 helper（lyst 季對季比對）
 │   ├── validate_repo.py                 # 格式契約檢查（CI）
 │   └── repo_health.py                   # 健檢：新鮮度 + 一致性 + 守衛 + 產出契約 +（--liveness 死源探針）
 ├── tests/                    # smoke 測試（無需 pytest）
@@ -202,7 +201,6 @@ style-superman/
 pip install pyyaml
 
 python scripts/generate_daily_brief.py   # 產今天的 brief 骨架
-python scripts/track_rankings.py         # 看最紅品牌 / 單品排行
 python scripts/repo_health.py            # 系統還活著嗎
 ```
 

@@ -63,46 +63,32 @@ data/rankings/
                        # （日本量化板 2026-06-14 撤除，無可自動收的當期源，見上）
 templates/ranking_snapshot_template.md   # 新增一期時複製的格式
 prompts/ranking_ingest.md                # 用 AI 把新報告轉成 YAML
-scripts/track_rankings.py                # 檢視最新榜 + 比對名次演化
+scripts/track_rankings.py                # 月報用的純函式 helper（lyst 季對季比對）
 ```
 
 > 📌 **snapshots 排序細則**：由上而下 = 新到舊，以**發布／入庫時間**為準，不是 period 字面排序。
 > 例：KREAM「2025 年度結算」官方稿發布於 2026-04，排在「2026-01」月度快照之上是正確的。
-> `ingest_ranking_snapshot.py --write` 會自動把新快照放最上，手動建檔時比照辦理。
+> 新快照放 `snapshots:` 最上方（AI 編輯時手動置頂）。
 
-## 日常操作
+## 日常操作（全在對話，無人工指令）
+
+> 2026-06-20（D21）：擁有者只走對話、從不打指令看檔。原本「看榜指令 / 存榜助手」（`track_rankings` CLI、
+> `ingest_ranking_snapshot.py`）機器無呼叫者、人類也無使用者，已移除。排行**資料**照常留著、月報照常用。
 
 ### 看現在的榜
-```bash
-python scripts/track_rankings.py                 # 全部（歐美 + 韓國；日本量化板已撤）
-python scripts/track_rankings.py --region jp      # 日本：回報量化板暫缺 + 原因
-python scripts/track_rankings.py --region us-eu   # 只看歐美（Lyst + StockX）
-python scripts/track_rankings.py --region kr      # 只看韓國（KREAM + MUSINSA）
-python scripts/track_rankings.py --source lyst    # 單一來源（lyst/stockx/kream/musinsa）
-```
+在對話跟 AI 說「現在歐美/韓國排行榜如何」——AI 讀 `data/rankings/*.yml` 回報。**不需要打任何指令。**
 
 ### 新一期發布時（季度 / 年度）
-1. 用 `prompts/ranking_ingest.md` 把報告轉成 YAML（或手動照 `templates/ranking_snapshot_template.md` 填），存成一個檔（例 `/tmp/lyst_q2.yml`）。
-2. **先 dry-run 檢查**（不寫檔）：
-   ```bash
-   python scripts/ingest_ranking_snapshot.py --source lyst --input /tmp/lyst_q2.yml
-   ```
-   它會擋下：period 重複、rank 重複/非整數、StockX 被壓成單一 ranking、KREAM 缺 `brand_top`/`menswear_read`、MUSINSA `brands` rank 重複/非整數。（支援來源：lyst / stockx / kream / musinsa）
-3. 檢查通過後 `--write` 寫入（自動放到 `snapshots:` 最上面，保留既有註解）：
-   ```bash
-   python scripts/ingest_ranking_snapshot.py --source lyst --input /tmp/lyst_q2.yml --write
-   ```
-4. 自驗：`python scripts/validate_repo.py --data` 與 `python scripts/track_rankings.py --source lyst --compare`。
+擁有者在對話說一聲（例「Lyst Q2 出了」），AI 依官方稿/報告，照 `templates/ranking_snapshot_template.md` 格式
+**直接把新快照編輯進** `data/rankings/<source>.yml`（放 `snapshots:` 最上方、保留既有註解），再跑 `validate_repo.py --data` 自驗格式。
 
 ### 比對演化（累積 2 期以上才有意義）
-```bash
-python scripts/track_rankings.py --source lyst --compare
-```
-會用我們自己的歷史算出每個品牌名次的 ↑ / ↓ / 新進 / 掉榜，而非只看來源標示。
+月報 `## 🆚 對照量化基準` 段會自動帶入 Lyst 季對季變動（`generate_monthly_heat_report.py` import `track_rankings.lyst_comparison_text`），
+用我們自己的歷史算出每個品牌名次的 ↑ / ↓ / 新進 / 掉榜，而非只看來源標示。**不需人工跑比對。**
 
 ## 在判斷裡的角色
 
-Rankings 是**唯一的 L1 硬數據佐證**：一個趨勢若同時出現在 Lyst 上升品牌或 StockX 熱銷榜，主編判斷它在升溫就有客觀依據，而非純主觀。月報 `## 🆚 對照量化基準` 段會自動帶入 Lyst 季對季變動（見 `track_rankings.py --compare`）。
+Rankings 是**唯一的 L1 硬數據佐證**：一個趨勢若同時出現在 Lyst 上升品牌或 StockX 熱銷榜，主編判斷它在升溫就有客觀依據，而非純主觀。月報 `## 🆚 對照量化基準` 段會自動帶入 Lyst 季對季變動（`generate_monthly_heat_report.py` 內 import `track_rankings.lyst_comparison_text`）。
 
 ## 目前資料
 
@@ -114,7 +100,7 @@ Rankings 是**唯一的 L1 硬數據佐證**：一個趨勢若同時出現在 Ly
 | KREAM | 2025 年度（Nike 成交 #1；平台去球鞋化 50%→37%）＋ 2026-01（中古精品 +203%、Rolex +363%）|
 | MUSINSA | 2026-02（무신사 스탠다드 連 5 月 #1、adidas #2）＋ 2025-12（#1 PB、#2 TNF）|
 
-下一期（皆對話觸發補，無排程，D16）：Lyst Q2 2026（約 7 月發布；發布後說一聲跑 ingest + `--compare`）、StockX 2026 年中、KREAM/MUSINSA 官方月榜更新時補一期。
+下一期（皆對話觸發補，無排程，D16）：Lyst Q2 2026（約 7 月發布；發布後在對話說一聲，AI 編一筆快照進 yaml，月報自動帶季對季變動）、StockX 2026 年中、KREAM/MUSINSA 官方月榜更新時補一期。
 
 ## 🚫 ZOZOTOWN：評估後不採用（紀錄）
 

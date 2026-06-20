@@ -152,6 +152,65 @@ brands:
     watch: ["現代 oversize refined", "版型實驗"]
     notes: 同 lane 但廓形更前衛
 
+  # ---------- 日本：デニム殿堂 / selvedge・repro（2026-06-21 牛仔褲深挖補入）----------
+  # 全球 selvedge 權威在日本（岡山兒島 / 大阪）。repro = 用復古梭織機忠實復刻 vintage 工法。
+  # 與上方 contemporary lane 區隔：這層是「養色文化 / 職人教材」，非 refined 現代版型。
+  - id: momotaro
+    name: Momotaro Jeans
+    region: jp
+    segment: heritage
+    tier: 2
+    watch: ["GTB（Going To Battle）桃太郎條", "18oz Zimbabwe 棉重磅", "兒島 atelier / 別注"]
+    notes: 兒島 Kojima 最知名 selvedge；粉色耳、深 indigo、不妥協職人；P0306-18SP GTB 為旗艦
+
+  - id: iron-heart
+    name: Iron Heart
+    region: jp
+    segment: heritage
+    tier: 2
+    watch: ["21oz 重磅旗艦", "養色 fade 社群熱度", "機車 / 工裝跨界"]
+    notes: 2003 以 21oz 掀起重磅軍備競賽；硬派 heavyweight、養色 fade 教材
+
+  - id: warehouse
+    name: Warehouse & Co.
+    region: jp
+    segment: heritage
+    tier: 2
+    watch: ["大阪五虎 repro", "歷史忠實復刻", "Lot 定番 / 別注"]
+    notes: 大阪五虎之一；忠實 vintage 復刻、日本 selvedge 復興源頭一脈
+
+  - id: full-count
+    name: Full Count
+    region: jp
+    segment: heritage
+    tier: 2
+    watch: ["Zimbabwe 棉先驅", "0105 定番", "柔韌穿感"]
+    notes: 大阪五虎之一；率先用 Zimbabwe 長纖棉做 selvedge，柔軟好穿派
+
+  - id: japan-blue
+    name: Japan Blue Jeans
+    region: jp
+    segment: heritage
+    tier: 3
+    watch: ["平價真 selvedge", "J370 Circle 腰", "兒島自有布廠（Collect）"]
+    notes: 兒島 Collect 集團；高 CP 真 selvedge、circle 腰人體工學；入門性價比首選
+
+  - id: studio-dartisan
+    name: Studio D'Artisan
+    region: jp
+    segment: heritage
+    tier: 3
+    watch: ["大阪五虎元祖（1979）", "豚 logo 別注", "天然藍染"]
+    notes: 大阪五虎元祖、日本 repro 運動的起點
+
+  - id: the-flat-head
+    name: The Flat Head
+    region: jp
+    segment: heritage
+    tier: 3
+    watch: ["重磅 americana", "高對比立體 fade", "別注 / 聯名"]
+    notes: 長野職人；高對比立體養色的重磅 americana selvedge
+
   # ---------- 韓國 ----------
   - id: we11done
     name: We11done

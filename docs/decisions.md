@@ -625,3 +625,28 @@ Google 體系的**所有強項**（搜尋 / Trends / Shopping / 多模態 / Clou
 ### 可逆 / guards
 
 可逆（韓國榜回手動、ZOZO 標記移除即還原）。無禁用識別字,不寫 `decision_guards`。延續 D22 紅線（keyless 免費額度、撞上限停、production 自帶 key、反向驗證）。
+
+## D24 — 用 SNKRDUNK 重建日本球鞋轉售量化板（2026-06-21）
+
+### 背景
+
+日本量化板 2026-06-14 因 ZOZO/Rakuten/2nd STREET/BUYMA 全擋而**留空**,當時明文「待哪天有可解析的當期日本時尚榜再重建」（D17）。深挖「球鞋排行·歐美/日/韓」時觸發該條件:**SNKRDUNK（スニダン）= 日本最大鑑定付球鞋轉售平台（日版 StockX）**,hottest 即時榜雖 JS 動態,但 Firecrawl keyless 結構化抽取實測攻破。
+
+### 實測證據（全反向驗證,跨平台互證,不信自報）
+
+- Firecrawl keyless 抽 SNKRDUNK hottest **TOP10 grounded**,且**跨 StockX/KREAM 三方互證**:
+  - Nike AF1 White **#1** = 韓 KREAM #1 = StockX 史上 #1（三區硬通貨）
+  - **Mizuno × 小林節正 Wave Prophecy #2#3** 坐實 StockX「Mizuno +124% 成長冠軍、Wave Prophecy lifestyle 化」,且**震央在日本**（本土設計師聯名）
+  - Travis Scott × Jordan 1 Low（#4#7#9）= 韓 KREAM #18 同款跨區
+  - Nike Mind 001 #8 = WWD 點名 2026 話題款;PEACEMINUSONE×Nike CTR360（G-DRAGON、世足南韓配色）#10 坐實 StockX「2026 世足年」預測
+
+### 拍板:立 `snkrdunk.yml`，部分逆轉 D17「日本量化板留空」
+
+- **新增 `data/rankings/snkrdunk.yml`**（region: jp / source: snkrdunk），工作流同 D23:答日本球鞋熱度 / 寫月報時 **AI 對話端 Firecrawl 抓 hottest 榜 → 確認口徑 → 寫 dated 快照**。**不進 collect 腳本**（守 D22 對話端 scope、輕依賴、D5）。成本 ~5 credits/次。
+- **範圍限定球鞋轉售**:SNKRDUNK 不涵蓋設計師成衣/精品,日本**服飾/精品量化板仍空**（ZOZO 永久死,要擴走 Rakuten 官方 API 另開一輪）。D17 只**部分**逆轉。
+- 過 D18 兩道門:① 持續產出（hottest 每日更新）② 夠權威（日本最大球鞋鑑定平台,一手成交數據,非聚合）;已 Firecrawl 實測可讀。
+- 同步 `docs/rankings.md`（日本段重建 + 檔案結構 + 目前資料表）。
+
+### 可逆 / guards
+
+可逆（刪 `snkrdunk.yml` + 還原 rankings.md 日本段即回留空狀態）。無禁用識別字,不寫 `decision_guards`。延續 D22 紅線（keyless 免費額度、撞上限停、production 自帶 key、反向驗證）。

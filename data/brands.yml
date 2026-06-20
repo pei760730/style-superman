@@ -9,6 +9,8 @@
 #   tier      1=重點追蹤  2=常態  3=雷達
 #   watch     目前特別關注的點
 #   notes     備註
+#   taste     （選填）擁有者個人品味標記。anchor = Pei 喜歡的品味錨點/同溫品牌。
+#             供「我喜歡的品牌」可靠查詢 + daily brief 🎯 For Me 優先比對，不靠 grep 散文。
 
 brands:
   # ---------- 日本 ----------
@@ -61,6 +63,7 @@ brands:
     tier: 1
     watch: ["自家開發布料", "巴黎發表 / 國際擴張", "buyer 點名 tailored jacket"]
     notes: 此 lane 最 refined、最接近國際舞台；Pei 品味錨點
+    taste: anchor
 
   - id: ciota
     name: CIOTA
@@ -69,6 +72,7 @@ brands:
     tier: 1
     watch: ["軍裝 / 丹寧老工法重做", "indigo 染", "供給稀缺度"]
     notes: 最有 craft / 根源敘事的一家；Pei 品味錨點
+    taste: anchor
 
   - id: neat
     name: NEAT
@@ -77,6 +81,7 @@ brands:
     tier: 1
     watch: ["義 / 英高級毛料長褲", "tapered 乾淨版型", "型號擴充 / 別注"]
     notes: 一條好褲子主義的 specialist；Pei 品味錨點
+    taste: anchor
 
   - id: comoli
     name: COMOLI
@@ -85,6 +90,7 @@ brands:
     tier: 1
     watch: ["垂墜 refined basics", "每季定番演化", "二手保值"]
     notes: 此 lane 的定義者，幾乎是 AURALEE 的兄弟座標
+    taste: anchor
 
   - id: a-presse
     name: A.PRESSE
@@ -101,6 +107,7 @@ brands:
     tier: 1
     watch: ["手工帽飾（草帽 / 貝雷 / cap）", "別注 / 聯名（Sunspel・FEIT 等）", "select shop 入荷"]
     notes: 日本帽飾作家（1996 獨立、大官山 atelier 全手工）；此 lane 的帽子 / 配件錨點；Pei 品味錨點（喜歡）
+    taste: anchor
 
   # 帽飾同溫層（Kijima 深掘 radar 2026-06-20 領跑，見 reports/analysis 若封存）
   - id: hw-dog-co
@@ -110,6 +117,7 @@ brands:
     tier: 2
     watch: ["木楦 + 老機台手工帽", "felt / Panama / cap / beret 全品類", "select shop 入荷 / 別注"]
     notes: 東京 2015 職人帽匠；「1930-40 製帽黃金年代」哲學、不向量產妥協；vintage workwear 底，Kijima 同溫最近一家
+    taste: anchor
 
   - id: mature-ha
     name: mature ha.
@@ -118,6 +126,7 @@ brands:
     tier: 2
     watch: ["招牌 Boxed Hat（可折收草帽）", "極簡 refined 帽型", "select shop 入荷"]
     notes: 神戶 2011 夫妻創立；招牌可壓收 Boxed Hat（82% 紙混紡、旅行帽）；極簡岔路、補衣櫥「能收進包的好帽」
+    taste: anchor
 
   - id: markaware
     name: marka / MARKAWARE
@@ -298,6 +307,7 @@ brands:
     tier: 1
     watch: ["quiet 週期成長指標（Lyst 2026 點名）", "定番價格年年上修", "croissant bag 配件線"]
     notes: lane 的西側錨點；Lemaire 本人公開推崇 AURALEE/COMOLI/Kaptain Sunshine，品味同源
+    taste: anchor
 
   - id: evan-kinori
     name: Evan Kinori

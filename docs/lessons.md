@@ -71,6 +71,7 @@
 - **發生什麼**：daily brief 把 Vogue Korea「一條牛仔褲指南」只寫成「夏季丹寧指南」，沒給任何品牌——擁有者問「你都給我這題目了，為什麼不給確切哪些品牌？要有確實讀完才能知道為什麼推薦」。根因在管線：`collect_raw_signals.py` 只抓 RSS 標題＋短摘要、不抓內文，listicle/roundup 到寫手手上本來就是空的，寫手卻照樣補了「對我的意義」＝沒讀就推薦。
 - **對策（已落地，本次 PR）**：`prompts/daily_trend_brief.md` 立「推薦的證據門檻」——進推薦位（For Me 值得入手）或寫「對我的意義」前要讀過原文，簡介行必含至少一個原文事實（價格/型號/材質/發售日/具體主張）當「讀過的證明」；清單型報導要 fetch 原文挖出 top 4–6 品牌；讀不到具體事實的降到訊號層報標題＋待查，不准編「為什麼」。
 - **硬化狀態（2026-06-14 更新：再犯一次 → 已硬化）**：2026-06-14 試跑時 roundup 又留「待挖」空殼,擁有者二度反映「roundup 一定要挖出 picks」。依「反覆出現才硬化」原則,**已硬化（prompt 規則層）**：roundup 一律 WebFetch 挖 picks 才能列、挖不到整條不列;並實測 26 源 crawler 可讀性,7 個封鎖源（gq/esquire/bof/sneakernews/drapers/wwd-japan/put-this-on，多 403）在 `data/sources.yml` 標 `body_fetchable: false`,prompt 看旗標直接不列其 roundup（確定性,不靠寫手自覺）。原候選 (a) collect 抓內文：封鎖源連 collect 也抓不到,故改走「標記 + 不列」;(b) validate gate 暫不加（roundup 在 reports/、不在 validate scope）。
+  - **2026-06-20 更新（D22）：「封鎖源直接不列」改為「先試 Firecrawl」**。Firecrawl keyless（免 key、1000 credits/月）平行試用勝出——實測 GQ「20 Best New Menswear」WebFetch 硬失敗、Firecrawl scrape 200+結構化抽 17 picks（價格對得上原始 markdown、grounded）;wwd-japan 同樣 200。落地走**對話端 MCP**（`.mcp.json` keyless,不進 Python 腳本 → 不破輕依賴/D5/D16/D21）。封鎖源 roundup 不再無腦丟,先 Firecrawl scrape（schema 結構化抽取,plain 1 credit / json extract 5 credits）,真挖不到才不列。Akamai 級即時榜（ZOZO/KREAM/MUSINSA 逐位）未測、不宣稱解決。production 自動化量級要自帶 key。
 
 ### 2026-06-11 · 排程 workflow 的「今天」是 UTC 的今天
 - **發生什麼**：daily-brief 排程設 UTC 23:00（＝台灣 07:00）跑，但腳本不帶 `--date` 時用 runner 本地日期——UTC 23:00 的「今天」是台灣的**昨天**。昨日報告已存在 → 防覆寫跳過 → 排程每天綠燈但什麼都沒產（靜默空轉，比紅燈更難發現）。首跑前人工讀 workflow 攔到，未實際發生。

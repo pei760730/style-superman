@@ -1,0 +1,77 @@
+# snkrdunk.yml
+# SNKRDUNK（スニーカーダンク／スニダン）球鞋轉售成交快照。日本最大鑑定付球鞋轉售平台（日版 StockX）。
+#
+# 來源：https://snkrdunk.com/products?type=hottest （hottest 即時人氣榜，免費瀏覽）
+# 性質：鑑定付二級市場成交/人氣 = 日本真實轉售需求，偏球鞋/聯名/限量。比 ZOZO（撤）更專、更貼街頭。
+#       補上日本量化板的空白（2026-06-14 因 ZOZO/Mercari 全擋而撤的板，D24 用 SNKRDUNK 重建）。
+# 限制：平台內部人氣/成交，反映日本 sneakerhead 消費，非全時尚市場；尖端日潮（visvim/Kapital/設計師成衣）
+#       仍要看媒體街拍。hottest 榜為 JS 動態渲染，WebFetch 抓不到。
+#       2026-06-21（D24）：Firecrawl keyless 結構化抽取實測攻破 hottest 榜（10 項，grounded、跨 StockX/KREAM 互證）→
+#       需要時由 AI 對話端 Firecrawl 抓當期榜、確認口徑後寫 dated 快照進此檔（不進腳本，見 docs/rankings.md）。
+
+source: snkrdunk
+region: jp
+cadence: monthly         # 站上 hottest 即時；本檔按需記 dated 快照
+free: true
+url: https://snkrdunk.com/products?type=hottest
+
+snapshots:
+  - period: 2026-06-21（hottest 即時人氣榜）
+    published: '2026-06-21'
+    report: SNKRDUNK hottest 即時人氣榜 TOP10（Firecrawl 對話端即時抓取，D24 重建日本量化板）
+    methodology: 站上 hottest（人氣/成交熱度）排序；price 為當下顯示最低成交/出價(¥)，「~」表起始價
+    notes: 'Firecrawl keyless json 結構化抽取，TOP10 grounded、跨平台反向驗證：① Nike AF1 White #1 與 KREAM #1、StockX 史上 #1 三區一致 ② Mizuno × 小林節正 Wave Prophecy #2#3 坐實 StockX「Mizuno +124% 成長冠軍、Wave Prophecy lifestyle 化」且震央在日本 ③ Travis Scott × Jordan 1 Low（#4#7#9）= KREAM #18 同款跨區 ④ Nike Mind 001 #8 = WWD 點名 2026 話題款 ⑤ PEACEMINUSONE×Nike CTR360（G-DRAGON、世足南韓配色）#10 坐實 StockX「2026 世足年」預測。'
+    items:
+    - rank: 1
+      brand: Nike
+      item: Air Force 1 Low '07 White/White
+      price: ¥12,000~
+      note: 街頭最大公約數；日#1、韓 KREAM #1、StockX 史上 #1
+    - rank: 2
+      brand: Mizuno
+      item: SETSUMASA KOBAYASHI × Wave Prophecy Ring Moc Brown/Off White
+      price: ¥38,500
+      note: 日本本土設計師（小林節正）聯名；Mizuno 起飛震央
+    - rank: 3
+      brand: Mizuno
+      item: SETSUMASA KOBAYASHI × Wave Prophecy Ring Moc Black/Light Grey
+      price: ¥39,999
+    - rank: 4
+      brand: Nike
+      item: Travis Scott × Air Jordan 1 Retro Low OG Sail/Tropical Pink
+      price: ¥52,000
+      note: Travis×Jordan 三區通殺（韓 KREAM #18 同款）
+    - rank: 5
+      brand: New Balance
+      item: 1906L Rich Oak Suede
+      price: ¥12,132~
+      note: 1906 系亞洲通殺（韓 1906A #13）；價格親民
+    - rank: 6
+      brand: New Balance
+      item: 1906L Black Suede
+      price: ¥11,270~
+    - rank: 7
+      brand: Nike
+      item: Travis Scott × Air Jordan 1 Retro Low OG Muslin/Shy Pink
+      price: ¥52,399
+    - rank: 8
+      brand: Nike
+      item: Mind 001 Flyknit QS Bronze Eclipse/Total Orange
+      price: ¥17,750
+      note: WWD 點名 2026 話題款
+    - rank: 9
+      brand: Nike
+      item: Travis Scott × PS Air Jordan 1 Low OG SP Muslin/Shy Pink
+      price: ¥18,000
+      note: PS=幼童尺寸線，同聯名外溢
+    - rank: 10
+      brand: Nike
+      item: PEACEMINUSONE × Cryoshot CTR360 World Cup/South Korea（G-DRAGON）
+      price: ¥45,400
+      note: 世足南韓配色釘鞋；坐實 StockX「2026 世足年」預測
+    menswear_read:
+    - 'Nike AF1 White #1：三區（日/韓/StockX 史上）一致硬通貨，男裝入門無腦起手式（跨區實證）'
+    - 'Mizuno × 小林節正 #2#3：StockX 全球成長冠軍（+124%）的震央在日本，且走「設計師聯名 lifestyle」非跑鞋功能買家 → 最有 insider-cool ＋ 數據雙證的標的（強解讀）'
+    - 'NB 1906L #5#6：1906 系亞洲全面延燒（韓 1906A 並進），價格 ¥11,000 級＝低風險當紅切入（解讀）'
+    - 'Travis×Jordan 1 Low 三槽位（#4#7#9）：聯名轉售仍是日本最強引擎，跨韓國 KREAM 同款（觀察）'
+    - '世足年訊號已現：PEACEMINUSONE×Nike CTR360 釘鞋聯名 #10，呼應 StockX「復古釘鞋 lifestyle 化」預測，下半年盯 adidas 受益面（解讀）'

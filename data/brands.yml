@@ -102,6 +102,23 @@ brands:
     watch: ["手工帽飾（草帽 / 貝雷 / cap）", "別注 / 聯名（Sunspel・FEIT 等）", "select shop 入荷"]
     notes: 日本帽飾作家（1996 獨立、大官山 atelier 全手工）；此 lane 的帽子 / 配件錨點；Pei 品味錨點（喜歡）
 
+  # 帽飾同溫層（Kijima 深掘 radar 2026-06-20 領跑，見 reports/analysis 若封存）
+  - id: hw-dog-co
+    name: THE H.W. DOG & CO.
+    region: jp
+    segment: contemporary
+    tier: 2
+    watch: ["木楦 + 老機台手工帽", "felt / Panama / cap / beret 全品類", "select shop 入荷 / 別注"]
+    notes: 東京 2015 職人帽匠；「1930-40 製帽黃金年代」哲學、不向量產妥協；vintage workwear 底，Kijima 同溫最近一家
+
+  - id: mature-ha
+    name: mature ha.
+    region: jp
+    segment: contemporary
+    tier: 2
+    watch: ["招牌 Boxed Hat（可折收草帽）", "極簡 refined 帽型", "select shop 入荷"]
+    notes: 神戶 2011 夫妻創立；招牌可壓收 Boxed Hat（82% 紙混紡、旅行帽）；極簡岔路、補衣櫥「能收進包的好帽」
+
   - id: markaware
     name: marka / MARKAWARE
     region: jp

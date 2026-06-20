@@ -42,8 +42,11 @@ Lyst 補精品/設計師視角，StockX 補街頭/球鞋實銷，兩者互補。
 
 KREAM 看「韓國願意花多少錢搶」（flex / 限量 / 精品轉售），MUSINSA 看「韓男日常實際買什麼」（PB 基本款 / 機能外套）。兩者一起看才完整。
 
-> 🚫 **逐位名次無法自動抓取**：kream.co.kr / musinsa.com 的即時榜頁為 JS 動態渲染，WebFetch 對 KREAM 回 500、MUSINSA 拒連（同 ZOZO 的 headless/反爬限制）。
-> 依「不準確就拿掉」原則：快照**採官方稿/官方月榜的公開數據手動建立**，不硬刮逐位即時榜。
+> ✅ **逐位名次可由 Firecrawl 對話端抓取（D23，2026-06-20 實測勝出，逆轉舊「無法自動抓取」結論）**：
+> kream.co.kr / musinsa.com 即時榜頁為 JS 動態渲染，WebFetch 抓不到（KREAM 500 / MUSINSA 拒連）；
+> 但 **Firecrawl keyless 結構化抽取實測攻破**——KREAM 抽到 18 項（#1 Nike AF1 96,000원…）、MUSINSA 抽到 30 項（#3 무신사 스탠다드…），韓文品名+價格 grounded、反向驗證過。
+> 工作流（守 D22 對話端 scope，不進腳本）：寫月報 / 答韓國熱度時 **AI 用 Firecrawl 抓當期榜 → 確認口徑（月榜/即時榜/哪個榜）→ 寫一筆 dated 快照進 yaml**（D21「AI 直接編輯 yaml」路徑）。
+> 成本 ~5 credits/次（json extract）。**不硬刮、不進 collect 腳本**——Firecrawl 對話端臨場抓即可。
 
 ### 🌐 Google Trends（評估後移除，2026-06-11 D7）
 
@@ -116,6 +119,8 @@ Rankings 是**唯一的 L1 硬數據佐證**：一個趨勢若同時出現在 Ly
 破解 Akamai 需真實 headless 瀏覽器 + 反偵測，屬於這個情報 repo 不該背的重量與脆弱性。
 依「不準確就拿掉」原則：**不保留半準的觀察清單**。若未來真有 ZOZO 逐位數據需求，
 評估改用官方 API（如 Rakuten Ichiba Ranking API，需申請 app id）或付費抓取服務，而非硬刮 ZOZO。
+
+> 🔴 **2026-06-20 Firecrawl 也過不了，確認 ZOZO 為永久死界（D23）**：Firecrawl keyless scrape 實測 zozo.jp/men/ranking 僅回 1635 字、0 排行資料（Akamai 仍擋）。與 KREAM/MUSINSA 被 Firecrawl 攻破對照——**ZOZO 是 Akamai 級、Firecrawl keyless 解不了,別再花時間試**。日本量化覆蓋若要擴,走 Rakuten 官方 API 另開一輪（非硬刮）。
 
 ## 誠實標註
 

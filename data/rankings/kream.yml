@@ -4,8 +4,9 @@
 # 來源：https://kream.co.kr/content/ranking_all-monthly （週榜/月榜，免費瀏覽）
 #       年度/趨勢數據另引自官方稿與媒體（見各 snapshot report 欄）。
 # 性質：韓版 StockX——成交量 = 真實轉售需求。比 MUSINSA 站內銷售更貼「市場願意花多少錢搶」。
-# 限制：平台內部成交數據，反映韓國 flex / 限量消費，非全市場；逐位名次頁為 JS 動態，
-#       目前無 headless 無法自動逐位抓取（同 ZOZO 限制，見 docs/rankings.md），快照採官方公開數據手動建立。
+# 限制：平台內部成交數據，反映韓國 flex / 限量消費，非全市場；逐位名次頁為 JS 動態。
+#       2026-06-20（D23）：Firecrawl keyless 結構化抽取實測攻破逐位榜（18 項，grounded）→
+#       需要時由 AI 對話端 Firecrawl 抓當期榜、確認口徑後寫 dated 快照進此檔（不進腳本，見 docs/rankings.md）。
 
 source: kream
 region: kr

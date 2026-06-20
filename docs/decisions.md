@@ -601,3 +601,27 @@ Google 體系的**所有強項**（搜尋 / Trends / Shopping / 多模態 / Clou
 ### 可逆 / guards
 
 可逆（移除 `.mcp.json` 的 firecrawl 條目 + 還原規則即回到「封鎖源不列」）。無禁用識別字,不寫 `decision_guards`。MCP 需重啟 session 才載入（本次落地後下個 session 生效）。
+
+---
+
+## D23 — Firecrawl 重開韓國量化榜（KREAM/MUSINSA），確認 ZOZO 永久死界（2026-06-20）
+
+### 背景
+
+加了 Firecrawl（D22）後,回頭把 repo 裡每個「因爬不到而死」的決策拿去**實測**（不假設,守 D22 自己的邊界註記）。焦點:KREAM/MUSINSA/ZOZO 即時榜——當初全因「JS 動態 + 反爬、無 headless 抓不到」改手動 / 撤除（見舊 `docs/rankings.md` §45/§119、D17）。
+
+### 實測證據（全反向驗證,不信自報）
+
+- **KREAM ✅ 攻破**:Firecrawl keyless 結構化抽取 **18 項**（#1 Nike AF1 96,000원、#3 PLAY CDG、#18 Jordan×Travis 462,000원）,韓文品名+원價 grounded、與 kream.yml 既有「Nike 最硬」一致。
+- **MUSINSA ✅ 攻破**:抽 **30 項**（#3 무신사 스탠다드,與「PB 連5月#1」一致、#5 Samba、滿夏季單品）。
+- **ZOZO ❌ 仍死**:Firecrawl scrape zozo.jp/men/ranking 僅 1635 字、0 資料（Akamai 級,Firecrawl keyless 也過不了）。
+
+### 拍板:重開韓國榜（對話端），ZOZO 標永久死
+
+- **KREAM/MUSINSA 逐位榜由「手動建立」改「AI 對話端 Firecrawl 抓」**:寫月報 / 答韓國熱度時,AI Firecrawl 抓當期榜 → **確認口徑（月榜/即時榜）→ 寫 dated 快照進 yaml**（D21「AI 直接編輯 yaml」+ D22 Firecrawl 合體）。**不進 collect 腳本**（守 D22 對話端 scope、輕依賴、D5）。成本 ~5 credits/次。
+- **ZOZO 標永久死界**:Akamai 級,別再試;日本量化要擴走 Rakuten 官方 API 另開一輪（非硬刮）。
+- 同步 `docs/rankings.md`（韓國段 + ZOZO 段）、`data/rankings/{kream,musinsa}.yml` 表頭。
+
+### 可逆 / guards
+
+可逆（韓國榜回手動、ZOZO 標記移除即還原）。無禁用識別字,不寫 `decision_guards`。延續 D22 紅線（keyless 免費額度、撞上限停、production 自帶 key、反向驗證）。

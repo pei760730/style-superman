@@ -152,6 +152,14 @@ brands:
     watch: ["現代 oversize refined", "版型實驗"]
     notes: 同 lane 但廓形更前衛
 
+  - id: kaptain-sunshine
+    name: Kaptain Sunshine
+    region: jp
+    segment: contemporary
+    tier: 2
+    watch: ["Traveller coat", "開領襯衫 / chino 定番", "select shop 入荷"]
+    notes: 小嶋伸介（雜誌編輯出身）把 vintage / 旅人 / 軍裝元素做成乾淨好搭的當代衣；Lemaire 同源、與 AURALEE/COMOLI 並列（2026-06-19 古著雷達 📈，補進 radar）
+
   # ---------- 日本：デニム殿堂 / selvedge・repro（2026-06-21 牛仔褲深挖補入）----------
   # 全球 selvedge 權威在日本（岡山兒島 / 大阪）。repro = 用復古梭織機忠實復刻 vintage 工法。
   # 與上方 contemporary lane 區隔：這層是「養色文化 / 職人教材」，非 refined 現代版型。
@@ -210,6 +218,24 @@ brands:
     tier: 3
     watch: ["重磅 americana", "高對比立體 fade", "別注 / 聯名"]
     notes: 長野職人；高對比立體養色的重磅 americana selvedge
+
+  # ---------- 日本：amekaji / heritage 古著魂（2026-06-19 古著雷達領跑，補進 radar）----------
+  # 與 denim 殿堂相鄰但更廣：軍裝 / 工裝 / americana 的「古著魂復刻」。擁有者 lane 頭號對味。
+  - id: orslow
+    name: orSlow
+    region: jp
+    segment: heritage
+    tier: 2
+    watch: ["105 標準丹寧", "US Army fatigue 褲", "工裝外套定番"]
+    notes: 中津一郎 2005 創立，靠百科級 vintage 知識做「慢工、版型安靜、像本來就是你的」工裝/丹寧；古著雷達標「跟擁有者 lane 最對味、最無痛入手」（📈，愛着 longevity 活教材）
+
+  - id: the-real-mccoys
+    name: The Real McCoy's
+    region: jp
+    segment: heritage
+    tier: 2
+    watch: ["A-2 / N-1 軍外套", "軍 tee / Buco", "原始規格復刻"]
+    notes: 公認地表最龜毛的軍裝復刻牌；用原始規格/布料/車縫重現 40s–50s 美軍服，博物館級、穿一輩子（古著雷達 🔥 領跑、愛着 longevity 標竿）
 
   # ---------- 韓國 ----------
   - id: we11done

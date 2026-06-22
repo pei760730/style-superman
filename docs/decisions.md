@@ -671,3 +671,20 @@ Google 體系的**所有強項**（搜尋 / Trends / Shopping / 多模態 / Clou
 ### 可逆 / guards
 
 可逆（還原觸發描述即回「需手動跑」）。無禁用識別字，不寫 `decision_guards`。延續 D9（週挑保留、不開獨立挑買卡）、D15（情報非買清單）、D16（對話觸發不排程）。
+
+## D26 — 週挑改「每日累積候選池 → 週一收斂」，不週一現抓（2026-06-23）
+
+### 背景
+
+D25 接好「週一早安自動觸發週挑」後，擁有者立刻戳到盲點：**「你是不是每天早安就要陸續找商品？不然一週到的那天才現抓，也沒多認真挑。」** 命中要害——D16 把 daily brief 改 ephemeral 不存檔後，**週一沒有前 6 天的觀察可回看**，週挑只能週一當天現抓；單日訊號分不出「真趨勢」還是「當天雜訊」，品質塌。週挑的靈魂本來就該是**整週觀察的收斂**，不是一次搜尋。
+
+### 拍板
+
+- **每日累積**：每天 brief 產出 🎯 For Me 後，把當天 lane 相關在紅單品**追加進滾動候選池** `reports/buy_shortlist/_candidates.draft.md`（gitignored 本機草稿；每筆：單品 ｜ 日期 ｜ 區 ｜ 在哪紅 ｜ 為什麼 ｜ 來源；同單品不重塞、出現一次次數 +1）。
+- **週一收斂**：讀候選池，挑「過去 7 天**反覆出現 = 真在升**」的、丟「單日 = 雜訊」的，湊 5 區 × 3 → 存檔 `YYYY-Wnn.md`；池內 >7 天 prune。**不週一現抓**。
+- **技術安全**：候選池檔名 `*.draft.md` → 已被 `.gitignore`（`reports/buy_shortlist/*.draft.md`）涵蓋、且 `validate_repo.check_reports` 明確跳過（line ~285）→ **零 config 改動**，純 prompt/行為。
+- **同步**：`prompts/daily_trend_brief.md`（每日累積規則）、`prompts/weekly_buy_picks.md`（輸入改候選池優先、收斂按出現次數）、`docs/flow_calendar.md`、`CHANGELOG`。
+
+### 可逆 / guards
+
+可逆（還原為「週一讀 briefs 現抓」）。無禁用識別字。延續 D25（週一早安觸發）、D16（ephemeral brief、不排程）、「管線非答案邊界」（某區候選不足才補查）。

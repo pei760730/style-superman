@@ -650,3 +650,24 @@ Google 體系的**所有強項**（搜尋 / Trends / Shopping / 多模態 / Clou
 ### 可逆 / guards
 
 可逆（刪 `snkrdunk.yml` + 還原 rankings.md 日本段即回留空狀態）。無禁用識別字,不寫 `decision_guards`。延續 D22 紅線（keyless 免費額度、撞上限停、production 自帶 key、反向驗證）。
+
+## D25 — 週挑改「週一早安」自動觸發，不需關鍵字（2026-06-23）
+
+### 背景
+
+未用功能審視發現：`週挑（weekly_buy_picks）`整套工具鏈（腳本 + prompt + template + `reports/buy_shortlist/` + validate + repo_health 看門狗）**只產過 1 次**（W24，2026-06-10），之後休眠。repo_health 的「落後 2 週」看門狗持續 WARN、對空氣叫（違反 CLAUDE.md「警告必配修復」）。
+
+反向驗證確認**不是死碼**（D9 明文保留週挑、prompt 指定流程），而是**缺觸發點**：D16 把週挑改對話觸發後，沒人會特地打關鍵字去跑。擁有者點出真實意圖：**「應該每週一我說『早安』時同步給我週挑，而不是還要特別給關鍵字」**。
+
+順帶暴露一個內部矛盾：D16 把週挑描述成「對話即焚不進 commit」，但 repo_health 看門狗檢查 `buy_shortlist/` 有沒有新檔——兩者打架，所以警告永遠空叫。
+
+### 拍板
+
+- **觸發**：週挑由**每週一擁有者說「早安」**自動觸發，與當日 daily brief **一起產出**——不需額外關鍵字、不排程（搭既有週節點，合 D16 的「對話觸發、0 雲端 routine」）。
+- **封存**：週挑**存檔** `reports/buy_shortlist/YYYY-Wnn.md`（commit）——與 ephemeral 的 daily brief 不同；買推薦有回看價值，且讓 repo_health 斷更看門狗變有效（解掉 D16 留下的「ephemeral vs 看門狗」矛盾）。daily brief 本身仍 ephemeral。
+- **腳本**：`generate_weekly_buy_picks.py` 降為**可選**骨架工具（對話端直接寫亦可），不再是必經步驟——保留不刪（仍是有效的骨架生成器，prompt 指向它）。
+- **同步**：`prompts/daily_trend_brief.md`（週一加值規則）、`prompts/weekly_buy_picks.md`（觸發）、`docs/flow_calendar.md`、`scripts/repo_health.py`（看門狗提示）、`CHANGELOG`。
+
+### 可逆 / guards
+
+可逆（還原觸發描述即回「需手動跑」）。無禁用識別字，不寫 `decision_guards`。延續 D9（週挑保留、不開獨立挑買卡）、D15（情報非買清單）、D16（對話觸發不排程）。

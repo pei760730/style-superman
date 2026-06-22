@@ -57,10 +57,10 @@ Topic Analysis（每週至少一張，歐美優先）：把最強跨源趨勢寫
 
 **目的**：把過去 7 天 daily brief 的情報收斂成「本週各部位在紅什麼」的 Head-to-Toe 情報（D15：情報非買清單、不催買；真要入手是隨選的另一條，D10）。
 
-**建議節奏**：每週收斂 1–3 個方向，依預算與衣櫥缺口調整。
+**觸發（D25，2026-06-23）**：每週一擁有者說「早安」時，與當日 daily brief **一起自動產出**——不需額外關鍵字、不排程（搭既有週節點，合 D16）。
 
-**固定產物**：「本週在紅 Head-to-Toe」→ `reports/buy_shortlist/YYYY-Wnn.md`（5 區 × 各 3 樣在紅單品 + 為什麼這週在紅 + 炒作 vs 真；D15：情報非買清單）。
-跑 `python scripts/generate_weekly_buy_picks.py` 產骨架，依 `prompts/weekly_buy_picks.md` 填內容。
+**固定產物**：「本週在紅 Head-to-Toe」→ `reports/buy_shortlist/YYYY-Wnn.md`（5 區 × 各 3 樣在紅單品 + 為什麼這週在紅 + 炒作 vs 真；D15：情報非買清單）。週挑存檔（非 ephemeral），供回看 + repo_health 斷更看門狗。
+產出：對話端直接寫，或（可選）跑 `python scripts/generate_weekly_buy_picks.py` 產骨架，依 `prompts/weekly_buy_picks.md` 填內容。
 
 **週度整理清單**：
 

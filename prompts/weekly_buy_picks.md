@@ -2,6 +2,8 @@
 
 > 用途：每週把過去 7 天的情報收斂成「從頭到腳 5 區 × 各 3 樣」的**在紅單品**清單——讓擁有者知道「這週各部位在紅什麼」（情報，非買清單，D15）。
 > 輸出格式嚴格遵守 `templates/weekly_buy_picks_template.md`，產出存 `reports/buy_shortlist/YYYY-Wnn.md`。
+> **觸發（D25，2026-06-23）**：每週一擁有者說「早安」時，與當日 daily brief **一起自動產出**，不需額外關鍵字。
+> 週挑**存檔**（與 ephemeral 的 daily brief 不同——買推薦有回看價值，且讓 repo_health 斷更看門狗有效）。
 
 ## 你的輸入（按優先序）
 
@@ -24,6 +26,6 @@
 
 ## 產出流程
 
-1. 跑 `python scripts/generate_weekly_buy_picks.py` 產骨架（自動帶週期、本週 briefs 清單、rankings 摘要）。
+1. （可選）跑 `python scripts/generate_weekly_buy_picks.py` 產骨架（自動帶週期、本週 briefs 清單、rankings 摘要）；對話端直接寫亦可。
 2. 依上述規則填 15 樣 + 本週最該記住的一個 + 一句話總結。
 3. 跑 `python scripts/validate_repo.py` 自驗格式。

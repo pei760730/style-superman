@@ -251,8 +251,8 @@ def check_weekly_picks_freshness(today: dt.date) -> list[Finding]:
         return [Finding(
             "warn",
             f"週挑已 {behind} 週沒產出（最新：{latest[0]}-W{latest[1]:02d}）",
-            "跑 generate_weekly_buy_picks.py 產骨架 → 依 prompts/weekly_buy_picks.md 補內容；"
-            "若不想維持週更，更新 docs/decisions.md 調整節奏宣告",
+            "週挑由「週一早安」自動觸發（D25）——若連續斷更代表週一沒跑到，"
+            "下個週一早安補上；若不想維持週更，更新 docs/decisions.md 調整節奏宣告",
         )]
     return [Finding("info", f"週挑最新：{latest[0]}-W{latest[1]:02d}（落後 {behind} 週內）")]
 

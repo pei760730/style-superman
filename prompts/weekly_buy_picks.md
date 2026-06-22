@@ -7,7 +7,8 @@
 
 ## 你的輸入（按優先序）
 
-1. **本週 daily briefs**（`reports/daily/` 過去 7 天）——「為什麼這週在紅」的主要依據
+0. **本週候選池** `reports/buy_shortlist/_candidates.draft.md`（**收斂的主要依據**，D26）——每日 brief 累積的在紅單品＋出現次數。**反覆出現 = 真在升（優先入選）、單日冒頭 = 雜訊（剔除）**。這就是「不週一現抓」的底氣。
+1. **本週 daily briefs**（若有存檔）＋ 候選池來源連結——回查「為什麼這週在紅」的原文事實
 2. **排行快照**（`data/rankings/*.yml` 最新一筆）——熱度 / 需求的硬數據
 3. **品牌追蹤**（`data/brands.yml`）——擁有者的品味錨點（日系素材主義 lane 為 tier 1）
 4. **趨勢生命週期**（`data/trend_history.yml`）+ **主題分析**（`reports/analysis/`）——判斷「炒作 vs 真」的基準
@@ -26,6 +27,6 @@
 
 ## 產出流程
 
-1. （可選）跑 `python scripts/generate_weekly_buy_picks.py` 產骨架（自動帶週期、本週 briefs 清單、rankings 摘要）；對話端直接寫亦可。
+1. **讀候選池 `_candidates.draft.md`，按出現次數 / 趨勢一致性排序**——反覆出現的優先、單日的剔除；某區候選不足 3 樣才主動補查（管線非答案邊界）。（可選：跑 `python scripts/generate_weekly_buy_picks.py` 產骨架帶週期 / rankings 摘要。）收斂完把池內 >7 天條目 prune。
 2. 依上述規則填 15 樣 + 本週最該記住的一個 + 一句話總結。
 3. 跑 `python scripts/validate_repo.py` 自驗格式。

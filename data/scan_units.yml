@@ -39,7 +39,7 @@ defaults:
   sources: 見 prompts/daily_trend_brief.md 各區既有來源清單（不新增來源，D18）
 
 # 頭條 + 三區合計的總量目標（寬進嚴出：寧可多抓再彙整去蕪，不要只摘 2 條大新聞）。
-total_target: [20, 30]
+total_target: [30, 45]
 headline:
   quota: [3, 5]
 
@@ -48,19 +48,19 @@ units:
   - id: jp
     kind: region
     label: 日潮 JP
-    quota: [6, 10]
+    quota: [10, 15]
 
   - id: kr
     kind: region
     label: 韓潮 KR
-    quota: [4, 8]
+    quota: [8, 12]
     # 三維度都要照看；某維度當日無可驗證訊號就明寫一行，不得補熱度。
     dimensions: [造型, 設計師·零售, 跨市場外溢]
 
   - id: us-eu
     kind: region
     label: 歐美 US-EU（global 訊號歸此區）
-    quota: [6, 10]
+    quota: [10, 15]
 
   - id: jp-contemporary-lane
     kind: lane
@@ -99,6 +99,10 @@ reader_output_schema:
 # 收斂層（平行抓進來會有重複與雜訊，這層做品質）：
 converge:
   dedup: 乾淨連結 / 平台:影片id / 同單品跨區——重複只留證據最硬那則
+  # 密度地板（把 CLAUDE.md「管線是底盤，不是答案邊界」硬規格化進 manifest，不再只靠記性）：
+  #   任一區 reader 回來可信訊號 < 3 條（或命中多為雜訊）時，orchestrator 必須主動 WebSearch/WebFetch
+  #   把該區補到有可信品項才出稿——不得拿「reader 沒收到 / 管線沒料」當該區交白卷的理由（KR 交白卷根因）。
+  density_floor: 任一區 < 3 條可信訊號 → orchestrator 主動補搜到達標再出稿，不交白卷
   archive: 按 頭條 → 區域 → lane 歸位；超量砍弱訊號（密度鐵則：有來源有日期的訊號才留）
   output: templates/daily_brief_template.md
   for_me: 🎯 對我最相關（在紅單品情報層，D15：不催買、無死線、無 ⏰ 行動日）；交付時 For Me 先講

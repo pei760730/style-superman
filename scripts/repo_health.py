@@ -17,7 +17,6 @@ validate_repo.py 檢查「格式契約」（YAML 欄位、template 段落）；
 
   新鮮度 / 產線（WARN，CI 不擋，但由 health.yml 週期巡檢盯）：
     - daily brief 斷更幾天
-    - 週挑（buy_shortlist）是否落後 2 週以上
     - 當月 monthly report 是否缺
     - Lyst 季度快照是否落後超過一季
     - 重定位後產的報告（daily / monthly）是否符合現行契約
@@ -248,11 +247,15 @@ def check_weekly_picks_freshness(today: dt.date) -> list[Finding]:
         - dt.date.fromisocalendar(latest[0], latest[1], 1)
     ).days // 7
     if behind >= 2:
+        # D29: 移除 patrol 對週挑的硬 SLA。D25/D26 的「週一早安觸發 + 候選池收斂」
+        # 機制保留——該產還是產；但落後不再是讓 health.yml --strict 變紅的 warn，
+        # 因為週挑無強制週更承諾（合 D16/D20/D21）。降為 info：仍顯示落後供參考，
+        # 但 CI 紅保留給真斷更（daily brief 死、契約違反、ERROR）＝真的壞了。
         return [Finding(
-            "warn",
-            f"週挑已 {behind} 週沒產出（最新：{latest[0]}-W{latest[1]:02d}）",
-            "週挑由「週一早安」自動觸發（D25）——若連續斷更代表週一沒跑到，"
-            "下個週一早安補上；若不想維持週更，更新 docs/decisions.md 調整節奏宣告",
+            "info",
+            f"週挑落後 {behind} 週（最新：{latest[0]}-W{latest[1]:02d}）"
+            "——週一早安該產就產（D25/D26），但無硬 SLA、不擋巡檢（D29）",
+            "想產就在週一早安說，或直接說「產一支週挑」",
         )]
     return [Finding("info", f"週挑最新：{latest[0]}-W{latest[1]:02d}（落後 {behind} 週內）")]
 

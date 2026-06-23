@@ -741,3 +741,22 @@ D27 落地後，擁有者再給一張卡：「照 anthropics/financial-services 
 ### 訂正（2026-06-23 dogfood）：reader 改 general-purpose
 
 實跑當天 daily 時抓到：reader 原指定 **Explore**（為工具層擋寫），但 Explore 自我定位是 codebase 搜尋、**會拒做 web research**（4 個 reader 裡 US-EU 直接回 0 資料）；改用 **general-purpose** 補跑即正常。改：reader 用 **general-purpose**（能查網），**no-Write 改由 `prompts/region_reader.md` prompt 規範**（非靠 agent type）。其餘紀律（output_schema/防注入/單一 writer/auditor）不變。同步 `prompts/region_reader.md`、`prompts/daily_scan_orchestration.md`、`data/scan_units.yml` roles、`docs/lessons.md`。教訓：選 subagent type 要看它肯不肯做這類任務，不只看工具權限。
+
+## D29 — 移除 patrol 對週挑的硬 SLA（repo_health 降為 INFO，2026-06-24）
+
+### 背景
+
+OS（個人指揮中心）的跨 repo CI lens 抓到 style-superman 的「Repo Health Patrol」長期紅；本機跑 `repo_health.py` 確認真因＝**週挑（buy_shortlist）落後 2 週**觸發 WARN，而 `health.yml --strict` 把 WARN 當失敗 → CI 紅。問題：週挑沒有強制週更承諾（D16 砍 routine、D20/D21 內容封給對話），一個「內容逾期就讓 CI 長期紅」的看門狗會讓紅燈衰退成噪音、失去「紅＝壞了」的意義（撞 CLAUDE.md「警告必配修復」精神）。
+
+### 反向驗證（不反殺昨天的決策）
+
+D25/D26（2026-06-23，**昨天**）才設好週挑的「週一早安觸發 + 每日候選池 → 週一收斂」機制。若本決策寫成「廢掉週更」＝一天內反轉、且與 D25/D26 散文 + `prompts/` 矛盾。**故 D29 不動 D25/D26 的觸發機制**——週一早安該產還是產；**只移除 patrol 對它的 `--strict` 硬 SLA 執法**。
+
+### 拍板：保留機制 + 校準執法（擁有者選 1+2，調和版）
+
+1. **節奏定性**：週挑＝**週一早安觸發（D25/D26 機制不變），但無 patrol 硬 SLA**。落後不代表壞掉，只代表那週擁有者沒觸發；要產隨時說。
+2. **repo_health 校準**：`check_weekly_picks_freshness` 落後判定由 `warn` 降為 `info` → `--strict` 巡檢不再因週挑落後變紅、issue 也不再為此開。**看門狗嚴格度保留給真斷更**（daily brief 死、契約違反、ERROR），CI 紅恢復「真的壞了」語意。
+
+### 可逆 / guards
+
+可逆（把 `check_weekly_picks_freshness` 的 `info` 改回 `warn` 即還原）。無禁用識別字，不寫 `decision_guards`。延續 D16/D20/D21、**保留 D25/D26**、CLAUDE.md 反熵 D7 與「警告必配修復」。

@@ -13,8 +13,9 @@
 ## 系統的一天（時間軸）
 
 ```txt
-我起床後     跟 agent 說「早安」→ agent 當場跑：本機收當日 RSS 訊號（每源 25 則、四區 400+）
-             → 濾噪音、歸類、主編判讀 → roundup 逐條 WebFetch 挖出實際 picks
+我起床後     跟 agent 說「早安」→ agent 照 data/scan_units.yml 對日/韓/歐美 + 日系 lane
+             各派一個平行唯讀 reader subagent（收 RSS + WebSearch/WebFetch 挖 picks、只回結構化 JSON；D27/D28）
+             → orchestrator 收斂去重、補密度（任一區 <3 條主動補搜、不交白卷）
              → 在對話端上完整 brief（頭條 + 日/韓/歐美三區塊 + 🎯 For Me）
              → 我直接讀，先看最下面的 🎯 For Me（對我最相關的在紅單品）
 ```
@@ -82,7 +83,7 @@
 
 | 執行者 | 時間 | 做什麼 | 提交方式 |
 |---|---|---|---|
-| 對話 agent（**唯一的內容入口**） | 說「早安」/ 需要時 | **每日 brief**（本機收訊號 → 判讀 → roundup 真 WebFetch 挖 picks → 對話端上）；趨勢深挖卡；**品牌雷達**（「深挖 A.PRESSE」式，D11）；**週挑**（週一說「早安」一起端）；**月報**（月初說一聲，歐美 / 日本，日本線 2026-07 起）；**Lyst Q2 ingest**（7 月榜出說一聲）；臨時任務 | 內容在對話讀（不入版控）；需封存 / 工程改動才走**分支 + PR**，驗證綠自 merge（D8） |
+| 對話 agent（**唯一的內容入口**） | 說「早安」/ 需要時 | **每日 brief**（照 `scan_units.yml` 派工平行唯讀 reader → 收訊號 + WebFetch 挖 picks → orchestrator 收斂去重 → 對話端上，D27/D28）；趨勢深挖卡；**品牌雷達**（「深挖 A.PRESSE」式，D11）；**週挑**（週一說「早安」一起端）；**月報**（月初說一聲，歐美 / 日本，日本線 2026-07 起）；**Lyst Q2 ingest**（7 月榜出說一聲）；臨時任務 | 內容在對話讀（不入版控）；需封存 / 工程改動才走**分支 + PR**，驗證綠自 merge（D8） |
 | GitHub Actions `flash-brief.yml` | **手機手動 dispatch**（D19） | ⚡ 速報：白名單硬源純機械抽取（零 LLM），落 `reports/flash/<date>.md` | 手機按一下 = 有人盯，不違 D16 砍排程 |
 | GitHub Actions `daily-brief.yml` | **手動備援**（已移除排程，D16） | `--with-rss` 在 egress 正常的 runner 收訊號 / 產骨架——僅本機 collect 失靈時手動 dispatch | （平時不跑） |
 | GitHub Actions `health.yml` | 每週一、四台北 09:00 | `repo_health --strict` 巡檢（新鮮度 + 一致性 + 守衛 + 產出契約）+ `--liveness` 死源探針（continue-on-error，限速不算死） | 未過 / 偵測死源 → 自動開 / 更新 `repo-health` issue |
@@ -129,6 +130,8 @@
 | D24 | SNKRDUNK 重建日本球鞋板 | 日本量化板部分重開——球鞋轉售榜（日版 StockX）可 Firecrawl 抓；服飾/精品板仍空 |
 | D25 | 週挑改「週一早安」自動觸發 | 週一說「早安」= brief + 週挑一起自動產出，不需關鍵字；週挑存檔（解掉看門狗空叫矛盾） |
 | D26 | 週挑改每日累積候選池 | 每天 For Me 累積進滾動候選池 → 週一收斂（反覆出現=真在升、單日=雜訊），不週一現抓 |
+| D27 | 多區掃描固化成宣告式 scan-manifest | 每日掃描照 `data/scan_units.yml` 派工給平行唯讀 reader subagent；主控＝對話 agent（非腳本）、不加 .py / 不接 API / 不排程 |
+| D28 | market-researcher 骨架升級掃描編排 | 抄 financial-services 骨架紀律（角色分離 orchestrator/reader/auditor + reader 強制 JSON schema + 防注入），不引 runtime；reader 用 general-purpose（能查網）|
 
 ---
 
@@ -158,6 +161,7 @@ style-superman/
 │   ├── brands.yml            # 追蹤品牌（contemporary lane + 日本デニム殿堂 + amekaji 古著魂；taste:anchor 標個人品味錨點）
 │   ├── people.yml            # 追蹤人物
 │   ├── decision_guards.yml   # 決策守衛：禁用識別字（CI 強制）
+│   ├── scan_units.yml        # 每日掃描派工清單（日/韓/歐美 + 日系 lane，配額/維度/reader schema；D27/D28）
 │   └── rankings/             # 量化排行快照（最新在上；即時榜由 Firecrawl 對話端抓 D22–D24）
 │       ├── lyst-index.yml    #   歐美：Lyst Index 季度
 │       ├── stockx.yml        #   歐美：StockX 年度
@@ -176,6 +180,9 @@ style-superman/
 │   ├── monthly_heat_report.md        # 月度熱度速報
 │   ├── trend_analysis.md             # 趨勢深挖卡
 │   ├── brand_radar.md                # 品牌雷達（「深挖 <關鍵字>」，D11）
+│   ├── daily_scan_orchestration.md   # 每日多區掃描派工＋收斂協定（D27/D28）
+│   ├── region_reader.md              # 單區/lane 掃描工人（唯讀 + 防注入 + 只回 schema JSON，D28）
+│   ├── scan_auditor.md               # brief 唯讀稽核（配額/格式/For Me 契約 → pass/fail，D28）
 │   └── ranking_ingest.md             # 排行快照 ingest 指引
 ├── templates/                # 產出物固定格式（格式即契約）
 ├── scripts/                  # 自動化腳本（用法見 scripts/README.md）
@@ -195,7 +202,7 @@ style-superman/
 │   ├── operating_manual.md      # 營運手冊
 │   ├── ai_collaboration.md      # 帽子原則 + 不自我終審 + 誰拍板（D7 已瘦身）
 │   ├── rankings.md              # 排行快照方法論（口徑分開、不硬湊）
-│   ├── decisions.md             # 方向決策紀錄（D1–D26）
+│   ├── decisions.md             # 方向決策紀錄（D1–D28）
 │   └── lessons.md               # 教訓簿（殭屍任務卡三例都在這）
 └── .github/workflows/
     ├── ci.yml                # PR validate + smoke（3.9 + 3.12）+ ruff
@@ -254,6 +261,7 @@ python scripts/repo_health.py --consistency
 - [x] ⚡ 速報層（D19，2026-06-16）：白名單硬源純機械抽取（零 LLM）、手機可 dispatch，補桌面深度 brief 手機看不到的缺口
 - [x] 採用 Firecrawl keyless 對話端（D22–D24，2026-06-20/21）：封鎖源 roundup 挖 picks、重開韓國/日本量化榜（不進腳本）
 - [x] 週挑「週一早安自動觸發 + 每日累積候選池 → 週一收斂」（D25/D26，2026-06-23）：解掉休眠 + 看門狗空叫
+- [x] scan-manifest 編排（D27/D28，2026-06-23）：每日掃描固化成 `data/scan_units.yml` + 平行唯讀 reader subagent（角色分離 + 強制 schema + 防注入）；配額對齊既定 brief、密度地板防交白卷
 - [ ] 推送通知（未拍板；傾向用既有據點，不加新平台）
 - [ ] 更多非 RSS 來源（視需求，不硬刮反爬站）
 

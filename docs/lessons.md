@@ -57,6 +57,11 @@
 
 ## Soft notes（觀察中，尚未硬化）
 
+### 2026-06-23 · scan reader 用 Explore 派工會查不了網（dogfood D28 抓到）
+- **發生什麼**：D28 為了「工具層擋掉 reader 寫檔」把多區 scan reader 指定用 **Explore** subagent。實跑當天 daily 時，4 個 reader 裡 **US-EU 的 Explore 直接拒做**：自稱「我是 code 搜尋工具、沒 web、唯讀、fashion 超出範圍」，回 0 資料；JP/lane 勉強回了但品質參差。對照組——同日改用 **general-purpose** 補跑 US-EU/KR，兩個都正常 WebSearch/WebFetch、回滿可查證 JSON。根因：**Explore 自我定位是 codebase 搜尋，不可靠地做外部 web research**；用它換 no-Write 保證 = 換來「讀不了網的 reader」，違背 reader 本職。
+- **對策**：scan reader 改用 **general-purpose**（能查網）；**no-Write 改由 reader prompt 規範**（`prompts/region_reader.md` 明寫「不可寫檔、不呼叫寫檔工具」）而非靠 agent type 工具層強制。其餘 cookbook 紀律（output_schema、防注入、單一 writer、auditor）不變。已改 `prompts/region_reader.md` / `prompts/daily_scan_orchestration.md` / `data/scan_units.yml` 的 roles。
+- **硬化狀態**：未硬化（單次、prompt 層修正即可）。教訓通則：**選 subagent type 要看它「肯不肯做這類任務」，不是只看工具權限**——工具層保證再漂亮，agent 拒做就是 0。
+
 ### 2026-06-18 · 新時尚源評估：權威 ✓ 不是門檻，cadence + RSS 可解析才是
 - **發生什麼**：擁有者問「能用的好源是不是找完了」。評估兩個對其品味（日系 elevated/古著）最對的候選——**Die Workwear**（Derek Guy）與 **Sabukaru**。兩個權威都滿（D18 gate ②），但都退：Die Workwear 部落格最新文 2025-11-28（7 個月前、約季度更一次，即時產出全在 X）→ 敗 gate ①（近 30 天持續產出），`/feed/` 實測用 `parse_feed` 解析 0 則；Sabukaru 內容週級新鮮但**全無可用 RSS**（`/feed`、`/rss`、`?format=rss` 全 404，只有 10MB sitemap）→ 進不了只吃 RSS 的管線。
 - **對策**：評估新源**先過「實用門檻」再談權威**——① 近 30 天 cadence（用 repo 自己的 `parse_feed` 抓 feed 看實際 pubDate，**不只信 WebFetch「looks active」**）② RSS 能被 `parse_feed` 解析出 ≥N 則。好源常敗在這兩關（stale / no-RSS），這正是它們不在 repo 的原因。**結論：RSS 源層已成熟**；剩缺口（X-only 權威、無 RSS 新站、IG、古著店/拍賣）屬非管線 territory，走臨場 WebSearch/WebFetch（合 D20、反熵 D7），不擴常設源。

@@ -3,8 +3,9 @@
 對映 anthropics/financial-services market-researcher 的 `sector-reader`：你是被 orchestrator 派出的**唯讀工人**，
 只負責**一個**掃描單元（一個地區或一條 lane），掃該單元來源、抽趨勢事實、回傳結構化 JSON。
 
-> **派你的方式（給 orchestrator）**：用**唯讀 subagent（Explore）**跑本 prompt——Explore 天生無 Write/Edit、
-> 但有 WebSearch/WebFetch，正好對映「碰外部網頁但不能寫」。一個單元一個 reader，單元彼此獨立、可平行。
+> **派你的方式（給 orchestrator）**：用 **general-purpose** subagent 跑本 prompt（它能 WebSearch/WebFetch；
+> **no-Write 由本 prompt 規範，不靠 agent type 工具層**）。一個單元一個 reader，單元彼此獨立、可平行。
+> （2026-06-23 dogfood 訂正：原指定 Explore——但 Explore 自我定位是 codebase 搜尋、會拒做 web research，見 `docs/lessons.md`。）
 
 ## 鐵則
 

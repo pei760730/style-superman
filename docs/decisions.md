@@ -737,3 +737,7 @@ D27 落地後，擁有者再給一張卡：「照 anthropics/financial-services 
 ### 可逆 / guards
 
 可逆（刪 2 個新 prompt + 還原 `scan_units.yml`/orchestration 即回 D27 狀態）。無禁用識別字，不寫 `decision_guards`。延續 D27 與 D5/D6/D14/D15/D16/D18/D20/D21。
+
+### 訂正（2026-06-23 dogfood）：reader 改 general-purpose
+
+實跑當天 daily 時抓到：reader 原指定 **Explore**（為工具層擋寫），但 Explore 自我定位是 codebase 搜尋、**會拒做 web research**（4 個 reader 裡 US-EU 直接回 0 資料）；改用 **general-purpose** 補跑即正常。改：reader 用 **general-purpose**（能查網），**no-Write 改由 `prompts/region_reader.md` prompt 規範**（非靠 agent type）。其餘紀律（output_schema/防注入/單一 writer/auditor）不變。同步 `prompts/region_reader.md`、`prompts/daily_scan_orchestration.md`、`data/scan_units.yml` roles、`docs/lessons.md`。教訓：選 subagent type 要看它肯不肯做這類任務，不只看工具權限。

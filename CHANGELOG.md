@@ -4,6 +4,9 @@
 
 ## [Unreleased]
 
+### Fixed
+- **scan reader 改 general-purpose（D28 dogfood 訂正，2026-06-23）**：實跑當天 daily 抓到 D28 設計缺陷——reader 原指定 **Explore**（為工具層擋寫），但 Explore 自我定位 codebase 搜尋、**拒做 web research**（4 reader 裡 US-EU 回 0 資料）；改 **general-purpose** 補跑即正常。改 reader→general-purpose（能查網）、no-Write 改由 `prompts/region_reader.md` prompt 規範；其餘紀律（output_schema/防注入/單一 writer/auditor）不變。同步 `prompts/region_reader.md`/`prompts/daily_scan_orchestration.md`/`data/scan_units.yml` roles/`docs/lessons.md`/`docs/decisions.md` D28 訂正。教訓：選 subagent type 要看它肯不肯做該任務、不只看工具權限。
+
 ### Changed
 - **週挑改「每日累積候選池 → 週一收斂」，不週一現抓（D26，2026-06-23，擁有者「每天早安就該陸續找、不然一週到那天現抓也沒多認真挑」）**：D25 接好週一觸發後立刻暴露盲點——D16 後 daily brief ephemeral 不存檔，週一沒前 6 天觀察可回看 → 只能現抓 → 單日訊號分不出真趨勢 vs 雜訊。改為：每天 brief 的 🎯 For Me 在紅單品累積進滾動候選池 `reports/buy_shortlist/_candidates.draft.md`（gitignored 本機草稿，同單品累計出現次數）；週一**收斂**——反覆出現=真在升（入選）、單日=雜訊（剔除），湊 5 區×3。技術上零 config 改動（`*.draft.md` 已 gitignored + validate_repo 明確跳過）。同步 `prompts/daily_trend_brief.md`（每日累積）+ `prompts/weekly_buy_picks.md`（輸入改候選池優先、按出現次數收斂）+ `docs/flow_calendar.md` + `docs/decisions.md` D26。可逆。
 - **週挑改「週一早安」自動觸發，不需關鍵字（D25，2026-06-23，擁有者「應該每週一說早安同步給我週挑」）**：未用功能審視發現週挑整套工具鏈只產過 1 次（W24，06-10）後休眠，repo_health「落後 2 週」看門狗持續對空氣 WARN（違反「警告必配修復」）。反向驗證確認非死碼（D9 保留週挑），是**缺觸發點**——D16 改對話觸發後沒人特地打關鍵字。改為：**週一擁有者說「早安」→ brief + 週挑一起自動產出**（不需關鍵字、不排程，合 D16）；週挑**存檔** `reports/buy_shortlist/`（解掉 D16 留下的「ephemeral vs 看門狗」矛盾——買推薦有回看價值、讓看門狗有效）。`generate_weekly_buy_picks.py` 降為可選骨架工具、不刪。同步 `prompts/daily_trend_brief.md` + `prompts/weekly_buy_picks.md` + `docs/flow_calendar.md` + `repo_health.py` 提示 + `docs/decisions.md` D25。可逆。

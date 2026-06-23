@@ -1,0 +1,67 @@
+# scan_units.yml — 每日趨勢掃描的宣告式工作清單（scan-manifest）
+# =============================================================
+# 用途：對話 agent 跑 daily brief 時照這份「派工」——對每個 active 單元開一個平行 subagent，
+#       各掃自己那一區 / lane，回來後彙整去重。把多區 fan-out 的「覆蓋與密度」固化成規格，
+#       不靠臨場記憶（痛點：臨場開 agent，密度與覆蓋不穩定）。
+#
+# 這不是會跑 LLM 的腳本（守 D5：腳本不呼叫 LLM、不管 key）。派工 / 收斂由「對話 agent」做
+#   （D16 全對話觸發、D20 內容層封給對話 + 人、D21 介面只有對話一條）——本檔只是「我每次照掃的規格」。
+# 協定（怎麼派工 / 收斂）見 prompts/daily_scan_orchestration.md；
+# 判讀規則 / 來源清單 / 證據門檻見 prompts/daily_trend_brief.md；輸出契約見 templates/daily_brief_template.md。
+#
+# 規模可調：要從 3 區放大到更多區 / lane，只加 units 清單項、不改架構（dynamic-workflow 原則）。
+# 參數化：每區則數 = quota[min,max]，跑時可覆寫；active:false 可單獨關掉某區；可單獨重跑一個單元 debug。
+
+version: 1
+
+defaults:
+  active: true
+  # 每則兩行：標題行＝粗體單品/事件 ＋ 日期/價格/通路 ＋ 來源連結（必附、實測有效）；
+  #           次行＝1–2 句「特點是什麼 ＋ 為什麼值得看 / 對我的意義」。
+  two_line: true
+  # 寫進每則的可查證事實（roundup 一律 WebFetch 挖實際 picks，挖不到整條不列）。
+  evidence: [date, price_if_any, source_link]
+  # 挑選視角＝對我 lane（日系 contemporary / 重質感 / 直筒）能不能駕馭（wearability 可駕馭度）。
+  # 這是「主編判讀的視角」，不是打 0–5 分的評分機制（守 D14：趨勢挑選靠判讀，不重建評分框架）。
+  lens: wearability
+  sources: 見 prompts/daily_trend_brief.md 各區既有來源清單（不新增來源，D18）
+
+# 頭條 + 三區合計的總量目標（寬進嚴出：寧可多抓再彙整去蕪，不要只摘 2 條大新聞）。
+total_target: [20, 30]
+headline:
+  quota: [3, 5]
+
+# 掃描單元：彼此獨立、無共享狀態（才能真正平行）。每個單元 = 一個平行 subagent。
+units:
+  - id: jp
+    kind: region
+    label: 日潮 JP
+    quota: [6, 10]
+
+  - id: kr
+    kind: region
+    label: 韓潮 KR
+    quota: [4, 8]
+    # 三維度都要照看；某維度當日無可驗證訊號就明寫一行，不得補熱度。
+    dimensions: [造型, 設計師·零售, 跨市場外溢]
+
+  - id: us-eu
+    kind: region
+    label: 歐美 US-EU（global 訊號歸此區）
+    quota: [6, 10]
+
+  - id: jp-contemporary-lane
+    kind: lane
+    label: 日系 contemporary lane（重點追蹤）
+    quota: [2, 4]
+    # 沿用 docs/style_strategy.md 的 lane 定義，不自創分類。
+    brands: [AURALEE, CIOTA, NEAT, COMOLI, A.PRESSE]
+    # 這條 lane 的新作 / 聯名 / 補貨 / 秀場訊號，餵 🎯 For Me（D15 情報層，非買清單）。
+
+# 收斂層（平行抓進來會有重複與雜訊，這層做品質）：
+converge:
+  dedup: 乾淨連結 / 平台:影片id / 同單品跨區——重複只留證據最硬那則
+  archive: 按 頭條 → 區域 → lane 歸位；超量砍弱訊號（密度鐵則：有來源有日期的訊號才留）
+  output: templates/daily_brief_template.md
+  for_me: 🎯 對我最相關（在紅單品情報層，D15：不催買、無死線、無 ⏰ 行動日）；交付時 For Me 先講
+  archive_path: 對話端（daily brief ephemeral，D16）；需封存才寫 reports/daily/（另議）。不引新平台，用既有據點

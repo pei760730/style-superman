@@ -27,7 +27,7 @@
 > 白名單硬資訊源**純機械抽取(零 LLM)**,回答「今天有什麼上了/漲了/併了」+ 現成 SKU/價格/發售日。
 > 趨勢判讀 + 挖 picks 仍是桌面對話深度版的活(D19,2026-06-16)。
 
-**每週一**：說「早安」= daily + 週挑 Head-to-Toe 一起端上（5 區 × 3 樣，收斂上週 7 天情報；**對話觸發，不是排程**）。每週至少一張趨勢深挖卡（歐美優先，對話觸發）。
+**每週一**：說「早安」= daily + 週挑 Head-to-Toe **一起自動端上、不需額外關鍵字**（D25）。週挑不是週一現抓——每天 brief 的 🎯 For Me 在紅單品**累積進滾動候選池**，週一**收斂**（反覆出現=真在升、單日=雜訊；D26）。每週至少一張趨勢深挖卡（歐美優先，對話觸發）。
 **每月初**：說一聲跑歐美 / 日本月報（**對話觸發**；日本線 2026-07 起）。Lyst Q2 出刊（7 月）時說一聲 ingest 進 rankings。
 **每週一、四 09:00**：自動健檢巡檢——格式跑偏、文件↔程式碼漂移、週挑 / 月報斷更、**死源（liveness）**會**自動開 `repo-health` issue**，所以 GitHub 通知出現它 = 系統出事了，其他時候不用管。（daily 斷更看門狗已隨 D16 移除——brief 改對話觸發、不入 `reports/daily/`，無檔可數。）
 
@@ -48,8 +48,10 @@
 - **刻意不做趨勢判讀 / 不挖 picks / 不下熱度結論**——那是桌面對話深度版（opus）的活。只做機械抽取、不讓 LLM 假裝判讀，從根上不退化成被砍掉的「空殼 roundup」（D16）。
 - 與深度版分流：速報落 `reports/flash/`、深度 brief 在對話讀（不入版控），互不踩。
 
-### 🛍 週挑 Head-to-Toe — [reports/buy_shortlist/](reports/buy_shortlist/)（每週）
+### 🛍 週挑 Head-to-Toe — [reports/buy_shortlist/](reports/buy_shortlist/)（每週一，自動）
 
+- **觸發**：每週一說「早安」= daily brief + 週挑一起端上，**不需關鍵字**（D25）。
+- **怎麼挑**：不是週一現抓——每天 brief 的 🎯 For Me 在紅單品**累積進滾動候選池** `_candidates.draft.md`（gitignored），週一**收斂**：反覆出現=真在升（入選）、單日=雜訊（剔除）（D26）。
 - 從頭到腳 **5 區（頭部 / 上身 / 下身 / 足部 / 配件）× 各 3 樣**，每樣含：是什麼｜在哪紅（歐美/日/韓）｜價格/型號（辨識用）｜為什麼這週在紅｜炒作 vs 真（週期位置）。
 - 直接跳 **「🎯 本週最該記住的一個」**——15 樣裡訊號最強 × 最值得記住的那個。
 - 這是「各部位在紅什麼」的情報榜（D15，**非買清單**）；難不難買不是門檻，真要入手再隨選。
@@ -71,7 +73,8 @@
 
 ### 📈 想查什麼最紅（隨時）
 
-在對話跟 AI 說「現在歐美/韓國什麼最紅」——AI 讀 [data/rankings/](data/rankings/) 四榜快照（Lyst / StockX / KREAM / MUSINSA，最新在上）回報。**不需打指令**（D21：人工看榜 CLI 已移除，擁有者只走對話）。日本量化板 2026-06-14 撤除（Mercari 陳貨、即時榜 bot 擋，D17），日本看 daily brief 日潮區。
+在對話跟 AI 說「現在歐美/日本/韓國什麼最紅」——AI 讀 [data/rankings/](data/rankings/) **五榜快照**（歐美 Lyst / StockX、韓國 KREAM / MUSINSA、日本 SNKRDUNK，最新在上）回報。**不需打指令**（D21：人工看榜 CLI 已移除，擁有者只走對話）。
+要**即時當期榜**時，AI 用 **Firecrawl keyless 對話端抓**（D22–D24）→ 反向驗證 → 寫一筆 dated 快照進 yaml：KREAM / MUSINSA 逐位榜（D23）、SNKRDUNK 日本球鞋轉售榜（D24，部分重開日本量化板）。**ZOZO 為 Akamai 級永久死界**（Firecrawl 也過不了）；日本服飾/精品量化仍空，看 daily brief 日潮區。Mercari 2013→2022 陳貨已撤（D17）。
 
 ---
 
@@ -120,6 +123,12 @@
 | D18 | 新增來源兩道門 | 加來源前先驗 ① 近 30 天持續產出 ② 夠權威（非聚合 / SEO）；仍需擁有者拍板 |
 | D19 | 速報層 generate_flash | 白名單硬源純機械抽取（零 LLM）；手機可獨立 dispatch，補桌面對話 brief 手機看不到的缺口 |
 | D20 | Google 體系整合評估 | 不接常設源 / CLI / API / Cloud（Google 強項全落在被 D5/D7/D16 封死的內容層）；YT 話語層走對話臨場 WebSearch |
+| D21 | 不建需離開對話的人工介面 | 移除排行看榜 CLI + 存榜助手（機器無呼叫者、擁有者只走對話）；排行資料改 AI 對話端直接編 yaml |
+| D22 | 採用 Firecrawl keyless | 封鎖源 roundup 改 Firecrawl 對話端 scrape（免 key、結構化抽 picks）；限定對話端、不進腳本 |
+| D23 | Firecrawl 重開韓國量化榜 | KREAM / MUSINSA 逐位榜由 AI 對話端 Firecrawl 抓→寫 dated 快照；確認 ZOZO 為 Akamai 級永久死界 |
+| D24 | SNKRDUNK 重建日本球鞋板 | 日本量化板部分重開——球鞋轉售榜（日版 StockX）可 Firecrawl 抓；服飾/精品板仍空 |
+| D25 | 週挑改「週一早安」自動觸發 | 週一說「早安」= brief + 週挑一起自動產出，不需關鍵字；週挑存檔（解掉看門狗空叫矛盾） |
+| D26 | 週挑改每日累積候選池 | 每天 For Me 累積進滾動候選池 → 週一收斂（反覆出現=真在升、單日=雜訊），不週一現抓 |
 
 ---
 
@@ -141,18 +150,20 @@ style-superman/
 ├── CHANGELOG.md              # 系統演進紀錄（能力層變更）
 ├── CLAUDE.md                 # agent 執行守則（定位鐵則 + Self-Evolution Loop）
 ├── requirements.txt          # Python 相依（標準庫 + pyyaml）
+├── .mcp.json                 # Firecrawl keyless MCP 設定（對話端即時榜抓取，D22）
 ├── data/                     # 知識底層（長期維護，不是快照）
 │   ├── sources.yml           # 情報來源 43 個（31 個可 RSS 自動收；撤 Mercari D17、加錶源 Fratello/Monochrome）
 │   ├── trend_taxonomy.yml    # 趨勢分類體系（系統的「語言」）
 │   ├── trend_history.yml     # 趨勢生命週期基準（炒作 vs 真趨勢；雷達 / 深挖 prompt 引用）
-│   ├── brands.yml            # 追蹤品牌（含 contemporary lane 錨點）
+│   ├── brands.yml            # 追蹤品牌（contemporary lane + 日本デニム殿堂 + amekaji 古著魂；taste:anchor 標個人品味錨點）
 │   ├── people.yml            # 追蹤人物
 │   ├── decision_guards.yml   # 決策守衛：禁用識別字（CI 強制）
-│   └── rankings/             # 量化排行快照（最新在上，可比對演化）
+│   └── rankings/             # 量化排行快照（最新在上；即時榜由 Firecrawl 對話端抓 D22–D24）
 │       ├── lyst-index.yml    #   歐美：Lyst Index 季度
 │       ├── stockx.yml        #   歐美：StockX 年度
-│       ├── kream.yml         #   韓國：KREAM 轉售
-│       └── musinsa.yml       #   韓國：MUSINSA 銷售榜
+│       ├── kream.yml         #   韓國：KREAM 轉售（Firecrawl 重開 D23）
+│       ├── musinsa.yml       #   韓國：MUSINSA 銷售榜（Firecrawl 重開 D23）
+│       └── snkrdunk.yml      #   日本：SNKRDUNK 球鞋轉售（日版 StockX，D24 重建）
 ├── reports/                  # 封存快照（產出後不回改）
 │   ├── daily/                # 每日 brief（YYYY-MM-DD.md）
 │   ├── flash/                # ⚡ 速報（YYYY-MM-DD.md；手機 dispatch，純機械抽取 D19）
@@ -184,7 +195,7 @@ style-superman/
 │   ├── operating_manual.md      # 營運手冊
 │   ├── ai_collaboration.md      # 帽子原則 + 不自我終審 + 誰拍板（D7 已瘦身）
 │   ├── rankings.md              # 排行快照方法論（口徑分開、不硬湊）
-│   ├── decisions.md             # 方向決策紀錄（D1–D20）
+│   ├── decisions.md             # 方向決策紀錄（D1–D26）
 │   └── lessons.md               # 教訓簿（殭屍任務卡三例都在這）
 └── .github/workflows/
     ├── ci.yml                # PR validate + smoke（3.9 + 3.12）+ ruff
@@ -229,7 +240,7 @@ python scripts/repo_health.py --consistency
 
 ## Roadmap
 
-- [x] 資料底層 + Rankings 模組（歐美 / 韓四榜；日本量化板 D17 撤除）
+- [x] 資料底層 + Rankings 模組（歐美 / 韓 / 日五榜；KREAM/MUSINSA Firecrawl 重開 D23、SNKRDUNK 日本球鞋板 D24、ZOZO 確認永久死界）
 - [x] CI（validate + smoke）+ 週期健檢巡檢（自動開 issue）
 - [x] RSS 收集事實層（RSS 源擴到 31、每源抓取 10 → 25；新增來源走 D18 門檻）
 - [x] AI 撰寫走對話 agent（D5：不接 repo 內 LLM API；D16：0 排程 routine、全對話）
@@ -241,6 +252,8 @@ python scripts/repo_health.py --consistency
 - [x] 終審 ≠ merge（2026-06-12 D8）；挑買卡停產、推薦回歸 brief 內（2026-06-12 D9）
 - [x] 配件全週期覆蓋（週挑第 5 區；daily / monthly 配件同等納入）；粉絲增長殘留二次深掃
 - [x] ⚡ 速報層（D19，2026-06-16）：白名單硬源純機械抽取（零 LLM）、手機可 dispatch，補桌面深度 brief 手機看不到的缺口
+- [x] 採用 Firecrawl keyless 對話端（D22–D24，2026-06-20/21）：封鎖源 roundup 挖 picks、重開韓國/日本量化榜（不進腳本）
+- [x] 週挑「週一早安自動觸發 + 每日累積候選池 → 週一收斂」（D25/D26，2026-06-23）：解掉休眠 + 看門狗空叫
 - [ ] 推送通知（未拍板；傾向用既有據點，不加新平台）
 - [ ] 更多非 RSS 來源（視需求，不硬刮反爬站）
 

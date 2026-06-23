@@ -2,6 +2,9 @@
 
 把當天收集到的原始潮流訊號，整理成一份精煉、可讀、可行動的男性潮流每日簡報。
 
+> 多區訊號怎麼**派工蒐集 + 收斂去重**（照 `data/scan_units.yml` 對日/韓/歐美 + lane 平行 fan-out）見
+> `prompts/daily_scan_orchestration.md`；本檔管的是收斂之後的**判讀、格式、證據門檻**。
+
 ---
 
 ## System / Role

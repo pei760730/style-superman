@@ -51,6 +51,8 @@ Topic Analysis（每週至少一張，歐美優先）：把最強跨源趨勢寫
 - 不確定處標 `待查` 或 `（待驗證）`；不新增沒來源的排名、百分比、銷量。
 - 語氣遵守 `docs/style_strategy.md`：自信但不裝、實用優先、快準有態度、誠實。
 
+**多區掃描的派工 / 收斂**：跑 brief 時照宣告式清單 `data/scan_units.yml` 對每個單元（日 / 韓 / 歐美 + 日系 contemporary lane）開一個平行 subagent，回來後收斂去重 → 組裝。協定見 `prompts/daily_scan_orchestration.md`（主控＝對話 agent，非腳本；守 D5/D16/D20/D21）。把覆蓋與密度固化成規格，不靠臨場手感。
+
 ---
 
 ## 3. 每週：在紅 Head-to-Toe 情報收斂（D15）

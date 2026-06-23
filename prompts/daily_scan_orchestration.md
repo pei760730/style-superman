@@ -47,14 +47,14 @@
 平行抓進來必有重複與雜訊，這層做品質（`scan_units.yml` 的 `converge`）：
 
 1. **去重**：乾淨連結 / `平台:影片id` / 同單品跨區——重複只留證據最硬那則；同品牌一天最多 1 則（除非兩個獨立大事）。
-2. **歸檔**：頭條 `headline.quota` 3–5 → 三區域區塊（JP `6–10` / KR `4–8` / US-EU `6–10`）→ lane 訊號進 For Me。超量砍弱訊號（密度鐵則：有來源、有日期才留）。**總量 `total_target` 20–30**。
+2. **歸檔**：頭條 `headline.quota` 3–5 → 三區域區塊（JP `10–15` / KR `8–12` / US-EU `10–15`）→ lane 訊號進 For Me。超量砍弱訊號（密度鐵則：有來源、有日期才留）。**總量 `total_target` 30–45**。任一區 < 3 條可信訊號（`converge.density_floor`）→ 主動 WebSearch/WebFetch 補到達標再出稿，不交白卷。
 3. **組裝**：嚴格照 `templates/daily_brief_template.md` 結構，判讀 / 口吻 / 證據門檻照 `prompts/daily_trend_brief.md`。
 4. **For Me**：`🎯 對我最相關`（在紅單品**情報層**，D15）——單品｜是什麼｜在哪紅（歐美/日/韓）｜對我衣櫥的意義｜價格/型號（辨識用，查不到標 `待查`）。**不催買、無死線、無 ⏰ 行動日**（D15 反轉舊買清單）。交付時 **For Me 先講**。
 5. **落點**：brief 在對話端上（ephemeral，D16）；需封存才寫 `reports/daily/YYYY-MM-DD.md`（另議）。用既有據點，不引新平台。
 
 ## Step 3 — 稽核（audit，可選但建議）
 
-收斂出 brief 草稿後，跑一次 `prompts/scan_auditor.md`（唯讀）檢查：配額（頭條 3–5 / JP 6–10 / KR 4–8 / US-EU 6–10 / lane 2–4 / 總量 20–30）、每則有日期+來源連結、For Me 是 🎯 情報層（無 🛒/⏰/買壓力，D15）、去重、待查沒被講成最紅。`fail` → orchestrator（唯一寫入者）自己補，補完可再送複檢。
+收斂出 brief 草稿後，跑一次 `prompts/scan_auditor.md`（唯讀）檢查：配額（頭條 3–5 / JP 10–15 / KR 8–12 / US-EU 10–15 / lane 2–4 / 總量 30–45）、每則有日期+來源連結、For Me 是 🎯 情報層（無 🛒/⏰/買壓力，D15）、去重、待查沒被講成最紅。`fail` → orchestrator（唯一寫入者）自己補，補完可再送複檢。
 
 ---
 

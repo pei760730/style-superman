@@ -98,7 +98,8 @@ brands:
     segment: contemporary
     tier: 1
     watch: ["vintage-rooted 熱度", "發售即售罄", "別注 / 聯名"]
-    notes: 近年最熱的 vintage-rooted refined，熱度正高
+    notes: 近年最熱的 vintage-rooted refined；也是 Pei 品味錨點
+    taste: anchor
 
   - id: kijima-takayuki
     name: KIJIMA TAKAYUKI

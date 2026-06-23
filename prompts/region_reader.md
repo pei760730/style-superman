@@ -26,6 +26,7 @@
 - **密度**：寧可多抓再讓 orchestrator 去蕪；但每則都要有可查證來源。真無資料的單元/維度，`items` 就少、`strength: 弱`，誠實回報，不硬湊。
 - **視角**：`why` 用 wearability（對「日系 contemporary / 重質感 / 直筒」這條 lane 能不能駕馭）寫 1–2 句，**不打分數**（D14）。
 - **KR 單元**：三維度（造型／設計師·零售／跨市場外溢）都照看；某維度當日無可驗證訊號，就少收，不補熱度。
+- **rss:null 骨幹源不可靜默漏**：KR 的 MUSINSA / KREAM、US-EU 的 IG / TikTok / SSENSE / END 無 RSS、不進自動管線，靠對話端 Firecrawl 快照或 WebSearch 才有料。當天這些骨幹源沒資料時，`strength` 要誠實反映、並在回報裡點明「該源/維度缺口」，**不要當沒這回事跳過**——否則骨幹塌了，orchestrator 從 JSON 看不出來（KR 設計師·零售 / 跨市場外溢兩維度最易因此空掉）。
 
 ## 輸出範例（形狀，非內容）
 

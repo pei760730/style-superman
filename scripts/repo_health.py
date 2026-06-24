@@ -46,6 +46,8 @@ from pathlib import Path
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
 
 # 讓 _probe_rss 能 import 同層的 collect_raw_signals；模組載入時設一次（不在每次 probe 時重插，避免 sys.path 污染）
 _SCRIPTS_DIR = str(Path(__file__).resolve().parent)

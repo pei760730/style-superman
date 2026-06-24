@@ -86,7 +86,7 @@ Next      → repo_health.py 的 Next Actions 就是下一輪 TODO
 
 ## 常見坑（詳見 docs/lessons.md）
 
-- Windows 終端 cp950：腳本都要 `sys.stdout.reconfigure(encoding="utf-8")`；CI 設 `PYTHONIOENCODING`。
+- Windows 終端 cp950：腳本都要 `sys.stdout.reconfigure(encoding="utf-8")` **與 `sys.stderr.reconfigure(encoding="utf-8")`**（argparse 錯誤訊息 / `print(file=sys.stderr)` 走 stderr，只設 stdout 仍會在本機 cp950 吐亂碼/炸 UnicodeError）；CI 設 `PYTHONIOENCODING`。
 - 擁有者的 Mac 沒有 `python` 只有 `python3`（3.9）：文件範例的 `python` 自行代換；新語法要相容 3.9（`X | Y` 型別註記靠 `from __future__ import annotations` 才活著）。
 - workflow 檔在 GitHub 上的註冊可能無聲消失（帳號風控後遺症）：「檔案在 ≠ 在跑」，要看 run 紀錄。
 - 反爬網站（ZOZO 永久死；KREAM / MUSINSA / SNKRDUNK 即時榜）：對話端用 Firecrawl keyless 抓、反向驗證後寫 dated 快照（D22–D24），不進腳本。

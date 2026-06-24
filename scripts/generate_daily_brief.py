@@ -29,6 +29,8 @@ from pathlib import Path
 # Windows 終端機預設 cp950，emoji / 中文會炸。強制 stdout 走 UTF-8。
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
 
 try:
     import yaml

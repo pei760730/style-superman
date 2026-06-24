@@ -23,6 +23,8 @@ from pathlib import Path
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
 
 ROOT = Path(__file__).resolve().parent.parent
 PY = sys.executable
@@ -76,6 +78,9 @@ def main() -> int:
     jdraft.unlink(missing_ok=True)
 
     # 5c. 壞日期/月份反向：四支 generator 對非法輸入要非 0 退出、且不產垃圾封存檔（fail-open 缺口回歸鎖）
+    #     附帶 stderr 編碼回歸鎖（2026-06-24）：argparse 的中文錯誤訊息走 stderr，腳本若只
+    #     reconfigure stdout、漏了 stderr，本機 cp950 會吐亂碼／capture 時 UnicodeDecodeError。
+    #     run() 用 encoding="utf-8" 收 stderr——這裡斷言收到的中文未被 cp950 弄壞（含 CJK、無替代字）。
     for _args, _bad in [
         (["scripts/generate_daily_brief.py", "--date", "NOT-A-DATE"], ROOT / "reports" / "daily" / "NOT-A-DATE.md"),
         (["scripts/generate_monthly_heat_report.py", "--month", "2026-13"], ROOT / "reports" / "monthly" / "2026-13-eu.md"),
@@ -84,8 +89,12 @@ def main() -> int:
     ]:
         r = run(_args)
         bad_made = bool(_bad and _bad.exists())
-        check(f"壞日期被擋不產檔：{_args[0].split('/')[-1]}", r.returncode != 0 and not bad_made,
-              f"rc={r.returncode} bad_made={bad_made}")
+        _err = r.stderr or ""
+        # 至少一個 CJK 字元（中文錯誤訊息有解碼正確）且無 U+FFFD 替代字（沒被 cp950 ↔ utf-8 互轉弄壞）
+        _stderr_ok = any("一" <= ch <= "鿿" for ch in _err) and "�" not in _err
+        check(f"壞日期被擋不產檔：{_args[0].split('/')[-1]}",
+              r.returncode != 0 and not bad_made and _stderr_ok,
+              f"rc={r.returncode} bad_made={bad_made} stderr_ok={_stderr_ok} stderr={_err[:80]!r}")
         if bad_made:
             _bad.unlink()  # 萬一驗證沒擋住，清掉避免污染
 

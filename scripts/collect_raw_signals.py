@@ -36,6 +36,8 @@ from xml.etree import ElementTree as ET
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
+if hasattr(sys.stderr, "reconfigure"):
+    sys.stderr.reconfigure(encoding="utf-8")
 
 try:
     import yaml
@@ -82,8 +84,6 @@ def _text(el) -> str:
 
 def _clean(text: str, limit: int = 280) -> str:
     """去 HTML 標籤、壓空白、截斷——summary 只留事實摘要。"""
-    import re
-
     text = re.sub(r"<[^>]+>", " ", text or "")
     text = html.unescape(text)  # &amp; / &#39; / &nbsp; → 實字（feeds 常雙重編碼；先解碼再壓空白）
     text = re.sub(r"\s+", " ", text).strip()

@@ -88,7 +88,7 @@
 - **結案（2026-06-14，D16/D17）**：「daily 改 weekly」的觀察有結論了，但走的是**第三條路**——daily brief 改**對話觸發、不入 `reports/daily/`**（D16）。既然產出不存檔、無檔可監控，`repo_health` 的 daily 斷更檢查（`check_daily_freshness`）與 `DAILY_STALE_DAYS` 一併移除；health.yml 巡檢改只盯週挑/月報/一致性/守衛/產出契約，**不再是 daily 的看門狗**。⚠ 上方 2026-06-10 條描述的「daily 斷更看門狗 / daily-brief.yml 排程」機制**已不適用**（保留原文為歷史記錄）。
 
 ### Windows 終端機 cp950 編碼
-- 所有腳本已加 `sys.stdout.reconfigure(encoding="utf-8")`；新腳本記得照抄，CI 端配 `PYTHONIOENCODING: utf-8`。PowerShell 5.1 的 `Get-Content` 讀 UTF-8 檔會亂碼，讀檔用支援 UTF-8 的工具。
+- 所有腳本已加 `sys.stdout.reconfigure(encoding="utf-8")` **及 `sys.stderr.reconfigure(encoding="utf-8")`**（2026-06-24：原本只設 stdout，argparse 的中文錯誤訊息與 `print(file=sys.stderr)` 警告走 stderr，在本機 cp950 仍亂碼／smoke 測試 capture 時 UnicodeDecodeError）；新腳本記得兩個都照抄，CI 端配 `PYTHONIOENCODING: utf-8`。PowerShell 5.1 的 `Get-Content` 讀 UTF-8 檔會亂碼，讀檔用支援 UTF-8 的工具。
 
 ### 2026-06-15 · 設定在的 RSS 源默默 403、躲在「N 個 RSS」數字裡沒人發現
 - **發生什麼**：擁有者要我跑沒用過的功能找問題，dogfood `collect_raw_signals` 進料口（這 session 從沒真連網跑過），發現 3 個 reddit 源（malefashion / techwear / Sneakers）的 `rss:` 指向 `www.reddit.com/*.rss`——reddit 2023 API 封鎖後該域一律 403。collect 對抓取失敗「優雅降級」（跳過 + 印 warning），所以這些源**每次跑都默默回 0**，卻照樣被算進 README/repo_health 宣稱的「31 個 RSS」。實際能收的是 28，宣稱 31。同 Mercari（D17 陳貨）一個本質：**宣稱覆蓋 ≠ 實際覆蓋**，而降級設計讓它永遠無聲。

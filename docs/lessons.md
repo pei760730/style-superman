@@ -86,6 +86,7 @@
 - **對策**：`repo_health.py` 新鮮度檢查讓停擺可見；agent 每次開工先跑 health（見 `CLAUDE.md`）。
 - **硬化進度（2026-06-10）**：「警告無人看見」的環節已硬化（health.yml 排程巡檢 + 自動 issue，見上方）。**仍在觀察**：daily 排程 6/10 才開、issue 機制是否真的讓警告被處理——若 repo-health issue 開著超過兩週沒動作，回到原判斷：修產線或承認 daily 改 weekly。
 - **結案（2026-06-14，D16/D17）**：「daily 改 weekly」的觀察有結論了，但走的是**第三條路**——daily brief 改**對話觸發、不入 `reports/daily/`**（D16）。既然產出不存檔、無檔可監控，`repo_health` 的 daily 斷更檢查（`check_daily_freshness`）與 `DAILY_STALE_DAYS` 一併移除；health.yml 巡檢改只盯週挑/月報/一致性/守衛/產出契約，**不再是 daily 的看門狗**。⚠ 上方 2026-06-10 條描述的「daily 斷更看門狗 / daily-brief.yml 排程」機制**已不適用**（保留原文為歷史記錄）。
+- **硬化（2026-06-26，D16/D7）：純文件規則擋不住，daily 被 commit 進 master 連四犯 → 加 gate**。D16「daily 不入 `reports/daily/`」只寫在文件、沒有機制執法 → 平行 session 走舊存檔習慣把整份 brief commit 進去：**06-23（rogue routine，已刪）+ 06-24/06-25/06-26（平行 session 開 PR、擁有者每次手動 merge）連四犯**，每次都要人手動發現+移除。反向驗證收穫：第一反應喊「rogue routine 復活」，查 `RemoteTrigger list` → 零 routine，**真因是規則沒長牙齒、不是有人惡意**。達「反覆出現才硬化」門檻後，`validate_repo.py` 加 `DAILY_FREEZE_CUTOFF=2026-06-16`：之後的 `reports/daily/*.md` 一律 CI 紅（歷史 ≤06-16 grandfathered；flash 不在此列）。擁有者定調：**「我要的就是單純看，喜歡的自己記」**——daily 是用來讀的、不是用來存的（要存喜歡的單品走候選池/週挑，不存整份 brief）。教訓：**「文件寫了」≠「擋得住」；反覆違規且對策穩定，就該從散文升級成 gate（警告必配修復）**。
 
 ### Windows 終端機 cp950 編碼
 - 所有腳本已加 `sys.stdout.reconfigure(encoding="utf-8")` **及 `sys.stderr.reconfigure(encoding="utf-8")`**（2026-06-24：原本只設 stdout，argparse 的中文錯誤訊息與 `print(file=sys.stderr)` 警告走 stderr，在本機 cp950 仍亂碼／smoke 測試 capture 時 UnicodeDecodeError）；新腳本記得兩個都照抄，CI 端配 `PYTHONIOENCODING: utf-8`。PowerShell 5.1 的 `Get-Content` 讀 UTF-8 檔會亂碼，讀檔用支援 UTF-8 的工具。

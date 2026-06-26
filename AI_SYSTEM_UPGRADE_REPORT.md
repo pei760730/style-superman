@@ -311,3 +311,96 @@ removed-component 全 repo grep（`ingest_ranking_snapshot` / `score_trends` / `
 - Yes
 - Why: 2 檔皆防禦性（修活工具指向已刪檔 + CI 省額度 guard），零產線行為擴張；驗收三件套 + smoke 23 + 4 workflow YAML 全綠；無 secrets、可逆。既存 untracked 檔全程未碰。
 - Conditions before commit: 依 repo 慣例 branch + 單主題 PR；**不要** `git add .`（會把既存 untracked 的 brand-radar 卡一起帶進，那是獨立產物，應另行處理）。建議 `git add scripts/repo_health.py .github/workflows/ci.yml AI_SYSTEM_UPGRADE_REPORT.md`。
+
+---
+
+## Run 2026-06-27 (HEAD 4f59337)
+
+### Base
+- Branch / HEAD / Repo root / Time: `master` / `4f59337` / `/Users/pei/style-superman` / 2026-06-27 02:34 CST
+- Target 選擇：啟動目錄 `/Users/pei`（家目錄，非 git repo）。本階段唯一活躍 repo = `style-superman`，以此為 target。
+- Working tree before changes: clean（與 origin/master 同步；本機曾落後 123 commit，已 pull 到 4f59337）
+- Working tree after changes: 4 個 tracked modified（見 Change ledger）+ 本報告；無 commit / push / branch
+- Pre-existing modified files: 無
+- Pre-existing untracked files: `reports/buy_shortlist/_candidates.draft.md`（**本 session 稍早**依 D25/D26 起的週挑候選池草稿；gitignored，`git status` 不顯示；依 dirty-tree 保護**本輪全程未碰**）
+
+### Project snapshot
+- Project type: 個人男裝潮流情報 + 挑買決策系統（AI agent 長期維護；docs/config/automation 複合型）
+- Primary language: Python 3.9（標準庫 + pyyaml）；86 個追蹤檔
+- Package manager / build tool: pip + requirements.txt（pyyaml）；無 build step
+- Main entrypoints: `scripts/`（generate_daily_brief / generate_flash / generate_monthly_heat_report / generate_weekly_buy_picks / collect_raw_signals / track_rankings / validate_repo / repo_health）
+- Automation: 4 個 workflows（ci[PR/push] / daily-brief[僅 dispatch] / flash-brief[僅 dispatch] / health[週一四 01:00Z]）。**daily/週挑/月報內容全對話觸發**（D16/D25/D27/D28）；scan-manifest 宣告式派工（`data/scan_units.yml` + `prompts/region_reader.md`）。
+- Validation commands actually available: `python3 scripts/validate_repo.py`、`python3 tests/test_smoke.py`（**24** cases）、`python3 scripts/repo_health.py --consistency|--strict`；CI 跑 3.9+3.12 矩陣 + ruff
+- Docs / runbooks: README / CLAUDE.md / docs/（decisions D1–D29、flow_calendar、lessons、operating_manual、system_design、rankings、ai_collaboration、style_strategy）
+- AI instruction files: `CLAUDE.md`（成熟，本輪未改）
+- High-risk areas: `daily-brief.yml`（**本輪標記與 D16 freeze gate 互斥**）；`data/decision_guards.yml` 守衛；`reports/` 封存快照不回改
+
+### What I inspected
+自 06-21 巡檢後 repo 大量演進（D25–D29、PR #142–#160：週挑週一觸發 + 每日候選池、scan-manifest 宣告式編排 + 角色分離、D16 freeze gate 機制化、stderr 編碼硬化、D29 週挑降 INFO）。本輪聚焦「D25–D29 快速演進引入的漂移與機制互斥」：
+4 個 workflow 全文 vs D16 freeze gate 交叉比對、`generate_daily_brief.py` 全文（確認非 draft 寫 `reports/daily/<date>.md`）、`tests/test_smoke.py` 全文（freeze 回歸鎖 + 確認 smoke 不留違規檔）、`validate_repo.py` 的 `DAILY_FREEZE_CUTOFF` gate、`repo_health.py` docstring/freshness 檢查 vs D16/D29 實況、候選池機制跨 6 檔一致性、`.gitignore` 對 signals.yml/候選池草稿的覆蓋、README 自動化全貌表 vs workflow 實況。未深讀：reports/ 內容層（封存不回改）、prompts/ 內容判斷規則（屬主編）、scan_units 內容配額（內容判斷）。
+
+### System-level issues found
+#### High risk
+無。健檢三件套全綠、working tree 乾淨、無 secrets 疑慮、無假成功路徑。
+
+#### Medium risk
+1. **`daily-brief.yml` 與 D16 freeze gate 互斥（潛在地雷，dispatch 即弄紅 master）**：該 workflow 呼叫 `generate_daily_brief.py`（**未帶 `--draft`**）→ 寫 `reports/daily/<date>.md` 骨架 → commit step `git add reports/daily` 直推 master。但 06-26 的 D16 gate（`validate_repo.py DAILY_FREEZE_CUTOFF=2026-06-16`）會擋凍結線之後的 daily `.md` → push 後 master CI 立刻紅 + 留 stray 檔要人工刪（**正是 D16 gate 當初要終結的「連四犯」痛點**）。**複合**：workflow 註解宣稱「收 signals 一併 commit 交棒」，但 `.gitignore:38` 已把 `reports/daily/*.signals.yml` 忽略（`git check-ignore` 實證）→ `git add reports/daily` 根本 stage 不到 signals → 交棒路徑也失效。在 D16 + signals gitignored + freeze gate 三重夾擊下，這支「手動備援」已無可行任務。**屬決策層**（退役 / 重設計），巡檢不自行改 workflow 行為 → 已加醒目警告註解 + README caveat + 列 Recommended next actions 待擁有者拍板。
+
+#### Low risk
+2. **`repo_health.py` 模組 docstring 漂移**：頂部 docstring（line 19）把「daily brief 斷更幾天」列為現行 WARN 檢查，但該檢查已於 2026-06-14 隨 D16 移除（同檔 line 60–61 自證）→ 讀 docstring 的下個 agent 會誤以為有此監控。**已修**（改列現行的「週挑落後（INFO，D29）」）。
+3. **D29 後「週挑斷更」文件漂移**：`check_weekly_picks_freshness` 已全回 `info`（D29，decisions.md 明寫「issue 不再為此開」），但 README line 33 仍把「週挑斷更」列為 health.yml 會自動開 issue 的條件、`docs/flow_calendar.md` line 66 仍稱「repo_health 斷更看門狗」（暗示執法）→ 讀者會誤以為週挑落後會弄紅 CI / 開 issue。**已修**兩處文件對齊 INFO 語意。
+
+### Change ledger
+| File | Change | Reason | Risk | Verification |
+|---|---|---|---|---|
+| `.github/workflows/daily-brief.yml` | 檔頭加 12 行 ⚠ 警告註解：說明與 D16 freeze gate 互斥、signals 被 gitignore、dispatch 前須拍板、暫勿 dispatch | medium #1（潛在地雷，非破壞性標記，行為層留給擁有者拍板） | low（純註解，YAML 行為不變） | 4 workflows `yaml.safe_load` 全 OK |
+| `README.md` | (1) 自動化表 daily-brief.yml 列改「⚠ 暫勿 dispatch」+ 現況；(2) 巡檢段移除「週挑斷更→開 issue」、補「週挑 D29 降 INFO 不開 issue」 | medium #1 + low #3（README 描述對齊事實） | low（文件文字） | validate/smoke/consistency 全綠 |
+| `docs/flow_calendar.md` | 週挑「repo_health 斷更看門狗」→「落後提示（D29 後 INFO：不擋巡檢、不開 issue）」 | low #3 | low（文件文字） | consistency exit 0（路徑引用未動） |
+| `scripts/repo_health.py` | docstring WARN 清單「daily brief 斷更幾天」→「週挑落後幾週（INFO，D29）」 | low #2 | low（docstring 字串，非邏輯） | `py_compile` OK + grep 確認舊行已消失（0 命中）+ consistency 綠 |
+
+> 4 檔本輪皆**首次**被本 session 修改（非 pre-existing dirty）。共 4 檔 +16/-4（不含本報告）。零邏輯／零行為變更——全為註解、docstring、README/docs 散文。
+
+### Files changed
+`.github/workflows/daily-brief.yml`、`README.md`、`docs/flow_calendar.md`、`scripts/repo_health.py`、`AI_SYSTEM_UPGRADE_REPORT.md`（本檔）。
+
+### Verification run
+| Check | Command | Result | Notes |
+|---|---|---|---|
+| 契約驗證 | `python3 scripts/validate_repo.py` | ✅ exit 0 | 改動後 |
+| 煙霧測試 | `python3 tests/test_smoke.py` | ✅ 24 passed, 0 failed | 含 D16 freeze 回歸鎖 |
+| 健檢一致性 | `python3 scripts/repo_health.py --consistency` | ✅ exit 0，一切健康 | 含改過的 repo_health 自身 |
+| 健檢 strict | `python3 scripts/repo_health.py --strict` | ✅ exit 0（僅 INFO） | 週挑落後為 INFO、不紅（D29 實證） |
+| 編譯 | `python3 -m py_compile scripts/repo_health.py` | ✅ | 本機 3.9.6 |
+| workflow YAML | `yaml.safe_load` × 4 | ✅ 全可解析 | 含新增警告註解的 daily-brief.yml |
+| docstring 漂移消除 | `grep -c "daily brief 斷更幾天" repo_health.py` | ✅ 0 命中 | 舊行已更正 |
+| gate 衝突佐證 | `git check-ignore reports/daily/<date>.signals.yml` | ✅ 命中 .gitignore:38 | 證 signals 交棒失效 |
+| gate 衝突佐證 | `generate_daily_brief.py --draft`（temp 探針，產後即刪） | ✅ 確認寫 `<date>.md` 路徑 | 非 draft 即撞 freeze gate；探針已清、git status 乾淨 |
+
+### Issues fixed (with evidence)
+- **low #2、#3**：對應上表 py_compile + grep（0 命中）+ consistency 綠 + validate/smoke 全綠，已修且驗證。純文件/docstring，零邏輯。
+- **medium #1**：非破壞性標記（警告註解 + README caveat），行為層修復**刻意留給擁有者拍板**（屬決策層，見 Recommended next actions）；佐證見上表 `git check-ignore` + draft 探針兩條。
+
+### Existing issues not fixed
+- **medium #1 的行為層**（退役 / 重設計 daily-brief.yml）：屬擁有者方向決策（D16 後該 workflow 是否還有存在價值），巡檢不自行退役 workflow（「不改部署流程」）→ 已標記 + 列建議，待拍板。
+- `daily-brief.yml` push race（前三輪已記；現僅 dispatch、且本輪標記暫勿 dispatch，風險再降）。
+- 06-13 的 gh `// empty` 修正仍待真紅一次觀察（06-13 已實彈演習驗過紅路徑，見 Run 2026-06-13 Correction）。
+
+### Remaining risks
+- 本輪純防禦性（註解 + 文件對齊），無產線行為擴張；最壞情況是文字描述，不會讓能動的東西壞掉。
+- daily-brief.yml 的警告只是「文件層攔阻」——若有人無視註解仍 dispatch，仍會弄紅 master（真正止血要擁有者拍板退役 / 加豁免）。已在 workflow 註解 + README 雙處明寫「暫勿 dispatch」。
+
+### Branch cleanup candidates（read-only 檢查）
+#### Possibly safe to delete after human review
+- `remotes/origin/brief/2026-06-13`：唯一 stale remote-tracking ref。repo 已開 `delete_branch_on_merge`，多半是本機過期視圖（遠端實況僅 master），`git fetch --prune` 即清。squash-merge 的分支不會被 `--merged` 認出，刪前人工確認。
+#### Do not delete yet
+- 無 ancestry 上真正未 merge 的本機分支（`git branch --no-merged` 空；master 為唯一長期分支）。
+
+### Recommended next actions
+1. **（擁有者拍板，medium #1）daily-brief.yml 方向**：擇一——(a) 退役本 workflow（D16 後 daily 全對話、Actions 收訊號交棒路徑已被 gitignore + freeze gate 雙殺，實質無用）；(b) 改成只收 signals 寫進已 gitignore 的 `scratch/`、產 `--draft` 骨架、拿掉 commit step；(c) 若真要保留 Actions egress 收訊號能力，把 daily 從 freeze gate 豁免並重設計交棒。**拍板前請勿 dispatch**（會弄紅 master）。
+2. （選配）`git fetch --prune` 清掉 stale 的 `origin/brief/2026-06-13` 視圖。
+3. 本輪 4 檔走 branch + 單主題 PR 提交（主題：「sleep-mode 2026-06-27：標記 daily-brief.yml↔D16 gate 互斥 + 清 D29 週挑文件漂移」，全防禦性、主題一致）；**不要** `git add .`（會把 gitignored 的候選池草稿以外的東西…實際候選池被 ignore 不會進，但仍建議顯式 `git add` 這 4 檔 + 本報告）；CI 綠後 merge。
+
+### Safe to commit?
+- Yes
+- Why: 4 檔全為註解 / docstring / README·docs 散文對齊，零邏輯、零行為擴張；驗收三件套 + smoke 24 + 4 workflow YAML 全綠；無 secrets、可逆。既存 untracked 候選池草稿（gitignored）全程未碰。
+- Conditions before commit: 依 repo 慣例 branch + 單主題 PR。建議顯式 `git add .github/workflows/daily-brief.yml README.md docs/flow_calendar.md scripts/repo_health.py AI_SYSTEM_UPGRADE_REPORT.md`。**medium #1 的行為層修復不在本 PR**（屬擁有者拍板），本 PR 只含「標記 + 文件對齊」。

@@ -16,7 +16,7 @@ validate_repo.py 檢查「格式契約」（YAML 欄位、template 段落）；
       不得回到活文件 / 程式碼（擋「殭屍任務卡」——舊世界觀的任務被照做）
 
   新鮮度 / 產線（WARN，CI 不擋，但由 health.yml 週期巡檢盯）：
-    - daily brief 斷更幾天
+    - 週挑 (buy_shortlist) 落後幾週（INFO，D29 後無硬 SLA）
     - 當月 monthly report 是否缺
     - Lyst 季度快照是否落後超過一季
     - 重定位後產的報告（daily / monthly）是否符合現行契約

@@ -30,7 +30,7 @@
 
 **每週一**：說「早安」= daily + 週挑 Head-to-Toe **一起自動端上、不需額外關鍵字**（D25）。週挑不是週一現抓——每天 brief 的 🎯 For Me 在紅單品**累積進滾動候選池**，週一**收斂**（反覆出現=真在升、單日=雜訊；D26）。每週至少一張趨勢深挖卡（歐美優先，對話觸發）。
 **每月初**：說一聲跑歐美 / 日本月報（**對話觸發**；日本線 2026-07 起）。Lyst Q2 出刊（7 月）時說一聲 ingest 進 rankings。
-**每週一、四 09:00**：自動健檢巡檢——格式跑偏、文件↔程式碼漂移、週挑 / 月報斷更、**死源（liveness）**會**自動開 `repo-health` issue**，所以 GitHub 通知出現它 = 系統出事了，其他時候不用管。（daily 斷更看門狗已隨 D16 移除——brief 改對話觸發、不入 `reports/daily/`，無檔可數。）
+**每週一、四 09:00**：自動健檢巡檢——格式跑偏、文件↔程式碼漂移、月報斷更、**死源（liveness）**會**自動開 `repo-health` issue**，所以 GitHub 通知出現它 = 系統出事了，其他時候不用管。（daily 斷更看門狗已隨 D16 移除——brief 改對話觸發、不入 `reports/daily/`，無檔可數；**週挑落後 D29 後降 INFO**——仍顯示供參考，但不再讓巡檢變紅 / 不開 issue。）
 
 ---
 
@@ -85,7 +85,7 @@
 |---|---|---|---|
 | 對話 agent（**唯一的內容入口**） | 說「早安」/ 需要時 | **每日 brief**（照 `scan_units.yml` 派工平行唯讀 reader → 收訊號 + WebFetch 挖 picks → orchestrator 收斂去重 → 對話端上，D27/D28）；趨勢深挖卡；**品牌雷達**（「深挖 A.PRESSE」式，D11）；**週挑**（週一說「早安」一起端）；**月報**（月初說一聲，歐美 / 日本，日本線 2026-07 起）；**Lyst Q2 ingest**（7 月榜出說一聲）；臨時任務 | 內容在對話讀（不入版控）；需封存 / 工程改動才走**分支 + PR**，驗證綠自 merge（D8） |
 | GitHub Actions `flash-brief.yml` | **手機手動 dispatch**（D19） | ⚡ 速報：白名單硬源純機械抽取（零 LLM），落 `reports/flash/<date>.md` | 手機按一下 = 有人盯，不違 D16 砍排程 |
-| GitHub Actions `daily-brief.yml` | **手動備援**（已移除排程，D16） | `--with-rss` 在 egress 正常的 runner 收訊號 / 產骨架——僅本機 collect 失靈時手動 dispatch | （平時不跑） |
+| GitHub Actions `daily-brief.yml` | ⚠ **暫勿 dispatch**（已移除排程，D16） | 原為手動備援收訊號 / 產骨架；現與 D16 freeze gate 互斥（產 `reports/daily/<date>.md` 會撞 gate 弄紅 master），且要交棒的 signals 已被 gitignore——**待擁有者拍板退役 / 重設計**（見 workflow 內註解 + 2026-06-27 巡檢報告） | （平時不跑；拍板前別跑） |
 | GitHub Actions `health.yml` | 每週一、四台北 09:00 | `repo_health --strict` 巡檢（新鮮度 + 一致性 + 守衛 + 產出契約）+ `--liveness` 死源探針（continue-on-error，限速不算死） | 未過 / 偵測死源 → 自動開 / 更新 `repo-health` issue |
 | GitHub Actions `ci.yml` | 每個 PR | validate + smoke（Python **3.9 + 3.12** 雙版）+ ruff lint（py39） | 紅燈 = 不能 merge |
 

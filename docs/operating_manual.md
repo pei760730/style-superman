@@ -12,7 +12,7 @@ pip install pyyaml
 
 ## 1. 每日流程（備援 / 手動路徑）
 
-> **D16（2026-06-14）：daily brief 現在是全對話觸發**——擁有者說「早安 / 今天」→ 對話 agent 當場收訊號、判讀、上完整 brief，**在對話讀、不入 `reports/daily/`**（要封存再另議）。下面這套手動腳本 6 步是 `collect` 失靈時的備援路徑（`daily-brief.yml` 的 `workflow_dispatch`），不是日常流程。
+> **D16（2026-06-14）：daily brief 現在是全對話觸發**——擁有者說「早安 / 今天」→ 對話 agent 當場收訊號、判讀、上完整 brief，**在對話讀、不入 `reports/daily/`**（要封存再另議）。下面這套手動腳本 6 步是 `collect` 失靈時**在本機跑**的備援路徑（daily-brief workflow 已於 D30 退役刪檔，不再有 `workflow_dispatch`），不是日常流程。
 
 ### Step 1 — 產出今日骨架
 ```bash
@@ -79,7 +79,7 @@ git commit -m "brief: YYYY-MM-DD"
 
 ## 5. 自動化開關
 
-- **GitHub Actions**：`.github/workflows/daily-brief.yml` 的自動 schedule 已於 D16 移除，僅留 `workflow_dispatch`（本機收 RSS 失靈時的手動備援）。每日 brief 改對話觸發。
+- **GitHub Actions**：daily-brief workflow 已**退役並刪檔**（D30，2026-06-27——D16 後 daily 全對話觸發，該 workflow 與 D16 freeze gate 互斥、要交棒的 signals 又被 gitignore，實質無用）。每日 brief 改對話觸發；本機收 RSS 失靈時的備援是直接在本機跑下方腳本（非 workflow_dispatch）。現存 workflow 只剩 `ci.yml` / `flash-brief.yml`（D19 手機速報）/ `health.yml`（巡檢）。
   AI 撰寫全文由對話中的 agent 做，**不接 repo 內 LLM API**（決策 D5，見 `docs/decisions.md`）。
 - **推送（Telegram / Notion 等）**：未拍板。先手動跑順、確認有價值，再自動化；不要為了自動化而自動化。
 

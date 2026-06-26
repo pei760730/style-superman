@@ -85,8 +85,9 @@
 |---|---|---|---|
 | 對話 agent（**唯一的內容入口**） | 說「早安」/ 需要時 | **每日 brief**（照 `scan_units.yml` 派工平行唯讀 reader → 收訊號 + WebFetch 挖 picks → orchestrator 收斂去重 → 對話端上，D27/D28）；趨勢深挖卡；**品牌雷達**（「深挖 A.PRESSE」式，D11）；**週挑**（週一說「早安」一起端）；**月報**（月初說一聲，歐美 / 日本，日本線 2026-07 起）；**Lyst Q2 ingest**（7 月榜出說一聲）；臨時任務 | 內容在對話讀（不入版控）；需封存 / 工程改動才走**分支 + PR**，驗證綠自 merge（D8） |
 | GitHub Actions `flash-brief.yml` | **手機手動 dispatch**（D19） | ⚡ 速報：白名單硬源純機械抽取（零 LLM），落 `reports/flash/<date>.md` | 手機按一下 = 有人盯，不違 D16 砍排程 |
-| GitHub Actions `daily-brief.yml` | ⚠ **暫勿 dispatch**（已移除排程，D16） | 原為手動備援收訊號 / 產骨架；現與 D16 freeze gate 互斥（產 `reports/daily/<date>.md` 會撞 gate 弄紅 master），且要交棒的 signals 已被 gitignore——**待擁有者拍板退役 / 重設計**（見 workflow 內註解 + 2026-06-27 巡檢報告） | （平時不跑；拍板前別跑） |
 | GitHub Actions `health.yml` | 每週一、四台北 09:00 | `repo_health --strict` 巡檢（新鮮度 + 一致性 + 守衛 + 產出契約）+ `--liveness` 死源探針（continue-on-error，限速不算死） | 未過 / 偵測死源 → 自動開 / 更新 `repo-health` issue |
+
+> daily-brief workflow 已於 **D30（2026-06-27）退役刪檔**——D16 後 daily 全對話觸發，該 workflow 與 D16 freeze gate 互斥、要交棒的 signals 又被 gitignore，實質無用。本機收 RSS 失靈時直接在本機跑 `generate_daily_brief.py`（見 docs/operating_manual.md）。
 | GitHub Actions `ci.yml` | 每個 PR | validate + smoke（Python **3.9 + 3.12** 雙版）+ ruff lint（py39） | 紅燈 = 不能 merge |
 
 > **0 支雲端 routine（D16，2026-06-14）。** 每日 brief 連同週挑 / 月報 / Lyst Q2 全部**對話觸發**——
@@ -202,12 +203,11 @@ style-superman/
 │   ├── operating_manual.md      # 營運手冊
 │   ├── ai_collaboration.md      # 帽子原則 + 不自我終審 + 誰拍板（D7 已瘦身）
 │   ├── rankings.md              # 排行快照方法論（口徑分開、不硬湊）
-│   ├── decisions.md             # 方向決策紀錄（D1–D28）
+│   ├── decisions.md             # 方向決策紀錄（D1–D30）
 │   └── lessons.md               # 教訓簿（殭屍任務卡三例都在這）
 └── .github/workflows/
     ├── ci.yml                # PR validate + smoke（3.9 + 3.12）+ ruff
     ├── flash-brief.yml       # ⚡ 速報：手機 dispatch、純機械抽取（D19）
-    ├── daily-brief.yml       # 收 RSS signals + 產骨架（手動備援；排程已於 D16 移除）
     └── health.yml            # 週一、四 --strict 巡檢 + 死源 liveness，未過/死源自動開 issue
 ```
 

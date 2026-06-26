@@ -272,6 +272,13 @@ REPORT_PATTERNS = {
     "buy_shortlist": re.compile(r"^\d{4}-W\d{2}\.md$"),  # 週挑（ISO 週，D3）
 }
 
+# D16（2026-06-14）：daily brief 對話即焚、不入 reports/daily/、不 commit。擁有者要的是「讀，喜歡的自己記」。
+# 06-16（最後一個歷史 daily）以前的檔 grandfathered；之後任何被 commit 進來的 daily brief 都是違規——
+# 多為平行 session 走 D16 前的舊存檔習慣（06-23 routine、06-24/25/26 session 連四犯，純文件規則擋不住）。
+# 這條 gate 把違規檔變 CI 紅、PR merge 不了，從「靠記性」升級成「機制擋死」（CLAUDE.md：反覆出現才硬化、警告必配修復）。
+# 只擋 daily：flash（D19 機械產、合法 commit）同為 YYYY-MM-DD.md 但不在此列。
+DAILY_FREEZE_CUTOFF = "2026-06-16"
+
 
 def check_reports() -> list[CheckResult]:
     results: list[CheckResult] = []
@@ -291,6 +298,12 @@ def check_reports() -> list[CheckResult]:
                         f"{report}: filename does not match {pattern.pattern}"
                         f"（若為本機暫存/實驗檔請刪除該檔，不要放寬此 regex；"
                         f"只有真要新增報告類型時才改 REPORT_PATTERNS）"
+                    )
+                elif subdir == "daily" and report.name[:-3] > DAILY_FREEZE_CUTOFF:
+                    errors.append(
+                        f"{report}: D16 違規——daily brief 對話即焚、不得 commit 進 reports/daily/"
+                        f"（凍結線 {DAILY_FREEZE_CUTOFF}，之後的 daily 一律擋；歷史檔 grandfathered）。"
+                        f"請刪除此檔——擁有者要的是『讀、喜歡的自己記』，不存整份 brief。"
                     )
                 text = report.read_text(encoding="utf-8").strip()
                 if not text.startswith("# "):

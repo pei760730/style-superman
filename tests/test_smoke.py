@@ -55,6 +55,21 @@ def main() -> int:
     r = run(["scripts/validate_repo.py"])
     check("validate_repo exit 0", r.returncode == 0, r.stdout + r.stderr)
 
+    # 1b. D16 gate 回歸鎖：凍結線（2026-06-16）後的 daily 檔（非 draft）被 validate 擋下。
+    #     根因＝平行 session 走 D16 前舊存檔習慣把整份 brief commit 進 reports/daily/（06-23~26 連犯，
+    #     純文件規則擋不住）→ 硬化成 gate。擁有者要的是「讀、喜歡的自己記」，不存整份 brief。
+    stray = ROOT / "reports" / "daily" / "2099-12-31.md"
+    stray.write_text("# stray daily（測試用，產後即刪）\n", encoding="utf-8")
+    try:
+        r = run(["scripts/validate_repo.py"])
+        check(
+            "D16 gate 擋住凍結線後的 daily（非 draft）",
+            r.returncode != 0 and "D16" in (r.stdout + r.stderr),
+            r.stdout + r.stderr,
+        )
+    finally:
+        stray.unlink(missing_ok=True)
+
     # 2. track_rankings 的 lyst_comparison_text（月報 🆚 段唯一在用的函式）見 9d 回歸鎖。
     #    （CLI / --json / ingest 已於 D21 移除——擁有者只走對話，無人工指令，見 docs/rankings.md）
 

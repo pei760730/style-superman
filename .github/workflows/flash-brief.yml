@@ -15,8 +15,9 @@ name: Flash Brief
 #     不是無人值守排程 → 不違反 D16（砍的是 schedule，不是 dispatch）。
 #   - 刻意「不」加 schedule：速報只在擁有者想看時手動拉，不每天自動 commit。
 #
-# 與 daily-brief.yml 的分工：那支收訊號 + 產「空骨架」（給寫手交棒用）；這支不碰骨架、
-# 直接產可讀速報，輸出落 reports/flash/（與深度版 reports/daily/ 分開，不踩 D16）。
+# 定位：直接產可讀速報，輸出落 reports/flash/（與深度版 reports/daily/ 分開，不踩 D16）。
+# （原與 daily-brief workflow 分工——那支收訊號 + 產空骨架——但 daily-brief 已於 D30 退役刪檔，
+#   深度 daily 全對話觸發；本速報層是僅存的手機 dispatch 產出路徑。）
 
 on:
   workflow_dispatch:

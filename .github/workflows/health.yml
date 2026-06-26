@@ -8,8 +8,9 @@ name: Repo Health Patrol
 #     1. run 變紅（GitHub 會通知 scheduled run 失敗）
 #     2. 自動開 / 更新一個 `repo-health` issue——警告變成持久物件，不會衰退成噪音
 #
-# 也是 daily-brief.yml 的獨立看門狗：若 daily-brief 排程死了（例如 workflow
-# 註冊無聲消失，見 lessons），daily 斷更 3 天會被這裡的新鮮度檢查抓到。
+# 巡檢盯的新鮮度＝月報缺檔 + 一致性 + 守衛 + 產出契約（週挑落後 D29 後只 INFO、不擋）。
+# 註：daily 斷更看門狗已隨 D16 移除（daily 對話即焚、不入 reports/daily/、無檔可數），
+#   daily-brief workflow 本身也已於 D30 退役刪檔；本巡檢不再是 daily 的看門狗。
 #
 # 觸發：每週一、四 UTC 01:00（台灣 09:00）+ 手動 dispatch。
 #   頻率刻意不設每日：避免通知疲勞——警告的出口是 issue，不是洗版。

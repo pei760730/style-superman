@@ -63,7 +63,7 @@ Topic Analysis（每週至少一張，歐美優先）：把最強跨源趨勢寫
 
 **怎麼挑（D26，2026-06-23，非週一現抓）**：每天 brief 的 🎯 For Me 在紅單品**累積進滾動候選池** `reports/buy_shortlist/_candidates.draft.md`（gitignored；單品 ｜ 日期 ｜ 區 ｜ 在哪紅 ｜ 為什麼 ｜ 來源，同單品累計出現次數）。週一**收斂候選池**——反覆出現 = 真在升（入選）、單日 = 雜訊（剔除），這才是認真挑而非週一臨時抓。
 
-**固定產物**：「本週在紅 Head-to-Toe」→ `reports/buy_shortlist/YYYY-Wnn.md`（5 區 × 各 3 樣在紅單品 + 為什麼這週在紅 + 炒作 vs 真；D15：情報非買清單）。週挑存檔（非 ephemeral），供回看 + repo_health 斷更看門狗。
+**固定產物**：「本週在紅 Head-to-Toe」→ `reports/buy_shortlist/YYYY-Wnn.md`（5 區 × 各 3 樣在紅單品 + 為什麼這週在紅 + 炒作 vs 真；D15：情報非買清單）。週挑存檔（非 ephemeral），供回看 + repo_health 落後提示（D29 後降 INFO：仍顯示落後供參考，但無硬 SLA、不擋巡檢、不開 issue）。
 產出：對話端直接寫，或（可選）跑 `python scripts/generate_weekly_buy_picks.py` 產骨架，依 `prompts/weekly_buy_picks.md` 填內容。
 
 **週度整理清單**：

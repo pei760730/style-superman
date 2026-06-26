@@ -1,5 +1,17 @@
 name: Daily Brief
 
+# ⚠⚠ 現況警告（2026-06-27 sleep-mode 巡檢標記）：本 workflow 與 D16 freeze gate 互斥，**目前 dispatch 會壞 master**。
+#   1. generate_daily_brief.py（未帶 --draft）寫 `reports/daily/<date>.md` 骨架 → 下方 commit step `git add reports/daily`
+#      會把它推上 master。但 06-26 的 D16 gate（validate_repo.py `DAILY_FREEZE_CUTOFF=2026-06-16`）會擋下
+#      凍結線之後的 daily .md → push 後 master CI 立刻紅 + 留 stray 檔要人工刪（正是 D16 gate 要終結的「連四犯」痛點）。
+#   2. 本檔註解說「收 signals 一併 commit 交棒」，但 `.gitignore` 已把 `reports/daily/*.signals.yml` 忽略
+#      → `git add reports/daily` 根本 stage 不到 signals → 交棒路徑也已失效。
+#   結論：在 D16（daily 對話即焚、不入庫）+ signals gitignored + freeze gate 三重夾擊下，本「手動備援」已無可行任務。
+#   **修復需擁有者拍板方向**（屬決策層，巡檢不自行改 workflow 行為）：擇一——
+#     (a) 退役本 workflow；(b) 改成只收 signals 寫進已 gitignore 的 scratch/、產 --draft 骨架、commit step 拿掉；
+#     (c) 若真要保留 Actions egress 收訊號的能力，把 daily 從 freeze gate 豁免並重設計交棒。
+#   在拍板前**請勿 dispatch**（會弄紅 master）。詳見 AI_SYSTEM_UPGRADE_REPORT.md 的 Run 2026-06-27。
+#
 # 每日自動產出 Daily Brief 骨架 + 當日 RSS 訊號包。
 #
 # 跑 generate_daily_brief.py --with-rss：填模板骨架 + 在 egress 正常的 Actions

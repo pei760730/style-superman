@@ -219,9 +219,13 @@ def check_yaml_parseable(path: Path) -> CheckResult:
     broken-YAML 防護；要加欄位契約時再升級成專屬 check。
     """
     errors: list[str] = []
+    # yaml 為 None（缺 pyyaml）時，load_yaml 先丟 RuntimeError；此處不可寫 `except yaml.YAMLError`，
+    # 否則求值 None.YAMLError → AttributeError 蓋掉 RuntimeError、逃出 main() 的 RuntimeError 處理，
+    # 變成醜 traceback 而非 CLAUDE.md 要求的「缺 pyyaml 明確回報」。缺套件時放行 RuntimeError 上拋。
+    yaml_error = yaml.YAMLError if yaml is not None else ()
     try:
         require_mapping(load_yaml(path), path, errors)
-    except yaml.YAMLError as exc:
+    except yaml_error as exc:
         errors.append(f"{path}: YAML 無法解析：{exc}")
     return CheckResult(str(path.relative_to(ROOT)), errors)
 

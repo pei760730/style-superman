@@ -11,8 +11,11 @@ C6 範圍：**只做「來源事實收集 + 格式化」**——
 交給寫 brief 的主編 agent 後續判讀。
 
 設計：
-- 純標準庫（urllib + xml.etree + email.utils），不加 feedparser 依賴。
+- 純標準庫（urllib + xml.etree + email.utils + concurrent.futures），不加 feedparser 依賴。
 - 抓取與解析**分離**：parse_feed() 吃字串、不碰網路 → 可離線測試。
+- 抓取**平行**、解析/歸併**序列照來源順序**：30+ 源每源最高 15s timeout，序列版 wall-clock 是
+  所有 fetch 的總和（慢源線性累加）；改用 ThreadPoolExecutor 只平行「抓」（網路 I/O bound、
+  urlopen 釋放 GIL），解析與歸併仍照來源順序做 → 輸出與序列版**逐位相同**（可重現、diff 穩定）。
 - 抓取失敗（無網路 / 逾時 / 404）**優雅降級**：跳過該來源並記 warning，不中斷。
 
 用法：
@@ -30,6 +33,7 @@ import sys
 import time
 import urllib.error
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from email.utils import parsedate_to_datetime
 from pathlib import Path
 from xml.etree import ElementTree as ET
@@ -194,12 +198,26 @@ def fetch_feed(url: str, timeout: int = 15, sleep=time.sleep) -> str | None:
     return None
 
 
-def collect(sources: list[dict], limit: int = DEFAULT_LIMIT, fetcher=fetch_feed) -> tuple[list[dict], list[str]]:
-    """對每個來源 fetch+parse；回傳 (signals, warnings)。fetcher 可注入以便測試。"""
+def collect(
+    sources: list[dict],
+    limit: int = DEFAULT_LIMIT,
+    fetcher=fetch_feed,
+    max_workers: int = 8,
+) -> tuple[list[dict], list[str]]:
+    """對每個來源 fetch+parse；回傳 (signals, warnings)。fetcher 可注入以便測試。
+
+    抓取平行（網路 I/O bound）、解析/歸併序列照 `sources` 順序——輸出與序列版逐位相同
+    （可重現）。max_workers 上限刻意保守（預設 8）：相鄰同域請求（如 reddit）同時打易招
+    429，fetch_feed 已有單次退避重試，配合小池子即可（見該函式註解）。
+    """
     signals: list[dict] = []
     warnings: list[str] = []
-    for s in sources:
-        xml_text = fetcher(s["rss"])
+    if not sources:
+        return signals, warnings
+    # 只平行「抓」：ThreadPoolExecutor.map 保序、且 fetch_feed 內部吞所有例外回 None（map 不會拋）。
+    with ThreadPoolExecutor(max_workers=max(1, min(max_workers, len(sources)))) as ex:
+        xml_texts = list(ex.map(lambda s: fetcher(s["rss"]), sources))
+    for s, xml_text in zip(sources, xml_texts):
         if xml_text is None:
             warnings.append(f"{s.get('id')}: 抓取失敗（跳過）")
             continue

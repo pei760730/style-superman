@@ -155,6 +155,21 @@ def main() -> int:
                                fetcher=lambda url: feed_xml if url == "x" else None)
     check("RSS collect 注入 fetcher + 降級", len(sigs2) == 2 and len(warns) == 1, f"{len(sigs2)} sigs, {warns}")
 
+    # 9e. 平行 collect 保序回歸鎖（抓取已平行化；輸出仍須照 sources 順序、與「完成順序」無關）。
+    #     讓越前面的源抓得越慢：若實作改用完成順序（如 as_completed）組裝，結果會反過來 → 被這鎖抓到。
+    import time as _t
+    _order_src = [{"id": f"src{i}", "tier": 2, "region": "global", "rss": str(i)} for i in range(5)]
+
+    def _slow_fetch(url):
+        _t.sleep(0.02 * (5 - int(url)))  # url "0" 最慢、"4" 最快
+        return (f"<rss><channel><item><title>t{url}</title><link>http://e/{url}</link>"
+                "<pubDate>Wed, 04 Jun 2026 10:00:00 +0000</pubDate></item></channel></rss>")
+
+    _osigs, _ = crs.collect(_order_src, fetcher=_slow_fetch)
+    check("平行 collect 仍照來源順序（不隨完成順序）",
+          [s["source_id"] for s in _osigs] == [f"src{i}" for i in range(5)],
+          [s["source_id"] for s in _osigs])
+
     # 9a. 社群來源 spam 過濾：盜播類標題被濾掉且記 warning；正常貼文不受影響
     spam_feed = feed_xml.replace(
         "</channel>",

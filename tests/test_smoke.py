@@ -232,6 +232,34 @@ def main() -> int:
         _ur.urlopen = _orig
     check("fetch_feed 429 退避重試成功", _xml is not None and _calls["n"] == 2, f"calls={_calls['n']}")
 
+    # 9g. repo_health 來源死活檢查平行化保序回歸鎖（探測已平行；死源/限速清單須照 sources.yml 順序、
+    #     與完成順序無關 → issue body 穩定可重現）。注入快樁 probe（不連網），讓越前面的源回得越慢。
+    import repo_health as _rh  # noqa: E402
+    _live_src = [{"id": f"L{i}", "rss": f"http://e/{i}"} for i in range(6)]
+    _st = {0: ("ok", 200), 1: ("dead", 404), 2: ("ratelimited", 429),
+           3: ("ok", 200), 4: ("dead", 403), 5: ("ok", 200)}
+
+    def _live_probe(url, timeout=15):
+        i = int(url.rsplit("/", 1)[1])
+        _t.sleep(0.02 * (6 - i))  # L0 最慢、L5 最快
+        return _st[i]
+
+    import yaml as _yl
+    _orig_load = _yl.safe_load
+    _yl.safe_load = lambda *a, **k: {"sources": _live_src}
+    try:
+        _lout = _rh.check_source_liveness(probe=_live_probe)
+    finally:
+        _yl.safe_load = _orig_load
+    _ldetail = [f.message for f in _lout[1:]]
+    _live_ok = (
+        "3/6" in _lout[0].message                                    # 3 ok
+        and len(_lout) == 4                                          # summary + L1/L2/L4
+        and "L1" in _ldetail[0] and "L2" in _ldetail[1] and "L4" in _ldetail[2]  # 照來源順序
+    )
+    check("liveness 平行探測仍照來源順序（不隨完成順序）", _live_ok,
+          [m[:24] for m in _ldetail])
+
     # 9d. flash 速報：純機械抽取（離線，import 直接呼叫 extract，不碰網路）
     import generate_flash as gf  # noqa: E402
 

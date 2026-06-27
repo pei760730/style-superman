@@ -42,6 +42,7 @@ import re
 import sys
 import urllib.error
 import urllib.request
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -397,7 +398,7 @@ def _probe_rss(url: str, timeout: int = 15) -> tuple[str, int]:
         return ("unreachable", 0)
 
 
-def check_source_liveness() -> list[Finding]:
+def check_source_liveness(probe=_probe_rss) -> list[Finding]:
     """實際連網打每個 rss URL，揪出『設定在、但每次都默默 403/404/0 則』的死源。
     需網路、慢，故只在 --liveness 手動跑（不入預設 / CI --strict，否則 CI 會因外站抖動變 flaky）。
     根因：collect_raw_signals 對抓取失敗優雅降級——死源會永遠躲在『31 個 RSS』的數字裡沒人發現
@@ -411,8 +412,14 @@ def check_source_liveness() -> list[Finding]:
     rssable = [s for s in data.get("sources", []) if s.get("rss")]
     detail: list[Finding] = []
     ok = dead = limited = 0
-    for s in rssable:
-        status, code = _probe_rss(s["rss"])
+    # 平行探測（每源最高 15s timeout，序列版最壞 33×15≈8 分鐘；I/O bound、urlopen 釋放 GIL）。
+    # 結果照 rssable 順序歸併 → 死源/限速清單穩定可重現。max_workers 保守（429 已被當非死源處理）。
+    if not rssable:
+        results: list[tuple[str, int]] = []
+    else:
+        with ThreadPoolExecutor(max_workers=max(1, min(8, len(rssable)))) as ex:
+            results = list(ex.map(lambda s: probe(s["rss"]), rssable))
+    for s, (status, code) in zip(rssable, results):
         if status == "ok":
             ok += 1
         elif status == "ratelimited":

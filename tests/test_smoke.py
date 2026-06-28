@@ -297,6 +297,26 @@ def main() -> int:
               text[:200])
         draft.unlink()
 
+    # 9h. validate_repo 缺 pyyaml 時要乾淨回報、不可崩 traceback（回歸鎖）。
+    #     check_yaml_parseable 舊版寫死 `except yaml.YAMLError`：yaml 缺套件被設成 None 時，
+    #     求值 None.YAMLError → AttributeError 蓋掉 load_yaml 丟的 RuntimeError、逃出 main() 的
+    #     RuntimeError 處理，違反 CLAUDE.md「缺 pyyaml 明確回報」。注入 yaml=None 模擬缺套件，
+    #     斷言只拿到 RuntimeError（main 會接住印 ⚠️），絕不是 AttributeError。
+    import validate_repo as _vr  # noqa: E402
+    _orig_yaml = _vr.yaml
+    _vr.yaml = None
+    try:
+        _raised = None
+        try:
+            _vr.check_yaml_parseable(ROOT / "data" / "trend_history.yml")
+        except BaseException as _e:  # noqa: BLE001 — 就是要分辨拿到哪種例外
+            _raised = _e
+        check("validate_repo 缺 pyyaml 乾淨上拋 RuntimeError（非 AttributeError）",
+              isinstance(_raised, RuntimeError),
+              f"raised={type(_raised).__name__ if _raised else None}")
+    finally:
+        _vr.yaml = _orig_yaml
+
     # 10. repo_health 一致性檢查全綠（文件↔程式碼沒有漂移；新鮮度 WARN 不在此擋）
     r = run(["scripts/repo_health.py", "--consistency"])
     check("repo_health --consistency exit 0", r.returncode == 0, r.stdout + r.stderr)

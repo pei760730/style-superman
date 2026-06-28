@@ -133,6 +133,8 @@
 | D26 | 週挑改每日累積候選池 | 每天 For Me 累積進滾動候選池 → 週一收斂（反覆出現=真在升、單日=雜訊），不週一現抓 |
 | D27 | 多區掃描固化成宣告式 scan-manifest | 每日掃描照 `data/scan_units.yml` 派工給平行唯讀 reader subagent；主控＝對話 agent（非腳本）、不加 .py / 不接 API / 不排程 |
 | D28 | market-researcher 骨架升級掃描編排 | 抄 financial-services 骨架紀律（角色分離 orchestrator/reader/auditor + reader 強制 JSON schema + 防注入），不引 runtime；reader 用 general-purpose（能查網）|
+| D29 | 移除 patrol 對週挑硬 SLA | repo_health 週挑落後 warn→info；CI 不再為週挑逾期變紅（避免警告衰退成噪音、紅燈恢復「真壞了」語意）|
+| D30 | 退役並刪除 daily-brief workflow | D16 後 daily 全對話觸發，該 workflow 與 D16 freeze gate 互斥、signals 又被 gitignore，實質無用 |
 
 ---
 
@@ -142,7 +144,8 @@
 2. **決策守衛**（[data/decision_guards.yml](data/decision_guards.yml) + `repo_health.py`，ERROR / CI 擋）：「不可回頭」的拍板留下禁用識別字（清單見守衛檔本身），任何 PR 把它們寫回活文件直接紅燈——**排程 agent 拿舊任務卡產的東西進不了 master**。
 3. **產出契約檢查**（WARN / 巡檢盯）：重定位（2026-06-05）之後產的 daily / monthly 必含現行段落（`🎯 對我最相關 For Me`／`🛒 本月挑買方向`）、不得含舊世界觀識別字；日期已過仍殘留 `{{…}}` 佔位 = 空轉殭屍 WARN。
 4. **歷史快照不溯及**：`reports/` 是封存快照，產出後不回改；重定位前的舊報告掛豁免註記保留原樣，**不要**把它們改寫成新格式。
-5. **教訓硬化路徑**：踩坑先記 [docs/lessons.md](docs/lessons.md)（soft note），反覆出現才硬化成檢查——不為單次事故加終身檢查。
+5. **D16 freeze gate**（[validate_repo.py](scripts/validate_repo.py) `DAILY_FREEZE_CUTOFF=2026-06-16`，CI 擋）：daily brief 對話即焚、不入 `reports/daily/`——任何日期 > 凍結線的 `reports/daily/*.md` 被 commit 進來直接 CI 紅、PR merge 不了（歷史檔 ≤06-16 grandfathered；flash 不在此列）。連四犯（06-23 routine + 06-24/25/26 平行 session）後從「靠記性」硬化成 gate（D16 機制化，2026-06-26）。
+6. **教訓硬化路徑**：踩坑先記 [docs/lessons.md](docs/lessons.md)（soft note），反覆出現才硬化成檢查——不為單次事故加終身檢查（上方 D16 freeze gate 就是「連四犯才硬化」的範例）。
 
 ---
 

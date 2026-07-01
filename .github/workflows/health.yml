@@ -98,3 +98,12 @@ jobs:
           else
             gh issue create --title "🩺 Repo health 巡檢未通過" --label repo-health --body-file issue-body.md
           fi
+
+      - name: Report run status to Kai (kai-notify, fail-soft)
+        if: always()
+        uses: pei760730/kai-notify@main
+        env:
+          KAI_NOTIFY_BOT_TOKEN: ${{ secrets.KAI_NOTIFY_BOT_TOKEN }}
+          KAI_NOTIFY_CHAT_ID: ${{ secrets.KAI_NOTIFY_CHAT_ID }}
+        with:
+          text: "style-superman health · ${{ job.status }}"

@@ -18,7 +18,7 @@ validate_repo.py 檢查「格式契約」（YAML 欄位、template 段落）；
   新鮮度 / 產線（WARN，CI 不擋，但由 health.yml 週期巡檢盯）：
     - 週挑 (buy_shortlist) 落後幾週（INFO，D29 後無硬 SLA）
     - 當月 monthly report 是否缺
-    - Lyst 季度快照是否落後超過一季
+    - Lyst 季度快照是否有「已發布逾寬限卻沒 ingest」的季（D31 發布寬限模型，非日曆季差）
     - 重定位後產的報告（daily / monthly）是否符合現行契約
       （殭屍任務卡的產出層防線——決策守衛不掃 reports/，舊世界觀產出從這裡抓）
 
@@ -291,7 +291,9 @@ def check_monthly_freshness(today: dt.date) -> list[Finding]:
 
 
 def check_lyst_staleness(today: dt.date) -> list[Finding]:
-    """Lyst 是唯一固定季度節奏的榜，落後兩季以上代表 ingest 斷了。"""
+    """Lyst 是唯一固定季度節奏的榜。D31（2026-07-03）改「發布寬限」模型：上一季索引要
+    「季結束 + LYST_PUBLISH_LAG_DAYS 天」後才算可 ingest，「已發布逾寬限卻沒 ingest」才 WARN
+    ——紅＝「有東西可以 ingest 而沒人動」，不再是「日曆走到季界」（舊日曆季差語意已廢）。"""
     try:
         import yaml
     except ImportError:

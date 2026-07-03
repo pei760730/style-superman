@@ -51,7 +51,13 @@ except ImportError:  # pragma: no cover
 ROOT = Path(__file__).resolve().parent.parent
 SOURCES = ROOT / "data" / "sources.yml"
 
-UA = "Mozilla/5.0 (compatible; StyleSupermanBot/0.1; +https://github.com/pei760730/style-superman)"
+# 2026-07-03:自報身分的 bot UA(StyleSupermanBot/0.1)被三個源擋 —— bof 回 403、
+# heddels / permanent-style 回空 200(WAF 對不明 bot 餵空)。同 URL 換瀏覽器 UA 實測
+# 三源全回完整 RSS(bof 120KB / heddels 18KB / permanent-style 394KB)。這些是公開
+# 訂閱用 feed,用一般 reader 等級的 UA 屬正常消費;三源曾被 liveness 誤判「死源」
+# 差點被 D17 撤掉 —— 死的是 UA,不是源。
+UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+      "(KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36")
 DEFAULT_LIMIT = 25  # 每來源最多收幾則（2026-06-14 由 10 提到 25：hypebeast 等高產源一天發 30+，10 上限丟掉 2/3、也壓低多樣性）
 ATOM = "{http://www.w3.org/2005/Atom}"
 

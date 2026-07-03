@@ -61,7 +61,10 @@ ROOT = Path(__file__).resolve().parent.parent
 # （daily 斷更檢查已於 2026-06-14 移除：D16 後 daily brief 改對話觸發、不入 reports/daily/，
 #   用「檔案新鮮度」監控對話產出只會永遠誤報，見 docs/decisions.md D16）
 MONTHLY_GRACE_DAY = 3         # 每月 N 號後仍無當月月報就警告
-LYST_STALE_QUARTERS = 2       # Lyst 快照落後 >= 這個季數就警告（落後 1 季屬正常發布延遲）
+LYST_PUBLISH_LAG_DAYS = 45    # Lyst 季度索引在「季結束後 ~3-4 週」才發布(Q2'25=7/23)。
+                              # 舊的純日曆季差(落後>=2季就警)讓每年 1/4/7/10 月的頭六週
+                              # 固定假警報 —— behind 跳 2 但新索引根本還沒出、無事可做。
+                              # 改成:只有「已過發布寬限的季」沒 ingest 才算真落後。
 
 # 報告產出契約（重定位 2026-06-05 拍板後產的報告適用；歷史快照不溯及。月報以當月 1 號計）
 OUTPUT_CONTRACT_SINCE = dt.date(2026, 6, 5)
@@ -303,14 +306,20 @@ def check_lyst_staleness(today: dt.date) -> list[Finding]:
         return [Finding("warn", "lyst-index.yml 沒有可解析的季度 period", "檢查 snapshots 的 period 格式（YYYY-QN）")]
     current_q = today.year * 4 + (today.month - 1) // 3 + 1
     behind = current_q - latest_q
-    if behind >= LYST_STALE_QUARTERS:
+    # 上一季的索引要「季結束 + LYST_PUBLISH_LAG_DAYS」後才存在;在那之前它不算可 ingest。
+    prev_idx = current_q - 1
+    py, pq = (prev_idx - 1) // 4, (prev_idx - 1) % 4 + 1
+    prev_end = (dt.date(py, 12, 31) if pq == 4
+                else dt.date(py, pq * 3 + 1, 1) - dt.timedelta(days=1))
+    expected_q = prev_idx if today > prev_end + dt.timedelta(days=LYST_PUBLISH_LAG_DAYS) else prev_idx - 1
+    if latest_q < expected_q:
         return [Finding(
             "warn",
-            f"Lyst 快照落後 {behind} 季（最新：{max(periods)}）",
+            f"Lyst 快照落後 {behind} 季且新一季已發布逾 {LYST_PUBLISH_LAG_DAYS} 天寬限（最新：{max(periods)}）",
             "新一季 Lyst Index 已發布的話，在對話請 AI 依 prompts/ranking_ingest.md 把新快照編輯進 "
             "data/rankings/lyst-index.yml（D21：直接編 yaml，ingest_ranking_snapshot.py 已移除）",
         )]
-    return [Finding("info", f"Lyst 快照：落後 {behind} 季（正常發布延遲內）")]
+    return [Finding("info", f"Lyst 快照：落後 {behind} 季（發布節奏寬限內，無可 ingest 的新季）")]
 
 
 def check_output_contract(today: dt.date) -> list[Finding]:

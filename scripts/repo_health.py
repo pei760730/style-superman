@@ -18,7 +18,7 @@ validate_repo.py 檢查「格式契約」（YAML 欄位、template 段落）；
   新鮮度 / 產線（WARN，CI 不擋，但由 health.yml 週期巡檢盯）：
     - 週挑 (buy_shortlist) 落後幾週（INFO，D29 後無硬 SLA）
     - 當月 monthly report 是否缺
-    - Lyst 季度快照是否落後超過一季
+    - Lyst 季度快照是否落後（>= LYST_STALE_QUARTERS 季才警告；D31 起門檻 3 季）
     - 重定位後產的報告（daily / monthly）是否符合現行契約
       （殭屍任務卡的產出層防線——決策守衛不掃 reports/，舊世界觀產出從這裡抓）
 
@@ -61,7 +61,9 @@ ROOT = Path(__file__).resolve().parent.parent
 # （daily 斷更檢查已於 2026-06-14 移除：D16 後 daily brief 改對話觸發、不入 reports/daily/，
 #   用「檔案新鮮度」監控對話產出只會永遠誤報，見 docs/decisions.md D16）
 MONTHLY_GRACE_DAY = 3         # 每月 N 號後仍無當月月報就警告
-LYST_STALE_QUARTERS = 2       # Lyst 快照落後 >= 這個季數就警告（落後 1 季屬正常發布延遲）
+LYST_STALE_QUARTERS = 3       # Lyst 快照落後 >= 這個季數就警告。Lyst Index 季末後約一個月才發布，
+                              # 落後 2 季內屬正常發布延遲 + 對話端尚未 ingest（D21 後 ingest 是手動編 yaml、
+                              # 無自動管線可「斷」）；門檻 2→3 見 D31，避免看門狗為「暫時無法 action 的內容項」長期紅
 
 # 報告產出契約（重定位 2026-06-05 拍板後產的報告適用；歷史快照不溯及。月報以當月 1 號計）
 OUTPUT_CONTRACT_SINCE = dt.date(2026, 6, 5)
@@ -282,7 +284,9 @@ def check_monthly_freshness(today: dt.date) -> list[Finding]:
 
 
 def check_lyst_staleness(today: dt.date) -> list[Finding]:
-    """Lyst 是唯一固定季度節奏的榜，落後兩季以上代表 ingest 斷了。"""
+    """Lyst 是唯一固定季度節奏的榜。落後 >= LYST_STALE_QUARTERS 季（D31：3）才警告——
+    Lyst Index 季末後約一個月才發布、且 D21 後 ingest 是對話端手動編 yaml（無自動管線可斷），
+    落後 2 季內屬正常發布延遲 + 尚未 ingest，不該讓排程巡檢長期紅（見 D31）。"""
     try:
         import yaml
     except ImportError:

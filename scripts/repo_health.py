@@ -18,7 +18,7 @@ validate_repo.py 檢查「格式契約」（YAML 欄位、template 段落）；
   新鮮度 / 產線（WARN，CI 不擋，但由 health.yml 週期巡檢盯）：
     - 週挑 (buy_shortlist) 落後幾週（INFO，D29 後無硬 SLA）
     - 當月 monthly report 是否缺
-    - Lyst 季度快照是否落後超過一季
+    - Lyst 季度快照是否有「已發布逾寬限卻沒 ingest」的季（D31 發布寬限模型，非日曆季差）
     - 重定位後產的報告（daily / monthly）是否符合現行契約
       （殭屍任務卡的產出層防線——決策守衛不掃 reports/，舊世界觀產出從這裡抓）
 
@@ -90,8 +90,10 @@ PATH_RE = re.compile(
 )
 PLACEHOLDER_MARKS = ("YYYY", "{{", "<", "*", "…")
 
-# 死源偵測偽陽性退避：dead/empty/unreachable 隔這麼多秒重打一次再定讞（外站瞬斷 403/empty 常一下就恢復，
-# 見 docs/lessons.md 2026-07-03；429 有自己的退避、不在此列）。測試可傳 retry_delay=0 關掉。
+# 死源偵測偽陽性退避：dead/empty/unreachable 隔這麼多秒重打一次再定讞——防真瞬斷（DNS 抖、暫時 5xx）。
+# 注意它防不了「探測視角」的封鎖：UA 級（7/2 bof/heddels/permanent-style，靠 reader-grade UA 修，#177）
+# 與 egress 地理（6/16 KR 三源）都要另行歸因，見 docs/lessons.md 2026-07-03 兩節。
+# 429 有自己的退避、不在此列。測試可傳 retry_delay=0 關掉。
 LIVENESS_RETRY_DELAY_SEC = 2.0
 
 
@@ -419,7 +421,9 @@ def check_source_liveness(probe=_probe_rss, retry_delay: float = LIVENESS_RETRY_
     （Mercari 陳貨 D17、reddit www 域 403 都是這類）。此檢查把『宣稱 ≠ 實際』顯性化。
     429（限速）單獨標示、不算死源——活著但被擋，是『調抓取節奏』而非『撤源』的訊號。
     偽陽性退避（D32，2026-07-03）：dead/empty/unreachable 隔 retry_delay 秒重打一次，二次仍非活才定讞死源
-    ——外站瞬斷（bof 403、heddels/permanent-style empty）常一下就恢復，單探測會抽風誤報進 issue。"""
+    ——防真瞬斷（DNS 抖、暫時 5xx）。防不了「探測視角」封鎖：UA 級（7/2 bof/heddels/permanent-style，
+    #177 換 reader-grade UA 修）與 egress 地理（6/16 KR）——報死先分層歸因、本機複核，再談 D17 撤源
+    （docs/lessons.md 2026-07-03 兩節）。"""
     try:
         import yaml
     except ImportError:

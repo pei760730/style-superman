@@ -90,8 +90,9 @@ PATH_RE = re.compile(
 )
 PLACEHOLDER_MARKS = ("YYYY", "{{", "<", "*", "…")
 
-# 死源偵測偽陽性退避：dead/empty/unreachable 隔這麼多秒重打一次再定讞（外站瞬斷 403/empty 常一下就恢復，
-# 見 docs/lessons.md 2026-07-03；429 有自己的退避、不在此列）。測試可傳 retry_delay=0 關掉。
+# 死源偵測偽陽性退避：dead/empty/unreachable 隔這麼多秒重打一次再定讞——只防真瞬斷（DNS 抖、暫時 5xx），
+# 防不了 UA/egress 地理這類「探測視角」的持續性封鎖（那要靠 reader-grade UA + 本機複核，
+# 見 docs/lessons.md 2026-07-03 訂正節）；429 有自己的退避、不在此列。測試可傳 retry_delay=0 關掉。
 LIVENESS_RETRY_DELAY_SEC = 2.0
 
 
@@ -419,7 +420,9 @@ def check_source_liveness(probe=_probe_rss, retry_delay: float = LIVENESS_RETRY_
     （Mercari 陳貨 D17、reddit www 域 403 都是這類）。此檢查把『宣稱 ≠ 實際』顯性化。
     429（限速）單獨標示、不算死源——活著但被擋，是『調抓取節奏』而非『撤源』的訊號。
     偽陽性退避（D32，2026-07-03）：dead/empty/unreachable 隔 retry_delay 秒重打一次，二次仍非活才定讞死源
-    ——外站瞬斷（bof 403、heddels/permanent-style empty）常一下就恢復，單探測會抽風誤報進 issue。"""
+    ——只防真瞬斷（DNS 抖、暫時 5xx）；歷史兩組誤報實例事後查明皆非瞬斷（6/16 KR=Actions 地理、
+    7/2 bof/heddels/permanent-style=bot UA 被擋，#177 換 reader-grade UA 解），重試防不了那類
+    「探測視角」持續封鎖——報死先疑地理/UA、本機複核再談撤源（docs/lessons.md 2026-07-03）。"""
     try:
         import yaml
     except ImportError:

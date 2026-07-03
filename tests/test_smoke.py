@@ -248,7 +248,8 @@ def main() -> int:
     _orig_load = _yl.safe_load
     _yl.safe_load = lambda *a, **k: {"sources": _live_src}
     try:
-        _lout = _rh.check_source_liveness(probe=_live_probe)
+        # retry_delay=0：關掉 D32 偽陽性退避的 sleep，讓保序測試快且確定（確定性 stub 的死源重打仍死）
+        _lout = _rh.check_source_liveness(probe=_live_probe, retry_delay=0)
     finally:
         _yl.safe_load = _orig_load
     _ldetail = [f.message for f in _lout[1:]]
@@ -259,6 +260,39 @@ def main() -> int:
     )
     check("liveness 平行探測仍照來源順序（不隨完成順序）", _live_ok,
           [m[:24] for m in _ldetail])
+
+    # 9g-2. D32 偽陽性退避回歸鎖：瞬斷源（首打 dead/empty/unreachable、重打就活）不該被誤報死源。
+    #       每源給獨立計數，確認①失敗類第一次真的重打了 ②重打回 ok 就不進死源清單 ③429 不重打（自有退避）。
+    _retry_calls = {"t": 0, "e": 0, "u": 0, "r": 0, "ok": 0}
+    _retry_src = [{"id": "transient", "rss": "http://x/t"},   # dead→ok
+                  {"id": "flap-empty", "rss": "http://x/e"},  # empty→ok
+                  {"id": "flap-unreach", "rss": "http://x/u"},# unreachable→ok
+                  {"id": "limited", "rss": "http://x/r"},     # 429（不重打）
+                  {"id": "alive", "rss": "http://x/ok"}]      # ok（不重打）
+    def _flaky_probe(url, timeout=15):
+        k = url.rsplit("/", 1)[1]
+        _retry_calls[k] += 1
+        first = {"t": ("dead", 403), "e": ("empty", 200), "u": ("unreachable", 0),
+                 "r": ("ratelimited", 429), "ok": ("ok", 200)}[k]
+        # 失敗類第二次探測回活；429/ok 維持原狀
+        if _retry_calls[k] >= 2 and k in ("t", "e", "u"):
+            return ("ok", 200)
+        return first
+    _yl.safe_load = lambda *a, **k: {"sources": _retry_src}
+    try:
+        _rout = _rh.check_source_liveness(probe=_flaky_probe, retry_delay=0)
+    finally:
+        _yl.safe_load = _orig_load
+    _rdetail = [f.message for f in _rout[1:]]
+    _retry_ok = (
+        "4/5" in _rout[0].message                              # t/e/u 重打回活 + alive = 4 ok
+        and _retry_calls["t"] == 2 and _retry_calls["e"] == 2 and _retry_calls["u"] == 2  # 失敗類有重打
+        and _retry_calls["r"] == 1 and _retry_calls["ok"] == 1                            # 429/ok 不重打
+        and not any("死源：" in m for m in _rdetail)           # 沒有任何源被誤報死（「非死源」的限速訊息不算）
+        and any("限速" in m for m in _rdetail)                 # 429 仍被標限速
+    )
+    check("liveness 瞬斷源重試回活不誤報死源（429/ok 不重打）", _retry_ok,
+          {"summary": _rout[0].message[:40], "calls": _retry_calls})
 
     # 9d. flash 速報：純機械抽取（離線，import 直接呼叫 extract，不碰網路）
     import generate_flash as gf  # noqa: E402

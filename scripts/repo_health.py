@@ -40,6 +40,7 @@ import datetime as dt
 import json
 import re
 import sys
+import time
 import urllib.error
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
@@ -85,6 +86,10 @@ PATH_RE = re.compile(
     r"(?:data|docs|prompts|scripts|templates|tests|\.github)/[A-Za-z0-9_\-./]*\.(?:md|py|yml|yaml|xml|txt)"
 )
 PLACEHOLDER_MARKS = ("YYYY", "{{", "<", "*", "…")
+
+# 死源偵測偽陽性退避：dead/empty/unreachable 隔這麼多秒重打一次再定讞（外站瞬斷 403/empty 常一下就恢復，
+# 見 docs/lessons.md 2026-07-03；429 有自己的退避、不在此列）。測試可傳 retry_delay=0 關掉。
+LIVENESS_RETRY_DELAY_SEC = 2.0
 
 
 class Finding:
@@ -398,12 +403,14 @@ def _probe_rss(url: str, timeout: int = 15) -> tuple[str, int]:
         return ("unreachable", 0)
 
 
-def check_source_liveness(probe=_probe_rss) -> list[Finding]:
+def check_source_liveness(probe=_probe_rss, retry_delay: float = LIVENESS_RETRY_DELAY_SEC) -> list[Finding]:
     """實際連網打每個 rss URL，揪出『設定在、但每次都默默 403/404/0 則』的死源。
     需網路、慢，故只在 --liveness 手動跑（不入預設 / CI --strict，否則 CI 會因外站抖動變 flaky）。
     根因：collect_raw_signals 對抓取失敗優雅降級——死源會永遠躲在『31 個 RSS』的數字裡沒人發現
     （Mercari 陳貨 D17、reddit www 域 403 都是這類）。此檢查把『宣稱 ≠ 實際』顯性化。
-    429（限速）單獨標示、不算死源——活著但被擋，是『調抓取節奏』而非『撤源』的訊號。"""
+    429（限速）單獨標示、不算死源——活著但被擋，是『調抓取節奏』而非『撤源』的訊號。
+    偽陽性退避（D32，2026-07-03）：dead/empty/unreachable 隔 retry_delay 秒重打一次，二次仍非活才定讞死源
+    ——外站瞬斷（bof 403、heddels/permanent-style empty）常一下就恢復，單探測會抽風誤報進 issue。"""
     try:
         import yaml
     except ImportError:
@@ -412,13 +419,24 @@ def check_source_liveness(probe=_probe_rss) -> list[Finding]:
     rssable = [s for s in data.get("sources", []) if s.get("rss")]
     detail: list[Finding] = []
     ok = dead = limited = 0
+
+    def _confirm(url: str) -> tuple[str, int]:
+        status, code = probe(url)
+        # ok=活、429=活著被限速（自有退避、不重打以免火上加油）；
+        # dead/empty/unreachable 可能是瞬斷 → 隔一下重打一次，二次仍非活才算死（降偽陽性）。
+        if status not in ("ok", "ratelimited"):
+            if retry_delay:
+                time.sleep(retry_delay)
+            status, code = probe(url)
+        return status, code
+
     # 平行探測（每源最高 15s timeout，序列版最壞 33×15≈8 分鐘；I/O bound、urlopen 釋放 GIL）。
     # 結果照 rssable 順序歸併 → 死源/限速清單穩定可重現。max_workers 保守（429 已被當非死源處理）。
     if not rssable:
         results: list[tuple[str, int]] = []
     else:
         with ThreadPoolExecutor(max_workers=max(1, min(8, len(rssable)))) as ex:
-            results = list(ex.map(lambda s: probe(s["rss"]), rssable))
+            results = list(ex.map(lambda s: _confirm(s["rss"]), rssable))
     for s, (status, code) in zip(rssable, results):
         if status == "ok":
             ok += 1

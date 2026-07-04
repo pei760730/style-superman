@@ -91,8 +91,9 @@ PATH_RE = re.compile(
 PLACEHOLDER_MARKS = ("YYYY", "{{", "<", "*", "…")
 
 # 死源偵測偽陽性退避：dead/empty/unreachable 隔這麼多秒重打一次再定讞——只防真瞬斷（DNS 抖、暫時 5xx），
-# 防不了 UA/egress 地理這類「探測視角」的持續性封鎖（那要靠 reader-grade UA + 本機複核，
-# 見 docs/lessons.md 2026-07-03 訂正節）；429 有自己的退避、不在此列。測試可傳 retry_delay=0 關掉。
+# 治不了 UA/egress 地理這類「探測視角」問題（UA 級 WAF 常間歇、重試偶爾矇過≠治好；
+# 對症解是 reader-grade UA + 本機複核，見 docs/lessons.md 2026-07-03 訂正節）；
+# 429 有自己的退避、不在此列。測試可傳 retry_delay=0 關掉。
 LIVENESS_RETRY_DELAY_SEC = 2.0
 
 

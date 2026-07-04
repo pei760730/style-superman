@@ -109,6 +109,6 @@
 
 ### 2026-07-03 · `--liveness` 死源清單反覆偽陽性——真因是「探測視角」，不是對面死了
 - **發生什麼**：patrol（每週一・四排程）的死源清單三次三組、互不重疊：06-16=KR 三源（unreachable）、07-02=bof(403)/heddels/permanent-style(empty 200)。每組都被當死源開出／追評 issue #122，「死源」清單分不出真死 vs 誤報、失去可信度（liveness 帶 `|| true`、死源不弄紅 job——7/2 job 紅是 strict/Lyst，見 D31；死源的破壞是**污染 issue 清單**、下一步就是被 D17 誤撤源）。
-- **病因（兩組事後都查明、都不是瞬斷）**：① 6/16 KR 三源＝Actions 美國 egress 地理不可達（本頁 2026-06-16 節）；② **7/2 三源＝自報身分的 bot UA（StyleSupermanBot/0.1）被擋**——#177 實彈驗證同 URL 換瀏覽器 UA 即回滿 RSS（120KB/18KB/394KB），從 Actions 是持續性封鎖；7/3 本機測「全活」是住宅 IP 沒被封的視角差，一度被誤讀成「瞬斷已自己恢復」。
-- **對策 / 硬化（兩層，2026-07-03）**：① **UA 改 reader-grade 瀏覽器 UA**（#177，改 `collect_raw_signals.UA`，probe 同源引用）——公開 syndication feed 用閱讀器級 UA 屬正常使用；② `check_source_liveness` 對 dead/empty/unreachable 隔 2s 重打一次、二次仍非活才定讞（D32）——防真瞬斷（DNS 抖、暫時 5xx），**防不了 UA/地理這類持續性封鎖**。
+- **病因（兩組事後都查明、都不是瞬斷）**：① 6/16 KR 三源＝Actions 美國 egress 地理不可達（本頁 2026-06-16 節）；② **7/2 三源＝自報身分的 bot UA（StyleSupermanBot/0.1）被 WAF 擋**——#177 實彈驗證同 URL 換瀏覽器 UA 即回滿 RSS（120KB/18KB/394KB）。且封鎖是**間歇的**：7/3 同在本機、同 bot UA，早上探測全過、稍後實測被擋（同視角不同結果）——症狀因此長得像瞬斷，一度誤讀成「瞬斷已自己恢復」。
+- **對策 / 硬化（兩層，2026-07-03）**：① **UA 改 reader-grade 瀏覽器 UA**（#177，改 `collect_raw_signals.UA`，probe 同源引用）——公開 syndication feed 用閱讀器級 UA 屬正常使用；② `check_source_liveness` 對 dead/empty/unreachable 隔 2s 重打一次、二次仍非活才定讞（D32）——防真瞬斷（DNS 抖、暫時 5xx），**治不了 UA/地理這類探測視角問題**（間歇 WAF 時擋時放，重試偶爾矇過反而讓死源清單時紅時綠、更像抽風——對症解是換 UA，不是重試）。
 - **教訓**：**連網探測報死，第一嫌疑人是自己的探測視角（egress 地理、UA、IP 信譽），第二才是對面真死**；撤源（D17）前必本機複核＋換 UA 複核。與「跑了≠產出了」同族系：探測器說死 ≠ 源死了。（本節 2026-07-03 深審訂正：初版把兩組誤診成「瞬斷、下次自己恢復」，D32 決策的背景段有同步追記。）

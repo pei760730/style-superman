@@ -4,6 +4,9 @@
 
 ## [Unreleased]
 
+### Added
+- **兩個 subagent 定義：唯讀深審 repo-auditor + 單主題修繕 patch-worker（.claude/agents/，2026-07-06，D34 結構層）**：7/5 場最大單一 token 段（35%+）是「換模型重審」在 300K 尾端 context 重讀全部已完成工作，且 context 增長 44% 來自 patch 過程的 thinking 回灌永不丟棄（44 次 >250K 呼叫吃掉全場 44.9%）。新增 `repo-auditor`（唯讀：輸入 PR 編號自抓 diff——REST `gh api`——逐項驗證數學／cron 頻率語意／路徑與決策編號存在性；無誤一行帶過、有問題列 檔案:行｜問題｜建議修法；不開 branch 不寫檔）與 `patch-worker`（接派工單 branch→修→單發 `python3 tests/test_smoke.py`→記帳每本 ≤6 行一次寫完→push→開 PR→`gh run watch` 等 CI；回報 ≤15 行不貼 diff；不 merge；碰內容判斷／template 契約／新來源即停）。`CLAUDE.md` Self-Evolution Loop 的 Patch 行同步「>3 輪派 patch-worker、一行級小修主迴圈直做但同輪完成」（>3 輪門檻避免冷啟動虧損；D27/D28 已有對話派工 subagent 先例）。兩檔在 `.claude/`，不觸 guard scope、不觸孤兒檢查；可逆（刪兩檔＋還原 Patch 行）。
+
 ### Changed
 - **decisions.md 冷熱拆分（2026-07-06，D34 記帳收斂的結構配套）**：decisions.md 一個月 10.4KB→74.9KB（7.2x）且逐月線性變肥，每次「比對最新拍板」都得揹整檔。拆：新增 `docs/decisions-archive.md`（冷資料層，D1–D30 完整敘事整段原文搬入、不改字）；`docs/decisions.md` 改熱檔——全量總覽表補全 D1–D34（原表殘缺只到 D7）＋最近完整條目（D31–D34）＋檔頭輪替規則（完整條目 >5 條時 Record 同 PR 把最舊的搬進 archive，零人類定期勞動、合 D7）。`data/decision_guards.yml` 三組 guard（positioning／audit-rejected／d9）exclude 各加 `docs/decisions-archive.md`（反向驗證：guard pattern 在 archive 分別命中 2/2/3 行，漏加 exclude 本 PR 自己就 CI 紅——自動防呆；d5 scope 不含 docs/ 不用加）。純文件搬移，不碰 D6 否決的任何程式重構。可逆。
 - **Token 成本紀律：驗收單一入口 + Session 分場 + Bash 衛生 + 記帳收斂（D34，2026-07-06）**：真實 API 用量顯示單日 cache_read 一個月 10.1M→27.8M（2.75x）、尾端 context 171K→336K，法醫還原證實大宗是工程 side-quest 疊舊 context 續滾＋驗收三條串跑重複執行（test_smoke 內部本就跑 validate_repo 與 repo_health --consistency，ci.yml 明註不重複跑）。改：`CLAUDE.md` Validate 行與驗收命令區、`scripts/README.md` 驗收段收斂成單一入口 `python tests/test_smoke.py`；新增「Session 紀律」節（一場一事/一場一 PR 週期/跨日不續場/換模型重審開新場或派 repo-auditor/收場儀式/成本模型）與「Bash 衛生」節（指令合併、gh/git 絕對路徑、等 CI 單呼叫、MERGE 授權措辭）；Self-Evolution Loop 補記帳收斂（decisions ≤12 行、lessons ≤5 行、收場前一次寫完）；慣例節補帳本 grep 索引讀法（主迴圈禁止整讀三帳本）。純文件、零腳本改動、可逆。決策記 `docs/decisions.md` D34（以新收斂格式示範）。

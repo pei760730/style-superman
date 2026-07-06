@@ -26,7 +26,8 @@
 Observe   → python scripts/repo_health.py        # 系統還活著嗎、文件↔程式碼有沒有漂移
 Diagnose  → 看 ERROR（一致性壞了）/ WARN（產線停了）；判斷類型與優先級
 Propose   → 工程問題看到就修、修的人負責到底（D12）；涉及內容判斷 / 品牌觀點 / 費用 → 留給人類拍板
-Patch     → 實際修改（branch + 單主題 PR）
+Patch     → 預估 >3 輪的修繕派 patch-worker subagent 執行；一行級小修主迴圈直做
+            # 但同輪完成（皆走 branch + 單主題 PR）
 Validate  → python tests/test_smoke.py   # 單一驗收入口：validate_repo 與 repo_health --consistency
             # 已由 test_smoke 內部執行（L55、L355），與 CI 同源；每輪 patch 收尾跑一次，
             # 連續 micro-edit 期間不重跑，失敗時只重跑失敗那支

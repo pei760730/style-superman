@@ -4,6 +4,9 @@
 
 ## [Unreleased]
 
+### Changed
+- **Token 成本紀律：驗收單一入口 + Session 分場 + Bash 衛生 + 記帳收斂（D34，2026-07-06）**：真實 API 用量顯示單日 cache_read 一個月 10.1M→27.8M（2.75x）、尾端 context 171K→336K，法醫還原證實大宗是工程 side-quest 疊舊 context 續滾＋驗收三條串跑重複執行（test_smoke 內部本就跑 validate_repo 與 repo_health --consistency，ci.yml 明註不重複跑）。改：`CLAUDE.md` Validate 行與驗收命令區、`scripts/README.md` 驗收段收斂成單一入口 `python tests/test_smoke.py`；新增「Session 紀律」節（一場一事/一場一 PR 週期/跨日不續場/換模型重審開新場或派 repo-auditor/收場儀式/成本模型）與「Bash 衛生」節（指令合併、gh/git 絕對路徑、等 CI 單呼叫、MERGE 授權措辭）；Self-Evolution Loop 補記帳收斂（decisions ≤12 行、lessons ≤5 行、收場前一次寫完）；慣例節補帳本 grep 索引讀法（主迴圈禁止整讀三帳本）。純文件、零腳本改動、可逆。決策記 `docs/decisions.md` D34（以新收斂格式示範）。
+
 ### Fixed
 - **bot UA 誤殺三活源 + Lyst 日曆季差假警報（#177，2026-07-03；本條為補記錄——#177 只改 code 未記文件；初版補記由 #178 先入庫，本 PR 深審後以訂正整併版取代）**：patrol 紅的兩個獨立根因，皆實彈驗證。① **UA**：自報身分的 `StyleSupermanBot/0.1` 被 bof 回 403、heddels/permanent-style 回 empty 200——liveness 判死源、下一步就是被 D17 誤撤；同 URL 換 reader-grade 瀏覽器 UA 即回滿 RSS（120KB/18KB/394KB）。改 `collect_raw_signals.UA`（probe 同源引用），修後 liveness 29/31 活、0 死源（僅 2 個 reddit 429，本就非死源）。② **Lyst**：純日曆季差（behind>=2 即警）在每年 1/4/7/10 月頭約六週保證假警報——新索引季末後 ~3-4 週才發布（Q2'25=7/23；Q2'26 於 7/3 實查未發布）。刪 `LYST_STALE_QUARTERS`、新 `LYST_PUBLISH_LAG_DAYS=45`：季結束+45 天後才算可 ingest，「已發布逾寬限未 ingest」才 WARN。`--strict` 回 exit 0；Q2'26 若 ~8/14 後仍未 ingest 會正確重新變紅。決策補記 `docs/decisions.md` D31（含兩端同日並行、#175「門檻 2→3」草案被本修法超越關閉的過程）。
 - **D32 病因訂正（2026-07-03 深審，docs/註解，零行為變更）**：D32「重試再判死」決策背景把 6/16、7/2 兩組死源誤報寫成「外站瞬斷、下次自己恢復」——#177 驗證後訂正：6/16 KR 三源＝Actions 美國 egress 地理（lessons 2026-06-16 節）、7/2 三源＝bot UA 持續封鎖（見上條），**皆非瞬斷、同跑重試救不了**；7/3 本機測活是住宅 IP 視角差。重試機制保留（防真瞬斷：DNS 抖、暫時 5xx，成本 2s、有回歸鎖）。訂正 `docs/lessons.md` 2026-07-03 節（改題為「真因是探測視角」＋教訓「報死先疑 egress 地理/UA/IP 信譽，本機複核＋換 UA 複核再談撤源」）、`docs/decisions.md` D32 追記、`repo_health.py` 常數註解與 docstring 引例。

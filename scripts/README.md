@@ -119,14 +119,13 @@ python scripts/generate_daily_brief.py
 ```
 
 ## 驗收 / 測試
-PR 前（CI 也會自動跑）：
+PR 前（CI 也會自動跑）——**單一驗收入口**：
 
 ```bash
-python scripts/validate_repo.py            # repo 契約（隨 data/templates/reports 數量增減）
 python tests/test_smoke.py                 # 核心腳本最小驗收（無需 pytest）
-python scripts/repo_health.py --consistency  # 文件↔程式碼一致性
 ```
 
+`validate_repo.py`（repo 契約）與 `repo_health.py --consistency`（文件↔程式碼一致性）**由 test_smoke 內部執行，與 CI 同源**；單獨除錯時才直呼個別腳本。
 `tests/test_smoke.py` 跑過所有核心指令並斷言結果；`tests/fixtures/*_snapshot.yml` 是 ingest 的合成測試範例。
 
 ## 後續規劃

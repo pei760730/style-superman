@@ -30,6 +30,7 @@ guards:
     exclude:
       - CHANGELOG.md
       - docs/decisions.md
+      - docs/decisions-archive.md
       - docs/lessons.md
       - data/decision_guards.yml
 
@@ -50,6 +51,7 @@ guards:
     exclude:
       - CHANGELOG.md
       - docs/decisions.md
+      - docs/decisions-archive.md
       - docs/lessons.md
       - data/decision_guards.yml
 
@@ -81,5 +83,6 @@ guards:
     exclude:
       - CHANGELOG.md
       - docs/decisions.md
+      - docs/decisions-archive.md
       - docs/lessons.md
       - data/decision_guards.yml

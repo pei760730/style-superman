@@ -25,22 +25,43 @@
 ```
 Observe   → python scripts/repo_health.py        # 系統還活著嗎、文件↔程式碼有沒有漂移
 Diagnose  → 看 ERROR（一致性壞了）/ WARN（產線停了）；判斷類型與優先級
-Propose   → 工程問題看到就修、修的人負責到底（D12）；涉及內容判斷 / 品牌觀點 / 費用 → 留給人類拍板
-Patch     → 實際修改（branch + 單主題 PR）
-Validate  → python scripts/validate_repo.py && python tests/test_smoke.py && python scripts/repo_health.py --consistency
+Propose   → 工程問題登記後在工程場修、修的人負責到底（D12；分場紀律見下方 Session 紀律節 / D34，
+            daily 場只登記不動手）；涉及內容判斷 / 品牌觀點 / 費用 → 留給人類拍板
+Patch     → 預估 >3 輪的修繕派 patch-worker subagent 執行；一行級小修主迴圈直做
+            # 但同輪完成（皆走 branch + 單主題 PR）
+Validate  → python tests/test_smoke.py   # (Mac 用 python3) 單一驗收入口：validate_repo 與 repo_health --consistency
+            # 已由 test_smoke 內部執行（L55、L355），與 CI 同源；每輪 patch 收尾跑一次，
+            # 連續 micro-edit 期間不重跑，失敗時只重跑失敗那支
 Record    → 能力變更記 CHANGELOG.md；方向決策記 docs/decisions.md
 Learn     → 踩到新坑記 docs/lessons.md（soft note；反覆出現才硬化成檢查）
+            # 記帳收斂（與 patch-worker 同一組上限）：CHANGELOG 單條 ≤3 行；
+            # decisions.md 新條目 ≤12 行（背景 2-3、拍板 3-5、可逆/guards 1-2）；
+            # 事後訂正用一行「追記」，不重寫既有段落；lessons.md 單條 ≤5 行；
+            # 每個 patch 的記帳（CHANGELOG + decisions/lessons + memory）在收場前一輪
+            # 一次寫完，不逐版回改帳本
 Next      → repo_health.py 的 Next Actions 就是下一輪 TODO
 ```
+
+## Session 紀律（token 成本，2026-07-06）
+
+> 成本模型：token 按**每次呼叫 × 當下全量 context** 計費——尾端 300K 時每條小 Bash 都是
+> 一次 30 萬 token 的 cache read（實測 2026-07-05 場後半 58 個呼叫燒掉全日 60%）。
+
+1. **一場一事**：STYLE 場照 `prompts/daily_scan_orchestration.md` 出 brief、交付 For Me 後即收場；
+   途中看到的工程問題記一行到收場摘要（memory next-actions）留給下個 REPO 場——
+   這是 D12「看到就修」的**分場執行**（批次修，不是回到請示制）。
+2. **REPO 場一場最多一個 PR 週期**；同性質低風險文件修正合併同一 PR。
+3. **跨日不續場**：隔天「接著做」一律開新對話；續作靠 memory + git log / gh api 接軌，不靠舊 context。
+4. **換模型重審 / 深審已完成工作＝開新場或派 repo-auditor subagent**，輸入只帶 PR 編號讓它自抓 diff。
+5. **收場儀式**：每完成一個 PR 週期或 daily 交付，agent 主動總結
+   「本場已完成 X、剩餘已記 memory，建議收場、下個任務開新對話」。
 
 ## 修改前 / 修改後
 
 - **修改前**：先跑 `repo_health.py` 知道現況；找該主題的既有檔案，**改既有的，不另起爐灶**。
 - **修改後（驗收命令）**：
   ```bash
-  python scripts/validate_repo.py          # 格式契約
-  python tests/test_smoke.py               # 核心腳本行為
-  python scripts/repo_health.py --consistency   # 文件↔程式碼一致性
+  python tests/test_smoke.py   # 單一驗收入口：validate_repo 與 repo_health --consistency 已由它內部執行，與 CI 同源
   ```
   缺 `pyyaml` 時明確回報，不要為了通過檢查改掉 YAML 依賴。
   跑驗收前先 `git status` 清掉 `reports/` 下的未追蹤暫存檔——scratch 檔會讓 `validate_repo` 紅燈，
@@ -57,6 +78,9 @@ Next      → repo_health.py 的 Next Actions 就是下一輪 TODO
 - **執行既有任務卡 / 排程任務前**：先比對本檔定位與 `docs/decisions.md` 最新拍板——
   任務卡可能來自重定位前的舊世界觀（殭屍任務卡，2026-06-10 發生過）。矛盾就**停**，
   記入 decisions.md 待拍板，不執行。
+  比對拍板用 `grep -n "^## D" docs/decisions.md` 先取索引、再只讀命中的目標段落——
+  **主迴圈禁止整讀三帳本**（decisions / lessons / CHANGELOG 三帳本＋archive 合計逾百 KB
+  且持續成長，整讀一次即數萬 tokens 永久滯留 context）。
 - **決策過時時**：不要默默繞過；更新 `docs/decisions.md` 並在同 PR 清掉全 repo 矛盾描述、
   掃一遍排程 agent 的任務來源；「不可回頭」的拍板要在 `data/decision_guards.yml`
   留下禁用識別字（repo_health 會擋住任何把它們寫回來的 PR）。
@@ -83,6 +107,17 @@ Next      → repo_health.py 的 Next Actions 就是下一輪 TODO
 - 改 `templates/` 欄位契約（除非任務明確要求且同步全鏈）。
 - 新增情報來源到 `data/sources.yml`（來源可信度是內容判斷；**加之前先過 D18 兩道門：① 近 30 天會持續產出新內容 ② 夠權威（非聚合/SEO 農場）**，並 WebFetch 實測可讀）。
 - 開啟自動排程、接外部推送、任何花錢或對外發布的動作。
+
+## Bash 衛生（2026-07-06）
+
+- **能合併的指令用 `&&` 合成一發**——不把 `cd` / `export` / `git status` / `git diff` 拆成多次呼叫
+  （2026-07-05 實測：`cd`×52、`export`×33 全是固定前綴稅，每發都揹全量 context）。
+- **gh 一律用絕對路徑 `~/.local/bin/gh`**（不再每次 export PATH）；**git 用 `git -C ~/style-superman`**（不再 cd 前綴）。
+- **等 CI 一律單呼叫**：`~/.local/bin/gh run watch <run-id>`，或同一 Bash 內 `until`+`sleep` loop（設逾時）；
+  禁止逐次輪詢各發一呼叫。
+- **merge 授權**：要 merge 前一句話問、使用者回「MERGE」即明確授權（2026-07-05 實證分類器放行此措辭；
+  此為 D8/D12 自 merge 的**權限分類器層**通行路徑，非回到事前請示制）；
+  被權限分類器擋兩次直接請使用者 GitHub UI 按 merge，不進 settings.json 攻防。
 
 ## 常見坑（詳見 docs/lessons.md）
 

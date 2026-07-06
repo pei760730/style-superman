@@ -25,15 +25,17 @@
 ```
 Observe   → python scripts/repo_health.py        # 系統還活著嗎、文件↔程式碼有沒有漂移
 Diagnose  → 看 ERROR（一致性壞了）/ WARN（產線停了）；判斷類型與優先級
-Propose   → 工程問題看到就修、修的人負責到底（D12）；涉及內容判斷 / 品牌觀點 / 費用 → 留給人類拍板
+Propose   → 工程問題登記後在工程場修、修的人負責到底（D12；分場紀律見下方 Session 紀律節 / D34，
+            daily 場只登記不動手）；涉及內容判斷 / 品牌觀點 / 費用 → 留給人類拍板
 Patch     → 預估 >3 輪的修繕派 patch-worker subagent 執行；一行級小修主迴圈直做
             # 但同輪完成（皆走 branch + 單主題 PR）
-Validate  → python tests/test_smoke.py   # 單一驗收入口：validate_repo 與 repo_health --consistency
+Validate  → python tests/test_smoke.py   # (Mac 用 python3) 單一驗收入口：validate_repo 與 repo_health --consistency
             # 已由 test_smoke 內部執行（L55、L355），與 CI 同源；每輪 patch 收尾跑一次，
             # 連續 micro-edit 期間不重跑，失敗時只重跑失敗那支
 Record    → 能力變更記 CHANGELOG.md；方向決策記 docs/decisions.md
 Learn     → 踩到新坑記 docs/lessons.md（soft note；反覆出現才硬化成檢查）
-            # 記帳收斂：decisions.md 新條目 ≤12 行（背景 2-3、拍板 3-5、可逆/guards 1-2）；
+            # 記帳收斂（與 patch-worker 同一組上限）：CHANGELOG 單條 ≤3 行；
+            # decisions.md 新條目 ≤12 行（背景 2-3、拍板 3-5、可逆/guards 1-2）；
             # 事後訂正用一行「追記」，不重寫既有段落；lessons.md 單條 ≤5 行；
             # 每個 patch 的記帳（CHANGELOG + decisions/lessons + memory）在收場前一輪
             # 一次寫完，不逐版回改帳本
@@ -77,8 +79,8 @@ Next      → repo_health.py 的 Next Actions 就是下一輪 TODO
   任務卡可能來自重定位前的舊世界觀（殭屍任務卡，2026-06-10 發生過）。矛盾就**停**，
   記入 decisions.md 待拍板，不執行。
   比對拍板用 `grep -n "^## D" docs/decisions.md` 先取索引、再只讀命中的目標段落——
-  **主迴圈禁止整讀三帳本**（decisions / lessons / CHANGELOG 已達 75KB / 27KB / 85KB，
-  整讀一次 ≈25-35K tokens 且永久滯留 context）。
+  **主迴圈禁止整讀三帳本**（decisions / lessons / CHANGELOG 三帳本＋archive 合計逾百 KB
+  且持續成長，整讀一次即數萬 tokens 永久滯留 context）。
 - **決策過時時**：不要默默繞過；更新 `docs/decisions.md` 並在同 PR 清掉全 repo 矛盾描述、
   掃一遍排程 agent 的任務來源；「不可回頭」的拍板要在 `data/decision_guards.yml`
   留下禁用識別字（repo_health 會擋住任何把它們寫回來的 PR）。
@@ -113,7 +115,8 @@ Next      → repo_health.py 的 Next Actions 就是下一輪 TODO
 - **gh 一律用絕對路徑 `~/.local/bin/gh`**（不再每次 export PATH）；**git 用 `git -C ~/style-superman`**（不再 cd 前綴）。
 - **等 CI 一律單呼叫**：`~/.local/bin/gh run watch <run-id>`，或同一 Bash 內 `until`+`sleep` loop（設逾時）；
   禁止逐次輪詢各發一呼叫。
-- **merge 授權**：要 merge 前一句話問、使用者回「MERGE」即明確授權（2026-07-05 實證分類器放行此措辭）；
+- **merge 授權**：要 merge 前一句話問、使用者回「MERGE」即明確授權（2026-07-05 實證分類器放行此措辭；
+  此為 D8/D12 自 merge 的**權限分類器層**通行路徑，非回到事前請示制）；
   被權限分類器擋兩次直接請使用者 GitHub UI 按 merge，不進 settings.json 攻防。
 
 ## 常見坑（詳見 docs/lessons.md）

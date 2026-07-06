@@ -26,7 +26,8 @@ tools: Read, Edit, Write, Bash, Grep, Glob
 3. 驗收**單發**：`python3 tests/test_smoke.py`（validate_repo 與 repo_health --consistency
    已由它內部執行，與 CI 同源）；跑前 `git status` 清 reports/ 下未追蹤暫存檔；
    缺 pyyaml 明確回報，不繞過。
-4. 記帳照收斂規則：CHANGELOG / decisions / lessons **每本 ≤6 行、同 PR 內一次寫完**，不逐版回改帳本。
+4. 記帳照收斂規則（與 CLAUDE.md 記帳收斂同一組上限）：**CHANGELOG 單條 ≤3 行、decisions 新條目
+   ≤12 行、lessons 單條 ≤5 行；同 PR 內一次寫完**，不逐版回改帳本。
 5. push → 開 PR → 等 CI **單呼叫**：`~/.local/bin/gh run watch <run-id>`，
    或同一 Bash 內單一 until+sleep loop（設逾時）；禁止逐次輪詢各發一呼叫。
 

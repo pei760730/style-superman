@@ -206,7 +206,8 @@ style-superman/
 │   ├── operating_manual.md      # 營運手冊
 │   ├── ai_collaboration.md      # 帽子原則 + 不自我終審 + 誰拍板（D7 已瘦身）
 │   ├── rankings.md              # 排行快照方法論（口徑分開、不硬湊）
-│   ├── decisions.md             # 方向決策紀錄（D1–D30）
+│   ├── decisions.md             # 方向決策（熱層）：D1–D34 全量總覽表＋最近完整條目
+│   ├── decisions-archive.md     # 決策完整敘事封存（冷資料層，查歷史脈絡用）
 │   └── lessons.md               # 教訓簿（殭屍任務卡三例都在這）
 └── .github/workflows/
     ├── ci.yml                # PR validate + smoke（3.9 + 3.12）+ ruff
@@ -225,13 +226,13 @@ python scripts/generate_daily_brief.py   # 產今天的 brief 骨架
 python scripts/repo_health.py            # 系統還活著嗎
 ```
 
-修改任何東西之後的驗收三件套：
+修改任何東西之後的驗收——**單一入口**：
 
 ```bash
-python scripts/validate_repo.py
-python tests/test_smoke.py
-python scripts/repo_health.py --consistency
+python tests/test_smoke.py   # validate_repo 與 repo_health --consistency 由它內部執行，與 CI 同源
 ```
+
+單獨除錯時才直呼 `validate_repo.py` / `repo_health.py --consistency`（見 `scripts/README.md`）。
 
 ---
 

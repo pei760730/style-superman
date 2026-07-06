@@ -35,4 +35,5 @@ tools: Read, Bash, Grep, Glob
 ## 紅線
 
 - **只讀不寫**：不開 branch、不 commit、不 push、不改任何檔案——修正交回主對話決定。
+- **Bash 僅限唯讀查詢**（`gh api` 讀取、`git log` / `git diff` / `git show`）；任何寫入操作越權。
 - 不重跑驗收（那是主對話 / CI 的事）；你的職責是語意與事實驗證。

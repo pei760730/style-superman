@@ -56,6 +56,13 @@
 
 收斂出 brief 草稿後，跑一次 `prompts/scan_auditor.md`（唯讀）檢查：配額（頭條 3–5 / JP 10–15 / KR 8–12 / US-EU 10–15 / lane 2–4 / 總量 30–45）、每則有日期+來源連結、For Me 是 🎯 情報層（無 🛒/⏰/買壓力，D15）、去重、待查沒被講成最紅。`fail` → orchestrator（唯一寫入者）自己補，補完可再送複檢。
 
+## Step 4 — 收場（close；session 流程步驟，非內容判斷規則）
+
+交付 For Me 之後：**總結本場產出 → 建議收場**（照 CLAUDE.md「Session 紀律」收場儀式，D34）。
+掃描途中看到的工程問題（腳本壞、文件漂移等）只**登記**——寫到 `repo_health.py` Next Actions
+所指位置，或一句話留到收場摘要（memory next-actions）給下一個工程（REPO）場——
+**不在 daily 場動手修**。本場到此結束，不接續工程 side-quest。
+
 ---
 
 ## 怎麼跑（驗收用）

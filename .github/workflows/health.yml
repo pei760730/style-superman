@@ -73,7 +73,16 @@ jobs:
           need=0
           [ "${{ steps.health.outcome }}" = "failure" ] && need=1
           grep -q "死源：" health-liveness.txt 2>/dev/null && need=1
-          if [ "$need" = "0" ]; then echo "巡檢全綠、無死源，不開 issue。"; exit 0; fi
+          if [ "$need" = "0" ]; then
+            echo "巡檢全綠、無死源。"
+            # 轉綠自動關既有 issue：偽陽性 issue 永久掛著每週追評 = 警告衰退成噪音
+            # （#122、#186 教訓——三組「死源」本機複核全活,issue 卻一直開著）。
+            stale=$(gh issue list --label repo-health --state open --json number --jq '.[0].number // empty' || echo "")
+            if [ -n "$stale" ]; then
+              gh issue close "$stale" --comment "巡檢轉綠（$(date -u +%Y-%m-%dT%H:%MZ)），自動關閉。若之前列的死源其實是 Actions egress 視角誤報，無需任何動作。"
+            fi
+            exit 0
+          fi
           gh label create repo-health --description "repo_health.py 巡檢警告" --color D93F0B 2>/dev/null || true
           {
             echo "repo_health 巡檢於 $(date -u +%Y-%m-%dT%H:%MZ)："
@@ -87,7 +96,11 @@ jobs:
               echo '```'; cat health-liveness.txt; echo '```'; echo
             fi
             echo "處理方式見 CLAUDE.md 的 Self-Evolution Loop；修好後關閉本 issue。"
-            echo "死源處理：確認可否換域名/端點修復，真的無解就比照 D17 撤源（改 sources.yml + 記 decisions）；撤不撤是內容判斷、留擁有者拍板。"
+            echo "死源處理（**先複核再處置**——本看門狗跑在 Actions 美國 egress，非產線本機視角，已三度把活源看成死源：#122×2、#186）："
+            echo "1. 本機重跑 \`python scripts/repo_health.py --liveness\`——本機收得到 = 誤報，關 issue 即可；"
+            echo "2. 本機也紅再換瀏覽器 UA 複核（docs/lessons.md 的 UA 教訓）；"
+            echo "3. 兩關都死才確認可否換域名/端點修復，真的無解才比照 D17 撤源（改 sources.yml + 記 decisions）；撤不撤是內容判斷、留擁有者拍板。"
+            echo "⚠️ 未過 1、2 兩關前，禁止任何 agent 依本 issue 撤源。"
             echo "若同類警告反覆出現且兩週無人處理，依 docs/lessons.md：要嘛修產線，要嘛調整節奏宣告，不要讓警告衰退成噪音。"
           } > issue-body.md
           # `// empty`：無開啟 issue 時 .[0].number 為 null，沒有 fallback 會印出字面 "null"

@@ -28,6 +28,7 @@ permanentstyle.com
 drapersonline.com
 fratellowatches.com
 monochrome-watches.com
+wwd.com
 
 # --- 日本 JP ---
 fashionsnap.com
@@ -40,6 +41,7 @@ senken.co.jp
 # --- 韓國 KR ---
 hypebeast.kr
 wwdkorea.com
+wkorea.com
 vogue.co.kr
 gqkorea.co.kr
 dazedkorea.com

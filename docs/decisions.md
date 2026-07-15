@@ -127,6 +127,8 @@
 
 可逆（本條純方向拍板，未改任何 code；未來重開 notify-only/flash 排程即偏離本條，需新決策）。`flash-brief.yml` 維持 **僅 workflow_dispatch、無 schedule**（D19/D30），本條不動它。延續 D16（對話即焚）、D7 反熵（新流程不得依賴無人值守排程去產 daily）、CLAUDE.md「矛盾就停」。
 
+追記 2026-07-16：同一殭屍任務再觸發，RSS 全降級（31/31 失敗），WebSearch 補查，brief 寫完後 D16 gate 再次正確擋下，內容走 notify-only PushNotification 傳遞。
+
 ## D34 — Session 分場紀律 + 驗收單一入口（token 成本，2026-07-06）
 
 ### 背景

@@ -236,8 +236,8 @@ def main() -> int:
     #     與完成順序無關 → issue body 穩定可重現）。注入快樁 probe（不連網），讓越前面的源回得越慢。
     import repo_health as _rh  # noqa: E402
     _live_src = [{"id": f"L{i}", "rss": f"http://e/{i}"} for i in range(6)]
-    _st = {0: ("ok", 200), 1: ("dead", 404), 2: ("ratelimited", 429),
-           3: ("ok", 200), 4: ("dead", 403), 5: ("ok", 200)}
+    _st = {0: ("ok", 200), 1: ("gone", 404), 2: ("ratelimited", 429),
+           3: ("ok", 200), 4: ("blocked", 403), 5: ("ok", 200)}
 
     def _live_probe(url, timeout=15):
         i = int(url.rsplit("/", 1)[1])
@@ -257,14 +257,15 @@ def main() -> int:
         "3/6" in _lout[0].message                                    # 3 ok
         and len(_lout) == 4                                          # summary + L1/L2/L4
         and "L1" in _ldetail[0] and "L2" in _ldetail[1] and "L4" in _ldetail[2]  # 照來源順序
+        and "死源候補" in _ldetail[0] and "疑遭阻擋" in _ldetail[2]  # gone→候補、blocked→視角阻擋（403 永不判死）
     )
     check("liveness 平行探測仍照來源順序（不隨完成順序）", _live_ok,
           [m[:24] for m in _ldetail])
 
     # 9g-2. D32 偽陽性退避回歸鎖：瞬斷源（首打 dead/empty/unreachable、重打就活）不該被誤報死源。
-    #       每源給獨立計數，確認①失敗類第一次真的重打了 ②重打回 ok 就不進死源清單 ③429 不重打（自有退避）。
+    #       每源給獨立計數，確認①失敗類第一次真的重打了 ②重打回 ok 就不進死源候補清單 ③429 不重打（自有退避）。
     _retry_calls = {"t": 0, "e": 0, "u": 0, "r": 0, "ok": 0}
-    _retry_src = [{"id": "transient", "rss": "http://x/t"},   # dead→ok
+    _retry_src = [{"id": "transient", "rss": "http://x/t"},   # gone→ok
                   {"id": "flap-empty", "rss": "http://x/e"},  # empty→ok
                   {"id": "flap-unreach", "rss": "http://x/u"},# unreachable→ok
                   {"id": "limited", "rss": "http://x/r"},     # 429（不重打）
@@ -272,7 +273,7 @@ def main() -> int:
     def _flaky_probe(url, timeout=15):
         k = url.rsplit("/", 1)[1]
         _retry_calls[k] += 1
-        first = {"t": ("dead", 403), "e": ("empty", 200), "u": ("unreachable", 0),
+        first = {"t": ("gone", 404), "e": ("empty", 200), "u": ("unreachable", 0),
                  "r": ("ratelimited", 429), "ok": ("ok", 200)}[k]
         # 失敗類第二次探測回活；429/ok 維持原狀
         if _retry_calls[k] >= 2 and k in ("t", "e", "u"):
@@ -288,7 +289,7 @@ def main() -> int:
         "4/5" in _rout[0].message                              # t/e/u 重打回活 + alive = 4 ok
         and _retry_calls["t"] == 2 and _retry_calls["e"] == 2 and _retry_calls["u"] == 2  # 失敗類有重打
         and _retry_calls["r"] == 1 and _retry_calls["ok"] == 1                            # 429/ok 不重打
-        and not any("死源：" in m for m in _rdetail)           # 沒有任何源被誤報死（「非死源」的限速訊息不算）
+        and not any("死源候補：" in m for m in _rdetail)        # 沒有任何源被誤報死（「疑遭阻擋」「限速」不算死判定）
         and any("限速" in m for m in _rdetail)                 # 429 仍被標限速
     )
     check("liveness 瞬斷源重試回活不誤報死源（429/ok 不重打）", _retry_ok,

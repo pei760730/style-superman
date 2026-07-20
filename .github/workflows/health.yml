@@ -52,7 +52,7 @@ jobs:
       # 死源看門狗（2026-06-16）：--liveness 連網打每個 RSS、揪「設定在卻每次 403/0 則」的死源。
       # 它原本 opt-in、永不排程 → 違反反熵 D7（靠人類記得手動跑）。塞進這支週期巡檢補上。
       # 不弄 flaky 的關鍵：① continue-on-error，外站抖動絕不讓巡檢變紅；② 死源是 warn、
-      # --liveness 不帶 --strict 故 exit 0，所以下面靠 grep「死源：」判斷而非 exit code；
+      # --liveness 不帶 --strict 故 exit 0，所以下面靠 grep「死源候補：」判斷而非 exit code（403/timeout 類=「疑遭阻擋」不開 issue,#186 結構修法）；
       # ③ 限速(429)被 check_source_liveness 標為「非死源」，抖動造成的暫時 429 不會誤報。
       - name: Probe source liveness (death-of-source watchdog)
         if: always()
@@ -69,10 +69,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
         run: |
-          # 開 issue 條件：strict 巡檢失敗，或 liveness 偵測到死源（限速不算）。兩者皆無就不開。
+          # 開 issue 條件：strict 巡檢失敗，或 liveness 偵測到死源候補（404/410/NXDOMAIN;疑遭阻擋/限速不算）。兩者皆無就不開。
           need=0
           [ "${{ steps.health.outcome }}" = "failure" ] && need=1
-          grep -q "死源：" health-liveness.txt 2>/dev/null && need=1
+          grep -q "死源候補：" health-liveness.txt 2>/dev/null && need=1
           if [ "$need" = "0" ]; then
             echo "巡檢全綠、無死源。"
             # 轉綠自動關既有 issue：偽陽性 issue 永久掛著每週追評 = 警告衰退成噪音
@@ -91,8 +91,8 @@ jobs:
               echo '### ❌ --strict 未通過'
               echo '```'; cat health-report.txt; echo '```'; echo
             fi
-            if grep -q "死源：" health-liveness.txt 2>/dev/null; then
-              echo '### 🌐 RSS 死源（--liveness）'
+            if grep -q "死源候補：" health-liveness.txt 2>/dev/null; then
+              echo '### 🌐 RSS 死源候補（--liveness）'
               echo '```'; cat health-liveness.txt; echo '```'; echo
             fi
             echo "處理方式見 CLAUDE.md 的 Self-Evolution Loop；修好後關閉本 issue。"

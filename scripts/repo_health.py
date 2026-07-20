@@ -39,6 +39,7 @@ import argparse
 import datetime as dt
 import json
 import re
+import socket
 import sys
 import time
 import urllib.error
@@ -90,7 +91,7 @@ PATH_RE = re.compile(
 )
 PLACEHOLDER_MARKS = ("YYYY", "{{", "<", "*", "…")
 
-# 死源偵測偽陽性退避：dead/empty/unreachable 隔這麼多秒重打一次再定讞——只防真瞬斷（DNS 抖、暫時 5xx），
+# 死源偵測偽陽性退避：非活類（gone/nxdomain/blocked/empty/unreachable）隔這麼多秒重打一次再定讞——只防真瞬斷（DNS 抖、暫時 5xx），
 # 治不了 UA/egress 地理這類「探測視角」問題（UA 級 WAF 常間歇、重試偶爾矇過≠治好；
 # 對症解是 reader-grade UA + 本機複核，見 docs/lessons.md 2026-07-03 訂正節）；
 # 429 有自己的退避、不在此列。測試可傳 retry_delay=0 關掉。
@@ -394,9 +395,13 @@ def check_rss_coverage() -> list[Finding]:
 
 def _probe_rss(url: str, timeout: int = 15) -> tuple[str, int]:
     """打一次 rss，回 (狀態類別, http_code)。
-    狀態類別：ok / empty(200但解析0則) / dead(403/404/410) / ratelimited(429) / unreachable。
-    刻意分開 429——那是『活著但被限速』,不是死源,不該跟永久 403 混為一談（2026-06-15 dogfood 教訓：
-    舊版單看『0 則』把被限速的 reddit 誤判成死源）。"""
+    狀態類別（2026-07-21 視角感知分類——#186 四次誤殺的結構修法）：
+      ok / empty(200但解析0則) / ratelimited(429)
+      gone(404/410＝真死候補) / nxdomain(DNS 查無此域＝最強真死訊號)
+      blocked(403＝活著但拒收「本探測視角」，永不當死源證據) / unreachable(timeout/5xx/其他＝視角存疑)。
+    403 是「誰在看」的陳述、不是「還在不在」的陳述：bof 對 Actions egress 連紅五輪、
+    本機兩閘全活（#186 7/20）；reader-grade UA（#177）救不了 IP 信譽封鎖，故 403 永不判死。
+    2026-06-15 dogfood 教訓（429≠死源）續留：限速單獨歸類。"""
     import collect_raw_signals as c  # 同層；路徑已於模組載入時設好
     req = urllib.request.Request(url, headers={"User-Agent": c.UA})
     try:
@@ -409,10 +414,16 @@ def _probe_rss(url: str, timeout: int = 15) -> tuple[str, int]:
         e.close()  # urlopen 拋錯時 with 沒進去，error response 要自己關（否則連線開到 GC）
         if code == 429:
             return ("ratelimited", 429)
-        if code in (403, 404, 410):
-            return ("dead", code)
+        if code == 403:
+            return ("blocked", 403)
+        if code in (404, 410):
+            return ("gone", code)
         return ("unreachable", code)
-    except Exception:  # noqa: BLE001 — timeout / DNS / decode 都歸連不上
+    except urllib.error.URLError as e:
+        if isinstance(getattr(e, "reason", None), socket.gaierror):
+            return ("nxdomain", 0)  # DNS 查無此域——唯一不需第二視角佐證的死訊號
+        return ("unreachable", 0)
+    except Exception:  # noqa: BLE001 — timeout / decode 都歸連不上（視角存疑、非死）
         return ("unreachable", 0)
 
 
@@ -425,7 +436,9 @@ def check_source_liveness(probe=_probe_rss, retry_delay: float = LIVENESS_RETRY_
     偽陽性退避（D32，2026-07-03）：dead/empty/unreachable 隔 retry_delay 秒重打一次，二次仍非活才定讞死源
     ——只防真瞬斷（DNS 抖、暫時 5xx）；歷史兩組誤報實例事後查明皆非瞬斷（6/16 KR=Actions 地理、
     7/2 bof/heddels/permanent-style=bot UA 被擋，#177 換 reader-grade UA 解），重試防不了那類
-    「探測視角」持續封鎖——報死先疑地理/UA、本機複核再談撤源（docs/lessons.md 2026-07-03）。"""
+    「探測視角」持續封鎖——報死先疑地理/UA、本機複核再談撤源（docs/lessons.md 2026-07-03）。
+    標籤即機器契約（2026-07-21）：health.yml 以 grep「死源候補：」決定開 issue；
+    「疑遭阻擋」「限速」為非死判定,永不觸發撤源流程——撤源指引只掛在死源候補行。"""
     try:
         import yaml
     except ImportError:
@@ -433,12 +446,12 @@ def check_source_liveness(probe=_probe_rss, retry_delay: float = LIVENESS_RETRY_
     data = yaml.safe_load((ROOT / "data" / "sources.yml").read_text(encoding="utf-8")) or {}
     rssable = [s for s in data.get("sources", []) if s.get("rss")]
     detail: list[Finding] = []
-    ok = dead = limited = 0
+    ok = candidate = suspect = limited = 0
 
     def _confirm(url: str) -> tuple[str, int]:
         status, code = probe(url)
         # ok=活、429=活著被限速（自有退避、不重打以免火上加油）；
-        # dead/empty/unreachable 可能是瞬斷 → 隔一下重打一次，二次仍非活才算死（降偽陽性）。
+        # 非活類（gone/nxdomain/blocked/empty/unreachable）可能是瞬斷 → 隔一下重打一次再定讞（降偽陽性）。
         if status not in ("ok", "ratelimited"):
             if retry_delay:
                 time.sleep(retry_delay)
@@ -461,18 +474,29 @@ def check_source_liveness(probe=_probe_rss, retry_delay: float = LIVENESS_RETRY_
                 "warn",
                 f"限速（非死源）：{s.get('id')} 回 429——活著但被擋，調抓取節奏（退避/間隔）而非撤源",
             ))
-        else:  # dead / empty / unreachable
-            dead += 1
+        elif status in ("gone", "nxdomain"):
+            candidate += 1
             detail.append(Finding(
                 "warn",
-                f"死源：{s.get('id')}（{s.get('rss')}）→ {status}"
-                + (f" HTTP {code}" if code else ""),
+                f"死源候補：{s.get('id')}（{s.get('rss')}）→ {status}"
+                + (f" HTTP {code}" if code else "")
+                + "——404/410/NXDOMAIN 屬真死訊號",
                 "確認可否換域名/端點修復；真的無解就比照 D17 撤源、改 sources.yml + 記 decisions",
             ))
+        else:  # blocked / empty / unreachable — 探測視角存疑，非死源判定
+            suspect += 1
+            detail.append(Finding(
+                "warn",
+                f"疑遭阻擋（本探測視角）：{s.get('id')}（{s.get('rss')}）→ {status}"
+                + (f" HTTP {code}" if code else "")
+                + "——flash 層（Actions）實際收不到；深度日報（本機）不受影響",
+                "本機 --liveness 複核；勿依本行撤源；本機亦死才改判死源候補（#122×2、#186 四次誤殺教訓）",
+            ))
     summary = Finding(
-        "info" if (dead == 0 and limited == 0) else "warn",
+        "info" if (candidate == 0 and suspect == 0 and limited == 0) else "warn",
         f"來源死活：{ok}/{len(rssable)} 個 RSS 實際收得到料"
-        + (f"，{dead} 死源" if dead else "")
+        + (f"，{candidate} 死源候補" if candidate else "")
+        + (f"，{suspect} 疑遭阻擋（探測視角，非死源）" if suspect else "")
         + (f"，{limited} 被限速（非死，見下）" if limited else ""),
     )
     return [summary, *detail]

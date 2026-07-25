@@ -562,7 +562,7 @@ def main() -> None:
     parser.add_argument("--date", help="以指定日期計算新鮮度（YYYY-MM-DD，測試用）")
     args = parser.parse_args()
 
-    today = dt.date.fromisoformat(args.date) if args.date else dt.date.today()
+    today = dt.date.fromisoformat(args.date) if args.date else dt.datetime.now(dt.timezone(dt.timedelta(hours=8))).date()
     if args.liveness:
         findings = check_source_liveness()
     else:

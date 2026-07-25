@@ -36,7 +36,7 @@ _failed = 0
 
 def run(args: list[str], stdin: str | None = None) -> subprocess.CompletedProcess:
     return subprocess.run(
-        [PY, *args], cwd=ROOT, input=stdin, capture_output=True, text=True, encoding="utf-8"
+        [PY, *args], cwd=ROOT, input=stdin, capture_output=True, text=True, encoding="utf-8", check=False
     )
 
 
@@ -117,7 +117,7 @@ def main() -> int:
 
     # 8–9. RSS 收集（離線：用 fixture，不碰網路）
     sys.path.insert(0, str(ROOT / "scripts"))
-    import collect_raw_signals as crs  # noqa: E402
+    import collect_raw_signals as crs
 
     feed_xml = (FIX / "sample_feed.xml").read_text(encoding="utf-8")
     src = {"id": "test-src", "tier": 2, "region": "us-eu", "rss": "x"}
@@ -195,7 +195,7 @@ def main() -> int:
 
     # 9d. track_rankings.lyst_comparison_text 前季 partial 不可假「新進榜」（commit 5fee0bf 修的 bug，留回歸鎖）
     #     （月報 🆚 對照量化基準段唯一在用的函式；ingest/CLI 已於 D21 移除，見 docs/rankings.md）
-    import track_rankings as _tr  # noqa: E402
+    import track_rankings as _tr
     _cmp = _tr.lyst_comparison_text({"snapshots": [
         {"period": "2099-Q2", "brands": [{"rank": 1, "name": "A"}, {"rank": 2, "name": "NewBrand"}]},
         {"period": "2099-Q1", "coverage": "partial", "brands": [{"rank": 1, "name": "A"}]},
@@ -203,9 +203,9 @@ def main() -> int:
     check("compare 前季 partial 不假新進榜", "無法判定" in _cmp and "🆕 新進榜" not in _cmp, _cmp[:200])
 
     # 9f. fetch_feed 對 429 退避重試一次（reddit 限速；sleep 可注入正是為了測，不真的等）
-    import urllib.request as _ur
-    import urllib.error as _ue
     import io as _io
+    import urllib.error as _ue
+    import urllib.request as _ur
     _calls = {"n": 0}
 
     class _FakeResp:
@@ -234,7 +234,7 @@ def main() -> int:
 
     # 9g. repo_health 來源死活檢查平行化保序回歸鎖（探測已平行；死源/限速清單須照 sources.yml 順序、
     #     與完成順序無關 → issue body 穩定可重現）。注入快樁 probe（不連網），讓越前面的源回得越慢。
-    import repo_health as _rh  # noqa: E402
+    import repo_health as _rh
     _live_src = [{"id": f"L{i}", "rss": f"http://e/{i}"} for i in range(6)]
     _st = {0: ("ok", 200), 1: ("gone", 404), 2: ("ratelimited", 429),
            3: ("ok", 200), 4: ("blocked", 403), 5: ("ok", 200)}
@@ -296,7 +296,7 @@ def main() -> int:
           {"summary": _rout[0].message[:40], "calls": _retry_calls})
 
     # 9d. flash 速報：純機械抽取（離線，import 直接呼叫 extract，不碰網路）
-    import generate_flash as gf  # noqa: E402
+    import generate_flash as gf
 
     flash_sigs = [
         {"source_id": "hypebeast", "region": "global", "published": "2026-06-16",
@@ -337,7 +337,7 @@ def main() -> int:
     #     求值 None.YAMLError → AttributeError 蓋掉 load_yaml 丟的 RuntimeError、逃出 main() 的
     #     RuntimeError 處理，違反 CLAUDE.md「缺 pyyaml 明確回報」。注入 yaml=None 模擬缺套件，
     #     斷言只拿到 RuntimeError（main 會接住印 ⚠️），絕不是 AttributeError。
-    import validate_repo as _vr  # noqa: E402
+    import validate_repo as _vr
     _orig_yaml = _vr.yaml
     _vr.yaml = None
     try:

@@ -103,7 +103,7 @@ def baseline_movement(region: dict) -> str:
         import track_rankings  # 同在 scripts/，run 時 scripts/ 在 sys.path
         data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
         text = track_rankings.lyst_comparison_text(data, top=20)
-    except Exception as e:  # pragma: no cover
+    except (OSError, ValueError, KeyError, TypeError, ImportError) as e:  # pragma: no cover
         return f"（基準變動計算失敗：{e}）"
     if text is None:
         return "（Lyst 僅 1 筆快照，尚無季對季可比；下季發布後自動帶入）"
@@ -134,7 +134,7 @@ def build(month: str, region: dict) -> str:
     # 只填可自動推導的 metadata；品牌/單品等判斷留給 AI/人工。
     body = body.replace("{{month}}", month)
     body = body.replace("{{region_name}}", region["name"])
-    body = body.replace("{{generated_date}}", dt.date.today().isoformat())
+    body = body.replace("{{generated_date}}", dt.datetime.now(dt.timezone(dt.timedelta(hours=8))).date().isoformat())
     body = body.replace("{{baseline_label}}", baseline_label(region))
     body = body.replace("{{baseline_movement}}", baseline_movement(region))
     body = body.replace("{{signal_strength}}", "待填")
@@ -142,7 +142,7 @@ def build(month: str, region: dict) -> str:
 
     footer = (
         f"\n\n---\n\n"
-        f"<!-- 骨架由 generate_monthly_heat_report.py 產出 · {dt.date.today().isoformat()} -->\n"
+        f"<!-- 骨架由 generate_monthly_heat_report.py 產出 · {dt.datetime.now(dt.timezone(dt.timedelta(hours=8))).date().isoformat()} -->\n"
         f"<!-- 量化基準：{baseline_label(region)} -->\n"
         f"<!-- {source_summary(region)} -->\n"
         f"<!-- 下一步：依 prompts/monthly_heat_report.md 填入本月訊號（每條標 L1–L4 層級與信心） -->\n"

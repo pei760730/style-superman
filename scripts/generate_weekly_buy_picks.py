@@ -107,7 +107,7 @@ def main() -> None:
         except ValueError:
             parser.error(f"--date 須為合法 YYYY-MM-DD（收到 {args.date!r}）")
     else:
-        day = dt.date.today()
+        day = dt.datetime.now(dt.timezone(dt.timedelta(hours=8))).date()
     week_label, body = build(day)
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)

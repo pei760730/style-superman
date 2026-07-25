@@ -51,14 +51,14 @@ WHITELIST = {
 ROUNDUP_RE = re.compile(
     r"(best|guide|\bvs\b|showdown|picks|every |how to|why |these |roundup|"
     r"추천|선정|\d+\s*選|ベスト|特集|名品|リスト|厳選|セレク|まとめ)",
-    re.I,
+    re.IGNORECASE,
 )
 # 排除非時尚雜訊（hypebeast 常混入體育 / 科技 / 汽車 / 電影 / 訃聞 / 金融）。
 NOISE_RE = re.compile(
     r"(\bnba\b|\bbmw\b|\bdji\b|spacex|\bipo\b|patent|sues|box office|"
     r"\bfilm\b|movie|映画|興収|逝去|passed away|타계|le mans|auction|"
     r"trillionaire|트릴리어네어|결승전|파이널|球迷)",
-    re.I,
+    re.IGNORECASE,
 )
 
 REGION_NAME = {"global": "🌐 全球", "jp": "🇯🇵 日本", "kr": "🇰🇷 韓國", "us-eu": "🇺🇸🇪🇺 歐美"}
@@ -94,8 +94,10 @@ def extract(signals: list[dict], date_str: str, days: int = 2) -> str:
     lines = [
         f"# ⚡ Style 速報 — {date_str}",
         "",
-        "> 白名單硬資訊源 × 純機械抽取（零 LLM）：今天有什麼上了 / 漲了 / 併了，"
-        "帶 SKU / 價格 / 發售日。趨勢判讀 + picks 看對話深度版。",
+        (
+            "> 白名單硬資訊源 × 純機械抽取（零 LLM）：今天有什麼上了 / 漲了 / 併了，"
+            "帶 SKU / 價格 / 發售日。趨勢判讀 + picks 看對話深度版。"
+        ),
         "> 同一事件可能在各區各出一次（跨語言）；標題帶一點雜訊屬正常（速報定位，掃一眼可略）。",
     ]
     total = 0
@@ -166,7 +168,7 @@ def main() -> None:
             dt.date.fromisoformat(args.date)
         except ValueError:
             parser.error(f"--date 須為合法 YYYY-MM-DD（收到 {args.date!r}）")
-    date_str = args.date or dt.date.today().isoformat()
+    date_str = args.date or dt.datetime.now(dt.timezone(dt.timedelta(hours=8))).date().isoformat()
     signals = _load_signals(args.signals_in) if args.signals_in else _collect_live()
     md = extract(signals, date_str, args.days)
 

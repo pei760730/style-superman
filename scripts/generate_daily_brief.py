@@ -145,7 +145,7 @@ def main() -> None:
             dt.date.fromisoformat(args.date)
         except ValueError:
             parser.error(f"--date 須為合法 YYYY-MM-DD（收到 {args.date!r}）")
-    date_str = args.date or dt.date.today().isoformat()
+    date_str = args.date or dt.datetime.now(dt.timezone(dt.timedelta(hours=8))).date().isoformat()
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
     rss_note = ""

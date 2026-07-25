@@ -765,7 +765,7 @@ D25/D26（2026-06-23，**昨天**）才設好週挑的「週一早安觸發 + �
 - **刪** `daily-brief.yml`（在 `.github/workflows/` 下；此處刻意寫裸檔名，避免 repo_health 路徑檢查把「已刪檔」誤判成漂移 ERROR）。
 - **保留** `generate_daily_brief.py` / `collect_raw_signals.py`——本機骨架/收訊號仍在用（`test_smoke` 用 `--draft`、operating_manual 的本機備援 6 步用），只是不再有 Actions 入口。
 - **本機備援**：collect 失靈時直接在本機跑 `generate_daily_brief.py`（非 workflow_dispatch）。
-- **同步引用**：`README.md`（自動化表 + 檔案樹）、`docs/operating_manual.md`、`docs/system_design.md`、`.github/workflows/flash-brief.yml`（分工註解）、`.github/workflows/health.yml`（看門狗註解）。D16 的歷史條目（本檔上方「保留 workflow_dispatch、不刪檔」）保留為史，本決策明文超越。
+- **同步引用**：`README.md`（自動化表 + 檔案樹）、`docs/operating_manual.md`、`docs/system_design.md`、flash-brief.yml（分工註解；D35 2026-07-25 已刪檔）、`.github/workflows/health.yml`（看門狗註解）。D16 的歷史條目（本檔上方「保留 workflow_dispatch、不刪檔」）保留為史，本決策明文超越。
 
 ### 可逆 / guards
 

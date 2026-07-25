@@ -489,7 +489,7 @@ def check_source_liveness(probe=_probe_rss, retry_delay: float = LIVENESS_RETRY_
                 "warn",
                 f"疑遭阻擋（本探測視角）：{s.get('id')}（{s.get('rss')}）→ {status}"
                 + (f" HTTP {code}" if code else "")
-                + "——flash 層（Actions）實際收不到；深度日報（本機）不受影響",
+                + "——本行是 Actions egress 視角；flash 與深度日報 D35 起均在本機對話跑,不受影響",
                 "本機 --liveness 複核；勿依本行撤源；本機亦死才改判死源候補（#122×2、#186 四次誤殺教訓）",
             ))
     summary = Finding(

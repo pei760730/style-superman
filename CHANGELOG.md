@@ -4,6 +4,9 @@
 
 ## [Unreleased]
 
+### Removed
+- **flash-brief.yml 按鈕層（D35，2026-07-25）**：速報觸發面改純對話（擁有者拍板「我只會在對話觸發」；6 週僅 1 次 dispatch）。`generate_flash.py` + 測試保留，對話說「速報」直接跑。
+
 ### Added
 - **兩個 subagent 定義：唯讀深審 repo-auditor + 單主題修繕 patch-worker（.claude/agents/，2026-07-06，D34 結構層）**：7/5 場最大單一 token 段（35%+）是「換模型重審」在 300K 尾端 context 重讀全部已完成工作，且 context 增長 44% 來自 patch 過程的 thinking 回灌永不丟棄（44 次 >250K 呼叫吃掉全場 44.9%）。新增 `repo-auditor`（唯讀：輸入 PR 編號自抓 diff——REST `gh api`——逐項驗證數學／cron 頻率語意／路徑與決策編號存在性；無誤一行帶過、有問題列 檔案:行｜問題｜建議修法；不開 branch 不寫檔）與 `patch-worker`（接派工單 branch→修→單發 `python3 tests/test_smoke.py`→記帳同一組上限（CHANGELOG ≤3／decisions ≤12／lessons ≤5 行）一次寫完→push→開 PR→`gh run watch` 等 CI；回報 ≤15 行不貼 diff；不 merge；碰內容判斷／template 契約／新來源即停）。`CLAUDE.md` Self-Evolution Loop 的 Patch 行同步「>3 輪派 patch-worker、一行級小修主迴圈直做但同輪完成」（>3 輪門檻避免冷啟動虧損；D27/D28 已有對話派工 subagent 先例）。兩檔在 `.claude/`，不觸 guard scope、不觸孤兒檢查；可逆（刪兩檔＋還原 Patch 行）。
 

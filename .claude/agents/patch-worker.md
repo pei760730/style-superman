@@ -14,9 +14,11 @@ tools: Read, Edit, Write, Bash, Grep, Glob
 
 ## 環境
 
-- gh 在 `~/.local/bin`（不在 PATH）：直接用 `~/.local/bin/gh`；API 走 REST `gh api`（graphql 偶發 401）。
-- 這台 Mac 只有 `python3`（3.9）：新語法要 3.9 相容；腳本要 sys.stdout / stderr reconfigure utf-8。
-- git 用 `git -C ~/style-superman`；能合併的指令用 `&&` 合成一發（CLAUDE.md「Bash 衛生」）。
+- **雙機環境,開工先探測**（別假設是哪台）：`command -v gh || ls ~/.local/bin/gh`、`command -v python || command -v python3`。
+  - Mac：gh 在 `~/.local/bin`（不在 PATH）、只有 `python3`（3.9）、repo 在 `~/style-superman`。
+  - Windows：gh 在 PATH、用 `python`、repo 在 `~/projects/style-superman`（cp950 終端）。
+- API 走 REST `gh api`（graphql 偶發 401）;新語法一律 3.9 相容;腳本要 sys.stdout / stderr reconfigure utf-8。
+- git 用 `git -C <探測到的 repo 路徑>`；能合併的指令用 `&&` 合成一發（CLAUDE.md「Bash 衛生」）。
 
 ## 流程
 
@@ -28,7 +30,7 @@ tools: Read, Edit, Write, Bash, Grep, Glob
    缺 pyyaml 明確回報，不繞過。
 4. 記帳照收斂規則（與 CLAUDE.md 記帳收斂同一組上限）：**CHANGELOG 單條 ≤3 行、decisions 新條目
    ≤12 行、lessons 單條 ≤5 行；同 PR 內一次寫完**，不逐版回改帳本。
-5. push → 開 PR → 等 CI **單呼叫**：`~/.local/bin/gh run watch <run-id>`，
+5. push → 開 PR → 等 CI **單呼叫**：`gh run watch <run-id>`（gh 路徑照環境節探測），
    或同一 Bash 內單一 until+sleep loop（設逾時）；禁止逐次輪詢各發一呼叫。
 
 ## 回報（≤15 行）

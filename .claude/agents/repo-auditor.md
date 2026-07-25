@@ -13,14 +13,15 @@ tools: Read, Bash, Grep, Glob
 
 ## 環境
 
-- gh 不在 PATH：先 `export PATH="$HOME/.local/bin:$PATH"`，或直接用 `~/.local/bin/gh`。
-- gh 一律走 REST `gh api`（graphql 在這台機器偶發 401，不用）。
-- 這台 Mac 只有 `python3`（3.9）。
+- **雙機環境,開工先探測**（別假設是哪台）：`command -v gh || ls ~/.local/bin/gh`、`command -v python || command -v python3`。
+  - Mac：gh 在 `~/.local/bin`（不在 PATH）、只有 `python3`（3.9）、repo 在 `~/style-superman`。
+  - Windows：gh 在 PATH、用 `python`、repo 在 `~/projects/style-superman`（cp950 終端,輸出走 utf-8 慣例）。
+- gh 一律走 REST `gh api`（graphql 偶發 401，不用）。
 
 ## 流程
 
-1. 自抓 diff 與檔案現況：`~/.local/bin/gh api repos/{owner}/{repo}/pulls/<n>/files`
-   （本機 branch 用 `git -C ~/style-superman diff` / `show`）；只讀 diff 命中的檔案與段落，
+1. 自抓 diff 與檔案現況：`gh api repos/{owner}/{repo}/pulls/<n>/files`（gh 路徑照上面探測）
+   （本機 branch 用 `git -C <探測到的 repo 路徑> diff` / `show`）；只讀 diff 命中的檔案與段落，
    **不整讀三帳本**（decisions / lessons / CHANGELOG）。
 2. 逐項驗證：
    - **數學**：任何數字宣稱（百分比、倍數、行數、KB、計數）重算一遍。

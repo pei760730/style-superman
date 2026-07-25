@@ -112,7 +112,8 @@ Next      → repo_health.py 的 Next Actions 就是下一輪 TODO
 
 - **能合併的指令用 `&&` 合成一發**——不把 `cd` / `export` / `git status` / `git diff` 拆成多次呼叫
   （2026-07-05 實測：`cd`×52、`export`×33 全是固定前綴稅，每發都揹全量 context）。
-- **gh 一律用絕對路徑 `~/.local/bin/gh`**（不再每次 export PATH）；**git 用 `git -C ~/style-superman`**（不再 cd 前綴）。
+- **gh 用固定路徑、git 用 `git -C <repo>`**（不再每次 export PATH / cd 前綴）。路徑按機器：
+  Mac＝`~/.local/bin/gh` + `git -C ~/style-superman`；Windows＝gh 已在 PATH + `git -C ~/projects/style-superman`。
 - **等 CI 一律單呼叫**：`~/.local/bin/gh run watch <run-id>`，或同一 Bash 內 `until`+`sleep` loop（設逾時）；
   禁止逐次輪詢各發一呼叫。
 - **merge 授權**：要 merge 前一句話問、使用者回「MERGE」即明確授權（2026-07-05 實證分類器放行此措辭；

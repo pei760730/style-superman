@@ -132,7 +132,7 @@
 ## D35 — 速報觸發面改純對話，廢 flash-brief.yml 按鈕層（2026-07-25，擁有者拍板「我只會在對話觸發」）
 
 - **背景**：D19 速報層設計給「手機在外按 Actions 按鈕」；實際 6 週僅 1 次 dispatch（6/16），與擁有者 chat-only 習性結構性矛盾（7/25 深審發現）。
-- **拍板**：刪 `.github/workflows/flash-brief.yml`；`generate_flash.py` + 測試保留，對話說「速報」由 agent 直接跑、對話即讀（同 D16/D33 的 daily 模式）。D19 的機械抽取原則（零 LLM、白名單硬源、不判讀）不變，只改觸發面。
+- **拍板**：刪 flash-brief.yml（原 .github/workflows 下的 dispatch 按鈕層）；`generate_flash.py` + 測試保留，對話說「速報」由 agent 直接跑、對話即讀（同 D16/D33 的 daily 模式）。D19 的機械抽取原則（零 LLM、白名單硬源、不判讀）不變，只改觸發面。
 - **修訂**：D33 尾段「flash-brief.yml 維持僅 workflow_dispatch」該句由本條取代（workflow 已除）；D33 其餘不動。
 - 可逆：未來真需要離機速報，走 D33 已框定的 notify-only 路線，不回退 dispatch 按鈕。
 

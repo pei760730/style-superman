@@ -24,9 +24,9 @@
 > 退化成「只有標題的空殼 roundup」；對話裡 agent 認真跑(真收訊號 + 真 WebFetch 挖 picks)品質更高、
 > 又省 routine 額度。產出在對話讀,不入 `reports/daily/`(要封存再說)。
 
-> **手機在外、開不了電腦?** 從手機按一下 GitHub Actions 跑 `flash-brief.yml`,拿到 ⚡ Style 速報([reports/flash/](reports/flash/))——
-> 白名單硬資訊源**純機械抽取(零 LLM)**,回答「今天有什麼上了/漲了/併了」+ 現成 SKU/價格/發售日。
-> 趨勢判讀 + 挖 picks 仍是桌面對話深度版的活(D19,2026-06-16)。
+> **要快訊?** 對話裡說「速報」,agent 直接跑 `generate_flash.py`(白名單硬資訊源**純機械抽取,零 LLM**),
+> 回答「今天有什麼上了/漲了/併了」+ 現成 SKU/價格/發售日,對話即讀。
+> 趨勢判讀 + 挖 picks 仍是深度版的活(D19 機械抽取原則不變;D35 廢 Actions 按鈕層,2026-07-25)。
 
 **每週一**：說「早安」= daily + 週挑 Head-to-Toe **一起自動端上、不需額外關鍵字**（D25）。週挑不是週一現抓——每天 brief 的 🎯 For Me 在紅單品**累積進滾動候選池**，週一**收斂**（反覆出現=真在升、單日=雜訊；D26）。每週至少一張趨勢深挖卡（歐美優先，對話觸發）。
 **每月初**：說一聲跑歐美 / 日本月報（**對話觸發**；日本線 2026-07 起）。Lyst Q2 出刊（7 月）時說一聲 ingest 進 rankings。
@@ -43,11 +43,11 @@
 - **讀法慣例**：連續趨勢用增量寫法——同一件事第二天只寫新增事實，背景用「讀法見 YYYY-MM-DD brief」回連，所以看到回連別當漏寫，是防止每天重講一遍。
 - 訊號弱的日子會誠實寫「今日訊號偏弱」，不硬湊。
 
-### ⚡ Style 速報 — [reports/flash/](reports/flash/)（手機可觸發，D19）
+### ⚡ Style 速報 — 對話觸發（D19 機械抽取原則 × D35 對話入口）
 
-- **手機在外、開不了電腦時的速報層**：從手機開 GitHub Actions 手動跑 `flash-brief.yml`，白名單硬資訊源（hypebeast / sneakernews / WWD / fashionsnap / senken / 錶源…）**純機械抽取（零 LLM，守 D5）**，排成「今天有什麼上了 / 漲了 / 併了」+ 現成 SKU / 價格 / 發售日。
-- **刻意不做趨勢判讀 / 不挖 picks / 不下熱度結論**——那是桌面對話深度版（opus）的活。只做機械抽取、不讓 LLM 假裝判讀，從根上不退化成被砍掉的「空殼 roundup」（D16）。
-- 與深度版分流：速報落 `reports/flash/`、深度 brief 在對話讀（不入版控），互不踩。
+- 對話說「速報」→ agent 跑 `scripts/generate_flash.py`：白名單硬資訊源（hypebeast / sneakernews / WWD / fashionsnap / senken / 錶源…）**純機械抽取（零 LLM，守 D5）**，排成「今天有什麼上了 / 漲了 / 併了」+ 現成 SKU / 價格 / 發售日。
+- **刻意不做趨勢判讀 / 不挖 picks / 不下熱度結論**——那是深度版的活。只做機械抽取、不讓 LLM 假裝判讀，從根上不退化成被砍掉的「空殼 roundup」（D16）。
+- 產出對話即讀（同 daily brief）；歷史檔留在 [reports/flash/](reports/flash/)。原 `flash-brief.yml` 手機按鈕層 6 週 1 次使用、與擁有者「只在對話觸發」矛盾 → D35 廢除（2026-07-25）。
 
 ### 🛍 週挑 Head-to-Toe — [reports/buy_shortlist/](reports/buy_shortlist/)（每週一，自動）
 
@@ -84,7 +84,6 @@
 | 執行者 | 時間 | 做什麼 | 提交方式 |
 |---|---|---|---|
 | 對話 agent（**唯一的內容入口**） | 說「早安」/ 需要時 | **每日 brief**（照 `scan_units.yml` 派工平行唯讀 reader → 收訊號 + WebFetch 挖 picks → orchestrator 收斂去重 → 對話端上，D27/D28）；趨勢深挖卡；**品牌雷達**（「深挖 A.PRESSE」式，D11）；**週挑**（週一說「早安」一起端）；**月報**（月初說一聲，歐美 / 日本，日本線 2026-07 起）；**Lyst Q2 ingest**（7 月榜出說一聲）；臨時任務 | 內容在對話讀（不入版控）；需封存 / 工程改動才走**分支 + PR**，驗證綠自 merge（D8） |
-| GitHub Actions `flash-brief.yml` | **手機手動 dispatch**（D19） | ⚡ 速報：白名單硬源純機械抽取（零 LLM），落 `reports/flash/<date>.md` | 手機按一下 = 有人盯，不違 D16 砍排程 |
 | GitHub Actions `health.yml` | 每週一、四台北 09:00 | `repo_health --strict` 巡檢（新鮮度 + 一致性 + 守衛 + 產出契約）+ `--liveness` 死源探針（continue-on-error，限速不算死） | 未過 / 偵測死源 → 自動開 / 更新 `repo-health` issue；轉綠自動關（#189；egress 視角先複核再處置，D32） |
 
 > daily-brief workflow 已於 **D30（2026-06-27）退役刪檔**——D16 後 daily 全對話觸發，該 workflow 與 D16 freeze gate 互斥、要交棒的 signals 又被 gitignore，實質無用。本機收 RSS 失靈時直接在本機跑 `generate_daily_brief.py`（見 docs/operating_manual.md）。
@@ -123,7 +122,7 @@
 | D16 | 砍雲端排程 routine | daily 連週挑 / 月報全對話觸發（說「早安」當場跑）；0 routine、省額度、品質更高 |
 | D17 | 撤 Mercari 日本量化板 | 2013→2022 陳貨、年報已無時尚榜、替代源全 bot 擋；日本看 daily 日潮質化 |
 | D18 | 新增來源兩道門 | 加來源前先驗 ① 近 30 天持續產出 ② 夠權威（非聚合 / SEO）；仍需擁有者拍板 |
-| D19 | 速報層 generate_flash | 白名單硬源純機械抽取（零 LLM）；手機可獨立 dispatch，補桌面對話 brief 手機看不到的缺口 |
+| D19 | 速報層 generate_flash | 白名單硬源純機械抽取（零 LLM）；D35（2026-07-25）觸發面改對話（廢 Actions 按鈕層） |
 | D20 | Google 體系整合評估 | 不接常設源 / CLI / API / Cloud（Google 強項全落在被 D5/D7/D16 封死的內容層）；YT 話語層走對話臨場 WebSearch |
 | D21 | 不建需離開對話的人工介面 | 移除排行看榜 CLI + 存榜助手（機器無呼叫者、擁有者只走對話）；排行資料改 AI 對話端直接編 yaml |
 | D22 | 採用 Firecrawl keyless | 封鎖源 roundup 改 Firecrawl 對話端 scrape（免 key、結構化抽 picks）；限定對話端、不進腳本 |
@@ -180,7 +179,7 @@ style-superman/
 │       └── snkrdunk.yml      #   日本：SNKRDUNK 球鞋轉售（日版 StockX，D24 重建）
 ├── reports/                  # 封存快照（產出後不回改）
 │   ├── daily/                # 每日 brief（YYYY-MM-DD.md）
-│   ├── flash/                # ⚡ 速報（YYYY-MM-DD.md；手機 dispatch，純機械抽取 D19）
+│   ├── flash/                # ⚡ 速報歷史檔（YYYY-MM-DD.md；D35 起對話即讀不入版控）
 │   ├── buy_shortlist/        # 週挑 Head-to-Toe（YYYY-Wnn.md）
 │   ├── monthly/              # 月度熱度速報（YYYY-MM-eu.md 歐美；YYYY-MM-jp.md 日本，2026-07 起）
 │   └── analysis/             # 趨勢深挖卡 + 主題分析（每週至少一張，歐美優先）
@@ -217,7 +216,6 @@ style-superman/
 │   └── lessons.md               # 教訓簿（殭屍任務卡三例都在這）
 └── .github/workflows/
     ├── ci.yml                # PR validate + smoke（3.9 + 3.12）+ ruff
-    ├── flash-brief.yml       # ⚡ 速報：手機 dispatch、純機械抽取（D19）
     └── health.yml            # 週一、四 --strict 巡檢 + 死源 liveness，未過/死源自動開 issue
 ```
 

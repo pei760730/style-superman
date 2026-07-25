@@ -16,7 +16,7 @@ concurrency:
 jobs:
   smoke:
     runs-on: ubuntu-latest
-    # 擁有者 Mac 是 3.9 floor、本機是唯一產線（D16 後 brief 走對話、flash 手動 dispatch）。
+    # 擁有者 Mac 是 3.9 floor、本機是唯一產線（D16 後 brief 走對話、D35 後 flash 亦走對話）。
     # CI 必須在 3.9 也跑，否則 3.10+ 語法/stdlib 會 CI 綠卻在擁有者本機才炸（守錯門）。
     strategy:
       matrix:

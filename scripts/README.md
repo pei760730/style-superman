@@ -47,7 +47,7 @@ python scripts/generate_flash.py --date 2026-06-16 --out reports/flash/2026-06-1
 python scripts/generate_flash.py --signals-in /tmp/raw.yml --out /tmp/flash.md   # 讀現成 signals（離線）
 ```
 
-由 `.github/workflows/flash-brief.yml`（`workflow_dispatch`，手機 GitHub App 可手動觸發）跑；**趨勢判讀 + 挖 picks + For Me 仍是對話 opus 深度版的活，不在這層做**。
+D35（2026-07-25）起由對話觸發（說「速報」,agent 直接跑本腳本;原 flash-brief.yml 按鈕層已廢）；**趨勢判讀 + 挖 picks + For Me 仍是對話 opus 深度版的活，不在這層做**。
 
 ### `generate_weekly_buy_picks.py`
 產出「本週在紅 Head-to-Toe」骨架（在紅單品情報，非買清單，D15），寫到 `reports/buy_shortlist/YYYY-Wnn.md`（ISO 週）。

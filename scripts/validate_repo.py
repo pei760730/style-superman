@@ -269,7 +269,7 @@ def check_templates() -> list[CheckResult]:
 
 REPORT_PATTERNS = {
     "daily": re.compile(r"^\d{4}-\d{2}-\d{2}\.md$"),
-    # ⚡ flash 速報由 flash-brief.yml 機械產並 commit 進 master——之前不在任何契約掃描內，
+    # ⚡ flash 速報歷史檔（原 flash-brief.yml 機械產；D35 起對話觸發、新產出對話即讀不 commit）——
     #    檔名/標題跑掉不會被抓（與 daily 同日期格式 + H1）。2026-06-16 補上守門。
     "flash": re.compile(r"^\d{4}-\d{2}-\d{2}\.md$"),
     "monthly": re.compile(r"^\d{4}-\d{2}-[a-z-]+\.md$"),
@@ -280,7 +280,7 @@ REPORT_PATTERNS = {
 # 06-16（最後一個歷史 daily）以前的檔 grandfathered；之後任何被 commit 進來的 daily brief 都是違規——
 # 多為平行 session 走 D16 前的舊存檔習慣（06-23 routine、06-24/25/26 session 連四犯，純文件規則擋不住）。
 # 這條 gate 把違規檔變 CI 紅、PR merge 不了，從「靠記性」升級成「機制擋死」（CLAUDE.md：反覆出現才硬化、警告必配修復）。
-# 只擋 daily：flash（D19 機械產、合法 commit）同為 YYYY-MM-DD.md 但不在此列。
+# 只擋 daily：flash 歷史檔（D19 機械產）同為 YYYY-MM-DD.md 但不在此列（D35 後不再新增）。
 DAILY_FREEZE_CUTOFF = "2026-06-16"
 
 

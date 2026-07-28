@@ -38,6 +38,19 @@ python scripts/collect_raw_signals.py --out /tmp/raw.yml --limit 5
 
 > raw_signal_pack 是中間產物，**不入長期版控**（見 `templates/raw_signal_pack_template.md`）。
 
+### `fetch_article.py`
+把**單篇文章 URL** 抓成純文字（標題 / 發佈日 / 正文），給寫 brief 的對話 agent 挖 roundup 的實際 picks、補價格與型號用。**純機械抽取、零 LLM**（守 D5）：只做 HTTP + 去標籤 + 壓空白，判讀留在對話端。
+
+```bash
+python scripts/fetch_article.py https://www.gq.com/gallery/best-linen-shirts-for-men
+python scripts/fetch_article.py <url> --max-chars 4000     # 只要前段
+python scripts/fetch_article.py <url> --json               # 結構化（status/title/published/words/text）
+```
+
+- **本機專用**（D36，2026-07-28）：brief 本來就在本機跑（D30/D35），本機是最強視角；Actions egress 對多源會 403，所以這支不進 CI、不排程。
+- 退出碼：`0` 成功／`3` HTTP 錯誤（含 403＝**本視角**被拒，不代表源不可讀）／`4` 連不上／`5` 抓到但正文過短（JS 殼或付費牆，不足以當「讀過原文」的證據）。
+- 為什麼有這支：`body_fetchable: false` 有六個源是 2026-06-14 用 WebFetch 視角量錯的（本機複驗全 200、價格與 picks 都在）。要再封一個源的正文，得本機實測 + 填 `body_fetch_note`，`validate_repo` 會擋。
+
 ### `generate_flash.py`
 ⚡ **速報層**（D19）：對白名單硬資訊源做**純機械抽取**（零 LLM，守 D5），寫到 `reports/flash/YYYY-MM-DD.md`。回答「今天有什麼上了 / 漲了 / 併了」，帶 RSS summary 內現成的 SKU / 價格 / 發售日。只收「標題即資訊」的發售 / 新品 / 併購 / 漲價硬源（`hypebeast` 系 / `sneakernews` / `wwd` / `fashionsnap` / `senken` / 錶源），**排除**需要逐篇判讀的 roundup / editorial / clickbait（那些留對話深度版）。因為只機械抽取、不讓 LLM 假裝判讀，不會退化成 D16 砍掉的「空殼 roundup」。
 

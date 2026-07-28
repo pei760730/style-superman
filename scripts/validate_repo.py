@@ -92,6 +92,17 @@ def check_sources() -> CheckResult:
         missing = missing_fields(source, required)
         if missing:
             errors.append(f"{path}: source {source.get('id', idx)!r} missing {', '.join(missing)}")
+        # D36（2026-07-28）：`body_fetchable: false` 是**量出來的**，不是與生俱來的屬性——
+        # 六個源被 2026-06-14 的 WebFetch 視角誤判成「不可讀」，本機實測全 200。
+        # 所以要封一個源的正文，必須留下「哪個視角、哪天量的」，否則下次沒人知道該不該複驗。
+        if source.get("body_fetchable") is False:
+            note = source.get("body_fetch_note")
+            if not (isinstance(note, str) and re.search(r"\d{4}-\d{2}-\d{2}", note) and "本機" in note):
+                errors.append(
+                    f"{path}: source {source.get('id', idx)!r} 標了 body_fetchable: false，"
+                    "必須附 body_fetch_note（含本機實測日期 YYYY-MM-DD）"
+                    "——403 是「誰在看」的陳述，不得只憑遠端視角封源（D36）"
+                )
     check_unique([s for s in sources if isinstance(s, dict)], "id", str(path), errors)
     return CheckResult("data/sources.yml", errors)
 

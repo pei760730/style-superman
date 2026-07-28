@@ -8,9 +8,15 @@
 #   tier      1=核心必看  2=常態追蹤  3=輔助/驗證
 #   url       主站
 #   rss       RSS（若有，未來自動抓取用；無則留 null）
-#   body_fetchable  false=WebFetch 讀不到內文（網站封鎖 crawler 或付費牆，如 GQ gq.com）。
-#                   2026-06-20（D22）起：標 false 的 roundup **先改用 Firecrawl keyless scrape 挖 picks**（試用勝出落地，
-#                   實測 GQ/wwd-japan 皆 200、結構化抽取乾淨）；Firecrawl 也挖不到才直接不列。省略/true=WebFetch 可讀。
+#   body_fetchable  false=**本機視角**（brief 實際跑的地方，D30/D35）也抓不到內文＝真站級封鎖。
+#                   判定視角＝本機 `python scripts/fetch_article.py <url>`，不是 WebFetch。
+#                   ⚠ D36（2026-07-28）修正：本欄 2026-06-14 是用「WebFetch 視角」量的，把
+#                   gq / esquire / bof / drapers / put-this-on / wwd-japan 六源誤判成不可讀；
+#                   本機複驗全部 200 且價格、picks 都抓得到（PS $3,800、GQ 亞麻襯衫 $120/$90/$50…）。
+#                   403 是「誰在看」的陳述，不是「這個源可不可讀」——同一條 #186/#193 已在 RSS
+#                   死活軸硬化過（repo_health.check_source_liveness），D36 把它套到正文抓取軸。
+#                   標 false 必須同時填 body_fetch_note（哪個視角、哪天量的），validate_repo 會擋。
+#   body_fetch_note 封源證據：本機實測日期 + 現象（僅在 body_fetchable: false 時必填）。
 #   notes     用途備註
 #
 # 🚪 新增來源前的門檻（擁有者 2026-06-14 拍板，D18）——兩關都過才加，寧缺勿濫：
@@ -18,8 +24,9 @@
 #      只在大事件才更新、或已半停更的不收（會變死權重：cf. Mercari 年報轉趨勢詞已撤、
 #      google-trends 手動月拉 D7 砍）。
 #   ② 夠權威：有編輯判斷 / 一手資訊 / 行業地位，不是聚合農場或 SEO 內容站。
-#   （新增來源是內容判斷、需擁有者拍板；tier 不批量改＝D4。加之前先 WebFetch 實測可讀，
-#    讀不到就標 body_fetchable: false。）
+#   （新增來源是內容判斷、需擁有者拍板；tier 不批量改＝D4。加之前先用
+#    `python scripts/fetch_article.py <url>` 本機實測，本機也讀不到才標 body_fetchable: false
+#    ＋ body_fetch_note；遠端視角 403 一律不算證據，D36。）
 
 sources:
   # ---------- 全球潮流媒體 ----------
@@ -48,7 +55,8 @@ sources:
     tier: 2
     url: https://www.gq.com/style
     rss: https://www.gq.com/feed/rss   # 全站 feed（含非 style 內容，篩選交 brief 主編 agent）；2026-06-10 實測可解析
-    body_fetchable: false   # gq.com 封鎖 crawler，WebFetch 讀不到內文（2026-06-14 實測）→ roundup 改走 Firecrawl scrape（D22）
+    # 2026-07-28 本機實測 200、正文 2,907 字，roundup picks 與價格（$120/$90/$50/$118/$345/$148）全抓得到
+    # → D36 撤掉 body_fetchable: false（那是 WebFetch 視角的 403，非站點屬性）。
     notes: 主流男裝、紅毯與名人穿搭
 
   - id: esquire-style
@@ -58,7 +66,7 @@ sources:
     tier: 3
     url: https://www.esquire.com/style/
     rss: https://www.esquire.com/rss/all.xml   # 全站 feed（含非 style 內容）；2026-06-10 實測可解析
-    body_fetchable: false   # esquire.com 封鎖 crawler，WebFetch 讀不到內文（2026-06-14 實測）→ roundup 改走 Firecrawl scrape（D22）
+    # 2026-07-28 本機實測 200、正文 778 字（Timex $199→$133 等數字都在）→ D36 撤掉 body_fetchable: false
     notes: 經典男裝、tailoring 角度
 
   - id: bof
@@ -68,7 +76,8 @@ sources:
     tier: 1
     url: https://www.businessoffashion.com/
     rss: https://www.businessoffashion.com/arc/outboundfeeds/rss/?outputType=xml   # 2026-06-11 實測可解析
-    body_fetchable: false   # 正文付費牆 + 403，WebFetch 讀不到內文（2026-06-14 實測）→ roundup 改走 Firecrawl scrape（D22）；title+summary 仍收
+    # 2026-07-28 本機實測 200、正文 738 字（LVMH/Dior 數字在）→ D36 撤掉 body_fetchable: false。
+    # 注意仍是**部分付費牆**：拿到的是前段，深度分析看不到——引用前看 fetch_article 回報的字數。
     notes: 國際時裝產業情報的最高標來源（品牌併購 / 人事 / 策略）；正文部分付費牆，事實層收 title+summary 已足
 
   - id: wwd
@@ -87,7 +96,8 @@ sources:
     tier: 2
     url: https://sneakernews.com/
     rss: https://sneakernews.com/feed/   # 2026-06-11 實測可解析
-    body_fetchable: false   # sneakernews.com 回 403、WebFetch 讀不到內文（2026-06-14 實測）→ roundup 改走 Firecrawl scrape（D22）；RSS summary 含 SKU/價格仍可當單則
+    body_fetchable: false
+    body_fetch_note: "2026-07-28 本機實測仍 403（瀏覽器 UA 與 bot UA 皆然）＝真站級封鎖，非探測視角問題；RSS summary 含 SKU/價格仍可當單則用"
     notes: 球鞋發售情報垂直媒體（日期 / 定價 / SKU 密度高）；與 Hypebeast 交叉驗證發售訊號
 
   - id: fucking-young
@@ -124,7 +134,7 @@ sources:
     tier: 3
     url: https://putthison.com/
     rss: https://putthison.com/feed/   # 2026-06-11 實測可解析
-    body_fetchable: false   # putthison.com 回 403、WebFetch 讀不到內文（2026-06-14 實測）→ roundup 改走 Firecrawl scrape（D22）
+    # 2026-07-28 本機實測 200（Get Bejeweled! 全文）→ D36 撤掉 body_fetchable: false
     notes: 美式經典男裝部落格老店：質感判斷 / 二手挖寶（eBay roundup）視角，補 discourse 層深度
 
   - id: reddit-sneakers
@@ -152,7 +162,7 @@ sources:
     tier: 2
     url: https://www.drapersonline.com/
     rss: https://www.drapersonline.com/feed   # 2026-06-13 實測可解析（2 週 sitemap 驗證、高量穩定）
-    body_fetchable: false   # drapersonline.com 回 403、WebFetch 讀不到內文（2026-06-14 實測）→ roundup 改走 Firecrawl scrape（D22）
+    # 2026-07-28 本機實測 200、正文 584 字（Frasers/Hugo Boss 收購案數字在）→ D36 撤掉 body_fetchable: false
     notes: 英國時裝零售產業日報；零售/通路 intel（品牌動向、人事、漲價、零售布局），非消費趨勢——餵「值得買｜通路」軸，不當 trend headline 來源（D13）
 
   # ---------- 高級鐘錶（配件位：錶與服裝同等對待）----------
@@ -201,7 +211,7 @@ sources:
     tier: 2
     url: https://www.wwdjapan.com/
     rss: https://www.wwdjapan.com/feed   # 2026-06-10 實測可解析
-    body_fetchable: false   # wwdjapan.com 回 403、WebFetch 讀不到內文（2026-06-14 實測；母刊 wwd.com 反而可讀）→ roundup 改走 Firecrawl scrape（D22）
+    # 2026-07-28 本機實測 200（ルルレモン原宿旗艦店全文）→ D36 撤掉 body_fetchable: false
     notes: 產業 / 品牌營運 / 秀場
 
   - id: mens-nonno

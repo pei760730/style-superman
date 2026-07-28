@@ -321,6 +321,71 @@ def main() -> int:
     )
     check("flash 速報機械抽取（白名單×去 roundup×去 noise×近期）", ok_flash, md[:200])
 
+    # 9i. fetch_article 正文抓取（D36；離線：用 fixture + 注入 fetcher，不碰網路）
+    #     這支存在的理由本身就是回歸鎖：403 是「誰在看」的陳述，不是「源不可讀」——
+    #     2026-06-14 憑 WebFetch 視角把六個源標成 body_fetchable:false，本機複驗全 200。
+    import fetch_article as fa
+
+    art_html = (FIX / "sample_article.html").read_text(encoding="utf-8")
+    body = fa.to_text(fa.main_region(art_html))
+    ok_extract = (
+        "SCRIPTNOISE" not in body and "STYLENOISE" not in body      # <script>/<style> 整段丟掉
+        and "NOSCRIPTNOISE" not in body                              # <noscript> 同上
+        and "SIDEBARNOISE" not in body                               # <article> 外的側欄不入正文
+        and "$118" in body and "$345" in body                        # 價格（挖 picks 的關鍵事實）留著
+        and "Testwear & Co." in body                                 # HTML entity 已解碼
+        and "—" in body                                              # &#8212; 這種數字實體也解
+        and "<" not in body                                          # 標籤清乾淨
+    )
+    check("fetch_article 正文抽取（去雜訊 × 留價格 × 解實體）", ok_extract, body[:160])
+
+    ok_meta = (
+        fa.title_of(art_html) == "Six Linen Shirts Worth Knowing – Fixture Times"  # 取最長：og:title 是站名
+        and fa.published_of(art_html) == "2026-07-28"
+        and fa.published_of("<html><body>no date here</body></html>") == "待查"     # 抓不到要誠實
+    )
+    check("fetch_article 標題取最長 + 發佈日 ISO 化", ok_meta,
+          f"{fa.title_of(art_html)!r} / {fa.published_of(art_html)!r}")
+
+    got = fa.article("https://e.example/a", fetcher=lambda u, t: (200, art_html))
+    blocked = fa.article("https://e.example/b", fetcher=lambda u, t: (403, ""))
+    dead = fa.article("https://e.example/c", fetcher=lambda u, t: (0, ""))
+    ok_article = (
+        got["ok"] and got["status"] == 200 and got["words"] > 60 and "$118" in got["text"]
+        and blocked["status"] == 403 and not blocked["ok"] and blocked["text"] == ""  # 403 不丟例外、不假裝有文
+        and dead["status"] == 0 and not dead["ok"]
+    )
+    check("fetch_article 注入 fetcher：200 / 403 / 連不上三態", ok_article,
+          f"{got['words']}w, blocked={blocked['status']}, dead={dead['status']}")
+
+    # 短正文（JS 殼 / 付費牆）不可被當成「讀過原文」→ ok=False（CLI 退 5）
+    thin = fa.article("https://e.example/d", fetcher=lambda u, t: (200, "<html><body><p>Hi</p></body></html>"))
+    check("fetch_article 正文過短判 not ok（付費牆 / JS 殼）", not thin["ok"] and thin["status"] == 200, str(thin["chars"]))
+
+    # known_domains 的 www 去頭回歸鎖：lstrip("www.") 會把 wwd.com 啃成 d.com（字元集合陷阱）
+    _domains = fa.known_domains()
+    check("fetch_article known_domains 不誤啃 wwd.com", "wwd.com" in _domains and "d.com" not in _domains,
+          sorted(d for d in _domains if d.startswith("ww"))[:5])
+
+    # 9i-2. D36 契約：標 body_fetchable: false 必須附 body_fetch_note（含本機實測日期）。
+    #       反向探針——只憑遠端視角封源（沒有 note）要被 validate_repo 擋下。
+    _vr_mod = sys.modules.get("validate_repo") or __import__("validate_repo")
+    import yaml as _yl2
+    _orig_load2 = _yl2.safe_load
+    _base_src = {"id": "x", "name": "X", "region": "us-eu", "type": "media", "tier": 2, "url": "https://x.example"}
+    try:
+        _yl2.safe_load = lambda *a, **k: {"sources": [dict(_base_src, body_fetchable=False)]}
+        _bad = _vr_mod.check_sources()
+        _yl2.safe_load = lambda *a, **k: {"sources": [dict(
+            _base_src, body_fetchable=False,
+            body_fetch_note="2026-07-28 本機實測仍 403（兩種 UA 皆然）")]}
+        _good = _vr_mod.check_sources()
+    finally:
+        _yl2.safe_load = _orig_load2
+    check("D36 契約：封源沒附本機實測證據被擋、附了才過",
+          not _bad.ok and "body_fetch_note" in " ".join(_bad.errors) and _good.ok,
+          f"bad={_bad.errors[:1]} good={_good.errors[:1]}")
+
     # 9b. 週挑骨架（draft 模式，不污染版控）
     r = run(["scripts/generate_weekly_buy_picks.py", "--date", "2099-01-07", "--draft"])
     draft = ROOT / "reports" / "buy_shortlist" / "2099-W02.draft.md"

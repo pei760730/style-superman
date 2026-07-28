@@ -4,7 +4,7 @@
 >
 > **輪替規則（2026-07-06）**：本檔只保留**全量總覽表 + 最近 5 條完整條目**；Record 新決策時若完整條目超過 5 條，同 PR 把最舊的整段搬進 `docs/decisions-archive.md`（完整脈絡查 archive 或 git 歷史）。
 
-## 決策總覽（D1–D34 全量；完整敘事 D1–D30 見 `docs/decisions-archive.md`）
+## 決策總覽（D1–D36 全量；完整敘事 D1–D31 見 `docs/decisions-archive.md`）
 
 | # | 拍板結論（一句話） | 日期 | guard |
 |---|--------------------|------|-------|
@@ -42,31 +42,10 @@
 | D32 | 死源偵測加「重試再判死」降偽陽性（追記：頭牌實例真因是 UA／egress 視角） | 2026-07-03 | 無 |
 | D33 | 廢雲端排程 daily 代理，daily 純對話觸發 | 2026-07-04 | 無 |
 | D34 | Session 分場紀律＋驗收單一入口（token 成本） | 2026-07-06 | 無 |
+| D35 | 速報改純對話觸發，廢 flash-brief.yml 按鈕層 | 2026-07-25 | 無 |
+| D36 | 正文抓取改本機優先（fetch_article.py）；`body_fetchable` 是「視角 × 源」的量測，封源要附本機證據 | 2026-07-28 | 無（validate_repo 契約檢查） |
 
 ---
-
-## D31 — Lyst 看門狗改「發布寬限」模型（2026-07-03，兩端同日並行、以 merge #177 定案；本條為補記錄）
-
-### 背景
-
-2026-07-02 排程「Repo Health Patrol」首次紅（6/29 還綠）：`--strict` 唯一觸發 WARN＝「Lyst 快照落後 2 季（最新 2026-Q1）」。真因是**純日曆季差判定的結構缺陷**：新一季 Lyst Index 在季結束後約 3–4 週才發布（Q2'25＝7/23 實證；Q2'26 於 7/3 實查尚未發布），所以每年 1/4/7/10 月頭約六週 `behind` 必跳 2——**保證假警報**，但當下根本無資料可 ingest（D21 後 ingest 是對話端手動編 yaml、無自動管線可「斷」）。6/29 還在 Q2（落後 1 季）故綠、7/1 進 Q3 落後變 2 故紅，「同一份資料三天內綠轉紅」即此。patrol cron 每週一・四（`0 1 * * 1,4`），不修＝每週兩發紅通知到 Kai。
-
-### 兩端並行與定案過程（誠實記錄）
-
-同日兩個 session 平行修同一問題：
-- Session A（本機開工巡檢）：AskUserQuestion 攤三選項，擁有者先拍「門檻 2→3」（`LYST_STALE_QUARTERS` 2→3），開 PR #175。
-- Session B：直接做**發布寬限模型**並實彈驗證（Q2'26 未發布），開 PR #177。
-- Session B 於 CI 綠後 merge **#177**；擁有者事後在對帳 session 以 AskUserQuestion **明確重拍板：留 #177、關 #175** → 定案。#175 被超越關閉未合：門檻 2→3 治標（每季頭六週的假警報只是延後到落後 3 的年份才消失），發布寬限模型治本（結構上消滅日曆季差假警報、且該警時警得更早——Q2 逾 ~8/14 未 ingest 即警，不用等到落後 3 季）。
-
-### 拍板：發布寬限模型（#177 實作）
-
-- 刪 `LYST_STALE_QUARTERS`，新 `LYST_PUBLISH_LAG_DAYS = 45`：上一季索引要「季結束 + 45 天」後才算**可 ingest**；只有「已發布逾寬限、卻沒 ingest」才 WARN，其餘 INFO。
-- 語意：紅＝「有東西可以 ingest 而沒人動」，不再是「日曆走到季界」。Q2'26 若 ~8/14 後仍未 ingest，巡檢會正確重新變紅。
-- 同 PR 順修 UA 誤殺三源（見 D32 追記）。
-
-### 可逆 / guards
-
-可逆（還原 `check_lyst_staleness` 為季差判定即回復）。無禁用識別字。延續 D21（ingest 對話化）、D29（內容節奏不該讓看門狗長期紅）、D7 反熵、「警告必配修復」。教訓另記 lessons（多端並行：同日兩案修同一問題，先 merge 者勝，後案要主動對帳、別硬 rebase 搶進）。
 
 ## D32 — 死源偵測加「重試再判死」降偽陽性（2026-07-03，開工巡檢 → 擁有者 AskUserQuestion 拍板；與 D31 同 session）
 
@@ -150,3 +129,35 @@
 
 ### 可逆 / guards
 - 可逆（純行為約定，還原 CLAUDE.md / scripts/README.md 相關節即回復）。無禁用識別字，不寫 decision_guards。
+
+## D36 — 正文抓取改「本機優先」，`body_fetchable` 正名為視角量測（2026-07-28，擁有者「認真修 把它修好」）
+
+### 背景
+
+2026-07-28 daily brief 交付時，我把 Permanent Style 的 Luca Museo 棉西裝評測、GQ 亞麻襯衫 13 選、drapers 的 Frasers/Hugo Boss 收購三條**整條不列**，理由是「WebFetch 403、Firecrawl 備援沒掛上」。擁有者要求深挖，本機實測七源打臉這個理由：
+
+| 源 | WebFetch 視角 | 本機視角（瀏覽器 UA） |
+|---|---|---|
+| permanent-style / gq / esquire / drapers / bof / fratello | 403 或空殼 | **200**，正文與價格齊全（PS $3,800、GQ $120/$90/$50/$118/$345/$148、Timex $199→$133、drapers 收購案數字、BoF LVMH 數字） |
+| put-this-on / wwd-japan | 403（2026-06-14 標記） | **200** 全文 |
+| sneakernews | 403 | **403（換 bot UA 亦然）＝真站級封鎖** |
+
+**七個裡六個是假陰性。**
+
+### 根因（四層）
+
+1. `data/sources.yml` 的 `body_fetchable` 是 2026-06-14 用**單一視角（WebFetch）**量出來的，卻被寫成「源的永久屬性」，還被 `prompts/daily_trend_brief.md` 引用成硬規則。
+2. **同一個概念錯誤 repo 已經修過一次、但沒橫向套用**：#186 四次誤殺 → #193「視角感知分類」已在 RSS 死活軸硬化（`403＝blocked＝活著但拒收本視角，永不判死`），正文抓取軸卻仍把 403 當永久事實。
+3. **D22 的備援（Firecrawl MCP）在真正跑 brief 的環境不存在**：`.mcp.json` 設了 server，但實跑 session 沒掛上工具 → 規則寫的三層備援實際只有一層。
+4. **能用的路早就在 repo 裡、只差沒接線**：`collect_raw_signals.py` 用本機 urllib + 瀏覽器 UA 打同一批站全 200（#177 已為此改過 UA），但它只收 RSS 不收正文。#177 那次**只改了 UA、沒回頭複驗 `body_fetchable` 名單**，假陰性就這樣留了 44 天。
+
+### 拍板
+
+- **新增 `scripts/fetch_article.py`**（本機、純機械、零 LLM，守 D5）：URL → 標題 / 發佈日 / 正文純文字；退出碼分辨 403（本視角被拒）／連不上／正文過短（付費牆・JS 殼）。**本機專用**：Actions egress 會 403，不進 CI、不排程。
+- **取內文順序改為**：① 本機 `fetch_article.py` → ② WebFetch → ③ Firecrawl（若掛得上，明文標註「不保證存在」）→ ④ 才整條不列。
+- **`body_fetchable` 正名**：判定視角＝**本機**（brief 實跑的地方，D30/D35）；標 `false` 必須附 `body_fetch_note`（本機實測日期＋現象），`validate_repo.check_sources` 會擋。六個假陰性撤旗標，sneakernews 保留並附證據。
+- 不新增來源（D18 不動）：`fetch_article` 對不在 sources.yml 的網域只印提醒、不擋——單次引用 ≠ 收進來源清單。
+
+### 可逆 / guards
+
+可逆（刪腳本 + 還原旗標即回復）。**不寫 `decision_guards`**：這裡要擋的不是某個識別字，而是「沒有本機證據就封源」，已用 `validate_repo` 契約檢查硬化（比識別字守衛更貼題）；回歸鎖在 `tests/test_smoke.py` 9i / 9i-2（含 `known_domains` 的 `lstrip("www.")` 字元集合陷阱）。延續 #193 視角感知、D5 零 LLM、D18 不新增來源、D30/D35 本機執行。

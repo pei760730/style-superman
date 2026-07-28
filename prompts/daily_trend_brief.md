@@ -19,6 +19,8 @@
   #   （egress 正常環境）跑 `python scripts/collect_raw_signals.py`** 現收——這是 D30（6/27）後
   #   唯一路徑；舊的「Actions 落檔 `reports/daily/<date>.signals.yml` 交棒」已退役，該檔不會存在，
   #   別去找。受限環境（web/手機）才退 WebSearch 補，並在 brief 註明訊號降級。
+  # 📄 **正文**（roundup 的 picks、價格、規格）同樣走本機：`python scripts/fetch_article.py <url>`
+  #   （D36，2026-07-28）。RSS 只給標題＋短摘要，寫「為什麼」前一定要拿到正文。
 - `TAXONOMY`: 見 data/trend_taxonomy.yml
 
 ## 任務
@@ -36,7 +38,8 @@
    - `## 🇰🇷 韓潮 KR 追蹤` **8–12 條**，每條開頭標維度（造型／設計師·零售／跨市場外溢），三維度都要照看：MUSINSA / Hypebeast KR / GQ·W Korea / K-pop 造型等；某維度當日無可驗證訊號就明寫一行，不得編熱度。
    - `## 🌍 歐美 US-EU 追蹤` **10–15 條**（global 訊號歸此區）：Hypebeast / Highsnobiety / SneakerNews / GQ / Esquire / BoF 等。
    - 任一區訊號弱可低於下限，但要明寫「今日 XX 訊號偏弱（N 條）」，不硬湊。**達到 10+ 靠的是更多不同來源 / 不同單品的廣度**（上游每源已收 25 則、四區共 400+ raw），**不是重貼舊的或硬湊弱訊號**——與任務 8 去重 / 下架 / 同品牌上限並行不衝突：先去重，剩下的真材料自然就有 10+。
-   - **roundup / N選 / 指南 / best-of / 추천 / おすすめ 類清單報導（鐵則，擁有者 2026-06-14：「roundup 一定要挖出 picks」）**：**一定要 fetch 原文挖出實際品牌＋單品名（＋價格 / 型號），至少 top 4–6 項才能列**（更多標「等十餘項」並點分類）。取內文順序：① 先 WebFetch；② **WebFetch 讀不到（`data/sources.yml` 標 `body_fetchable: false`，crawler 被封鎖，如 GQ / Esquire）→ 改用 Firecrawl keyless scrape**（MCP `firecrawl_scrape`，給 schema 結構化抽 picks 最乾淨；D22，2026-06-20 試用勝出落地）。**WebFetch + Firecrawl 都挖不到、或付費牆讀不到的才整條不列：不留標題、不留「待挖」、不降訊號層硬塞**。`RAW_SIGNALS` 只含標題＋短摘要不含內文，清單型一律要 fetch 原文（擁有者 2026-06-13：「只給標題＝空殼」）。
+   - **roundup / N選 / 指南 / best-of / 추천 / おすすめ 類清單報導（鐵則，擁有者 2026-06-14：「roundup 一定要挖出 picks」）**：**一定要 fetch 原文挖出實際品牌＋單品名（＋價格 / 型號），至少 top 4–6 項才能列**（更多標「等十餘項」並點分類）。取內文順序（D36 改序，2026-07-28）：① **先本機 `python scripts/fetch_article.py <url>`**（brief 就在本機跑，這是最強視角：純機械、零 LLM，回標題/日期/正文字數）；② 本機不行才 WebFetch；③ 再不行才 Firecrawl keyless scrape（MCP `firecrawl_scrape`；D22——**注意實務上這層常常沒掛上**，2026-07-28 的 session 就沒有，別把它當保證有的備援）；④ 三層都挖不到、或付費牆只給前段的才整條不列：**不留標題、不留「待挖」、不降訊號層硬塞**。
+     ⚠ **WebFetch 回 403 ≠ 這個源不可讀**——那是「誰在看」的陳述（#186/#193 在 RSS 死活軸已硬化過同一條）。2026-06-14 憑 WebFetch 視角把 GQ / Esquire / BoF / drapers / put-this-on / wwd-japan 六源標成 `body_fetchable: false`，本機複驗全部 200；現在 `body_fetchable: false` 的判定視角是**本機**，且必須附 `body_fetch_note`（validate_repo 會擋）。`RAW_SIGNALS` 只含標題＋短摘要不含內文，清單型一律要 fetch 原文（擁有者 2026-06-13：「只給標題＝空殼」）。
 6. 標出 **1–2 個明日值得追蹤的伏筆**（watchlist）。
 7. 固定填寫 `## 🎯 對我最相關 For Me`——**這是「在紅單品」情報層，不是買清單**（D15，2026-06-14 Kai 拍板；反轉 2026-06-11 的「行動帳」設計）：
    - **禁止重述** headline 已講過的內容；引用用「見頭條 N」一筆帶過。

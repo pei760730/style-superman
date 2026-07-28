@@ -58,7 +58,7 @@ SOURCES = ROOT / "data" / "sources.yml"
 # （這次的假陰性正是「UA 改了、旗標沒複驗」造成的）。這是直接引用既有常數，
 # 不是另建共用抽象層（D6 否決的是那種東西）。
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from collect_raw_signals import UA  # noqa: E402 — 需先設好 sys.path 才能 import 同層腳本
+from collect_raw_signals import UA  # 需先設好 sys.path 才能 import 同層腳本
 
 DEFAULT_TIMEOUT = 25
 DEFAULT_MAX_CHARS = 12000

@@ -179,3 +179,22 @@
 ### 可逆 / guards
 
 可逆（回退 orchestration Step 6 即可）。**不寫 guards**：這是「行為要發生」的正向流程、非「禁某識別字」，靠文件規則 + 每日執行硬化（守 CLAUDE.md「能用文件規則就別寫 code」）；上線後看真實使用（若又停更＝行為沒發生，追根因不補規則，D 規則紀律）。延續 D26 候選池、D29 週挑落後只 INFO。
+
+---
+
+## D38 — rankings 硬數據脊椎：救不砍，週挑「炒作 vs 真」必交叉引用（2026-07-30）
+
+### 背景
+
+`data/rankings/*.yml`（Lyst / KREAM / MUSINSA / SNKRDUNK / StockX）D21 後改「AI 對話中直接編」，但**沒人編 → 全停在 6 月**（Lyst 6/12、StockX 6/10）、health「Lyst 落後 2 季」。週挑「炒作 vs 真」目前純判讀、無量化背書＝半套。問：救還是砍。
+
+### 拍板
+
+- **救（deepen），不砍**：rankings 是「炒作 vs 真」唯一客觀依據，砍了週挑核心使命（找溢價陷阱/季節錯位）就沒硬地基。
+- **機制（`prompts/weekly_buy_picks.md` 挑選規則）**：「炒作 vs 真」從只對照 `trend_history` 升級成**必加對照 `data/rankings` 量化名次** + 新鮮度守則（逾發布 lag 明標過期、對話端刷新）。
+- **刷新紀律**：MUSINSA 抓 `주간`週榜（集計 confirmed 當年）非 `월간`月榜陷阱（承 C）；反爬站走 Firecrawl/WebFetch 反驗後寫 dated 快照（D22–D24）。
+- **範圍誠實**：本 PR 只上機制；5 個 6 月快照的實際 data 刷新是另一次驗證 pass（KREAM/SNKRDUNK/Lyst 反爬、本 session 未掛 Firecrawl → 不編假數字）。
+
+### 可逆 / guards
+
+可逆（回退挑選規則即可）。不寫 guards（正向流程）。承 C（週榜非月榜）、D22–D24（反爬快照）、D29（health 不因 rankings 落後變紅）。

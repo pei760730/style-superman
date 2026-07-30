@@ -69,6 +69,11 @@ units:
     # 沿用 docs/style_strategy.md 的 lane 定義，不自創分類。
     brands: [AURALEE, CIOTA, NEAT, COMOLI, A.PRESSE]
     # 這條 lane 的新作 / 聯名 / 補貨 / 秀場訊號，餵 🎯 For Me（D15 情報層，非買清單）。
+    # 擴大 sweep 宇宙（D 加深，2026-07-30）：核心 5 之外，reader 也掃這批同溫層——本 session 實測
+    #   會掉出真 lane 料（Graphpaper FIELDWORK / Scye 26AW / Studio Nicholson / Stòffa 等）：
+    #   Graphpaper / ssstein / Lemaire / Kaptain Sunshine / MARKAWARE / YOKE / NICENESS / blurhms /
+    #   Steven Alan / Scye / OUTIL / Phlannel / Cale / UNTRACE / SEVEN BY SEVEN / Studio Nicholson / Stòffa。
+    #   核心 5 = 重點追蹤（次數/優先入 For Me）；擴大宇宙 = 覆蓋掃描（只查了確實空才報空，別只查 5 個就說淡）。
 
 # reader 工人的強制回傳格式（對映 cookbook 的 output_schema）：reader 只回這個 JSON、不回自由文字。
 # maxLength/maxItems = 護欄（擋灌爆/雜訊）。source_url 必填且實測有效；price/lane 可空；其餘必填。

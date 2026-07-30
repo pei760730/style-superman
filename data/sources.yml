@@ -69,6 +69,18 @@ sources:
     # 2026-07-28 本機實測 200、正文 778 字（Timex $199→$133 等數字都在）→ D36 撤掉 body_fetchable: false
     notes: 經典男裝、tailoring 角度
 
+  - id: insidehook-stitch
+    name: InsideHook — The Stitch
+    region: us-eu
+    type: media
+    tier: 2
+    url: https://www.insidehook.com/style-news
+    # 2026-07 過 D18：原創 bylined 週更「The Stitch」menswear roundup、WebFetch 200 可讀、挖得到 picks；
+    # 本 session 實測掉出 Studio Nicholson 亞麻直筒 / Stòffa / Another Aspect 等教科書 lane 單品。
+    # 同批被 D18 擋下：Permanent Style（WebFetch 403 不可讀）、Die Workwear（最新 2025-11、非近 30 天持續產出）。
+    # RSS 待確認，暫 reader-fetch（WebFetch 週更頁）。
+    notes: 週更男裝新品 roundup，重質感 / 直筒視角常有 lane 單品
+
   - id: bof
     name: The Business of Fashion
     region: global

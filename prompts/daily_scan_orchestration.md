@@ -51,6 +51,7 @@
 3. **組裝**：嚴格照 `templates/daily_brief_template.md` 結構，判讀 / 口吻 / 證據門檻照 `prompts/daily_trend_brief.md`。
 4. **For Me**：`🎯 對我最相關`（在紅單品**情報層**，D15）——單品｜是什麼｜在哪紅（歐美/日/韓）｜對我衣櫥的意義｜價格/型號（辨識用，查不到標 `待查`）。**不催買、無死線、無 ⏰ 行動日**（D15 反轉舊買清單）。交付時 **For Me 先講**。
 5. **落點**：brief 在對話端上（ephemeral，D16）；需封存才寫 `reports/daily/YYYY-MM-DD.md`（另議）。用既有據點，不引新平台。
+6. **回流候選池（D37，daily→weekly 複利的唯一 writer）**：交付 For Me 後，把當日 For Me 在紅單品**追加**進 `reports/buy_shortlist/_candidates.draft.md`（gitignored 草稿、非 commit）——每項一列 `單品｜區｜首見｜次數｜在哪紅｜為什麼｜來源`；**同一單品已在池內 → 次數 +1、更新新事實**，不重複開列。這是每日情報累積成週挑的**唯一接口**：不做，`_candidates.draft.md` 就會停更、週挑週一收斂時看不到本週 lane 料而漂成通用榜（W28/W30 漂移根因）。落 brief 是 ephemeral，回流候選池**不是**（池是滾動草稿、餵下週挑）。
 
 ## Step 3 — 稽核（audit，可選但建議）
 

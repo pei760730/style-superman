@@ -161,3 +161,21 @@
 ### 可逆 / guards
 
 可逆（刪腳本 + 還原旗標即回復）。**不寫 `decision_guards`**：這裡要擋的不是某個識別字，而是「沒有本機證據就封源」，已用 `validate_repo` 契約檢查硬化（比識別字守衛更貼題）；回歸鎖在 `tests/test_smoke.py` 9i / 9i-2（含 `known_domains` 的 `lstrip("www.")` 字元集合陷阱）。延續 #193 視角感知、D5 零 LLM、D18 不新增來源、D30/D35 本機執行。
+
+---
+
+## D37 — daily For Me 回流候選池：對話 agent 為唯一 writer（2026-07-30）
+
+### 背景
+
+`_candidates.draft.md`（D26 候選池）**沒有任何 writer**：`generate_daily_brief.py` 不寫它、`generate_weekly_buy_picks.py` 只帶「訊號依據」文字不讀它。每日 For Me 是對話端 ephemeral（D16）、寫完即焚 → 池停在 2026-07-04、週挑週一收斂看不到本週 lane 料 → **W28/W30 漂成通用榜的根因**。守 D5（腳本不呼叫 LLM）：不能靠腳本讀 ephemeral brief 回填。
+
+### 拍板
+
+- **每日收斂 Step 6（`prompts/daily_scan_orchestration.md`）**：對話 agent 交付 For Me 後，把當日 For Me **追加**進 `_candidates.draft.md`（gitignored 草稿、非 commit）；同單品次數 +1、更新新事實。此為 daily→weekly 複利的**唯一接口**。
+- 週挑（`prompts/weekly_buy_picks.md` input 0）本就以候選池為收斂主依據 → 接上後 W32 起吃得到本週 lane 料。
+- 守 D5/D16：writer 是對話 agent、非腳本；池是 gitignored 草稿、不入版控、不改 ephemeral 契約。
+
+### 可逆 / guards
+
+可逆（回退 orchestration Step 6 即可）。**不寫 guards**：這是「行為要發生」的正向流程、非「禁某識別字」，靠文件規則 + 每日執行硬化（守 CLAUDE.md「能用文件規則就別寫 code」）；上線後看真實使用（若又停更＝行為沒發生，追根因不補規則，D 規則紀律）。延續 D26 候選池、D29 週挑落後只 INFO。

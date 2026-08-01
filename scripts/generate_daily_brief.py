@@ -102,19 +102,22 @@ def collect_rss(out_path: str | None) -> str:
     sources = crs.rss_sources()
     signals, warnings = crs.collect(sources)
 
+    wrote_raw_pack = False
     if out_path:
         try:
             Path(out_path).write_text(crs.to_yaml(signals), encoding="utf-8")
             print(f"📥 raw_signal_pack：收集 {len(signals)} 則 → {out_path}")
         except OSError as e:
-            print(f"⚠️  raw pack 寫入失敗：{e}")
+            print(f"❌ raw pack 寫入失敗：{e}", file=sys.stderr)
+            raise SystemExit(1)
+        wrote_raw_pack = True
     else:
         print(f"📥 raw_signal_pack：收集 {len(signals)} 則（未指定 --raw-signals-out，未寫檔）")
 
     if warnings:
         print(f"   （{len(warnings)} 個來源降級：{'; '.join(warnings[:3])}{' …' if len(warnings) > 3 else ''}）")
 
-    out_hint = f"，已寫到 {out_path}" if out_path else "（未寫檔）"
+    out_hint = f"，已寫到 {out_path}" if wrote_raw_pack else "（未寫檔）"
     return (
         f"<!-- RSS 收集：{len(signals)} 則事實訊號、{len(warnings)} 來源降級{out_hint}；"
         f"signal_type/credibility 由 brief 主編 agent 判讀 -->\n"
@@ -139,6 +142,9 @@ def main() -> None:
         help="把收集到的 raw_signal_pack 寫到此路徑（YAML）；需搭配 --with-rss",
     )
     args = parser.parse_args()
+
+    if args.raw_signals_out and not args.with_rss:
+        parser.error("--raw-signals-out 需搭配 --with-rss")
 
     if args.date:  # 無驗證會把 --date NOT-A-DATE 直接寫成 reports/daily/NOT-A-DATE.md（封存垃圾檔）
         try:

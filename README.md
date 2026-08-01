@@ -203,7 +203,7 @@ style-superman/
 │   ├── track_rankings.py                # 月報用的純函式 helper（lyst 季對季比對）
 │   ├── validate_repo.py                 # 格式契約檢查（CI）
 │   └── repo_health.py                   # 健檢：新鮮度 + 一致性 + 守衛 + 產出契約 +（--liveness 死源探針）
-├── tests/                    # smoke 測試（無需 pytest）
+├── tests/                    # smoke 測試（可直接執行，也可由 pytest 收集）
 ├── docs/
 │   ├── system_design.md         # 架構設計
 │   ├── style_strategy.md        # 情報支柱、調性與個人成功指標
@@ -234,6 +234,7 @@ python scripts/repo_health.py            # 系統還活著嗎
 
 ```bash
 python tests/test_smoke.py   # validate_repo 與 repo_health --consistency 由它內部執行，與 CI 同源
+python -m pytest -q -s tests/test_smoke.py  # 同一套驗收；會收集並執行 1 test
 ```
 
 單獨除錯時才直呼 `validate_repo.py` / `repo_health.py --consistency`（見 `scripts/README.md`）。

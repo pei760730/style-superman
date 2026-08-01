@@ -122,7 +122,7 @@
 - 7/5 場 33 個驗收 Bash（38%）各揹全量 context 串跑三條驗收；`tests/test_smoke.py` 內部本就執行 validate_repo 與 repo_health --consistency（與 CI 同源，ci.yml 明註不重複跑）。
 
 ### 拍板
-- **驗收單一入口** `python tests/test_smoke.py`：每輪 patch 收尾跑一次；單獨除錯才直呼個別腳本（CLAUDE.md Validate 行 + 驗收命令區 + scripts/README.md 同步）。
+- **驗收單一入口** `tests/test_smoke.py`：可用 `python tests/test_smoke.py` 直接執行，也可由 pytest 收集並執行同一套 `main()`；每輪 patch 收尾只跑一種，單獨除錯才直呼個別腳本。
 - **Session 分場**：一場一事（daily 或一個 PR 週期）、跨日不續場、換模型重審開新場或派 repo-auditor subagent、收場儀式主動總結——這是 D12「看到就修」的分場執行（批次修），不是回到請示制；不觸 D16/D33（開場本來就一句話）。
 - **Bash 衛生**（合併指令、gh/git 絕對路徑、等 CI 單呼叫、MERGE 授權措辭）+ **記帳收斂**（decisions ≤12 行、lessons ≤5 行、收場前一次寫完）+ **帳本 grep 索引讀法**（主迴圈禁止整讀三帳本），全數寫入 CLAUDE.md 對應節。
 - **量測判準／升級 tripwire**：成功＝單日 cache_read 回到 8–12M 區間；一個月後複查（2026-08-06 前後）若 session 尾端 context 仍 >200K 或單場驗收執行 >20 次 → 啟動 D7 第二波硬化（結構性工具下沉／檢查）。

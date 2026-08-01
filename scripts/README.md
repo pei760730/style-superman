@@ -135,11 +135,12 @@ python scripts/generate_daily_brief.py
 PR 前（CI 也會自動跑）——**單一驗收入口**：
 
 ```bash
-python tests/test_smoke.py                 # 核心腳本最小驗收（無需 pytest）
+python tests/test_smoke.py                 # 核心腳本最小驗收（直接執行）
+python -m pytest -q -s tests/test_smoke.py # 同一套驗收（pytest 會收集 1 test）
 ```
 
 `validate_repo.py`（repo 契約）與 `repo_health.py --consistency`（文件↔程式碼一致性）**由 test_smoke 內部執行，與 CI 同源**；單獨除錯時才直呼個別腳本。
-`tests/test_smoke.py` 跑過所有核心指令並斷言結果；`tests/fixtures/*_snapshot.yml` 是 ingest 的合成測試範例。
+`tests/test_smoke.py` 跑過所有核心指令並斷言結果；直接執行與 pytest 共用同一個 `main()`，不會出現 pytest 收集 0 tests 的假綠。`tests/fixtures/*_snapshot.yml` 是 ingest 的合成測試範例。
 
 ## 後續規劃
 - 接更多來源自動收集（非 RSS API；新增來源需人類拍板）

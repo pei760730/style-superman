@@ -51,6 +51,10 @@ def check(name: str, cond: bool, detail: str = "") -> None:
 
 
 def main() -> int:
+    global _passed, _failed
+    _passed = 0
+    _failed = 0
+
     # 1. validate_repo 全綠
     r = run(["scripts/validate_repo.py"])
     check("validate_repo exit 0", r.returncode == 0, r.stdout + r.stderr)
@@ -98,6 +102,8 @@ def main() -> int:
     #     run() 用 encoding="utf-8" 收 stderr——這裡斷言收到的中文未被 cp950 弄壞（含 CJK、無替代字）。
     for _args, _bad in [
         (["scripts/generate_daily_brief.py", "--date", "NOT-A-DATE"], ROOT / "reports" / "daily" / "NOT-A-DATE.md"),
+        (["scripts/generate_daily_brief.py", "--date", "2099-01-02", "--raw-signals-out", "scratch/raw.yml"],
+         ROOT / "reports" / "daily" / "2099-01-02.md"),
         (["scripts/generate_monthly_heat_report.py", "--month", "2026-13"], ROOT / "reports" / "monthly" / "2026-13-eu.md"),
         (["scripts/generate_weekly_buy_picks.py", "--date", "2026-13-40"], None),
         (["scripts/generate_flash.py", "--date", "NOT-A-DATE"], None),
@@ -107,7 +113,7 @@ def main() -> int:
         _err = r.stderr or ""
         # 至少一個 CJK 字元（中文錯誤訊息有解碼正確）且無 U+FFFD 替代字（沒被 cp950 ↔ utf-8 互轉弄壞）
         _stderr_ok = any("一" <= ch <= "鿿" for ch in _err) and "�" not in _err
-        check(f"壞日期被擋不產檔：{_args[0].split('/')[-1]}",
+        check(f"非法參數被擋不產檔：{_args[0].split('/')[-1]}",
               r.returncode != 0 and not bad_made and _stderr_ok,
               f"rc={r.returncode} bad_made={bad_made} stderr_ok={_stderr_ok} stderr={_err[:80]!r}")
         if bad_made:
@@ -118,6 +124,28 @@ def main() -> int:
     # 8–9. RSS 收集（離線：用 fixture，不碰網路）
     sys.path.insert(0, str(ROOT / "scripts"))
     import collect_raw_signals as crs
+
+    # 明確要求 raw pack 時，寫入失敗必須非 0 中止，不能繼續產 brief 並謊稱「已寫到」。
+    import generate_daily_brief as gdb
+    _orig_sources = crs.rss_sources
+    _orig_collect = crs.collect
+    crs.rss_sources = list
+    crs.collect = lambda sources: ([], [])
+    _raw_exit = None
+    import contextlib as _contextlib
+    import io as _raw_io
+    _raw_stderr = _raw_io.StringIO()
+    try:
+        with _contextlib.redirect_stderr(_raw_stderr):
+            gdb.collect_rss(str(ROOT))  # 目錄不能當檔案寫，穩定觸發 OSError
+    except SystemExit as exc:
+        _raw_exit = exc
+    finally:
+        crs.rss_sources = _orig_sources
+        crs.collect = _orig_collect
+    check("daily raw pack 寫入失敗會中止",
+          isinstance(_raw_exit, SystemExit) and _raw_exit.code == 1 and "寫入失敗" in _raw_stderr.getvalue(),
+          f"exit={_raw_exit!r} stderr={_raw_stderr.getvalue()!r}")
 
     feed_xml = (FIX / "sample_feed.xml").read_text(encoding="utf-8")
     src = {"id": "test-src", "tier": 2, "region": "us-eu", "rss": "x"}
@@ -462,6 +490,11 @@ def main() -> int:
 
     print(f"\n{_passed} passed, {_failed} failed")
     return 1 if _failed else 0
+
+
+def test_smoke() -> None:
+    """讓 pytest 與直接執行共用同一套完整驗收，不留下 0 tests 假綠。"""
+    assert main() == 0
 
 
 if __name__ == "__main__":

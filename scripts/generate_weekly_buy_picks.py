@@ -7,7 +7,8 @@ generate_weekly_buy_picks.py
 這支腳本不做 AI 撰寫（決策 D5），它負責：
   1. 算出 ISO 週期與日期範圍（週一～週日）
   2. 載入 templates/weekly_buy_picks_template.md
-  3. 自動帶入「本週訊號依據」：本週的 daily briefs 清單 + 各排行快照最新 period
+  3. 自動帶入「本週訊號依據」：各排行快照最新 period（daily briefs 清單已拆——D16 後
+     reports/daily/ 永久凍結，掃描永遠回空；週間訊號走 D26 滾動候選池）
   4. 把骨架寫到 reports/buy_shortlist/YYYY-Wnn.md
 
 挑買內容由 AI（prompts/weekly_buy_picks.md）或人工補上。
@@ -39,7 +40,6 @@ except ImportError:  # pragma: no cover
 ROOT = Path(__file__).resolve().parent.parent
 TEMPLATE = ROOT / "templates" / "weekly_buy_picks_template.md"
 OUT_DIR = ROOT / "reports" / "buy_shortlist"
-DAILY_DIR = ROOT / "reports" / "daily"
 RANKINGS_DIR = ROOT / "data" / "rankings"
 
 
@@ -47,18 +47,6 @@ def week_bounds(day: dt.date) -> tuple[dt.date, dt.date]:
     """回傳該日所屬 ISO 週的（週一, 週日）。"""
     monday = day - dt.timedelta(days=day.weekday())
     return monday, monday + dt.timedelta(days=6)
-
-
-def briefs_in_range(start: dt.date, end: dt.date) -> list[str]:
-    names = []
-    for report in sorted(DAILY_DIR.glob("????-??-??.md")):
-        try:
-            d = dt.date.fromisoformat(report.stem)
-        except ValueError:
-            continue
-        if start <= d <= end:
-            names.append(report.stem)
-    return names
 
 
 def latest_ranking_periods() -> list[str]:
@@ -84,11 +72,10 @@ def build(day: dt.date) -> tuple[str, str]:
     body = body.replace("{{week}}", week_label)
     body = body.replace("{{date_range}}", f"{monday.isoformat()} ～ {sunday.isoformat()}")
 
-    briefs = briefs_in_range(monday, sunday)
-    basis = (
-        f"daily briefs：{', '.join(briefs) if briefs else '（本週尚無）'}"
-        f" ｜ rankings：{' / '.join(latest_ranking_periods())}"
-    )
+    # D16 後 daily 對話即焚、reports/daily/ 永久凍結——掃它永遠是空、印「本週尚無」
+    # 像是這週剛好沒有，實則結構性不可能有（殭屍欄位，2026-08-02 深看拆除）。
+    # 週間訊號的真依據是 D26 的滾動候選池（reports/buy_shortlist/_candidates.draft.md）。
+    basis = f"rankings：{' / '.join(latest_ranking_periods())}"
     body = body.replace("{{signal_basis}}", basis)
     # 其餘 {{...}} 佔位留給 AI / 人工，整段換成待填標記
     body = re.sub(r"\{\{[a-z0-9_]+\}\}", "_待填_", body)

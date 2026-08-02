@@ -16,9 +16,9 @@ pip install pyyaml
 
 ### Step 1 — 產出今日骨架
 ```bash
-python scripts/generate_daily_brief.py
+python scripts/generate_daily_brief.py --draft
 ```
-會在 `reports/daily/YYYY-MM-DD.md` 產出待填草稿。
+會在 `reports/daily/YYYY-MM-DD.draft.md` 產出待填草稿（gitignored；D16 後非 draft 會被腳本直接拒絕——凍結線後的 daily 本來就進不了版控）。
 
 ### Step 2 — 收集訊號
 依 `data/sources.yml` 巡一遍核心來源（tier 1 必看）。把值得記的丟進處理：

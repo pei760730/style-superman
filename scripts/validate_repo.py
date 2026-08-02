@@ -291,8 +291,12 @@ REPORT_PATTERNS = {
 # 06-16（最後一個歷史 daily）以前的檔 grandfathered；之後任何被 commit 進來的 daily brief 都是違規——
 # 多為平行 session 走 D16 前的舊存檔習慣（06-23 routine、06-24/25/26 session 連四犯，純文件規則擋不住）。
 # 這條 gate 把違規檔變 CI 紅、PR merge 不了，從「靠記性」升級成「機制擋死」（CLAUDE.md：反覆出現才硬化、警告必配修復）。
-# 只擋 daily：flash 歷史檔（D19 機械產）同為 YYYY-MM-DD.md 但不在此列（D35 後不再新增）。
 DAILY_FREEZE_CUTOFF = "2026-06-16"
+
+# D35（2026-07-25）：flash 速報同款收斂——改純對話觸發、對話即讀不 commit（flash-brief
+# workflow 已刪）。歷史檔（D19 機械產期）grandfathered；凍結線後被 commit 進 reports/flash/
+# 的一律擋。與 D16 同型教訓：「不再新增」靠紀律必漂移（daily 曾連四犯），要靠機制擋。
+FLASH_FREEZE_CUTOFF = "2026-07-25"
 
 
 def check_reports() -> list[CheckResult]:
@@ -319,6 +323,12 @@ def check_reports() -> list[CheckResult]:
                         f"{report}: D16 違規——daily brief 對話即焚、不得 commit 進 reports/daily/"
                         f"（凍結線 {DAILY_FREEZE_CUTOFF}，之後的 daily 一律擋；歷史檔 grandfathered）。"
                         f"請刪除此檔——擁有者要的是『讀、喜歡的自己記』，不存整份 brief。"
+                    )
+                elif subdir == "flash" and report.name[:-3] > FLASH_FREEZE_CUTOFF:
+                    errors.append(
+                        f"{report}: D35 違規——flash 速報對話即讀、不得 commit 進 reports/flash/"
+                        f"（凍結線 {FLASH_FREEZE_CUTOFF}，之後的 flash 一律擋；歷史檔 grandfathered）。"
+                        f"請刪除此檔。"
                     )
                 text = report.read_text(encoding="utf-8").strip()
                 if not text.startswith("# "):

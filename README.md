@@ -226,7 +226,7 @@ style-superman/
 ```bash
 pip install pyyaml
 
-python scripts/generate_daily_brief.py   # 產今天的 brief 骨架
+python scripts/generate_daily_brief.py --draft   # 產今天的 brief 骨架（D16 後必 --draft，非 draft 會被腳本拒絕）
 python scripts/repo_health.py            # 系統還活著嗎
 ```
 

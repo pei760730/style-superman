@@ -152,6 +152,17 @@ def main() -> None:
         except ValueError:
             parser.error(f"--date 須為合法 YYYY-MM-DD（收到 {args.date!r}）")
     date_str = args.date or dt.datetime.now(dt.timezone(dt.timedelta(hours=8))).date().isoformat()
+
+    # D16 fail-fast：凍結線後的非 draft daily，validate_repo/CI 一定擋——與其產一個
+    # 必被退件的檔（照 README 裸跑就中招），不如在產出前就拒絕。凍結線常數只有
+    # validate_repo 一份（單一真相源，import 安全：該檔有 __main__ guard）。
+    from validate_repo import DAILY_FREEZE_CUTOFF
+
+    if not args.draft and date_str > DAILY_FREEZE_CUTOFF:
+        parser.error(
+            f"D16：{DAILY_FREEZE_CUTOFF} 後 daily brief 對話即焚、不入 reports/daily/。"
+            "要產骨架請加 --draft（*.draft.md 不入版控）。"
+        )
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
     rss_note = ""

@@ -14,7 +14,7 @@ generate_flash.py
 
 用法：
     python scripts/generate_flash.py                                   # 收 RSS → stdout
-    python scripts/generate_flash.py --date 2026-06-16 --out reports/flash/2026-06-16.md
+    python scripts/generate_flash.py --date 2026-06-16 --out scratch/flash.md   # D35 後不入 reports/flash/（validate 會擋）
     python scripts/generate_flash.py --signals-in raw.yml --out /tmp/flash.md   # 讀現成 signals（離線/測試）
 """
 

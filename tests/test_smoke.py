@@ -74,6 +74,31 @@ def main() -> int:
     finally:
         stray.unlink(missing_ok=True)
 
+    # 1c. D35 gate 回歸鎖：凍結線（2026-07-25）後的 flash 檔被 validate 擋下。
+    #     與 D16 同型：「不再新增」靠紀律必漂移（daily 曾連四犯），要靠機制擋。
+    fstray = ROOT / "reports" / "flash" / "2099-12-31.md"
+    fstray.write_text("# stray flash（測試用，產後即刪）\n", encoding="utf-8")
+    try:
+        r = run(["scripts/validate_repo.py"])
+        check(
+            "D35 gate 擋住凍結線後的 flash",
+            r.returncode != 0 and "D35" in (r.stdout + r.stderr),
+            r.stdout + r.stderr,
+        )
+    finally:
+        fstray.unlink(missing_ok=True)
+
+    # 1d. D16 fail-fast：凍結線後的非 draft daily 在「腳本層」就被拒（照 README 裸跑
+    #     不該先產一個必被 validate 退件的檔）；--draft 路徑不受影響（test 4 另驗）。
+    d16_bad = ROOT / "reports" / "daily" / "2099-01-03.md"
+    r = run(["scripts/generate_daily_brief.py", "--date", "2099-01-03"])
+    check(
+        "generate_daily_brief 非 draft 過凍結線被腳本拒絕且不產檔",
+        r.returncode != 0 and "D16" in (r.stdout + r.stderr) and not d16_bad.exists(),
+        f"rc={r.returncode} exists={d16_bad.exists()}",
+    )
+    d16_bad.unlink(missing_ok=True)
+
     # 2. track_rankings 的 lyst_comparison_text（月報 🆚 段唯一在用的函式）見 9d 回歸鎖。
     #    （CLI / --json / ingest 已於 D21 移除——擁有者只走對話，無人工指令，見 docs/rankings.md）
 

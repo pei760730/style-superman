@@ -88,8 +88,11 @@ def _recent_window(date_str: str, days: int = 2) -> set[str]:
     return {(end - dt.timedelta(days=i)).isoformat() for i in range(max(days, 1))}
 
 
-def extract(signals: list[dict], date_str: str, days: int = 2) -> str:
-    """純機械抽取（不碰網路，可離線測）：白名單 × 非 roundup × 非 noise × 近 N 天 × 去重。"""
+def extract(signals: list[dict], date_str: str, days: int = 2, degraded: int = 0) -> str:
+    """純機械抽取（不碰網路，可離線測）：白名單 × 非 roundup × 非 noise × 近 N 天 × 去重。
+
+    `degraded` = 收集端降級/失敗的來源數，會標進產出（0 則時區分「市場安靜」vs「收集端壞掉」）。
+    """
     recent = _recent_window(date_str, days)
     lines = [
         f"# ⚡ Style 速報 — {date_str}",
@@ -132,19 +135,29 @@ def extract(signals: list[dict], date_str: str, days: int = 2) -> str:
             if summ:
                 lines.append(f"  {summ}")
     if total == 0:
-        lines += ["", "_今日白名單源無符合速報條件的硬訊號（可能非發售日 / 全是 roundup）。_"]
+        # 0 則有兩種完全不同的意思：市場安靜 vs 收集端壞掉。降級源數不標進
+        # 產出的話，斷網 / 全源被 WAF 擋會偽裝成「今日沒硬訊號」——daily brief
+        # 的 footer 有做同款誠實註記，速報是 Kai 直接讀的面、更不能只留 stderr。
+        if degraded:
+            lines += ["", (
+                f"_⚠️ 今日 0 則，且 {degraded} 個來源收集失敗/降級——"
+                "可能是收集端問題而非市場安靜，本速報不可盡信。_"
+            )]
+        else:
+            lines += ["", "_今日白名單源無符合速報條件的硬訊號（可能非發售日 / 全是 roundup）。_"]
+    lines += ["", f"<!-- 速報收集：{len(signals)} 則原始訊號、{degraded} 來源降級 -->"]
     return "\n".join(lines) + "\n"
 
 
-def _collect_live() -> list[dict]:
-    """連網收集（複用 collect_raw_signals，不另寫抓取）。"""
+def _collect_live() -> tuple[list[dict], int]:
+    """連網收集（複用 collect_raw_signals，不另寫抓取）。回 (signals, 降級源數)。"""
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     import collect_raw_signals as crs
 
     signals, warnings = crs.collect(crs.rss_sources())
     for w in warnings:
         print(f"⚠️  {w}", file=sys.stderr)
-    return signals
+    return signals, len(warnings)
 
 
 def _load_signals(path: str) -> list[dict]:
@@ -169,8 +182,11 @@ def main() -> None:
         except ValueError:
             parser.error(f"--date 須為合法 YYYY-MM-DD（收到 {args.date!r}）")
     date_str = args.date or dt.datetime.now(dt.timezone(dt.timedelta(hours=8))).date().isoformat()
-    signals = _load_signals(args.signals_in) if args.signals_in else _collect_live()
-    md = extract(signals, date_str, args.days)
+    if args.signals_in:
+        signals, degraded = _load_signals(args.signals_in), 0  # 離線包不經收集端，無降級概念
+    else:
+        signals, degraded = _collect_live()
+    md = extract(signals, date_str, args.days, degraded=degraded)
 
     if args.out:
         out = Path(args.out)

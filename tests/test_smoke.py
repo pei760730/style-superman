@@ -285,7 +285,9 @@ def main() -> int:
         "3/6" in _lout[0].message                                    # 3 ok
         and len(_lout) == 4                                          # summary + L1/L2/L4
         and "L1" in _ldetail[0] and "L2" in _ldetail[1] and "L4" in _ldetail[2]  # 照來源順序
-        and "死源候補" in _ldetail[0] and "疑遭阻擋" in _ldetail[2]  # gone→候補、blocked→視角阻擋（403 永不判死）
+        and "死源候補：" in _ldetail[0] and "疑遭阻擋" in _ldetail[2]  # gone→候補、blocked→視角阻擋（403 永不判死）
+        # ↑ 含全形冒號：health.yml 用 grep "死源候補：" 決定開不開 issue，斷言必須
+        #   鎖到跟契約一字不差——只鎖「死源候補」的話，措辭漂移會讓看門狗無聲死掉而測試全綠。
     )
     check("liveness 平行探測仍照來源順序（不隨完成順序）", _live_ok,
           [m[:24] for m in _ldetail])
@@ -348,6 +350,19 @@ def main() -> int:
         and "Stale Drop" not in md                     # 過期剔除
     )
     check("flash 速報機械抽取（白名單×去 roundup×去 noise×近期）", ok_flash, md[:200])
+
+    # 9d-2. flash 0 則的兩種意思必須可區分：收集端降級要標進產出本體（不能只留
+    #       stderr）——否則斷網 / 全源被 WAF 擋會偽裝成「今日沒硬訊號」（UA 假死源前科同族）。
+    md_degraded = gf.extract([], "2026-06-16", degraded=34)
+    md_quiet = gf.extract([], "2026-06-16")
+    ok_degrade_note = (
+        "34 個來源收集失敗/降級" in md_degraded and "不可盡信" in md_degraded
+        and "無符合速報條件" not in md_degraded        # 降級時不給編輯學理由
+        and "無符合速報條件" in md_quiet               # 真安靜才是編輯學訊息
+        and "不可盡信" not in md_quiet
+        and "0 來源降級" in md_quiet                   # footer 誠實註記恆在
+    )
+    check("flash 0 則區分「市場安靜」vs「收集端降級」", ok_degrade_note, md_degraded[-160:])
 
     # 9i. fetch_article 正文抓取（D36；離線：用 fixture + 注入 fetcher，不碰網路）
     #     這支存在的理由本身就是回歸鎖：403 是「誰在看」的陳述，不是「源不可讀」——

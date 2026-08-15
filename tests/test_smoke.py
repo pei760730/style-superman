@@ -59,6 +59,47 @@ def main() -> int:
     r = run(["scripts/validate_repo.py"])
     check("validate_repo exit 0", r.returncode == 0, r.stdout + r.stderr)
 
+    # 1a. reader schema ↔ prompt 範例契約：正向 + 三個 bytes-safe 反向探針。
+    #     Windows 必須用 bytes 備份/還原，避免文字模式把整檔 LF 改寫成 CRLF。
+    reader_prompt = ROOT / "prompts" / "region_reader.md"
+    reader_original = reader_prompt.read_bytes()
+    reader_text = reader_original.decode("utf-8")
+    check(
+        "reader_output_schema 正向範例通過",
+        r.returncode == 0 and "reader_output_schema" in r.stdout,
+        r.stdout + r.stderr,
+    )
+
+    reader_probes = [
+        (
+            "reader_output_schema 擋 items 缺 evidence",
+            reader_text.replace('      "evidence": "親測",\n', "", 1),
+            True,
+        ),
+        (
+            "reader_output_schema 擋 evidence enum 外值",
+            reader_text.replace('"evidence": "親測"', '"evidence": "聽說"', 1),
+            True,
+        ),
+        (
+            "reader_output_schema 擋未知欄位",
+            reader_text.replace('      "evidence": "親測",', '      "evidence": "親測",\n      "vibe": "乾淨",', 1),
+            True,
+        ),
+    ]
+    for probe_name, probe_text, require_marker in reader_probes:
+        try:
+            reader_prompt.write_bytes(probe_text.encode("utf-8"))
+            r = run(["scripts/validate_repo.py"])
+            output = r.stdout + r.stderr
+            check(
+                probe_name,
+                r.returncode != 0 and (not require_marker or "reader_output_schema" in output),
+                output,
+            )
+        finally:
+            reader_prompt.write_bytes(reader_original)
+
     # 1b. D16 gate 回歸鎖：凍結線（2026-06-16）後的 daily 檔（非 draft）被 validate 擋下。
     #     根因＝平行 session 走 D16 前舊存檔習慣把整份 brief commit 進 reports/daily/（06-23~26 連犯，
     #     純文件規則擋不住）→ 硬化成 gate。擁有者要的是「讀、喜歡的自己記」，不存整份 brief。

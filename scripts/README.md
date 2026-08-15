@@ -106,7 +106,7 @@ python scripts/repo_health.py --liveness     # 連網打每個 RSS，揪死源�
 每週一、四排程跑 `--strict` 巡檢，未通過會自動開 / 更新 `repo-health` issue。每次開工先跑這支。
 
 ### `validate_repo.py`
-檢查 repo 的基本契約：YAML 必填欄位、排行 rank 是否重複、template 必要段落、report 命名與標題。建議每次 PR 前跑一次。
+檢查 repo 的基本契約：YAML 必填欄位、排行 rank 是否重複、template 必要段落、report 命名與標題；另交叉驗證 `reader_output_schema` 與 `region_reader.md` 輸出範例，擋必填漏同步、未知欄位與 enum 外值。建議每次 PR 前跑一次。
 
 ```bash
 python scripts/validate_repo.py

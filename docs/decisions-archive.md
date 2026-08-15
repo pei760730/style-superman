@@ -793,3 +793,73 @@ D25/D26（2026-06-23，**昨天**）才設好週挑的「週一早安觸發 + �
 ### 可逆 / guards
 
 可逆（還原 `check_lyst_staleness` 為季差判定即回復）。無禁用識別字。延續 D21（ingest 對話化）、D29（內容節奏不該讓看門狗長期紅）、D7 反熵、「警告必配修復」。教訓另記 lessons（多端並行：同日兩案修同一問題，先 merge 者勝，後案要主動對帳、別硬 rebase 搶進）。
+
+---
+
+## D32 — 死源偵測加「重試再判死」降偽陽性（2026-07-03，開工巡檢 → 擁有者 AskUserQuestion 拍板；與 D31 同 session）
+
+### 背景
+
+追 D31（7/2 patrol 紅）時一併發現：`--liveness` 死源偵測是**單次探測**，外站瞬斷會抽風誤報。實證三天三組不同「死源」、且互不重疊、隔天全恢復：
+
+- 2026-06-16：gq-korea / w-korea / vogue-korea（KR 三源 unreachable）
+- 2026-07-02：bof（403）/ heddels（empty 200）/ permanent-style（empty 200）
+- 2026-07-03：0 死源（上述全部活著）
+
+每次瞬斷都被當死源追進 issue #122（6/16 那組就是它開的 issue；liveness 步驟有 `|| true`、死源本身不弄紅 job——7/2 的 job 紅是 strict/Lyst 的事，見 D31）。單探測偽陽性讓「死源」清單失去可信度（真死 vs 瞬斷分不出）。
+
+### 邊界：只降偽陽性，不碰撤源
+
+**撤不撤源是內容判斷、留擁有者**（D17/D18）；本決策只讓「判定死源」這個機械動作更準，不動撤源流程。liveness 仍 opt-in、不進 `--strict`（外站抖動不該讓 CI flaky，此原則不變）。
+
+### 拍板：dead/empty/unreachable 重打一次再定讞
+
+- `check_source_liveness` 對 dead/empty/unreachable 隔 `LIVENESS_RETRY_DELAY_SEC`（2s）重打一次，**二次仍非活**才算死源。
+- **429（ratelimited）與 ok 不重打**：429 有自己的退避（`fetch_feed` 已處理），重打只會火上加油招更多 429；ok 無需重打。
+- `_confirm` nested helper 包住可注入的 `probe` → 真重試邏輯可被 smoke 測（stub 首打 dead/empty/unreachable、重打回 ok → 斷言不誤報死源、且 429/ok 只打一次）；既有保序測試傳 `retry_delay=0` 維持快與確定性。
+- 教訓記 `docs/lessons.md`（2026-07-03 死源抽風節）。
+
+### 可逆 / guards
+
+可逆（移除 `_confirm` 重試、`ex.map` 改回直接 `probe` 即還原）。無禁用識別字，不寫 `decision_guards`（純偵測穩健化、非識別字禁令）。延續 D17/D18（撤源仍留擁有者）、D7 反熵（由重複出現的抽風教訓硬化而來，非憑空加檢查）。
+
+### 追記（2026-07-03 深審訂正）：兩組「瞬斷」實例事後都不是瞬斷
+
+#177 實彈驗證推翻本決策背景段的病因：**7/2 三源（bof/heddels/permanent-style）是自報身分的 bot UA（StyleSupermanBot/0.1）被 WAF 擋**——同 URL 換瀏覽器 UA 即回滿 RSS（120KB/18KB/394KB）。封鎖是**間歇性**的（7/3 同在本機、同 bot UA：早上探測全過、稍後實測被擋——同視角不同結果），症狀因此長得像瞬斷；對症解是換 UA，重試只是偶爾矇過；**6/16 KR 三源是 Actions 美國 egress 地理不可達**（lessons 2026-06-16 節早有記錄）。即：驅動本決策的兩組頭牌實例，真因分別是 UA 與地理，皆非瞬斷。**重試機制保留**——它防的是真瞬斷（DNS 抖、暫時 5xx、網路 hiccup），成本 2 秒、有回歸鎖；但「死源」判讀的第一嫌疑人應是**探測視角**（egress 地理、UA），不是對面死了。lessons 同步訂正。
+
+---
+
+## D33 — 廢掉雲端排程 daily 代理，daily 純對話觸發（2026-07-04，擁有者 AskUserQuestion 拍板 A）
+
+### 背景
+
+2026-07-04 雲端排程代理（claude-code-on-the-web 遠端環境）按使用者任務提示填寫 `reports/daily/2026-07-04.md`，完成填寫後執行 `validate_repo.py` 觸發 D16 gate（凍結線 2026-06-16，之後的 daily 一律擋）。
+
+衝突點：
+- **任務提示**：填完 brief → 驗證全綠 → 開分支 → commit → push → PR → 自 merge
+- **D16（2026-06-14 拍板）**：daily brief「對話即焚」、不入 `reports/daily/`；`validate_repo` 已對凍結線後的 daily 設死擋
+- **CLAUDE.md**：「矛盾就停，記入 decisions.md 待拍板，不執行」
+
+當日 brief 內容（WebSearch 多源補齊，RSS 全降級）已寫完，但因 validate_repo 紅燈未 commit，內容透過 PushNotification 傳遞給擁有者。gate 正確擋下、代理乖乖 escalate 未硬 commit——迴圈端到端跑通。
+
+### 拍板：A（廢掉雲端排程，daily 純對話）
+
+擁有者 2026-07-04 拍板：**不要任何雲端排程 daily 代理**。daily brief 維持「喊『早安』→ 對話端 opus 判讀 → 對話即焚」的現況（D16 未動）；擁有者「單純看、有喜歡自己會記錄」，不需要每天一支雲端排程去產、去 commit。
+
+- **理由**：第一性原理「先刪除」——雲端排程 daily 是 pre-D16 世界觀的殘留（殭屍任務卡）；D16 早已決定 daily 對話即焚，這支排程本質上與 D16 衝突、每天撞 gate = 結構性註定失敗。廢掉根因，不是放寬防線。
+- **證據**：① 2026-07-04 查 RemoteTrigger routines API `{"data":[]}`＝已無在跑的雲端 routine（無需 disable，已空）。② D16 gate 於當日實證擋下雲端誤 commit、代理正確 escalate。③ 擁有者明示偏好「對話即焚 / 自己會記錄」。
+- **失效條件（何時重議）**：若擁有者未來想要「每天早上主動收到手機速報」，重開時走 **notify-only**（雲端只 PushNotification、絕不 commit/PR）或 flash 機械速報（D19）——**絕不走「雲端版 commit 進 reports/daily/」**（那會重開復發 4 次的 direct-to-master 破口，被本條與 D16 明令排除）。
+- **B / C 已否決**：B（解凍 gate 讓雲端版進庫）與擁有者「對話即焚」相反、重開 rogue-commit 破口；C（雲端走 flash 加 schedule）給既有手機 dispatch 加自動排程 = 再引入 D16 所戒的無人值守自動化。兩者皆不採。
+
+### 可逆 / guards
+
+可逆（本條純方向拍板，未改任何 code；未來重開 notify-only/flash 排程即偏離本條，需新決策）。`flash-brief.yml` 維持 **僅 workflow_dispatch、無 schedule**（D19/D30），本條不動它。延續 D16（對話即焚）、D7 反熵（新流程不得依賴無人值守排程去產 daily）、CLAUDE.md「矛盾就停」。
+
+追記 2026-07-16：同一殭屍任務再觸發，RSS 全降級（31/31 失敗），WebSearch 補查，brief 寫完後 D16 gate 再次正確擋下，內容走 notify-only PushNotification 傳遞。
+
+## D35 — 速報觸發面改純對話，廢 flash-brief.yml 按鈕層（2026-07-25，擁有者拍板「我只會在對話觸發」）
+
+- **背景**：D19 速報層設計給「手機在外按 Actions 按鈕」；實際 6 週僅 1 次 dispatch（6/16），與擁有者 chat-only 習性結構性矛盾（7/25 深審發現）。
+- **拍板**：刪 flash-brief.yml（原 .github/workflows 下的 dispatch 按鈕層）；`generate_flash.py` + 測試保留，對話說「速報」由 agent 直接跑、對話即讀（同 D16/D33 的 daily 模式）。D19 的機械抽取原則（零 LLM、白名單硬源、不判讀）不變，只改觸發面。
+- **修訂**：D33 尾段「flash-brief.yml 維持僅 workflow_dispatch」該句由本條取代（workflow 已除）；D33 其餘不動。
+- 可逆：未來真需要離機速報，走 D33 已框定的 notify-only 路線，不回退 dispatch 按鈕。

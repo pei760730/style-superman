@@ -76,7 +76,10 @@ units:
     #   核心 5 = 重點追蹤（次數/優先入 For Me）；擴大宇宙 = 覆蓋掃描（只查了確實空才報空，別只查 5 個就說淡）。
 
 # reader 工人的強制回傳格式（對映 cookbook 的 output_schema）：reader 只回這個 JSON、不回自由文字。
-# maxLength/maxItems = 護欄（擋灌爆/雜訊）。source_url 必填且實測有效；price/lane 可空；其餘必填。
+# maxLength/maxItems = 護欄（擋灌爆/雜訊）。source_url 必填；是否開過原文由 evidence 誠實標記；price/lane 可空；其餘必填。
+# evidence：親測＝我本人 WebFetch 打開原文確認過；轉述未複核＝來自搜尋摘要/二手轉述，未開原文。
+# unreadable：讀不到的目標必須列進來，不得靜默省略；靜默省略正是 2026-08-11 事故的形狀——orchestrator 從 JSON 完全看不出有東西沒查成。
+# control_checks：任何「空 / 無 / 停滯 / 已死」結論都要附一組對照組；對照組也空＝方法壞了，不是對象空。
 # 這是 reader→orchestrator 的「中間結構化結果」，不是 template 契約的第二份定義（D6 否決過「第二套契約定義檔」的漂移坑，這裡只規範 reader 回傳、不碰 template）。
 reader_output_schema:
   type: object
@@ -85,20 +88,41 @@ reader_output_schema:
   properties:
     region: { type: string, maxLength: 16 }            # jp / kr / us-eu / lane id
     strength: { type: string, enum: [強, 中, 弱] }
+    unreadable:
+      type: array
+      items:
+        type: object
+        required: [target, url, reason]
+        additionalProperties: false
+        properties:
+          target: { type: string, maxLength: 120 }      # 想查的對象
+          url:    { type: string, maxLength: 300 }
+          reason: { type: string, maxLength: 120 }      # SSL / 403 / DNS / 密碼牆 / 逾時 / 無法解析日期
+    control_checks:
+      type: array
+      items:
+        type: object
+        required: [claim, control_target, control_result]
+        additionalProperties: false
+        properties:
+          claim:          { type: string, maxLength: 160 }  # 你下的負面結論
+          control_target: { type: string, maxLength: 160 }  # 拿來當對照組的已知有料目標
+          control_result: { type: string, maxLength: 160 }  # 對照組結果
     items:
       type: array
       maxItems: 15
       items:
         type: object
-        required: [title, date, source_url, why, region]
+        required: [title, date, source_url, why, region, evidence]
         additionalProperties: false
         properties:
           title:      { type: string, maxLength: 160 }  # 單品/事件
           date:       { type: string, maxLength: 16 }   # ISO YYYY-MM-DD；真無資料才填「待查」
           price:      { type: string, maxLength: 40 }   # 可空（幣別照原文）
-          source_url: { type: string, maxLength: 300 }  # 必填、WebFetch 實測打得開
+          source_url: { type: string, maxLength: 300 }  # 必填；未開原文須標 evidence: 轉述未複核
           why:        { type: string, maxLength: 200 }  # 1–2 句：特點/對我意義（wearability 視角）
           region:     { type: string, maxLength: 16 }
+          evidence:   { type: string, enum: [親測, 轉述未複核] }
           lane:       { type: string, maxLength: 32 }    # 可空（如 jp-contemporary）
 
 # 收斂層（平行抓進來會有重複與雜訊，這層做品質）：

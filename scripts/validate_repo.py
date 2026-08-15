@@ -12,6 +12,7 @@ core template/report sections before a PR is merged.
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import sys
 from dataclasses import dataclass
@@ -241,9 +242,71 @@ def check_yaml_parseable(path: Path) -> CheckResult:
     return CheckResult(str(path.relative_to(ROOT)), errors)
 
 
+def _check_reader_example_node(
+    value: Any, schema: dict[str, Any], layer: str, errors: list[str]
+) -> None:
+    """依 reader schema 檢查範例的 required、未知 key 與 enum。"""
+    schema_type = schema.get("type")
+    if schema_type == "object":
+        if not isinstance(value, dict):
+            errors.append(f"reader_output_schema：{layer} 必須是 object")
+            return
+        properties = schema.get("properties", {})
+        required = schema.get("required", [])
+        for key in required:
+            if key not in value:
+                errors.append(f"reader_output_schema：{layer} 缺少必填欄位 {key!r}")
+        for key, child in value.items():
+            if key not in properties:
+                errors.append(f"reader_output_schema：{layer} 出現 schema 未定義欄位 {key!r}")
+                continue
+            _check_reader_example_node(child, properties[key], f"{layer}.{key}", errors)
+    elif schema_type == "array":
+        if not isinstance(value, list):
+            errors.append(f"reader_output_schema：{layer} 必須是 array")
+            return
+        item_schema = schema.get("items", {})
+        for index, child in enumerate(value):
+            _check_reader_example_node(child, item_schema, f"{layer}[{index}]", errors)
+
+    enum = schema.get("enum")
+    if enum is not None and value not in enum:
+        errors.append(f"reader_output_schema：{layer} 的值 {value!r} 不在 enum {enum!r} 內")
+
+
+def check_reader_schema_contract() -> CheckResult:
+    """確保 region reader 的 JSON 範例與 reader_output_schema 同步。"""
+    errors: list[str] = []
+    schema_path = DATA_DIR / "scan_units.yml"
+    prompt_path = ROOT / "prompts" / "region_reader.md"
+    data = require_mapping(load_yaml(schema_path), schema_path, errors)
+    schema = data.get("reader_output_schema")
+    if not isinstance(schema, dict):
+        errors.append("reader_output_schema：data/scan_units.yml 缺少 object schema")
+        return CheckResult("reader_output_schema", errors)
+
+    text = prompt_path.read_text(encoding="utf-8")
+    heading_at = text.find("## 輸出範例")
+    if heading_at < 0:
+        errors.append("reader_output_schema：prompts/region_reader.md 缺少「## 輸出範例」")
+        return CheckResult("reader_output_schema", errors)
+    match = re.search(r"```json\s*\n(.*?)\n```", text[heading_at:], re.DOTALL)
+    if match is None:
+        errors.append("reader_output_schema：輸出範例下找不到第一個 json 圍籬區塊")
+        return CheckResult("reader_output_schema", errors)
+    try:
+        example = json.loads(match.group(1))
+    except json.JSONDecodeError as exc:
+        errors.append(f"reader_output_schema：輸出範例不是合法 JSON：{exc}")
+        return CheckResult("reader_output_schema", errors)
+
+    _check_reader_example_node(example, schema, "頂層", errors)
+    return CheckResult("reader_output_schema", errors)
+
+
 def check_data() -> list[CheckResult]:
-    results = [check_sources(), check_brands(), check_people(), check_taxonomy()]
-    covered = {DATA_DIR / name for name in ("sources.yml", "brands.yml", "people.yml", "trend_taxonomy.yml")}
+    results = [check_sources(), check_brands(), check_people(), check_taxonomy(), check_reader_schema_contract()]
+    covered = {DATA_DIR / name for name in ("sources.yml", "brands.yml", "people.yml", "trend_taxonomy.yml", "scan_units.yml")}
     for path in sorted(RANKINGS_DIR.glob("*.yml")):
         results.append(check_ranking_file(path))
         covered.add(path)

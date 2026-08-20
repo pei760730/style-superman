@@ -52,9 +52,11 @@ jobs:
           python -m pip install ruff==0.16.0  # pin 紀律:升版走專門 PR 連 code 一起修(2026-07-25 已升,17 條違規同 PR 清零)
           python -m ruff check --target-version py39 scripts tests
 
-      # 單一驗收入口：validate_repo / repo_health / track_rankings /
-      # generate_* 全部由 test_smoke 內部執行一次。pytest 必須收集到它，避免 0 tests 假綠。
+      # 收集整個 tests/：test_smoke 是端到端驗收入口（validate_repo / repo_health /
+      # track_rankings / generate_* 全由它內部各跑一次）；同目錄另有 scripts 的離線單元測試。
+      # 這裡必須指向目錄而非單檔——寫死單檔會讓新增的測試檔在 CI 一次都不執行（2026-08-18 實測
+      # #217 併入 9 檔 1,179 行後 CI 收集數未變），那是比 0 tests 更難察覺的假綠。
       - name: Acceptance smoke tests
         env:
           PYTHONIOENCODING: utf-8
-        run: python -m pytest -q -s tests/test_smoke.py
+        run: python -m pytest -q -s tests/

@@ -14,6 +14,67 @@ free: true
 url: https://www.lyst.com/data/the-lyst-index/
 
 snapshots:
+  - period: "2026-Q2"
+    published: "2026-08-05"
+    source_url: https://www.lyst.com/the-lyst-index/q2-26/
+    coverage: "full（官方頁實測 Top 20 品牌 + Top 10 單品，無缺漏、無補值）"
+    data_period: "2026-04 ~ 2026-06（待確認：官方頁未印月份；fashionweekdaily 寫 April–June、fashionunited 寫 April–July，兩家不一致）"
+    methodology: >
+      desire / demand / discovery 三維（資料來自平台年 1.6 億購物者，納入社群、搜尋、編輯報導與
+      AI discovery 訊號；排除折扣或負面聲量帶動的活動）。
+      ⚠️ 官方註明本季起 recalibrated the methodology（近十年來的方法重校）→ 跨季名次比較須留意口徑變動。
+    notes: >
+      Chanel 連兩季登頂。最大升幅 Massimo Dutti +8 進前十；Celine +5、Chloé +3、Miu Miu +2。
+      Phoebe Philo 首次進榜（#18）、Jacquemus 重返（#19）；COS（Q1 #10）與 Fendi（Q1 #19）掉出 Top 20。
+      單品榜第一是 New York Knicks Cap（NBA 總冠軍驅動，搜尋 +4,276%），不是時裝品牌單品。
+      取得註記：官方 archive 索引頁 /data/the-lyst-index/ 當時只列到 Q1（索引 stale），
+      但直接路徑 /the-lyst-index/q2-26/ 可讀 —— 下季沿用 /the-lyst-index/q{n}-{yy}/ 這個格式。
+      published 日期為【轉述已複核】（官方頁未印發布日，nssmag / stylerave / fashionweekdaily 三家獨立對上 08-05）。
+
+    # 最紅品牌 Top 20（move 已與本檔 2026-Q1 名次逐條反推核對，20/20 自洽）
+    brands:
+      - { rank: 1,  name: Chanel,          move: "=" }
+      - { rank: 2,  name: Miu Miu,         move: "+2" }
+      - { rank: 3,  name: Dior,            move: "=" }
+      - { rank: 4,  name: Saint Laurent,   move: "-2" }
+      - { rank: 5,  name: Gucci,           move: "=" }
+      - { rank: 6,  name: Prada,           move: "+1" }
+      - { rank: 7,  name: Ralph Lauren,    move: "-1" }
+      - { rank: 8,  name: Burberry,        move: "+1" }
+      - { rank: 9,  name: Coach,           move: "-1" }
+      - { rank: 10, name: Massimo Dutti,   move: "+8" }
+      - { rank: 11, name: "Chloé",          move: "+3" }
+      - { rank: 12, name: The Row,         move: "-1" }
+      - { rank: 13, name: Versace,         move: "-1" }
+      - { rank: 14, name: Bottega Veneta,  move: "+1" }
+      - { rank: 15, name: Celine,          move: "+5" }
+      - { rank: 16, name: Moncler,         move: "-3" }
+      - { rank: 17, name: Loewe,           move: "-1" }
+      - { rank: 18, name: Phoebe Philo,    move: new }
+      - { rank: 19, name: Jacquemus,       move: re-entry }
+      - { rank: 20, name: Stone Island,    move: "-3" }
+
+    # 最熱單品 Top 10（成長率為【轉述已複核】：兩家以上獨立來源對上；官方頁本身未逐項印百分比）
+    products:
+      - { rank: 1,  brand: "New York Knicks", item: "Cap",                  note: "搜尋 +4,276%；NBA 總冠軍驅動。非時裝品牌單品" }
+      - { rank: 2,  brand: Issey Miyake,      item: "Madame-T Stole",       note: "+501%" }
+      - { rank: 3,  brand: Skims,             item: "Jelly Shoes",          note: "+2,170%" }
+      - { rank: 4,  brand: Gucci,             item: "Vittoria Heels",       note: "+1,322%" }
+      - { rank: 5,  brand: "Chloé",            item: "Jelly Mules",          note: "+657%" }
+      - { rank: 6,  brand: Massimo Dutti,     item: "Toe Sandals",          note: "+304%" }
+      - { rank: 7,  brand: Chanel,            item: "Shield Sunglasses",    note: "+363%（另一說：太陽眼鏡整體需求 +70%）" }
+      - { rank: 8,  brand: "DÔEN",             item: "Iona Shorts",          note: "+96%" }
+      - { rank: 9,  brand: "Adidas x Willy Chavarria", item: "Jersey",      note: "+373%" }
+      - { rank: 10, brand: Zimmermann,        item: "Daylight Dress",       note: "+322%" }
+
+    # 男裝視角註記（手動標）：本季與男裝較相關的訊號
+    menswear_focus:
+      - "Adidas x Willy Chavarria Jersey（#9 單品，+373%）— 本季單品榜唯一明確男裝取向的聯名"
+      - "New York Knicks Cap（#1 單品，+4,276%）— 運動隊帽衝上單品第一，頭部這格的最強外部訊號；驅動力是賽事不是時裝"
+      - "Stone Island #20（-3）、Moncler #16（-3）— 男性機能/outerwear 兩大指標本季同步下滑"
+      - "Ralph Lauren #7（-1）、Burberry #8（+1）— prep/heritage 軸持穩，與 2026 學院風延續一致"
+      - "Issey Miyake Madame-T Stole（#2 單品，+501%）— 日系摺皺工藝，男女皆可用，對重質感 lane 是同溫層訊號"
+
   - period: "2026-Q1"
     published: "2026-04"
     methodology: "desire / demand / discovery 三維（2026 Q1 改版）"

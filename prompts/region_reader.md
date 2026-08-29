@@ -35,6 +35,28 @@
     - **網址沒驗**：YOKE 被判「官方站是密碼牆、讀不到」，實際 `yoke-tokyo.com` 是舊網域，現行官方站 `yoketokyo.com` HTTP 200 正常。→ **判定 `unreadable` 之前，先確認該網址是不是該品牌現在在用的**；換域／新舊站並存會製造假的不可讀。E2 保護的是「讀不到不等於沒動靜」，不保護「我自己找錯地址」。
 
 **E1 / E3 操作註記**：判讀電商「完售」時看**原始 HTML**，不看文字化結果；版型常對每張卡都渲染 sold-out 元素，再用 `hidden` / `display:none` 藏起來，文字擷取會洗掉這些屬性（2026-08-15 A.PRESSE：原始 HTML 16 個元素中 6 個帶 `hidden`，實際 8/8 那波 17 型中 10 型完售）。
+- 已知重演此陷阱的站（第三站，2026-08-29）：**auralee.jp** 的 `SOLD OUT` 全帶 `style="display:none"` / `class="hide"`，**Graphpaper** 商品頁原始 HTML 各含 5 個 sold out 字串而 `products.json` 全 `available:true`。**這三站都不要用文字化結果判完售。**
+
+**E2 操作註記（2026-08-29 新增）**：判 `unreadable` 前必須跑「**不跟隨重導 + 已知不存在路徑**」的對照組。
+- 探測參數本身是量測視角的一部分：`-L` / UA / cookie / `Accept-Language` 任一個都能製造出假的「站壞了」。
+- 具體程序：`curl -s -o /dev/null -w '%{http_code}|%{size_download}'`（**不加 `-L`**）各打一次「目標路徑」與「一個保證不存在的路徑」。**兩者回傳碼與大小相同**才可判「HTTP 層分不出真頁與 404」；只要不同就是可讀，繼續往下挖。
+- 立法理由（2026-08-29 AURALEE）：上一窗以 `curl -L` 判定「所有路徑都回同一個 95,663 bytes 殼、必須靠會渲染 JS 的工具」，實測不存在路徑回 404/77,127b、`/item` 回 200/170,003b——整站可純 curl 逐 variant 複核。
+
+**逐 variant 庫存的可靠抓法（已實測，優先於任何文字化結果）**：
+- **Shopify**：`/products.json`、`/collections/<x>/products.json`（⚠️ 幣別跟訪客走，日圓要帶 cookie `localization=JP; cart_currency=JPY`）。
+- **AURALEE（自建）**：商品頁內嵌 `var item_stock = {...}`，逐色逐碼帶 `stock` 整數（**非嚴格 JSON，有 trailing comma，解析前先 `re.sub(r",\s*([}\]])", r"\1", s)`**）；價格取同頁 JSON-LD `schema.org/Offer` 的 `priceCurrency`/`price`（頁面顯示價預設 USD，`?lang=ja` 不會改）。
+- **OUR LEGACY（Next.js + Centra）**：`<script id="__NEXT_DATA__">` → `props.pageProps.pageProps.centra.product`，`items[].warehouses[]` 逐倉庫存（**warehouse 1 = 網路倉**，6/7/8/9 是實體店；`items[].stock` 為 `yes`/`no`）。無 `products.json`。
+- **yoshidakaban.com（PORTER）**：整個網域 WAF 全擋（連 `robots.txt` 都 403，換瀏覽器 UA 無效）→ 走 **Firecrawl keyless REST** 且必須要 `formats:["rawHtml"]`；markdown 格式會把庫存狀態整個洗掉。判讀看 `<p class="stock soldout">` vs `<p class="stock ">`、按鈕 `mailRequest`（再入荷通知）vs `Add to cart`。
+
+**E5 網址沒驗——已知的錯誤網域對照表**（2026-08-29 實測）：
+| 寫錯的 | 正確的 |
+|---|---|
+| `yoke-tokyo.com`（舊密碼牆） | `yoketokyo.com` |
+| `amaniere.com` | `a-ma-maniere.com` |
+| `garbstore.com` | `couvertureandthegarbstore.com` |
+| `gp-onlinestore.com` | 已 NXDOMAIN（無替代） |
+| `neat-inc.jp`（同名活動公司） | `neat-tokyo.com` |
+| `isplus.co.kr`（網域已死） | `isplus.com` |
 
 ## 怎麼掃
 

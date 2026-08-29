@@ -241,3 +241,41 @@ def test_analysis_contract_and_run_checks_aggregation(tmp_path, monkeypatch):
     ):
         monkeypatch.setattr(health, name, lambda marker=marker: [marker])
     assert len(health.run_checks(dt.date(2026, 8, 18), consistency_only=True)) == 6
+
+
+def test_lyst_behind_count_is_signed_correctly_and_grace_boundary_is_derived(tmp_path, monkeypatch):
+    """Lyst 季度數學的兩個零測試點：`behind` 的數值本身，以及發布寬限的邊界那一天。
+
+    2026-08-29 突變測試顯示這兩處原本完全沒被蓋到——把 `behind` 正負反轉會印出
+    「落後 -1 季」、當季 index 少一個 `+ 1` 會印「落後 0 季」，兩者都不會有任何測試變紅。
+    既有 lyst 測試只斷言 level 與「寬限內 / 已發布逾」字串，從不看那個數字。
+    """
+    monkeypatch.setattr(health, "ROOT", tmp_path)
+    ranking = tmp_path / "data" / "rankings" / "lyst-index.yml"
+
+    # 2026-08 落在 Q3、手上最新是 Q2 → behind 必須是正的 1。
+    _write(ranking, "snapshots:\n  - period: 2026-Q2\n")
+    assert "落後 1 季" in health.check_lyst_staleness(dt.date(2026, 8, 29))[0].message
+
+    # 寬限邊界：上一季（2026-Q2）季末 6/30，要「嚴格晚於」季末 + lag 才算新一季可 ingest。
+    # 天數從常數推導、不寫死——調 LYST_PUBLISH_LAG_DAYS 是調參，不該讓測試變紅；
+    # 但「邊界當天仍在寬限內、隔天才警」這條語意必須釘死（季末算法錯一天就會漂掉）。
+    boundary = dt.date(2026, 6, 30) + dt.timedelta(days=health.LYST_PUBLISH_LAG_DAYS)
+    _write(ranking, "snapshots:\n  - period: 2026-Q1\n")
+    assert health.check_lyst_staleness(boundary)[0].level == "info"
+    assert "落後 2 季" in health.check_lyst_staleness(boundary)[0].message
+    assert health.check_lyst_staleness(boundary + dt.timedelta(days=1))[0].level == "warn"
+
+
+def test_weekly_behind_uses_iso_week_arithmetic_not_approximate_division(tmp_path, monkeypatch):
+    """週差必須是「ISO 週一日期相減 // 7」。
+
+    6 週差是 `// 7` 與 `// 6` 的第一個分歧點（42 // 7 == 6、42 // 6 == 7）；既有測試最遠只到
+    3 週，落在兩者結果相同的區間裡，把除數改掉不會有任何測試變紅。
+    """
+    monkeypatch.setattr(health, "ROOT", tmp_path)
+    (tmp_path / "reports" / "buy_shortlist").mkdir(parents=True)
+    _write(tmp_path / "reports" / "buy_shortlist" / "2026-W20.md", "# week")
+
+    finding = health.check_weekly_picks_freshness(dt.date.fromisocalendar(2026, 26, 1))[0]
+    assert "落後 6 週" in finding.message

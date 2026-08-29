@@ -100,3 +100,32 @@ def test_main_offline_writes_requested_file(tmp_path, monkeypatch, capsys):
 
     assert out.read_text(encoding="utf-8").startswith("# ⚡ Style 速報 — 2026-08-18")
     assert "速報已產出" in capsys.readouterr().out
+
+
+def test_clip_and_region_cap_hold_at_their_exact_boundaries():
+    """兩個邊界的零測試點（2026-08-29 突變測試找到）。
+
+    - `_clip` 的省略號：長度**剛好等於** limit 時不該加「…」——加了等於騙讀者說內容被截斷。
+      既有測試只驗 `abcdef` 截到 3（超過的情況），等長那一格沒人踩。
+    - 每區則數上限：`rows[:MAX_PER_REGION]` 的 off-by-one 沒有守衛，多印一則不會有測試變紅。
+    """
+    assert flash._clip("abc", limit=3) == "abc"      # 剛好等長 → 不加省略號
+    assert flash._clip("abcd", limit=3) == "abc…"    # 超過才加
+
+    over = [
+        _signal(title=f"Item {i}", url=f"https://example.com/news/item-{i}")
+        for i in range(flash.MAX_PER_REGION + 3)
+    ]
+    text = flash.extract(over, "2026-08-18")
+    assert f"🌐 全球（{flash.MAX_PER_REGION} 則）" in text
+    assert f"Item {flash.MAX_PER_REGION}" not in text
+
+
+def test_recent_window_never_returns_empty_even_for_zero_days():
+    """`--days 0` 是合法 CLI 輸入（argparse `type=int` 不擋負數與 0）。
+
+    視窗的 `max(days, 1)` 是 fail-safe：至少收今天。下限若被改成 0，`--days 0` 會回空集合
+    → 速報永遠 0 則，而且會走進「市場安靜」那條敘述、被讀成「今天沒事發生」。
+    """
+    assert flash._recent_window("2026-08-18", 0) == {"2026-08-18"}
+    assert flash._recent_window("2026-08-18", 1) == {"2026-08-18"}

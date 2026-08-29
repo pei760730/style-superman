@@ -170,3 +170,18 @@ def test_main_marks_short_body_as_insufficient_evidence(monkeypatch, capsys):
 
     assert fetch_article.main(["https://example.com/story"]) == 5
     assert "不足以當「讀過原文」" in capsys.readouterr().err
+
+
+def test_body_exactly_at_minimum_counts_as_evidence():
+    """`ok` 的門檻是 `>=`：長度剛好等於 `MIN_BODY_CHARS` 的正文算數。
+
+    改成 `>` 只差一個字元，卻會讓「剛好及格」的文章被降級成 `待查` 而整條不列（D36 的
+    取內文順序會誤判成本機也讀不到）。既有測試把 `article` 整個 mock 掉，這個邊界從沒跑過。
+    """
+    exact = "字" * fetch_article.MIN_BODY_CHARS
+    html = f"<html><body><article><p>{exact}</p></article></body></html>"
+    result = fetch_article.article(
+        "https://example.com/a", fetcher=lambda url, timeout: (200, html)
+    )
+    assert result["chars"] == fetch_article.MIN_BODY_CHARS
+    assert result["ok"] is True

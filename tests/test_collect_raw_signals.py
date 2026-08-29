@@ -146,3 +146,21 @@ def test_rss_sources_and_yaml_output_use_local_files(tmp_path, monkeypatch):
     text = signals.to_yaml([{"title": "中文"}])
     assert "事實層" in text
     assert "title: 中文" in text
+
+
+def test_atom_prefers_updated_over_published_for_freshness():
+    """Atom 兩個日期欄位的優先序是有意義的：`updated` 才是「這篇最後動過」。
+
+    近 N 天視窗吃的就是這個值——優先序對調會讓改版重發的舊文帶著原始發佈日進來、
+    被判成過期而整條漏掉。既有 Atom 測試的 fixture 只有一個日期欄位，蓋不到這條。
+    """
+    atom = """<feed xmlns="http://www.w3.org/2005/Atom">
+      <entry>
+        <title>Reissued story</title>
+        <link href="https://example.com/a"/>
+        <updated>2026-08-18T00:00:00Z</updated>
+        <published>2026-01-02T00:00:00Z</published>
+      </entry>
+    </feed>"""
+    rows = signals.parse_feed(atom, {"id": "atom", "tier": "B", "region": "global"})
+    assert rows[0]["published"] == "2026-08-18"

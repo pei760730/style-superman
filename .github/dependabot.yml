@@ -25,3 +25,25 @@ updates:
       github-actions:
         patterns:
           - "*"
+
+  # Added 2026-08-31. github-actions was the only ecosystem here, so nothing
+  # watched this repo's Python manifest. Fleet-wide that blind spot let
+  # `anthropic>=0.40` (unbounded) resolve to 1.2.0 on the day the SDK shipped
+  # its first major — a dependency swap (httpx -> httpx2) that CI could not
+  # have caught, because it never runs the code path that imports it.
+  #
+  # Scope note: dependabot reads manifests. A pin written inline in a workflow
+  # (`pip install ruff==X`) is invisible to every ecosystem and still needs a
+  # human — see the tool pins in .github/workflows/.
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: cron
+      cronjob: "0 9 1,15 * *"
+      timezone: Asia/Taipei
+    cooldown:
+      default-days: 7
+    groups:
+      python:
+        patterns:
+          - "*"

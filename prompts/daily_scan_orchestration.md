@@ -38,6 +38,7 @@
    - **格式**：`defaults.two_line`——每則兩行（標題行＝粗體單品/事件 ＋ 日期/價格/通路 ＋ 來源連結【必附、實測有效】；次行＝1–2 句特點 ＋ 為什麼值得看 / 對我意義）。
    - **證據**：`defaults.evidence`——盡量附日期、價格、來源連結；**roundup / N 選 / おすすめ / 추천 類一律 WebFetch 原文挖實際品牌＋單品名（＋價格/型號）至少 top 4–6，挖不到整條不列**（封鎖源走 Firecrawl，見 `prompts/daily_trend_brief.md`）。
    - **來源**：用 `prompts/daily_trend_brief.md` 該區既有來源清單（**不新增來源**，D18）。
+   - **跳過清單只能推導、不得手打**：派工 prompt 裡任何「某源讀不到／跳過」都必須來自 `data/sources.yml` 的 `body_fetchable: false`＋`body_fetch_note`（本機實測日期＋現象）。想標新的讀不到 → 先 `scripts/fetch_article.py` 本機實測、寫進 sources.yml 帶日期、再派工。**臨場打一句「X 讀不到」＝建立一個沒日期、沒視角、不會被任何檢查複驗的旗標**（08-29 SoleRetriever／Permanent Style 假死源，D40）。
    - **視角**：`defaults.lens: wearability`——挑「對我 lane（日系 contemporary / 重質感 / 直筒）能不能駕馭」的，當主編判讀視角，**不打分數**（D14）。
    - KR 單元三維度（造型 / 設計師·零售 / 跨市場外溢）都要照看；某維度當日無料明寫一行，不補熱度。
 3. 單元彼此不依賴（無共享狀態）→ 全部同時跑。**密度要求**：寧可多抓再彙整去蕪，不要只摘 2 條大新聞；有逐字稿/數據能自行判讀的就寫進去，只把真的無資料的列 `待查`。

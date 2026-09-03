@@ -4,7 +4,7 @@
 >
 > **輪替規則（2026-07-06）**：本檔只保留**全量總覽表 + 最近 5 條完整條目**；Record 新決策時若完整條目超過 5 條，同 PR 把最舊的整段搬進 `docs/decisions-archive.md`（完整脈絡查 archive 或 git 歷史）。
 
-## 決策總覽（D1–D39 全量；完整敘事 D1–D31 見 `docs/decisions-archive.md`）
+## 決策總覽（D1–D40 全量；完整敘事 D1–D31 見 `docs/decisions-archive.md`）
 
 | # | 拍板結論（一句話） | 日期 | guard |
 |---|--------------------|------|-------|
@@ -47,6 +47,7 @@
 | D37 | daily For Me 由對話 agent 回流 gitignored 候選池，作為唯一 writer | 2026-07-30 | 無 |
 | D38 | rankings 硬數據保留並成為週挑「炒作 vs 真」必引依據 | 2026-07-30 | 無 |
 | D39 | reader 證據等級、不可讀登記與負面結論對照組納入 schema 契約 | 2026-08-15 | 無（validate_repo 契約檢查） |
+| D40 | 自我進化迴圈補判斷軸：週挑複驗數／教訓重演計數／雷達回測扳機 + 派工跳過清單改推導 | 2026-09-03 | 無（info 級 health 檢查；文件規則） |
 
 ## D34 — Session 分場紀律 + 驗收單一入口（token 成本，2026-07-06）
 
@@ -143,3 +144,15 @@ CIOTA（08-04/06）、KR 來源健康檢查（08-11）、A.PRESSE（08-15）三�
 - `validate_repo.check_reader_schema_contract` 交叉檢查 schema 與 prompt JSON 範例，擋漏必填、未知欄位與 enum 外值。
 ### 可逆 / guards
 可逆（回退 schema、prompt 與 check 即可）。不寫識別字 guard；契約 gate 與 `test_smoke` 正反向探針直接擋漂移。
+
+## D40 — 自我進化迴圈補判斷軸（2026-09-03，擁有者「全優化」）
+### 背景
+迴圈（Observe→…→Learn→Next）量的全是流程衛生，判斷準不準零量測。08-29 三個錯（假死源、假 SPA、同文件違反自訂規則）的教訓全在 lessons.md 裡卻沒在動手時出現；D7「反覆出現才硬化」沒有計數器（六條自標重演無人硬化）；D11 承諾的三個月回測沒有扳機。
+### 拍板
+- 週挑 header 加「上週複驗：推薦 N ／ 複驗 N ／ 須更正 N」（來源＝候選池 ⚠️ 區塊，非新調查）；`check_weekly_review` 印出，缺欄位 info 提醒；W36 起算、之前 grandfather。
+- 派工 prompt 的「跳過／不可讀」清單只能從 `data/sources.yml` 的 `body_fetchable:false`＋`body_fetch_note` 推導，不得手打（orchestration Step 1）。
+- lessons.md soft note 標 `重演：N｜已硬化：…／未硬化`；`check_lessons_recurrence` 對 Soft 區 N ≥ 3 未標已硬化者印「該硬化了」（門檻取自本檔「不踩第三次」）。
+- `check_radar_backtest_due`：`*brand-radar*` 快照滿 90 天且無 `-backtest.md` 兄弟檔 → info。**若雷達確認停用（06-19 後無產出），連 D11 一起收、此檢查同刪。**
+- 三個檢查全 info 級：health.yml 走 `--strict`，判斷軸是儀表不是告警（D29）。
+### 可逆 / guards
+可逆（刪三個 check、還原模板欄位與 prompt 段落即可）。不寫識別字 guard；`test_repo_health` 正反向探針釘邊界（起算週、門檻 N 與 N−1、90 天當天與前一天、兄弟檔、非雷達檔名）。符合 D7：四條皆由重複教訓硬化（三例同根、六條自標重演、D11 承諾兩週後到期而無扳機）。

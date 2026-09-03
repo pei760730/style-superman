@@ -143,7 +143,8 @@
 - **而且站根本不是 SPA**：jQuery + `assets/front/js/`，頁內直接內嵌 `var item_stock = {...}`（逐色逐碼含 `stock` 整數）與 JSON-LD `schema.org/Offer`（`priceCurrency` / `price` / `availability`）。整站可純 curl 逐 variant 複核，不需要任何會渲染 JS 的工具。
 - **教訓**：**探測參數是量測視角的一部分**。`-L` / UA / cookie / Accept-Language 任一個都能製造出「站壞了」的假象，跟 #186（UA）、#193（403）、E5（找錯網址）是同一族錯誤的第四個變形。判 `unreadable` 前，**至少要有一次不跟隨重導、且比對過「已知不存在路徑」的對照組**——兩者回傳大小相同才是真的分不出。
 - **附帶**：本窗同時確認 sold-out 樣板元素陷阱在 AURALEE 重演（第三站）——`SOLD OUT` 全帶 `style="display:none"` / `class="hide"`，文字化必誤報完售。E1/E3 操作註記已補。
-- **重演**：4｜已硬化：E2 操作註記「不跟隨重導＋不存在路徑對照組」（#186 UA → #193 403 → D36 body_fetchable → 08-29 `-L`）
+- **重演**：5｜已硬化：E2 操作註記「不跟隨重導＋不存在路徑對照組」＋ `docs/rankings.md` 逐檔實測狀態（#186 UA → #193 403 → D36 body_fetchable → 08-29 `-L` → 09-03「Firecrawl MCP 未接＝補不動」）
+- **第 5 變形（09-03，硬化後又犯，因為上一輪硬化太窄）**：08-29 把規則寫進 `prompts/region_reader.md`（reader 怎麼讀網頁），但**沒覆蓋「文件裡的能力宣稱」**——`docs/rankings.md` 差點寫進「KREAM/MUSINSA/SNKRDUNK 只有接得到 Firecrawl 的環境才補得動」。兩層錯：① **`Firecrawl MCP 未接` ≠ `Firecrawl 不可用`**，keyless REST 從 bash 直接 curl 即可（免 key/免 MCP/免重啟，memory `firecrawl-keyless-blocked-sites` 早有記載）；② **MUSINSA 連 Firecrawl 都不需要**，官方 JSON 榜純 curl 回 200/588KB、101 筆帶 rank/價/折扣/完售。逐檔實測後只有 KREAM 真的打不到（HTTP 500）。→ **教訓:「某某補不動」是能力宣稱,和「某站讀不到」同一個東西;寫進任何文件前都要附實測日期與指令,否則它會以事實的身分活下去。**
 
 ### 2026-08-29 · 電商站的顯示幣別跟著訪客走，不是站的屬性（第三站重演）
 - **發生什麼**：auralee.jp 商品卡顯示 `$1,287.00` / `$737.00`，頁內 `<input id="currency_input" value="USD">`，即使帶 `?lang=ja` 仍是 USD；真價要從同頁 JSON-LD 取（`priceCurrency: JPY, price: 99000 / 55000`）。這與 8/15 A.PRESSE（無 cookie 時 `110000` 是 **$1,100 USD** 不是 ¥110,000）、以及 OUR LEGACY（Centra 各市場獨立定價，€230／€190 對應 ¥52,800／¥42,900）是同一件事。

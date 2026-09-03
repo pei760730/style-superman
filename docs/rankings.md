@@ -107,14 +107,22 @@ Rankings 是**唯一的 L1 硬數據佐證**：一個趨勢若同時出現在 Ly
 
 | 來源 | 已記錄 |
 |------|--------|
-| Lyst Index | 2026-Q1（Chanel 首度登頂；SL 立領外套單品 #1，MoM +5,550%）|
+| Lyst Index | **2026-Q2（published 2026-08-05；Chanel 連兩季登頂、Massimo Dutti +8 進 #10、Moncler / Stone Island 雙 -3、Phoebe Philo 首度進榜；官方本季起 recalibrated 方法，跨季比較留意口徑）**＋ 2026-Q1（Chanel 首度登頂；SL 立領外套單品 #1，MoM +5,550%）|
 | StockX | 2025 全年（ASICS Gel-1130 最暢銷；跑鞋品牌全面起飛）|
 | ~~Mercari~~ | **2026-06-14 撤除**（2013→2022 已 4 年陳貨、年報無時尚榜；替代源全 bot 擋，D17）|
 | KREAM | **2026-06 월간 전체榜（Firecrawl 即時抓，Nike AF1 #1；Pokémon TCG/錶/墨鏡進榜=去球鞋化具體化，D23）**＋ 2025 年度（Nike 成交 #1；去球鞋化 50%→37%）＋ 2026-01（中古精品 +203%、Rolex +363%）|
 | MUSINSA | **2026-06-20 무진장 여름세일 브랜드 GMV榜（Firecrawl 即時抓，Salomon 新進 #9、크록스 #7，D23）**＋ 2026-02（무신사 스탠다드 連 5 月 #1、adidas #2）＋ 2025-12（#1 PB、#2 TNF）|
 | SNKRDUNK | **2026-06-21 hottest 榜（Firecrawl 即時抓，D24 重建日本球鞋板：Nike AF1 #1、Mizuno×小林節正 #2#3、Travis×Jordan #4#7#9）** |
 
-下一期（皆對話觸發補，無排程，D16）：Lyst Q2 2026（約 7 月發布；發布後在對話說一聲，AI 編一筆快照進 yaml，月報自動帶季對季變動）、StockX 2026 年中、KREAM/MUSINSA 官方月榜更新時補一期。
+下一期（皆對話觸發補，無排程，D16）：**Lyst Q3 2026（約 11 月發布**；路徑沿用 `/the-lyst-index/q{n}-{yy}/`，發布後在對話說一聲，AI 編一筆快照進 yaml，月報自動帶季對季變動）、StockX 2026 年中、KREAM / MUSINSA / SNKRDUNK 更新時補一期。
+
+> ⚠️ **這三檔的 2026-06 快照是 Firecrawl 抓的（D23/D24），但「補不動」的說法 2026-09-03 已逐檔實測推翻兩檔**——`Firecrawl MCP 未接` ≠ `Firecrawl 不可用`：**keyless REST 從 bash 直接 `curl -X POST https://api.firecrawl.dev/v2/scrape` 即可，免 key、免 MCP、免重啟**（當日實測 `yoshidakaban.com` WAF 全擋站穿透成功、MUSINSA 首頁 200）。逐檔現況：
+> - **MUSINSA — 連 Firecrawl 都不需要，純 curl 有官方 JSON 榜**：`GET https://api.musinsa.com/api2/hm/web/v5/pans/ranking/sections/199?storeCode=musinsa&categoryCode=000&contentsId=`（2026-09-03 實測 `200 / 588,813 bytes`、`meta.result=SUCCESS`）。`data.modules[].items[]` 每筆帶 `rank` / `brandName` / `productName` / `finalPrice` / `strikethrough`（原價）/ `discountRatio` / `isSoldOut` / `productId`，共 101 筆。⚠️ 引用名次前先讀 [prompts/monthly_heat_report.md] 基準新鮮度 #3（MUSINSA 30 天算現貨）與「榜為 판매액(營收)非件數、集計為浮動七日窗、卡片價已套用優惠券」三個口徑坑。
+> - **KREAM — 真的打不到**：`kream.co.kr` 與 `api.kream.co.kr` 2026-09-03 全回 **HTTP 500 / 0 bytes**（非 403、非 404，連內容都沒吐）。這檔維持「需 Firecrawl 或別的視角」，且 Firecrawl 對它未實測。
+> - **SNKRDUNK — 未證實補不動**：`snkrdunk.com/` 2026-09-03 回 **200 / 1,609,652 bytes**（首頁可讀）；我猜的 `/api/v1/sneakers` 404，**只代表我沒找到端點，不代表沒有**。判它不可補之前要先照 E2 跑對照組。
+>
+> 2026-09-03 的後果具體可見：三檔同時停在 6/20–6/21（75 天），兩份 9 月月報的「韓潮外溢」段因此只能標 `待查`。**`repo_health` 現在會把每檔最新快照的年齡印成 INFO**（Lyst 另有 D31 的發布寬限 WARN），開工時就看得到，不必手讀 yaml。
+> 2026-09-03 的後果具體可見：三檔同時停在 6/20–6/21（75 天），兩份 9 月月報的「韓潮外溢」段因此只能標 `待查`。**`repo_health` 現在會把每檔最新快照的年齡印成 INFO**（Lyst 另有 D31 的發布寬限 WARN），開工時就看得到，不必手讀 yaml。
 
 ## 🚫 ZOZOTOWN：評估後不採用（紀錄）
 

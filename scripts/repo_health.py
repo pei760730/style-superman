@@ -19,6 +19,7 @@ validate_repo.py 檢查「格式契約」（YAML 欄位、template 段落）；
     - 週挑 (buy_shortlist) 落後幾週（INFO，D29 後無硬 SLA）
     - 當月 monthly report 是否缺
     - Lyst 季度快照是否有「已發布逾寬限卻沒 ingest」的季（D31 發布寬限模型，非日曆季差）
+    - 判斷軸（D40，全 info）：週挑「上週複驗」數／lessons 重演 ≥3 未硬化／雷達快照滿 90 天未回測
     - 重定位後產的報告（daily / monthly）是否符合現行契約
       （殭屍任務卡的產出層防線——決策守衛不掃 reports/，舊世界觀產出從這裡抓）
 
@@ -96,6 +97,15 @@ PLACEHOLDER_MARKS = ("YYYY", "{{", "<", "*", "…")
 # 對症解是 reader-grade UA + 本機複核，見 docs/lessons.md 2026-07-03 訂正節）；
 # 429 有自己的退避、不在此列。測試可傳 retry_delay=0 關掉。
 LIVENESS_RETRY_DELAY_SEC = 2.0
+
+# ---------- 判斷軸（D40，2026-09-03）----------
+# 迴圈原本只量流程（活著沒、漂沒漂）；這三個檢查把「判斷準不準」拉進 Observe 層。
+# 全部 info 級：health.yml 跑 --strict，warn 會讓週一四巡檢變紅、開 issue——判斷軸是儀表不是告警（D29 精神）。
+WEEKLY_REVIEW_SINCE = (2026, 36)   # 週挑 header 從這一 ISO 週起帶「上週複驗」欄；之前的 grandfather
+LESSON_HARDEN_AT = 3               # 取自 lessons.md 自己的規矩「不要讓同一個坑踩第三次」：重演到 3 就該硬化
+RADAR_BACKTEST_DAYS = 90           # D11：品牌雷達快照「三個月後回測」；只認檔名含 brand-radar 的 analysis 快照
+WEEKLY_REVIEW_RE = re.compile(r"\*\*上週複驗：\*\*\s*推薦\s*(\d+)\s*／\s*複驗\s*(\d+)\s*／\s*須更正\s*(\d+)")
+LESSON_RECUR_RE = re.compile(r"\*\*重演\*\*：(\d+)")
 
 
 class Finding:
@@ -532,6 +542,94 @@ def check_analysis_outputs() -> list[Finding]:
     return findings
 
 
+# ---------- 判斷軸（D40）：info 級，不擋巡檢 ----------
+
+
+def check_weekly_review() -> list[Finding]:
+    """判斷軸的第一個數字：上週推薦位被本週複驗後「須更正」幾條。
+    這個數字本來就每週手寫在候選池 ⚠️ 區塊（W34 五處、W35 六處＋複驗三處），但池子是
+    gitignored 草稿、沒人把它讀成指標。週挑 header 帶一行可解析欄位，這裡只是印出來。
+    缺欄位＝info 提醒、不擋（D29：週挑無硬 SLA）；WEEKLY_REVIEW_SINCE 之前的週 grandfather。"""
+    latest = None
+    for report in (ROOT / "reports" / "buy_shortlist").glob("????-W??.md"):
+        m = re.match(r"^(\d{4})-W(\d{2})$", report.stem)
+        if m:
+            key = (int(m.group(1)), int(m.group(2)))
+            if latest is None or key > latest[0]:
+                latest = (key, report)
+    if latest is None or latest[0] < WEEKLY_REVIEW_SINCE:
+        return []
+    (year, week), report = latest
+    label = f"{year}-W{week:02d}"
+    m = WEEKLY_REVIEW_RE.search(report.read_text(encoding="utf-8"))
+    if not m:
+        return [Finding(
+            "info",
+            f"{label} 未記「上週複驗」（推薦／複驗／須更正 三個數）",
+            "週挑收斂時填 header 的「上週複驗：推薦 N ／ 複驗 N ／ 須更正 N」——來源是候選池 ⚠️ 區塊，不是新調查",
+        )]
+    rec, chk, fix = (int(x) for x in m.groups())
+    rate = f"{fix}/{chk}" if chk else "—"
+    return [Finding("info", f"{label} 上週複驗：推薦 {rec}、複驗 {chk}、須更正 {fix}（更正率 {rate}）")]
+
+
+def check_lessons_recurrence() -> list[Finding]:
+    """D7「反覆出現才硬化」原本沒有計數器——實測 soft note 自標「重演／再犯」六條、都沒人硬化。
+    lessons.md 的 soft note 自帶 `- **重演**：N｜已硬化：…` 或 `｜未硬化`；只數「## Soft notes」
+    之下、N ≥ LESSON_HARDEN_AT、且該行沒有「｜已硬化」的條目。**只認顯式標籤、不掃散文**（否則會把
+    「別再犯」讀成再犯）；沒標＝0、不溯及。info 級：這是提醒該硬化，不是硬化本身。"""
+    path = ROOT / "docs" / "lessons.md"
+    if not path.exists():
+        return []
+    findings: list[Finding] = []
+    in_soft = False
+    title = ""
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if line.startswith("## "):
+            in_soft = "Soft" in line
+            continue
+        if not in_soft:
+            continue
+        if line.startswith("### "):
+            title = line[4:].strip()
+            continue
+        m = LESSON_RECUR_RE.search(line)
+        if m and int(m.group(1)) >= LESSON_HARDEN_AT and "｜已硬化" not in line:
+            findings.append(Finding(
+                "info",
+                f"教訓已重演 {m.group(1)} 次仍未硬化：{title}",
+                "反覆出現才硬化（D7）——現在就是那個時候：硬化成檢查或文件硬規則，並把該行改標「｜已硬化：…」",
+            ))
+    return findings
+
+
+def check_radar_backtest_due(today: dt.date) -> list[Finding]:
+    """D11 承諾雷達快照「三個月後回測『當時說紅的還紅嗎』」，但 repo 裡從沒有東西會觸發它。
+    只認檔名含 brand-radar 的 analysis 快照；滿 RADAR_BACKTEST_DAYS 天且沒有同名 -backtest.md
+    兄弟檔才提示（回測寫兄弟檔，不回改封存快照）。info 級、回測本身仍是對話觸發（D7）。"""
+    adir = ROOT / "reports" / "analysis"
+    if not adir.is_dir():
+        return []
+    findings: list[Finding] = []
+    for report in sorted(adir.glob("*brand-radar*.md")):
+        if report.name.endswith(("-backtest.md", ".draft.md")):
+            continue
+        m = re.match(r"^(\d{4})-(\d{2})-(\d{2})-", report.name)
+        if not m:
+            continue
+        try:
+            made = dt.date(int(m.group(1)), int(m.group(2)), int(m.group(3)))
+        except ValueError:
+            continue
+        age = (today - made).days
+        if age >= RADAR_BACKTEST_DAYS and not report.with_name(report.stem + "-backtest.md").exists():
+            findings.append(Finding(
+                "info",
+                f"雷達快照 {report.name} 已 {age} 天未回測（D11：三個月後回測「當時說紅的還紅嗎」）",
+                f"對話說「回測 {report.stem}」→ 產 reports/analysis/{report.stem}-backtest.md（不回改快照）",
+            ))
+    return findings
+
 def run_checks(today: dt.date, consistency_only: bool = False) -> list[Finding]:
     findings: list[Finding] = []
     findings += check_scripts_documented()
@@ -540,6 +638,7 @@ def run_checks(today: dt.date, consistency_only: bool = False) -> list[Finding]:
     findings += check_workflow_scripts()
     findings += check_decision_guards()
     findings += check_analysis_outputs()  # consistency 層：每 PR 擋 analysis 禁字/H1 回流
+    findings += check_lessons_recurrence()  # consistency 層（D40）：教訓重演 ≥3 未硬化，每 PR 提醒
     if not consistency_only:
         # daily 斷更檢查已移除（D16：daily brief 對話觸發、不入 reports/daily/，無檔可監控）
         findings += check_weekly_picks_freshness(today)
@@ -547,6 +646,8 @@ def run_checks(today: dt.date, consistency_only: bool = False) -> list[Finding]:
         findings += check_lyst_staleness(today)
         findings += check_output_contract(today)
         findings += check_rss_coverage()
+        findings += check_weekly_review()            # D40 判斷軸：上週推薦位複驗後須更正幾條
+        findings += check_radar_backtest_due(today)  # D40/D11：雷達快照滿 90 天未回測
     return findings
 
 

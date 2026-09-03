@@ -279,3 +279,70 @@ def test_weekly_behind_uses_iso_week_arithmetic_not_approximate_division(tmp_pat
 
     finding = health.check_weekly_picks_freshness(dt.date.fromisocalendar(2026, 26, 1))[0]
     assert "落後 6 週" in finding.message
+
+
+def test_weekly_review_parses_field_and_grandfathers_older_weeks(tmp_path, monkeypatch):
+    """D40 判斷軸第一個數字：起算週之前不提、缺欄位 info 提醒、有欄位印三個數與更正率。"""
+    monkeypatch.setattr(health, "ROOT", tmp_path)
+    d = tmp_path / "reports" / "buy_shortlist"
+    d.mkdir(parents=True)
+    since = health.WEEKLY_REVIEW_SINCE
+    older = (since[0], since[1] - 1)
+    _write(d / f"{older[0]}-W{older[1]:02d}.md", "# week\n")
+    assert health.check_weekly_review() == []                  # grandfather：起算週之前一律不提
+
+    _write(d / f"{since[0]}-W{since[1]:02d}.md", "# week\n")
+    missing = health.check_weekly_review()[0]
+    assert missing.level == "info"
+    assert "未記「上週複驗」" in missing.message
+
+    _write(d / f"{since[0]}-W{since[1]:02d}.md",
+           "# week\n**上週複驗：** 推薦 15 ／ 複驗 3 ／ 須更正 1\n")
+    got = health.check_weekly_review()[0]
+    assert got.level == "info"
+    assert "推薦 15、複驗 3、須更正 1（更正率 1/3）" in got.message
+
+
+def test_lessons_recurrence_counts_only_soft_explicit_tags_without_hardened_mark(tmp_path, monkeypatch):
+    """D40 重演計數的判準粒度：只數 Soft 區、只認顯式標籤、門檻 N 與 N−1 分開、「｜已硬化」即關閉、非整數忽略。"""
+    monkeypatch.setattr(health, "ROOT", tmp_path)
+    n = health.LESSON_HARDEN_AT
+    _write(tmp_path / "docs" / "lessons.md", "\n".join([
+        "# Lessons",
+        "## 已硬化（檢查已存在）",
+        "### 已硬化區的條目",
+        f"- **重演**：{n + 2}｜未硬化",                 # 在已硬化區 → 區段即標籤，不數
+        "## Soft notes（觀察中，尚未硬化）",
+        "### 差一次",
+        f"- **重演**：{n - 1}｜未硬化",                 # 未達門檻
+        "### 已硬化但留在 soft 區",
+        f"- **重演**：{n}｜已硬化：E2 操作註記",       # 有「｜已硬化」→ 關閉
+        "### 散文提到別再犯第三次",
+        "- 教訓：別再犯第三次，這坑重演過。",           # 無顯式標籤 → 不掃散文
+        "### 真該硬化的",
+        f"- **重演**：{n}｜未硬化",
+        "### 餵毒",
+        "- **重演**：三｜未硬化",                       # 非整數 → 忽略
+    ]))
+    got = health.check_lessons_recurrence()
+    assert [f.message for f in got] == [f"教訓已重演 {n} 次仍未硬化：真該硬化的"]
+    assert got[0].level == "info"
+
+
+def test_radar_backtest_due_only_for_aged_radar_without_sibling(tmp_path, monkeypatch):
+    """D40/D11 扳機：滿 90 天當天提、差一天不提、有 -backtest 兄弟檔不提、非雷達檔名不看。"""
+    monkeypatch.setattr(health, "ROOT", tmp_path)
+    adir = tmp_path / "reports" / "analysis"
+    adir.mkdir(parents=True)
+    today = dt.date(2026, 9, 12)
+    due = today - dt.timedelta(days=health.RADAR_BACKTEST_DAYS)
+    fresh = due + dt.timedelta(days=1)
+    _write(adir / f"{due.isoformat()}-brand-radar-kr.md", "# r")            # 剛好滿 → 提
+    _write(adir / f"{fresh.isoformat()}-brand-radar-jp.md", "# r")          # 差一天 → 不提
+    _write(adir / f"{due.isoformat()}-brand-radar-eu.md", "# r")            # 滿但有兄弟檔 → 不提
+    _write(adir / f"{due.isoformat()}-brand-radar-eu-backtest.md", "# b")
+    _write(adir / f"{due.isoformat()}-clean-retro-runner.md", "# r")        # 非雷達 → 不看
+    got = health.check_radar_backtest_due(today)
+    assert [f.message.split(" ")[1] for f in got] == [f"{due.isoformat()}-brand-radar-kr.md"]
+    assert got[0].level == "info"
+    assert "-backtest.md" in got[0].action

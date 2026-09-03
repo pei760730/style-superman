@@ -117,7 +117,12 @@ Rankings 是**唯一的 L1 硬數據佐證**：一個趨勢若同時出現在 Ly
 下一期（皆對話觸發補，無排程，D16）：**Lyst Q3 2026（約 11 月發布**；路徑沿用 `/the-lyst-index/q{n}-{yy}/`，發布後在對話說一聲，AI 編一筆快照進 yaml，月報自動帶季對季變動）、StockX 2026 年中、KREAM / MUSINSA / SNKRDUNK 更新時補一期。
 
 > ⚠️ **這三檔的 2026-06 快照是 Firecrawl 抓的（D23/D24），但「補不動」的說法 2026-09-03 已逐檔實測推翻兩檔**——`Firecrawl MCP 未接` ≠ `Firecrawl 不可用`：**keyless REST 從 bash 直接 `curl -X POST https://api.firecrawl.dev/v2/scrape` 即可，免 key、免 MCP、免重啟**（當日實測 `yoshidakaban.com` WAF 全擋站穿透成功、MUSINSA 首頁 200）。逐檔現況：
-> - **MUSINSA — 連 Firecrawl 都不需要，純 curl 有官方 JSON 榜**：`GET https://api.musinsa.com/api2/hm/web/v5/pans/ranking/sections/199?storeCode=musinsa&categoryCode=000&contentsId=`（2026-09-03 實測 `200 / 588,813 bytes`、`meta.result=SUCCESS`）。`data.modules[].items[]` 每筆帶 `rank` / `brandName` / `productName` / `finalPrice` / `strikethrough`（原價）/ `discountRatio` / `isSoldOut` / `productId`，共 101 筆。⚠️ 引用名次前先讀 [prompts/monthly_heat_report.md] 基準新鮮度 #3（MUSINSA 30 天算現貨）與「榜為 판매액(營收)非件數、集計為浮動七日窗、卡片價已套用優惠券」三個口徑坑。
+> - **MUSINSA — 連 Firecrawl 都不需要，純 curl 有官方 JSON 榜；但這是「商品榜」，⚠️ 不可直接寫進本檔（本檔記的是「品牌榜」）**：
+>   `GET https://api.musinsa.com/api2/hm/web/v5/pans/ranking/sections/199?storeCode=musinsa&categoryCode=000`
+>   2026-09-03 實測 `200 / 588,813 bytes`、`meta.result=SUCCESS`、101 筆。四個篩選參數（皆從 payload `modules[0].queries` 自報）：**`gf`**＝`A` 全體／`M` 남성／`F` 여성；**`period`**＝`REALTIME`（**預設**）／`DAILY`／`WEEKLY`／`MONTHLY`；**`ageBand`**＝`AGE_BAND_ALL`／`_MINOR`／`_20`／`_25`／`_30`／`_35`／`_40`；**`soldOut`**＝`true` 품절 포함／`false` 제외。
+>   ✅ 這條 lane 要的口徑是 **`&gf=M&period=MONTHLY`**（2026-09-03 實測 `200 / 595,970 bytes`，payload 自報 `성별:남성｜연령별:전체 연령대｜주기별:최근 1개월`、101 筆）。
+>   商品欄位在 `data.modules[].items[]`（`type: PRODUCT_COLUMN`）→ `info`：`brandName` / `productName` / `finalPrice`（**已套用優惠券後的最終價**）/ `discountRatio`（整數 %）/ `strikethrough`（**布林旗標，不是原價**——原價要另從 `goods-detail.musinsa.com/api2/goods/{id}` 取 `normalPrice`）/ `additionalInformation[].text`（「N명이 보는 중 / 구매 중」即時熱度）；`id` 為 productId。
+>   ⚠️ **口徑三坑**：① **這是商品榜，本檔四筆快照全是品牌榜**（`brands[]`，含 2026-06-10「近30日・男性」那筆）——granularity 不同，混寫會廢掉季對季/月對月可比性。**品牌榜端點 2026-09-03 未找到**（探 195–198 回空、200/201/202/210 是其他品類商品榜），要補品牌榜得先找到它。② 榜含**非服飾雜訊**（實測 Top10 內有 무신사머니 상품권、프로틴 음료）——是原始銷售榜、非策展。③ 引用名次前讀 `prompts/monthly_heat_report.md` 基準新鮮度 #3（MUSINSA 30 天算現貨）＋ 週榜的「판매액(營收)非件數、浮動七日窗、每週五 11:00 KST 刊」。
 > - **KREAM — 真的打不到**：`kream.co.kr` 與 `api.kream.co.kr` 2026-09-03 全回 **HTTP 500 / 0 bytes**（非 403、非 404，連內容都沒吐）。這檔維持「需 Firecrawl 或別的視角」，且 Firecrawl 對它未實測。
 > - **SNKRDUNK — 未證實補不動**：`snkrdunk.com/` 2026-09-03 回 **200 / 1,609,652 bytes**（首頁可讀）；我猜的 `/api/v1/sneakers` 404，**只代表我沒找到端點，不代表沒有**。判它不可補之前要先照 E2 跑對照組。
 >

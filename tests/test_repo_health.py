@@ -346,3 +346,37 @@ def test_radar_backtest_due_only_for_aged_radar_without_sibling(tmp_path, monkey
     assert [f.message.split(" ")[1] for f in got] == [f"{due.isoformat()}-brand-radar-kr.md"]
     assert got[0].level == "info"
     assert "-backtest.md" in got[0].action
+
+
+def test_ranking_snapshot_ages_skip_lyst_and_report_every_other_file(tmp_path, monkeypatch):
+    """D31 只盯 Lyst；其餘檔的年齡也要在 Observe 層看得見（2026-09-03：三檔同時 75 天沒人知道）。
+    釘住三件事：lyst 不重複報、兩種 published 寫法都算得出天數、只到月的要標精度。"""
+    monkeypatch.setattr(health, "ROOT", tmp_path)
+    rdir = tmp_path / "data" / "rankings"
+    rdir.mkdir(parents=True)
+    _write(rdir / "lyst-index.yml", "source: lyst-index\ncadence: quarterly\nsnapshots:\n  - period: '2026-Q2'\n    published: '2026-08-05'\n")
+    _write(rdir / "musinsa.yml", "source: musinsa\ncadence: monthly\nsnapshots:\n  - period: x\n    published: '2026-06-20'\n")
+    _write(rdir / "stockx.yml", "source: stockx\ncadence: annual+midyear\nsnapshots:\n  - period: y\n    published: '2026-01'\n")
+    got = health.check_ranking_snapshot_ages(dt.date(2026, 9, 3))
+    msgs = [f.message for f in got]
+    assert not any("lyst" in m for m in msgs)                      # 走 D31，不重複報
+    assert "排行快照 musinsa：最新 2026-06-20，75 天前（cadence monthly）" in msgs
+    assert "排行快照 stockx：最新 2026-01（只到月），245 天前（cadence annual+midyear）" in msgs
+    assert {f.level for f in got} == {"info"}                      # 刻意不設 WARN 門檻（內容判斷留人）
+    assert all(f.action is None for f in got)                      # info 不進 Next Actions
+
+
+def test_ranking_snapshot_ages_survive_bad_published_and_empty_snapshots(tmp_path, monkeypatch):
+    """壞資料不能讓開工的第一支腳本炸掉，也不能靜默吞掉——兩種都要留下一行。"""
+    monkeypatch.setattr(health, "ROOT", tmp_path)
+    rdir = tmp_path / "data" / "rankings"
+    rdir.mkdir(parents=True)
+    _write(rdir / "kream.yml", "source: kream\ncadence: monthly\nsnapshots:\n  - period: '2026-06'\n    published: '近30日'\n")
+    _write(rdir / "snkrdunk.yml", "source: snkrdunk\ncadence: monthly\nsnapshots: []\n")
+    _write(rdir / "musinsa.yml", "source: musinsa\ncadence: monthly\nsnapshots:\n  - period: z\n    published: '2026-13-99'\n")
+    msgs = sorted(f.message for f in health.check_ranking_snapshot_ages(dt.date(2026, 9, 3)))
+    assert msgs == [
+        "排行快照 kream：最新一筆 published 無法解析（'近30日'，cadence monthly）",
+        "排行快照 musinsa：最新一筆 published 無法解析（'2026-13-99'，cadence monthly）",
+        "排行快照 snkrdunk：尚無快照（cadence monthly）",
+    ]

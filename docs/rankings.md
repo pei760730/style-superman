@@ -107,14 +107,17 @@ Rankings 是**唯一的 L1 硬數據佐證**：一個趨勢若同時出現在 Ly
 
 | 來源 | 已記錄 |
 |------|--------|
-| Lyst Index | 2026-Q1（Chanel 首度登頂；SL 立領外套單品 #1，MoM +5,550%）|
+| Lyst Index | **2026-Q2（published 2026-08-05；Chanel 連兩季登頂、Massimo Dutti +8 進 #10、Moncler / Stone Island 雙 -3、Phoebe Philo 首度進榜；官方本季起 recalibrated 方法，跨季比較留意口徑）**＋ 2026-Q1（Chanel 首度登頂；SL 立領外套單品 #1，MoM +5,550%）|
 | StockX | 2025 全年（ASICS Gel-1130 最暢銷；跑鞋品牌全面起飛）|
 | ~~Mercari~~ | **2026-06-14 撤除**（2013→2022 已 4 年陳貨、年報無時尚榜；替代源全 bot 擋，D17）|
 | KREAM | **2026-06 월간 전체榜（Firecrawl 即時抓，Nike AF1 #1；Pokémon TCG/錶/墨鏡進榜=去球鞋化具體化，D23）**＋ 2025 年度（Nike 成交 #1；去球鞋化 50%→37%）＋ 2026-01（中古精品 +203%、Rolex +363%）|
 | MUSINSA | **2026-06-20 무진장 여름세일 브랜드 GMV榜（Firecrawl 即時抓，Salomon 新進 #9、크록스 #7，D23）**＋ 2026-02（무신사 스탠다드 連 5 月 #1、adidas #2）＋ 2025-12（#1 PB、#2 TNF）|
 | SNKRDUNK | **2026-06-21 hottest 榜（Firecrawl 即時抓，D24 重建日本球鞋板：Nike AF1 #1、Mizuno×小林節正 #2#3、Travis×Jordan #4#7#9）** |
 
-下一期（皆對話觸發補，無排程，D16）：Lyst Q2 2026（約 7 月發布；發布後在對話說一聲，AI 編一筆快照進 yaml，月報自動帶季對季變動）、StockX 2026 年中、KREAM/MUSINSA 官方月榜更新時補一期。
+下一期（皆對話觸發補，無排程，D16）：**Lyst Q3 2026（約 11 月發布**；路徑沿用 `/the-lyst-index/q{n}-{yy}/`，發布後在對話說一聲，AI 編一筆快照進 yaml，月報自動帶季對季變動）、StockX 2026 年中、KREAM / MUSINSA / SNKRDUNK 更新時補一期。
+
+> ⚠️ **KREAM / MUSINSA / SNKRDUNK 這三檔的 2026-06 快照是 Firecrawl 即時抓的（D23/D24）**，而 Firecrawl MCP 在擁有者本機未接 → 這三檔實務上只有在接得到 Firecrawl 的環境才補得動。
+> 2026-09-03 的後果具體可見：三檔同時停在 6/20–6/21（75 天），兩份 9 月月報的「韓潮外溢」段因此只能標 `待查`。**`repo_health` 現在會把每檔最新快照的年齡印成 INFO**（Lyst 另有 D31 的發布寬限 WARN），開工時就看得到，不必手讀 yaml。
 
 ## 🚫 ZOZOTOWN：評估後不採用（紀錄）
 

@@ -17,6 +17,7 @@ validate_repo.py 檢查「格式契約」（YAML 欄位、template 段落）；
 
   新鮮度 / 產線（WARN，CI 不擋，但由 health.yml 週期巡檢盯）：
     - 週挑 (buy_shortlist) 落後幾週（INFO，D29 後無硬 SLA）
+    - 每個排行基準快照的年齡（INFO；Lyst 另有 D31 發布寬限 WARN）
     - 當月 monthly report 是否缺
     - Lyst 季度快照是否有「已發布逾寬限卻沒 ingest」的季（D31 發布寬限模型，非日曆季差）
     - 判斷軸（D40，全 info）：週挑「上週複驗」數／lessons 重演 ≥3 未硬化／雷達快照滿 90 天未回測
@@ -342,6 +343,70 @@ def check_lyst_staleness(today: dt.date) -> list[Finding]:
     return [Finding("info", f"Lyst 快照：落後 {behind} 季（發布節奏寬限內，無可 ingest 的新季）")]
 
 
+RANKING_AGE_SKIP = {"lyst-index.yml"}   # Lyst 走 D31 的發布寬限模型，這裡不重複報
+
+
+def _parse_published(value):
+    """回 (date, month_only)。`published` 兩種寫法在檔裡都真實存在：'2026-06-20' 與 '2026-01'。
+    只到月的當月 1 號算並標出精度——別讓「2026-01」看起來像精確到日。"""
+    s = str(value).strip().strip("'\"")
+    m = re.match(r"^(\d{4})-(\d{2})-(\d{2})$", s)
+    if m:
+        try:
+            return dt.date(int(m.group(1)), int(m.group(2)), int(m.group(3))), False
+        except ValueError:
+            return None, False
+    m = re.match(r"^(\d{4})-(\d{2})$", s)
+    if m:
+        try:
+            return dt.date(int(m.group(1)), int(m.group(2)), 1), True
+        except ValueError:
+            return None, False
+    return None, False
+
+
+def check_ranking_snapshot_ages(today: dt.date) -> list[Finding]:
+    """每個排行基準的最新快照有多舊。D31 只盯 Lyst，其餘四檔沒有任何東西在看——
+    2026-09-03 實測：musinsa / kream / snkrdunk 三檔同時停在 6/20–6/21（75 天），
+    月報「韓潮外溢」段因此兩份都只能標待查，而 repo_health 印的是「一切健康」。
+
+    這裡**只印年齡（info），不判定多舊算過期**：門檻是內容判斷——`prompts/monthly_heat_report.md`
+    的基準新鮮度 #3 只覆蓋 Lyst 與 MUSINSA，且各檔 `cadence` 欄寫的是**來源的發布節奏**、
+    不是本檔的入庫承諾（kream/snkrdunk 的欄位註解明寫「按需記」）。硬要換算成 WARN 等於
+    我替擁有者訂了一個他沒訂過的 SLA。先讓數字在開工時看得見——今天是靠手讀 yaml 才發現的。"""
+    try:
+        import yaml
+    except ImportError:
+        return [Finding("warn", "缺 pyyaml，略過排行快照年齡檢查", "pip install -r requirements.txt")]
+    rdir = ROOT / "data" / "rankings"
+    if not rdir.is_dir():
+        return []
+    findings: list[Finding] = []
+    for path in sorted(rdir.glob("*.yml")):
+        if path.name in RANKING_AGE_SKIP:
+            continue
+        data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        source = data.get("source") or path.stem
+        parts = str(data.get("cadence") or "").split()
+        cadence = parts[0] if parts else "待查"
+        snaps = [s for s in (data.get("snapshots") or []) if isinstance(s, dict)]
+        if not snaps:
+            findings.append(Finding("info", f"排行快照 {source}：尚無快照（cadence {cadence}）"))
+            continue
+        raw = snaps[0].get("published", "")
+        made, month_only = _parse_published(raw)
+        if made is None:
+            findings.append(Finding(
+                "info", f"排行快照 {source}：最新一筆 published 無法解析（{raw!r}，cadence {cadence}）"))
+            continue
+        precision = "（只到月）" if month_only else ""
+        findings.append(Finding(
+            "info",
+            f"排行快照 {source}：最新 {raw}{precision}，{(today - made).days} 天前（cadence {cadence}）",
+        ))
+    return findings
+
+
 def check_output_contract(today: dt.date) -> list[Finding]:
     """重定位後產的報告（daily / monthly）必須符合現行契約（templates/）。
 
@@ -644,6 +709,7 @@ def run_checks(today: dt.date, consistency_only: bool = False) -> list[Finding]:
         findings += check_weekly_picks_freshness(today)
         findings += check_monthly_freshness(today)
         findings += check_lyst_staleness(today)
+        findings += check_ranking_snapshot_ages(today)  # D31 只盯 Lyst；其餘四檔的年齡也要看得見
         findings += check_output_contract(today)
         findings += check_rss_coverage()
         findings += check_weekly_review()            # D40 判斷軸：上週推薦位複驗後須更正幾條

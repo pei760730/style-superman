@@ -8,6 +8,7 @@
 - **flash-brief.yml 按鈕層（D35，2026-07-25）**：速報觸發面改純對話（擁有者拍板「我只會在對話觸發」；6 週僅 1 次 dispatch）。`generate_flash.py` + 測試保留，對話說「速報」直接跑。
 
 ### Added
+- **排行基準快照年齡進 Observe 層（2026-09-03）**：`repo_health` 新增 `check_ranking_snapshot_ages`，把 `data/rankings/` 每檔最新快照的年齡印成 info（Lyst 走 D31 發布寬限、不重複報）。起因：kream / musinsa / snkrdunk 三檔同時停在 6/20–6/21（75 天）、兩份 9 月月報「韓潮外溢」段被迫標 `待查`，而健檢印的是「一切健康」——D31 只盯 Lyst，其餘四檔沒有任何東西在看。**刻意不設 WARN 門檻**：多舊算過期是內容判斷（基準新鮮度 #3 只覆蓋 Lyst 與 MUSINSA），留擁有者拍板。
 - **自我進化迴圈補判斷軸（D40，2026-09-03）**：`repo_health` 新增三個 info 級檢查——週挑「上週複驗」數、lessons 重演 ≥3 未硬化、雷達快照滿 90 天未回測；weekly 模板加「上週複驗」欄（validate 契約鎖）；orchestration 派工「跳過清單」改從 `sources.yml` 推導、禁手打。
 - **reader 證據紀律契約與 gate（D39，2026-08-15）**：`reader_output_schema` 新增必填 evidence、不可讀登記與負面結論對照組；`region_reader` 同步方法鐵則與合法 JSON 範例，`validate_repo` + smoke 正反向探針擋 schema/prompt 漂移。
 - **深化來源：新增 InsideHook「The Stitch」+ 正式化 lane 擴大 sweep 宇宙（D 加深，2026-07-30）**：`data/sources.yml` 加 `insidehook-stitch`（us-eu，過 D18 三道門：原創週更 menswear、WebFetch 200 可讀、本 session 實測掉出 Studio Nicholson/Stòffa/Another Aspect 等教科書 lane 單品）；同批 **Permanent Style（403 不可讀）、Die Workwear（最新 2025-11、非近 30 天持續產出）依 D18 擋下**。`data/scan_units.yml` lane 單元加「擴大 sweep 宇宙」註記（核心 5 之外加掃 Graphpaper/Scye/Studio Nicholson/MARKAWARE/blurhms 等同溫層——只查了確實空才報空）。純 data/註記、可逆。

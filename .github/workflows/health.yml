@@ -38,8 +38,8 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install dependencies
-        run: pip install pyyaml
+      - name: Install dependencies (from requirements.txt, the file dependabot maintains)
+        run: pip install -r requirements.txt
 
       - name: Run repo health (strict)
         id: health

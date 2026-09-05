@@ -178,7 +178,7 @@ def main() -> None:
         print(f"⚠️  {out_path.name} 已存在，未覆蓋。要重產請先刪除或改用 --draft。")
         return
 
-    out_path.write_text(build(args.month, region), encoding="utf-8", newline="\n")
+    out_path.write_bytes(build(args.month, region).encode("utf-8"))
     print(f"✅ 已產出骨架：{out_path.relative_to(ROOT)}")
     print("   下一步：依 prompts/monthly_heat_report.md 用 AI 或人工填入本月品牌 / 單品判斷。")
 

@@ -105,7 +105,7 @@ def collect_rss(out_path: str | None) -> str:
     wrote_raw_pack = False
     if out_path:
         try:
-            Path(out_path).write_text(crs.to_yaml(signals), encoding="utf-8", newline="\n")
+            Path(out_path).write_bytes(crs.to_yaml(signals).encode("utf-8"))
             print(f"📥 raw_signal_pack：收集 {len(signals)} 則 → {out_path}")
         except OSError as e:
             print(f"❌ raw pack 寫入失敗：{e}", file=sys.stderr)
@@ -176,7 +176,7 @@ def main() -> None:
         print(f"⚠️  {out_path.name} 已存在，未覆蓋。要重產請先刪除或改用 --draft。")
         return
 
-    out_path.write_text(build_brief(date_str, rss_note), encoding="utf-8", newline="\n")
+    out_path.write_bytes(build_brief(date_str, rss_note).encode("utf-8"))
     print(f"✅ 已產出骨架：{out_path.relative_to(ROOT)}")
     print("   下一步：依 prompts/daily_trend_brief.md 用 AI 或人工補上今日趨勢內容。")
 

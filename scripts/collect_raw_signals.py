@@ -261,7 +261,7 @@ def main() -> None:
 
     out_yaml = to_yaml(signals)
     if args.out:
-        Path(args.out).write_text(out_yaml, encoding="utf-8")
+        Path(args.out).write_text(out_yaml, encoding="utf-8", newline="\n")
         print(f"✅ 收集 {len(signals)} 則訊號，來自 {len(sources)} 個 RSS 來源 → {args.out}")
     else:
         print(out_yaml)

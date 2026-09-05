@@ -165,6 +165,57 @@ def check_taxonomy() -> CheckResult:
     return CheckResult("data/trend_taxonomy.yml", errors)
 
 
+def _published_key(value: Any) -> tuple[int, int, int] | None:
+    """把 `published` 轉成可比較的 (年, 月, 日)。只到月的當月 0 日——同月的
+    `2026-01` 與 `2026-01-31` 因此不會被判成逆序（月精度本來就無法分辨日）。"""
+    text = str(value or "").strip()
+    m = re.match(r"^(\d{4})-(\d{2})-(\d{2})$", text)
+    if m:
+        return int(m.group(1)), int(m.group(2)), int(m.group(3))
+    m = re.match(r"^(\d{4})-(\d{2})$", text)
+    if m:
+        return int(m.group(1)), int(m.group(2)), 0
+    return None
+
+
+def check_snapshot_order(snapshots: list, path: Path, errors: list[str]) -> None:
+    """`snapshots:` 必須最新在最上方——CLAUDE.md 核心假設 #6。
+
+    2026-09-05 稽核：這條是明文不可破壞假設，卻**零機器守衛**，而有 6 個程式點依賴它
+    （`repo_health.check_ranking_snapshot_ages` / `check_lyst_staleness`、`validate_repo` 的
+    latest 驗證、`generate_weekly_buy_picks.latest_ranking_periods`、
+    `generate_monthly_heat_report.latest_period`、`track_rankings.lyst_comparison_text`）。
+    對話端 AI 依 `prompts/ranking_ingest.md` 編 yaml 時**最自然的動作是 append 到最後**，
+    一旦這麼做：repo_health 會印最舊那筆的年齡（#231 想解的「三檔 75 天沒人知道」直接反向復發）、
+    週挑／月報引用過期 period——**全部靜默**。
+    """
+    rows = [(i, s) for i, s in enumerate(snapshots, start=1) if isinstance(s, dict)]
+    if len(rows) < 2:
+        return  # 只有 0–1 筆時「順序」不是承重的，也就沒有可違反的不變式
+    keys = []
+    for idx, snapshot in enumerate(snapshots, start=1):
+        if not isinstance(snapshot, dict):
+            continue
+        key = _published_key(snapshot.get("published"))
+        if key is None:
+            # ≥2 筆時每一筆都必須可定日期——否則排序守衛會 fail-open，
+            # 而下游 6 個程式點仍照 snapshots[0] 取「最新」。
+            errors.append(
+                f"{path}: snapshots[{idx}] published {snapshot.get('published')!r} "
+                f"無法解析（須為 YYYY-MM-DD 或 YYYY-MM）；本檔有 {len(rows)} 筆快照，"
+                f"順序守衛需要每一筆都可定日期"
+            )
+            continue
+        keys.append((idx, key, snapshot.get("published")))
+    for (i1, k1, p1), (i2, k2, p2) in zip(keys, keys[1:]):
+        if k1 < k2:
+            errors.append(
+                f"{path}: snapshots 必須最新在最上方（CLAUDE.md 核心假設 #6），"
+                f"但 snapshots[{i1}] published={p1!r} 比 snapshots[{i2}] published={p2!r} 舊。"
+                f"新快照請 **插到最前面**，不要 append 到最後"
+            )
+
+
 def check_rank_values(items: Any, path: Path, label: str, errors: list[str],
                       required_fields: tuple[str, ...] = ()) -> None:
     rows = require_list(items, f"{path}: {label}", errors)
@@ -200,12 +251,21 @@ def check_ranking_file(path: Path) -> CheckResult:
         if not snapshot.get("period"):
             errors.append(f"{path}: snapshots[{idx}] missing period")
 
+    check_snapshot_order(snapshots, path, errors)
+
     source = data.get("source")
     if source == "lyst-index" and snapshots:
-        latest = snapshots[0]
-        if isinstance(latest, dict):
-            check_rank_values(latest.get("brands"), path, "latest brands", errors, ("name",))
-            check_rank_values(latest.get("products"), path, "latest products", errors, ("brand", "item"))
+        # ⚠️ 不能只驗 snapshots[0]：`track_rankings.lyst_comparison_text` 做季對季比對時
+        # 讀的是 **snaps[1]**（前一季），而月報 🆚 段直接 import 它。2026-09-05 實測：
+        # snapshots[1] 的 brands 缺一個 `name` → validate_repo 回 0 errors 放行，
+        # 產月報時 KeyError('name') 被 generate_monthly_heat_report 的 except 吞掉，
+        # 🆚 段變成「（基準變動計算失敗：'name'）」——而那段是 D38 的「硬數據脊椎」。
+        for pos, snapshot in enumerate(snapshots[:2]):
+            if not isinstance(snapshot, dict):
+                continue
+            tag = "latest" if pos == 0 else "previous"
+            check_rank_values(snapshot.get("brands"), path, f"{tag} brands", errors, ("name",))
+            check_rank_values(snapshot.get("products"), path, f"{tag} products", errors, ("brand", "item"))
     elif source == "stockx" and snapshots:
         for idx, snapshot in enumerate(snapshots, start=1):
             if isinstance(snapshot, dict) and "ranking" in snapshot:
@@ -322,6 +382,10 @@ TEMPLATE_REQUIREMENTS = {
     "weekly_buy_picks_template.md": ["{{week}}", "## 🧢 頭部", "## 👕 上身", "## 👖 下身", "## 👟 足部", "## 👜 配件", "## 🎯 本週最該記住的一個", "**上週複驗：**"],
     "ranking_snapshot_template.md": ["Lyst Index", "StockX", "snapshots:"],
     "monthly_heat_report_template.md": ["{{month}}", "## 🔥 本月最紅品牌", "## 來源 / 限制"],
+    # collect_raw_signals.py 的離線輸出格式範例，不是給寫手填的產出模板——
+    # 契約由 test_collect_raw_signals 直接對 yaml 結構驗，這裡刻意留空。
+    # （2026-09-05：這支原本完全沒登記，`test_every_template_file_has_a_contract_entry` 才抓到）
+    "raw_signal_pack_template.md": [],
 }
 
 

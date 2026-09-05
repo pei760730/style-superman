@@ -191,7 +191,7 @@ def main() -> None:
     if args.out:
         out = Path(args.out)
         out.parent.mkdir(parents=True, exist_ok=True)
-        out.write_text(md, encoding="utf-8")
+        out.write_text(md, encoding="utf-8", newline="\n")
         print(f"✅ 速報已產出 → {out.relative_to(ROOT) if out.is_relative_to(ROOT) else out}")
     else:
         print(md)

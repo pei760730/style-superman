@@ -190,3 +190,38 @@ def test_print_results_returns_failure_only_for_errors(capsys):
     output = capsys.readouterr().out
     assert "❌ bad" in output
     assert "why" in output
+
+
+def test_template_requirements_pin_the_contracts_that_other_layers_depend_on():
+    """`TEMPLATE_REQUIREMENTS` 的**內容**要有守衛，不能只驗機制。
+
+    立法理由（2026-09-05 突變稽核）：既有的 template 測試把整個字典 monkeypatch 掉，
+    所以 D40 剛加的 `**上週複驗：**` 契約**可以直接刪掉、測試全綠**——而
+    `repo_health.check_weekly_review` 正靠那個欄位存在才讀得到數字。
+
+    這裡只釘「有其他層依賴」的欄位，不是把整份模板抄第二遍（那才會漂）。
+    """
+    weekly = validate.TEMPLATE_REQUIREMENTS["weekly_buy_picks_template.md"]
+    assert "**上週複驗：**" in weekly, (
+        "weekly 模板契約少了「上週複驗」——D40 的判斷軸靠它，"
+        "repo_health.check_weekly_review 會永遠印「未記」"
+    )
+    assert "{{week}}" in weekly, "少了 {{week}}，generator 的替換就沒有守衛"
+
+    monthly = validate.TEMPLATE_REQUIREMENTS["monthly_heat_report_template.md"]
+    assert "{{month}}" in monthly
+
+
+def test_every_template_file_has_a_contract_entry():
+    """`templates/` 裡每一支 `.md` 都要在 `TEMPLATE_REQUIREMENTS` 裡有條目。
+
+    立法理由：`TEMPLATE_REQUIREMENTS` 是手工同步清單（＝靜默漏洞的標準形狀）。
+    2026-09-05 稽核實測 `templates/raw_signal_pack_template.md` 根本沒登記，
+    新增模板不接契約沒有任何東西會說話。改成從目錄推導。
+    """
+    on_disk = {p.name for p in (validate.ROOT / "templates").glob("*.md")}
+    registered = set(validate.TEMPLATE_REQUIREMENTS)
+    missing = sorted(on_disk - registered)
+    assert not missing, f"這些模板沒有契約條目（至少填 [] 表示刻意不驗）：{missing}"
+    stale = sorted(registered - on_disk)
+    assert not stale, f"契約指向不存在的模板：{stale}"

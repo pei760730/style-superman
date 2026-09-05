@@ -417,3 +417,30 @@ def test_lessons_recurrence_tags_in_repo_are_all_machine_readable():
     assert looks_like_tag, "lessons.md 目前沒有任何重演標記，這支測試失去意義"
     dumb = [line for line in looks_like_tag if not health.LESSON_RECUR_RE.search(line)]
     assert not dumb, f"這些重演標記機器讀不到（格式須為 `- **重演**：N｜…`）：{dumb}"
+
+
+def test_every_check_function_is_reachable_from_run_checks_or_main():
+    """每一支 `check_*` 都必須被 `run_checks` 或 `main` 接上——否則它只是一段沒人叫的死碼。
+
+    立法理由（2026-09-05 突變稽核）：`run_checks` 的 9 條接線裡 **8 條可以整行刪掉、
+    80 個測試全綠**。既有的 aggregation 測試 monkeypatch 掉 6 支檢查、只斷言
+    `consistency_only=True` 回 6 筆，偵測不到任何一支被拔掉。後果是新加的檢查
+    （D40 三支、#231 一支）在重構或 merge 衝突中掉出 `run_checks`，而 health.yml
+    照印「一切健康」——與同日修掉的「重演計數器靜默 no-op」同一族，只是換一層。
+
+    不維護第二份名單：**從原始碼推導**——把 `run_checks` 與 `main` 的原始碼串起來，
+    每個 `check_*` 函式名都要在裡面出現過。新增檢查忘了接就紅。
+    """
+    import inspect
+
+    wired = inspect.getsource(health.run_checks) + inspect.getsource(health.main)
+    defined = [
+        name for name, obj in vars(health).items()
+        if name.startswith("check_") and inspect.isfunction(obj)
+        and obj.__module__ == health.__name__
+    ]
+    assert len(defined) >= 10, f"只找到 {len(defined)} 支 check_*，推導可能失效"
+    orphans = [name for name in defined if f"{name}(" not in wired]
+    assert not orphans, (
+        f"這些檢查沒有被 run_checks 或 main 呼叫，等於不存在：{orphans}"
+    )

@@ -75,7 +75,7 @@ python scripts/generate_weekly_buy_picks.py --draft          # 產 *.draft.md（
 已存在的正式檔不覆寫（封存快照不回改）。
 
 ### `generate_monthly_heat_report.py`
-產出當月「熱度速報」骨架（`--region us-eu|jp`，預設歐美），寫到 `reports/monthly/YYYY-MM-eu.md` / `YYYY-MM-jp.md`。自動帶入該地區量化基準（歐美：Lyst / StockX；**日本無量化基準**，2026-06-14 撤 Mercari）的最新 period 與來源摘要，其餘判斷留 `待填`。
+產出當月「熱度速報」骨架（`--region us-eu|jp`，預設歐美），寫到 `reports/monthly/YYYY-MM-eu.md` / `YYYY-MM-jp.md`。自動帶入該地區量化基準（日本：SNKRDUNK 球鞋轉售，D24 重建、服飾精品仍空；歐美：Lyst / StockX）的最新 period 與來源摘要，其餘判斷留 `待填`。
 
 ```bash
 python scripts/generate_monthly_heat_report.py --month 2026-06

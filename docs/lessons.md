@@ -190,3 +190,10 @@
 - **發生什麼**：2026-09-03 我把 MUSINSA 商品榜端點（`api2/hm/web/v5/pans/ranking/sections/199`）寫進 `docs/rankings.md` 時，順手把候選池記的三個口徑特性——「판매액(營收)非件數／浮動七日窗／每週五 11:00 KST 刊」——掛在它身上。09-05 實測：那三條是**주간 랭킹 리포트**那條線的，section 199 是**另一個榜**：頁內 tooltip 自報 `매출, 조회수, 후기수를 반영한 상품 랭킹`＝**銷售額＋瀏覽數＋評論數混合**，`information.updatedAt` 顯示**每日 ~04:47 KST 更新**、且**不揭露日期範圍型的「집계 기간」，只給更新時刻**。
 - **後果**：如果照原文寫月報，會把一個混合指標當成純營收引用，「名次高」被讀成「賣得多」——而這正是 E5 立法時要防的（Polo 트윌 재킷 #1→#14 但銷量零增）。
 - **教訓**：**同一個平台可以有好幾個榜，口徑坑不會自動繼承。** 記端點時要連「這是哪一個榜」一起記；把舊筆記的注意事項搬到新端點上之前，先確認那些注意事項當初講的是不是同一個東西。
+
+### 2026-09-05 · 拍板改了資料層卻沒接進程式，而測試把錯誤狀態釘死當契約
+- **發生什麼**：D24（2026-06-21）用 SNKRDUNK 重建日本球鞋轉售量化板、`data/rankings/snkrdunk.yml` 也建好了，但 `generate_monthly_heat_report.REGIONS["jp"]["baselines"]` 一直是 `()`，而且它的註解引用的是 **D24 前一週（06-14）**的狀態。**後果不是骨架難看，是產出說謊**：`2026-08-jp.md` 與 `2026-09-jp.md` 兩份月報都白紙黑字寫「本區無可自動收的量化基準榜」「日本無量化基準榜是結構性限制」，而那個榜就躺在同一個 repo 裡、76 天沒人用。同一句話另外散在 `prompts/monthly_heat_report.md`（×2）、`prompts/brand_radar.md`、`docs/flow_calendar.md`、`scripts/README.md` 五處。
+- **最惡的一層：測試站在錯誤那一邊**。`test_baseline_labels_and_movements_cover_regional_contracts` 硬斷言 `baseline_label(REGIONS["jp"]) == "無"` 與「jp 的 movement 含『無可自動收的量化基準』」。**任何人把 D24 接上去，這支測試就會紅、看起來像迴歸** —— 它不是沒擋住這個 bug，它是這個 bug 的保鑣。
+- **對策 / 硬化**：① 接上 `snkrdunk.yml`，並在註解裡寫明它只覆蓋球鞋轉售、服飾／精品仍空；② 該測試改成測**函式契約**（用合成 region 測空/非空兩條分支），不再拿某地區當下的資料當斷言；③ 新增推導式守衛 `test_every_region_scoped_ranking_file_is_claimed_as_a_baseline` —— **從 `data/rankings/*.yml` 自己的 `region` 欄位推導**，凡是 region 對得上月報地區的檔都必須被那個地區認領，新增排行檔或改 region 忘了接就紅（不維護第二份手工清單，那正是會漂開的東西）。
+- **教訓（兩條）**：**① 拍板要同時盤點「資料層／程式層／文件層／測試層」四邊**，D24 只做了資料層與 `docs/rankings.md`，其餘三層原地不動了 76 天。**② 斷言「某地區現在沒有 X」是把資料狀態寫進契約** —— 測試該釘的是函式在給定輸入下的行為，不是世界現在長什麼樣；否則修正世界的人會先被自己的測試擋下來。
+- **重演**：2｜已硬化：`test_every_region_scoped_ranking_file_is_claimed_as_a_baseline`（2026-08-18 CI 寫死單檔導致新增測試永不執行的假綠 → 09-05 baselines 未接上的假限制）

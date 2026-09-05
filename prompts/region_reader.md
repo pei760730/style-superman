@@ -40,12 +40,14 @@
 **E2 操作註記（2026-08-29 新增）**：判 `unreadable` 前必須跑「**不跟隨重導 + 已知不存在路徑**」的對照組。
 - 探測參數本身是量測視角的一部分：`-L` / UA / cookie / `Accept-Language` 任一個都能製造出假的「站壞了」。
 - 具體程序：`curl -s -o /dev/null -w '%{http_code}|%{size_download}'`（**不加 `-L`**）各打一次「目標路徑」與「一個保證不存在的路徑」。**兩者回傳碼與大小相同**才可判「HTTP 層分不出真頁與 404」；只要不同就是可讀，繼續往下挖。
+- ⚠️ **對照組只在「正確的路徑前綴」上才有意義（2026-09-05 追加）**：W35 判 AURALEE 不可讀時，用的是 `/onlinestore/` 這個**根本不存在的前綴**——真假路徑當然都 301 回首頁，於是得出「HTTP 層分不出」。商店其實在 `/item`，換過去立刻 `200|169,101` vs `404|77,113` 分明。**先確認你打的前綴是這個站真的在用的**（從首頁的導覽連結取，不要憑猜），再跑對照組；否則你量的是「我猜錯了路徑」，不是「站讀不到」。
 - 立法理由（2026-08-29 AURALEE）：上一窗以 `curl -L` 判定「所有路徑都回同一個 95,663 bytes 殼、必須靠會渲染 JS 的工具」，實測不存在路徑回 404/77,127b、`/item` 回 200/170,003b——整站可純 curl 逐 variant 複核。
 
 **逐 variant 庫存的可靠抓法（已實測，優先於任何文字化結果）**：
 - **Shopify**：`/products.json`、`/collections/<x>/products.json`（⚠️ 幣別跟訪客走，日圓要帶 cookie `localization=JP; cart_currency=JPY`）。
 - **AURALEE（自建）**：商品頁內嵌 `var item_stock = {...}`，逐色逐碼帶 `stock` 整數（**非嚴格 JSON，有 trailing comma，解析前先 `re.sub(r",\s*([}\]])", r"\1", s)`**）；價格取同頁 JSON-LD `schema.org/Offer` 的 `priceCurrency`/`price`（頁面顯示價預設 USD，`?lang=ja` 不會改）。
 - **OUR LEGACY（Next.js + Centra）**：`<script id="__NEXT_DATA__">` → `props.pageProps.pageProps.centra.product`，`items[].warehouses[]` 逐倉庫存（**warehouse 1 = 網路倉**，6/7/8/9 是實體店；`items[].stock` 為 `yes`/`no`）。無 `products.json`。
+- **converse.co.jp**：是 **Shopify** —— `/products/<id>.js` 直接給逐碼 `available`（對照組：`/products/zzz-not-real.json` 回 404|0 vs 真商品 200|14,236）。⚠️ 2026-08 曾因兩份 reader 讀數打架就把整個 CONVERSE 日本線降級成「無法定案」，**而同一份報告對 Graphpaper／CIOTA／YOKE 用的正是這一招** —— 一行指令可解的事不要寫成懸案。
 - **yoshidakaban.com（PORTER）**：整個網域 WAF 全擋（連 `robots.txt` 都 403，換瀏覽器 UA 無效）→ 走 **Firecrawl keyless REST** 且必須要 `formats:["rawHtml"]`；markdown 格式會把庫存狀態整個洗掉。判讀看 `<p class="stock soldout">` vs `<p class="stock ">`、按鈕 `mailRequest`（再入荷通知）vs `Add to cart`。
 
 ## 已驗品牌尺碼對照（擁有者：上身 L／褲 W34 ＝ 34in ≒ 86.4cm）
@@ -64,6 +66,28 @@
 2. **AURALEE 官方公告不用「第 N 回」命名**，用日期（如 news 標題「8.28」）。「第 5 波」是我方內部編號，別拿去搜官網。
 
 ⚠️ **通則**：尺碼表是**每個品牌各自的**，不能跨品牌外推（AURALEE 的 5 是 88cm、CIOTA 的 5 是 83cm，差 5cm）。查不到就標 `待查`，**不要用別的品牌的表去猜**。
+
+## 已知性別／品類陷阱（引用前一定要查的那幾格）
+
+E5 說「引用單品前先確認尺碼／性別分類涵蓋得到擁有者」。以下是**實際踩過**的，看到就停下來查：
+
+| 陷阱 | 實例 | 怎麼查 |
+|---|---|---|
+| **副牌是女裝線** | **BEAMS BOY**（BB）是 BEAMS 的**女裝**レーベル（1998 創立，官方分類 レディース，概念是「把男裝縮成女裝尺碼」）——W35 把 `BB × New Era 59FIFTY` 放進頭部 Top3 並寫「已經沒有你的尺碼了」 | 看到 `BEAMS BOY` / `BB` 一律當女裝處理；任何副牌先查官方品牌頁的分類 |
+| **同名不同性別的型號** | CONVERSE ALL STAR **POINTEDTOE** PA OX 是 WOMENS、尺碼上限 26.0cm | 開尺碼表，不要只看價格與發售日 |
+| **性別篩選不保證品項標籤** | MUSINSA `gf=M` 的男性榜裡出現 푸마 스피드캣 웨지「**우먼스**」（週 #13／日 #15） | 平台的性別 filter 是**使用者**維度、不是**商品**維度；逐項看品名 |
+| **標 `W` 的並行女段** | BILLY'S 的 adidas Handball Spezial Loafer 站上另有標 `W` 的女段版本 | 同一個商品頁可能同時掛兩段尺碼 |
+| **Shopify tag 就寫著性別** | Graphpaper 的 `Scale Off Wool 6 Panel Cap` / `Necktie` tag 含 `WOMEN` / `INT_WMN`（雖為 `UNISEX`） | `products.json` 的 `tags` 直接看得到，比讀文案快 |
+
+## 同一批貨 ≠ 同一塊布（價格要跟著 tag 走）
+
+**2026-08-29 W35 最貴的一個錯**：Graphpaper 8/22 那批**同時**鋪了 `Scale Off Wool` 與 `Wool Doeskin` 兩套面料，**各自都有外套＋長褲＋領帶**。報告寫「同一塊 Scale Off Wool 走完頭到腳四格」時，把 **Wool Doeskin Jacket ¥92,400** 塞進 Scale Off Wool 的敘事裡——Scale Off Wool 的外套其實是 **¥77,000**（Double Jacket ¥81,400）。錯誤汙染了 W35 一則 + 9 月 jp 月報三處，包含一整條挑買方向的價位帶。
+
+**根因**：「四格」這個結論先成立了，價格才被找來填格——所以填錯了也沒人發現。
+
+**做法**：Shopify 的 `products.json` 每個商品都帶 `tags`，**面料名就在 tags 裡**。要講「同一塊布走完幾格」，就用 tag 篩、把該 tag 的全部型號列出來，不要憑價格湊。實測（2026-09-05）：
+- `Scale Off Wool` = 10 型（Jacket ¥77,000／Double Jacket ¥81,400／Wide Slacks ¥41,800／Chef Pants ¥35,200／6 Panel Cap ¥15,400／Necktie ¥14,300…）
+- `Wool Doeskin` = 3 型（Jacket ¥92,400／Wide Tapered Slacks ¥46,200／Necktie ¥15,400）——**它自己也走完頭到腳**
 
 **E5 網址沒驗——已知的錯誤網域對照表**（2026-08-29 實測）：
 | 寫錯的 | 正確的 |

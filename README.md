@@ -161,7 +161,8 @@ style-superman/
 ├── CLAUDE.md                 # agent 執行守則（定位鐵則 + Self-Evolution Loop + Session 分場紀律 D34）
 ├── AGENTS.md                 # Codex CLI 行為規則（雙 agent 協作；權威守則仍是 CLAUDE.md）
 ├── .claude/agents/           # subagent 定義：repo-auditor（唯讀深審）+ patch-worker（單主題修繕）（D34）
-├── requirements.txt          # Python 相依（標準庫 + pyyaml）
+├── requirements.txt          # 產線 Python 相依（標準庫 + pyyaml）
+├── requirements-dev.txt      # CI/dev 工具釘版 SSoT（pytest / ruff；放這裡 dependabot 才看得見）
 ├── .mcp.json                 # Firecrawl keyless MCP 設定（對話端即時榜抓取，D22）
 ├── data/                     # 知識底層（長期維護，不是快照）
 │   ├── sources.yml           # 情報來源 43 個（31 個可 RSS 自動收；撤 Mercari D17、加錶源 Fratello/Monochrome）

@@ -32,9 +32,13 @@ updates:
   # its first major — a dependency swap (httpx -> httpx2) that CI could not
   # have caught, because it never runs the code path that imports it.
   #
-  # Scope note: dependabot reads manifests. A pin written inline in a workflow
-  # (`pip install ruff==X`) is invisible to every ecosystem and still needs a
-  # human — see the tool pins in .github/workflows/.
+  # Scope note: dependabot reads manifests, so a pin written inline in a
+  # workflow (`pip install ruff==X`) is invisible to every ecosystem. That
+  # blind spot was real here: ruff sat on 0.16.4 for 17 days (0.16.5 and
+  # 0.16.6 both shipped) while client forks — which keep ruff in a manifest —
+  # got their bump PRs automatically. Fixed 2026-09-06 by moving the tool pins
+  # into requirements-dev.txt, which this ecosystem does see. Keep them there:
+  # anything pinned back inside a `run:` step stops being watched.
   - package-ecosystem: pip
     directory: /
     schedule:
@@ -47,3 +51,19 @@ updates:
       python:
         patterns:
           - "*"
+    ignore:
+      # pytest 9.0.0 raised requires_python to >=3.10, but this repo supports
+      # 3.9 (CLAUDE.md: the owner's Mac only has python3, and it is 3.9; the
+      # ci.yml matrix runs 3.9 too). 8.4.2 is the last release that admits 3.9.
+      #
+      # Why ignore rather than let it come and go red: the python group above
+      # bundles every pip update into ONE PR. A pytest 9 entry would make that
+      # PR red, which blocks the legitimate ruff bumps riding along with it.
+      #
+      # This is a convenience, not the guard — ignore rules have leaked before
+      # on range-style specs. The real guard is smoke (3.9) in ci.yml, which
+      # actually runs the code. When 3.9 support is dropped, remove this entry,
+      # the ci.yml matrix floor, and the ceiling note in requirements-dev.txt
+      # together.
+      - dependency-name: pytest
+        update-types: ["version-update:semver-major"]

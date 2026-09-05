@@ -1,0 +1,27 @@
+# CI / dev 工具的釘版唯一來源（SSoT）。產線不裝這些，只有 CI 與本機驗收會用。
+#
+# 為什麼有這個檔（2026-09-06）：釘版原本寫在 workflow 的 `run:` 裡
+# （`pip install ruff==X`）。那種寫法對**任何** dependabot ecosystem 都是隱形的
+# ——dependabot 只讀 manifest——所以那批版本腐爛沒有任何機制在守。實測：ruff
+# 在 0.16.4 上躺了 17 天沒人發現（0.16.5 於 08-27、0.16.6 於 09-03 都已釋出），
+# 同期把 ruff 放在 manifest 裡的客戶 fork 早就自動收到升版 PR。差別不在紀律，
+# 在可不可見。搬進這個檔之後，`.github/dependabot.yml` 的 pip ecosystem 就看得到了。
+#
+# 消費者（要加/改工具改這裡就好，別在別處另外釘）：
+#   - .github/workflows/ci.yml → python -m pip install -r requirements-dev.txt
+#
+# 為什麼不併進 requirements.txt：那個檔是產線相依（標準庫 + pyyaml），
+# lint / 測試工具 CI-only、不上產線（擁有者 2026-06-16 放行）。
+#
+# 升版紀律：走專門 PR，連新規則帶出來的違規一起修（2026-07-25 那次 17 條同 PR 清零）。
+
+# ⚠️ 這個上限是 Python 3.9 決定的，不是隨手釘的。
+# pytest 9.0.0 起 `requires_python` 是 >=3.10，而本 repo 支援 3.9
+# （CLAUDE.md：擁有者的 Mac 只有 python3 且是 3.9；ci.yml matrix 同步）。
+# 8.4.2 是最後一個收 3.9 的版本，實測於 2026-09-06 查 PyPI 確認。
+# dependabot 會定期想升到 9.x，`.github/dependabot.yml` 已 ignore 它的 major；
+# 萬一穿透，smoke (3.9) 會紅——那是正確訊號，不要為了讓它綠而拿掉 3.9。
+# 3.9 的限制哪天解除，這裡、ci.yml matrix、dependabot 的 ignore 要一起改。
+pytest==8.4.2
+
+ruff==0.16.6

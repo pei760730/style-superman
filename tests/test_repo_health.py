@@ -1,5 +1,6 @@
 import datetime as dt
 import io
+import re
 import socket
 import urllib.error
 
@@ -380,3 +381,39 @@ def test_ranking_snapshot_ages_survive_bad_published_and_empty_snapshots(tmp_pat
         "排行快照 musinsa：最新一筆 published 無法解析（'2026-13-99'，cadence monthly）",
         "排行快照 snkrdunk：尚無快照（cadence monthly）",
     ]
+
+
+def test_claude_md_recurrence_example_actually_matches_the_regex():
+    """CLAUDE.md／README 教人怎麼標「重演」，`LESSON_RECUR_RE` 決定機器認不認得——
+    這兩者是手工同步的，而且 2026-09-05 實測已經漂開過一次：說明書寫 `重演：N`（無粗體）、
+    正則要 `**重演**：N`，照說明書標記 `check_lessons_recurrence` 一聲不吭（靜默 no-op），
+    D40 花力氣加的計數器等於不存在。
+
+    這裡不比對字串，而是**把說明書裡的範例真的丟進正則跑**——說明書改格式、正則改語法，
+    任一邊動了對不上都會紅。
+    """
+    for doc in ("CLAUDE.md", "README.md"):
+        text = (health.ROOT / doc).read_text(encoding="utf-8")
+        examples = re.findall(r"`([^`]*重演[^`]*)`", text)
+        assert examples, f"{doc} 找不到反引號括住的「重演」標記範例"
+        matched = [e for e in examples if health.LESSON_RECUR_RE.search(e.replace("N", "3"))]
+        assert matched, (
+            f"{doc} 的重演標記範例 {examples!r} 沒有任何一個能被 LESSON_RECUR_RE "
+            f"({health.LESSON_RECUR_RE.pattern!r}) 命中——照說明書標記將永遠不會被計數"
+        )
+
+
+def test_lessons_recurrence_tags_in_repo_are_all_machine_readable():
+    """repo 裡實際標過的重演行，必須每一行都能被正則讀到。
+
+    反向守衛：上一支測的是「說明書寫對」，這支測的是「已經寫下的標記沒有一條是啞的」——
+    有人手打成 `重演:3`（半形冒號）或漏星號，這裡會紅。
+    """
+    text = (health.ROOT / "docs" / "lessons.md").read_text(encoding="utf-8")
+    # 判準粒度：`重演` 必須**緊接在項目符號之後**（星號可有可無）才算標記——
+    # 否則散文裡的「…在 AURALEE 重演（第三站）…」或引用格式的「標 `重演：N`」會被誤抓。
+    tag_shape = re.compile(r"^\s*-\s*\**\s*重演\s*\**\s*[:：]")
+    looks_like_tag = [line for line in text.splitlines() if tag_shape.match(line)]
+    assert looks_like_tag, "lessons.md 目前沒有任何重演標記，這支測試失去意義"
+    dumb = [line for line in looks_like_tag if not health.LESSON_RECUR_RE.search(line)]
+    assert not dumb, f"這些重演標記機器讀不到（格式須為 `- **重演**：N｜…`）：{dumb}"

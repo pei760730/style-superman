@@ -18,7 +18,7 @@
 
 | | 歐美（us-eu → `-eu.md`） | 日本（jp → `-jp.md`） |
 |---|---|---|
-| 量化基準 | `data/rankings/lyst-index.yml`、`stockx.yml` | **無可自動收的量化基準**（2026-06-14：Mercari 撤除、ZOZO/Rakuten/2nd STREET 即時榜 bot 擋，見 docs/rankings.md）——日本主榜全依 L2 事件確認 + L3 媒體共識，信心相應保守，撐不起的標 `待查` |
+| 量化基準 | `data/rankings/lyst-index.yml`、`stockx.yml` | `data/rankings/snkrdunk.yml`＝SNKRDUNK（球鞋轉售，D24 2026-06-21 重建；按需 Firecrawl 抓 dated 快照）——⚠️ **服飾／精品仍空**（ZOZO 為 Akamai 級死界）。**引用前先看快照日期夠不夠新**（2026-09-05 實測最新 2026-06-21）|
 | 搜尋查詢 | `"[月份] 2026 menswear trends Europe hottest"`、`"trending men's [item/brand] [月份] 2026"` | `"2026年[月]月 メンズ トレンド"`、`"[月]月 メンズ 人気 [単品/ブランド] 2026"` |
 | 電商訊號 | SSENSE / Mr Porter / END. / Farfetch | ZOZOTOWN（僅可見處，不硬刮）/ BEAMS / UNITED ARROWS / Rakuten Fashion 編輯推薦 |
 | 媒體 | Hypebeast / Highsnobiety 當月 best-of | Fashionsnap / Hypebeast JP / Houyhnhnm / WWD Japan / 繊研新聞 / POPEYE |
@@ -42,7 +42,7 @@
 7. **標升溫/退燒**：相對上月或上季，誰在升、誰在退；必須說明依據層級，避免把季榜殘熱包裝成本月新爆點。
    骨架 `## 🆚` 段已自動帶入 **Lyst 季對季名次變動**（`{{baseline_movement}}`，generate_monthly_heat_report.py 從 `data/rankings/` 算出，us-eu 限定）——**升溫/退燒優先引這個客觀變動當 L1 依據**（例：某品牌 Lyst ↑+4＝季榜層級的升溫硬訊號），別只憑媒體體感。
 8. **對照基準**：跟 repo 內該地區最新量化基準榜比——哪些一致、哪些是基準榜沒抓到的本月新訊號。直接讀骨架 🆚 段已嵌入的 Lyst 季變動，把「季榜在動 vs 本月媒體新訊號」分清楚。
-   **基準新鮮度（#3，2026-06-14）**：只有 **Lyst（季）+ MUSINSA（30 天）算「現貨」基準**；**StockX / KREAM 是年度結算（一年一更）→ 當年度脈絡、不當每月即時訊號**；**日本無量化基準**（Mercari 已撤、即時榜 bot 擋）→ 日本月報全靠 L2/L3，別硬湊量化。引基準時標清楚是季/年度，別把年度數字寫成本月熱度。
+   **基準新鮮度（#3，2026-06-14 立、2026-09-05 補齊三個缺口）**：**Lyst（季）+ MUSINSA（30 天）算「現貨」基準**；**StockX 是年度結算（一年一更）→ 當年度脈絡、不當每月即時訊號**。⚠️ **2026-09-05 三處訂正**：① **KREAM 不是年度結算** —— `kream.yml` 的 `cadence: monthly`、最新快照是 `2026-06 월간 전체 랭킹`，把它降格成年度脈絡會浪費一筆新鮮月榜（此處原文與 `prompts/weekly_buy_picks.md` 互相矛盾，以 yaml 的 cadence 為準）；② **日本不是沒有量化基準** —— D24（2026-06-21）已用 **SNKRDUNK** 重建球鞋轉售板（`snkrdunk.yml`），⚠️但**只覆蓋球鞋轉售、服飾／精品仍空**，別拿它當全品類代表；③ **SNKRDUNK 沒有 SLA** —— 它是按需 Firecrawl 抓的 dated 快照（非自動排程），**引用前先看快照日期**，太舊就標 `待查`、不要硬當本月熱度。引基準時一律標清楚是季／年度／按需快照。
 9. **本月挑買方向**：2–3 條。給自己的「值得入手 / 觀察」方向，可以有態度，但事實部分必須回扣訊號層級，沒來源支撐就不寫成「現在最該買」。
 10. 嚴格依 `templates/monthly_heat_report_template.md` 結構輸出。
 

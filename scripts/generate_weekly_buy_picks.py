@@ -103,7 +103,7 @@ def main() -> None:
     if out.exists() and not args.draft:
         print(f"⚠️  {out} 已存在，不覆寫（封存快照不回改）。要重產請先手動處理。")
         raise SystemExit(1)
-    out.write_text(body, encoding="utf-8")
+    out.write_bytes(body.encode("utf-8"))
     print(f"✅ 已產出骨架：{out.relative_to(ROOT)}")
     print("   下一步：依 prompts/weekly_buy_picks.md 填入 5 區 × 3 樣與理由。")
 

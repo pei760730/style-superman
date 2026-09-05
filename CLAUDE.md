@@ -33,7 +33,7 @@ Validate  → python tests/test_smoke.py   # (Mac 用 python3) 單一驗收入�
             # 已由 test_smoke 內部執行（L55、L355），與 CI 同源；每輪 patch 收尾跑一次，
             # 連續 micro-edit 期間不重跑，失敗時只重跑失敗那支
 Record    → 能力變更記 CHANGELOG.md；方向決策記 docs/decisions.md
-Learn     → 踩到新坑記 docs/lessons.md（soft note；反覆出現才硬化成檢查（再犯標 `重演：N`，≥3 未硬化 `repo_health` 會提醒，D40））
+Learn     → 踩到新坑記 docs/lessons.md（soft note；反覆出現才硬化成檢查（再犯在該條目下加一行 `- **重演**：N｜已硬化：<檢查/規則>` 或 `｜未硬化`（**粗體星號是機器判準的一部分，少了就不會被計數**），≥3 未硬化 `repo_health` 會提醒，D40））
             # 記帳收斂（與 patch-worker 同一組上限）：CHANGELOG 單條 ≤3 行；
             # decisions.md 新條目 ≤12 行（背景 2-3、拍板 3-5、可逆/guards 1-2）；
             # 事後訂正用一行「追記」，不重寫既有段落；lessons.md 單條 ≤5 行；

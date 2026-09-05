@@ -148,7 +148,7 @@
 3. **產出契約檢查**（WARN / 巡檢盯）：重定位（2026-06-05）之後產的 daily / monthly 必含現行段落（`🎯 對我最相關 For Me`／`🛒 本月挑買方向`）、不得含舊世界觀識別字；日期已過仍殘留 `{{…}}` 佔位 = 空轉殭屍 WARN。
 4. **歷史快照不溯及**：`reports/` 是封存快照，產出後不回改；重定位前的舊報告掛豁免註記保留原樣，**不要**把它們改寫成新格式。
 5. **D16 freeze gate**（[validate_repo.py](scripts/validate_repo.py) `DAILY_FREEZE_CUTOFF=2026-06-16`，CI 擋）：daily brief 對話即焚、不入 `reports/daily/`——任何日期 > 凍結線的 `reports/daily/*.md` 被 commit 進來直接 CI 紅、PR merge 不了（歷史檔 ≤06-16 grandfathered；flash 不在此列）。連四犯（06-23 routine + 06-24/25/26 平行 session）後從「靠記性」硬化成 gate（D16 機制化，2026-06-26）。
-6. **教訓硬化路徑**：踩坑先記 [docs/lessons.md](docs/lessons.md)（soft note），反覆出現才硬化成檢查（再犯標 `重演：N`，≥3 未硬化 `repo_health` 會提醒，D40）——不為單次事故加終身檢查（上方 D16 freeze gate 就是「連四犯才硬化」的範例）。
+6. **教訓硬化路徑**：踩坑先記 [docs/lessons.md](docs/lessons.md)（soft note），反覆出現才硬化成檢查（再犯在該條目下加一行 `- **重演**：N｜已硬化：<檢查/規則>` 或 `｜未硬化`（**粗體星號是機器判準的一部分，少了就不會被計數**），≥3 未硬化 `repo_health` 會提醒，D40）——不為單次事故加終身檢查（上方 D16 freeze gate 就是「連四犯才硬化」的範例）。
 
 ---
 

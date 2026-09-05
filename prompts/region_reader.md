@@ -48,6 +48,23 @@
 - **OUR LEGACY（Next.js + Centra）**：`<script id="__NEXT_DATA__">` → `props.pageProps.pageProps.centra.product`，`items[].warehouses[]` 逐倉庫存（**warehouse 1 = 網路倉**，6/7/8/9 是實體店；`items[].stock` 為 `yes`/`no`）。無 `products.json`。
 - **yoshidakaban.com（PORTER）**：整個網域 WAF 全擋（連 `robots.txt` 都 403，換瀏覽器 UA 無效）→ 走 **Firecrawl keyless REST** 且必須要 `formats:["rawHtml"]`；markdown 格式會把庫存狀態整個洗掉。判讀看 `<p class="stock soldout">` vs `<p class="stock ">`、按鈕 `mailRequest`（再入荷通知）vs `Add to cart`。
 
+## 已驗品牌尺碼對照（擁有者：上身 L／褲 W34 ＝ 34in ≒ 86.4cm）
+
+**為什麼要有這張表**：E5 說「引用單品前先確認尺碼涵蓋得到擁有者」，但每一窗都要重查同樣幾個品牌，而且 2026-08-29 W35 週挑就因為記錯 AURALEE 的對照而推薦了一個穿不下的尺碼（詳見 `docs/lessons.md` 2026-09-05 條）。**下表全部第一手實測，改動要附新的實測日期。**
+
+| 品牌 | 尺碼制 | 逐碼腰圍 | 擁有者對應 | 實測日 |
+|---|---|---|---|---|
+| **AURALEE** | 3/4/5/6 | 3=80cm(31.2in)／4=84cm(**32.7in**)／5=88cm(**34.3in**)／6=92cm(35.8in) | **褲 W34 → size 5**；上身 L → **size 5** | 2026-09-05 |
+| **CIOTA** | 1–7 | 1=67／2=71／3=75／4=79／5=83／**6=87**／7=91cm | **褲 W34 → size 6**（想貼身可 5，83cm 偏緊） | 2026-09-05 |
+| **A.PRESSE** | 英吋 腰/長 | 直接標 `34/30`、`34/32` 等 | **直接找 34 開頭**，不必換算 | 2026-09-05 |
+| **marka / MARKAWARE** | 1/2/3 | **官方商品頁與 products.json 皆未公開尺寸表**（grep ウエスト/わたり/股下/裾幅 皆 0 命中，推測為圖片或 JS 後載） | **待查** —— 不要臆測 1/2/3 對到哪一號 | 2026-09-05 |
+
+⚠️ **AURALEE 的兩個坑**：
+1. **官方 SIZE CONVERSION 同時給日規與國際規**：`Auralee 3/4/5/6` → `Japan Men S/M/L/XL`，但同一張表的 `Inter` 列是 `Men XS/S/M/L`。**看錯一列就差一整號** —— 擁有者的 L 是**日規**那一列的 5。
+2. **AURALEE 官方公告不用「第 N 回」命名**，用日期（如 news 標題「8.28」）。「第 5 波」是我方內部編號，別拿去搜官網。
+
+⚠️ **通則**：尺碼表是**每個品牌各自的**，不能跨品牌外推（AURALEE 的 5 是 88cm、CIOTA 的 5 是 83cm，差 5cm）。查不到就標 `待查`，**不要用別的品牌的表去猜**。
+
 **E5 網址沒驗——已知的錯誤網域對照表**（2026-08-29 實測）：
 | 寫錯的 | 正確的 |
 |---|---|

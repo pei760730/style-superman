@@ -1,5 +1,6 @@
 import datetime as dt
 import io
+import re
 import socket
 import urllib.error
 
@@ -380,3 +381,66 @@ def test_ranking_snapshot_ages_survive_bad_published_and_empty_snapshots(tmp_pat
         "排行快照 musinsa：最新一筆 published 無法解析（'2026-13-99'，cadence monthly）",
         "排行快照 snkrdunk：尚無快照（cadence monthly）",
     ]
+
+
+def test_claude_md_recurrence_example_actually_matches_the_regex():
+    """CLAUDE.md／README 教人怎麼標「重演」，`LESSON_RECUR_RE` 決定機器認不認得——
+    這兩者是手工同步的，而且 2026-09-05 實測已經漂開過一次：說明書寫 `重演：N`（無粗體）、
+    正則要 `**重演**：N`，照說明書標記 `check_lessons_recurrence` 一聲不吭（靜默 no-op），
+    D40 花力氣加的計數器等於不存在。
+
+    這裡不比對字串，而是**把說明書裡的範例真的丟進正則跑**——說明書改格式、正則改語法，
+    任一邊動了對不上都會紅。
+    """
+    for doc in ("CLAUDE.md", "README.md"):
+        text = (health.ROOT / doc).read_text(encoding="utf-8")
+        examples = re.findall(r"`([^`]*重演[^`]*)`", text)
+        assert examples, f"{doc} 找不到反引號括住的「重演」標記範例"
+        matched = [e for e in examples if health.LESSON_RECUR_RE.search(e.replace("N", "3"))]
+        assert matched, (
+            f"{doc} 的重演標記範例 {examples!r} 沒有任何一個能被 LESSON_RECUR_RE "
+            f"({health.LESSON_RECUR_RE.pattern!r}) 命中——照說明書標記將永遠不會被計數"
+        )
+
+
+def test_lessons_recurrence_tags_in_repo_are_all_machine_readable():
+    """repo 裡實際標過的重演行，必須每一行都能被正則讀到。
+
+    反向守衛：上一支測的是「說明書寫對」，這支測的是「已經寫下的標記沒有一條是啞的」——
+    有人手打成 `重演:3`（半形冒號）或漏星號，這裡會紅。
+    """
+    text = (health.ROOT / "docs" / "lessons.md").read_text(encoding="utf-8")
+    # 判準粒度：`重演` 必須**緊接在項目符號之後**（星號可有可無）才算標記——
+    # 否則散文裡的「…在 AURALEE 重演（第三站）…」或引用格式的「標 `重演：N`」會被誤抓。
+    tag_shape = re.compile(r"^\s*-\s*\**\s*重演\s*\**\s*[:：]")
+    looks_like_tag = [line for line in text.splitlines() if tag_shape.match(line)]
+    assert looks_like_tag, "lessons.md 目前沒有任何重演標記，這支測試失去意義"
+    dumb = [line for line in looks_like_tag if not health.LESSON_RECUR_RE.search(line)]
+    assert not dumb, f"這些重演標記機器讀不到（格式須為 `- **重演**：N｜…`）：{dumb}"
+
+
+def test_every_check_function_is_reachable_from_run_checks_or_main():
+    """每一支 `check_*` 都必須被 `run_checks` 或 `main` 接上——否則它只是一段沒人叫的死碼。
+
+    立法理由（2026-09-05 突變稽核）：`run_checks` 的 9 條接線裡 **8 條可以整行刪掉、
+    80 個測試全綠**。既有的 aggregation 測試 monkeypatch 掉 6 支檢查、只斷言
+    `consistency_only=True` 回 6 筆，偵測不到任何一支被拔掉。後果是新加的檢查
+    （D40 三支、#231 一支）在重構或 merge 衝突中掉出 `run_checks`，而 health.yml
+    照印「一切健康」——與同日修掉的「重演計數器靜默 no-op」同一族，只是換一層。
+
+    不維護第二份名單：**從原始碼推導**——把 `run_checks` 與 `main` 的原始碼串起來，
+    每個 `check_*` 函式名都要在裡面出現過。新增檢查忘了接就紅。
+    """
+    import inspect
+
+    wired = inspect.getsource(health.run_checks) + inspect.getsource(health.main)
+    defined = [
+        name for name, obj in vars(health).items()
+        if name.startswith("check_") and inspect.isfunction(obj)
+        and obj.__module__ == health.__name__
+    ]
+    assert len(defined) >= 10, f"只找到 {len(defined)} 支 check_*，推導可能失效"
+    orphans = [name for name in defined if f"{name}(" not in wired]
+    assert not orphans, (
+        f"這些檢查沒有被 run_checks 或 main 呼叫，等於不存在：{orphans}"
+    )

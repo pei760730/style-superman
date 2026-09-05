@@ -53,9 +53,12 @@ REGIONS = {
     "jp": {
         "suffix": "jp",
         "name": "日本",
-        # 日本無可自動收的量化基準（2026-06-14：Mercari 撤除、ZOZO/Rakuten/2nd STREET bot 擋，
-        # 見 docs/rankings.md）。日本主榜全依事件確認（L2）+ 媒體共識（L3），信心保守。
-        "baselines": (),
+        # 日本球鞋轉售量化板已於 D24（2026-06-21）用 SNKRDUNK 重建——這裡曾經是 `()`，
+        # 註解引用的是 D24 **前一週**（06-14 Mercari 撤除、ZOZO/Rakuten bot 擋）的狀態，
+        # 導致 2026-08 / 2026-09 兩份 jp 月報都白紙黑字寫「本區無可自動收的量化基準榜」，
+        # 而 data/rankings/snkrdunk.yml 就躺在 repo 裡（2026-09-05 稽核抓到）。
+        # ⚠️ 服飾／精品仍空（ZOZO 為 Akamai 級死界，Firecrawl 亦過不了）——球鞋板 ≠ 全品類板。
+        "baselines": (("snkrdunk.yml", "SNKRDUNK"),),
         "source_regions": ("jp", "global"),
     },
 }
@@ -88,14 +91,16 @@ def baseline_label(region: dict) -> str:
 
 def baseline_movement(region: dict) -> str:
     """量化基準的季對季名次變動，嵌進骨架供寫手填 🆚/📈 時當客觀依據。
-    只有 Lyst 有多季快照可算（us-eu）；StockX 年度、日本無量化基準（即時榜 bot 擋、Mercari 已撤）。"""
+    只有 Lyst 有多季快照可算（us-eu）；StockX 年度、日本 SNKRDUNK 為按需 dated 快照（D24，只覆蓋球鞋轉售）。"""
     if yaml is None:
         return "（缺 pyyaml，無法計算基準變動）"
     if not region["baselines"]:
         return ("（本地區無可自動收的量化基準：即時榜 bot 擋、Mercari 已撤，見 `docs/rankings.md`；"
                 "本月不做季對季對照，熱度全靠 L2 事件 + L3 媒體共識，撐不起的標 `待查`）")
     if region["suffix"] != "eu":
-        return "（本地區量化基準為年度／歷史區間，無季對季名次可比；即時榜不可自動收，見 `docs/rankings.md`）"
+        return ("（本地區量化基準為按需快照／年度區間，無季對季名次可比：日本 SNKRDUNK 是球鞋轉售人氣榜、"
+                "由對話端 Firecrawl 按需抓 dated 快照（D24），**只覆蓋球鞋轉售、不覆蓋服飾／精品**；"
+                "引用前先看快照日期夠不夠新，見 `docs/rankings.md`）")
     path = RANKINGS_DIR / "lyst-index.yml"
     if not path.exists():
         return "（無 lyst-index.yml）"
@@ -173,7 +178,7 @@ def main() -> None:
         print(f"⚠️  {out_path.name} 已存在，未覆蓋。要重產請先刪除或改用 --draft。")
         return
 
-    out_path.write_text(build(args.month, region), encoding="utf-8")
+    out_path.write_bytes(build(args.month, region).encode("utf-8"))
     print(f"✅ 已產出骨架：{out_path.relative_to(ROOT)}")
     print("   下一步：依 prompts/monthly_heat_report.md 用 AI 或人工填入本月品牌 / 單品判斷。")
 

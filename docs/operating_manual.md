@@ -32,17 +32,17 @@ python scripts/generate_daily_brief.py --draft
 值得長線深挖的題目用 `prompts/trend_analysis.md` 做成 trend card（週深挖旁支，不是每日必做）。
 
 ### Step 4 — 寫 brief
-用 `prompts/daily_trend_brief.md` 把挑選結果寫成完整 brief，填回 `reports/daily/YYYY-MM-DD.md`。
+用 `prompts/daily_trend_brief.md` 把挑選結果寫成完整 brief。
+> ⚠️ **2026-09-05 訂正**：這裡原本寫「填回 `reports/daily/YYYY-MM-DD.md`」，但 D16 的 freeze gate（`validate_repo.DAILY_FREEZE_CUTOFF = 2026-06-16`）**對備援路徑沒有豁免**，且 `generate_daily_brief.py` 也會硬拒非 `--draft`。照舊文走到底必然 CI 紅——而這條是「系統已經壞掉時才會走」的路徑，最不該再絆一次。**全程停在 `*.draft.md`**（gitignored），brief 在對話讀。
 
 ### Step 5 — 出挑買方向
 brief 的 `🎯 對我最相關 For Me` 是**在紅單品情報**（D15：知道現在在紅什麼,非買清單;不開獨立挑買卡 D9）；真要入手隨選再做。週度收斂走週挑 `reports/buy_shortlist/`。
 
-### Step 6 — 封存（僅備援路徑）
-> 日常對話 brief 在對話讀、不落檔（D16）；只有走上面備援路徑、確實產了檔才封存。
-```bash
-git add reports/daily/YYYY-MM-DD.md
-git commit -m "brief: YYYY-MM-DD"
-```
+### Step 6 — ~~封存~~（2026-09-05 刪除）
+> **這一步已取消。** 原本寫 `git add reports/daily/YYYY-MM-DD.md` + commit，但 D16 之後
+> `reports/daily/` 是**永久凍結的歷史目錄**（最後一檔 2026-06-16），freeze gate 會擋下任何新檔，
+> 備援路徑也沒有豁免。**daily brief 一律對話即焚、不落檔、不 commit**；
+> 需要跨窗留下來的東西走候選池（D26/D37）與週挑（D25），不走 `reports/daily/`。
 
 ## 1.5 AI 分工（Codex / Claude Code）
 

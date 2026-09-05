@@ -82,6 +82,7 @@
 - **發生什麼**：daily brief 把 Vogue Korea「一條牛仔褲指南」只寫成「夏季丹寧指南」，沒給任何品牌——擁有者問「你都給我這題目了，為什麼不給確切哪些品牌？要有確實讀完才能知道為什麼推薦」。根因在管線：`collect_raw_signals.py` 只抓 RSS 標題＋短摘要、不抓內文，listicle/roundup 到寫手手上本來就是空的，寫手卻照樣補了「對我的意義」＝沒讀就推薦。
 - **對策（已落地，本次 PR）**：`prompts/daily_trend_brief.md` 立「推薦的證據門檻」——進推薦位（For Me 值得入手）或寫「對我的意義」前要讀過原文，簡介行必含至少一個原文事實（價格/型號/材質/發售日/具體主張）當「讀過的證明」；清單型報導要 fetch 原文挖出 top 4–6 品牌；讀不到具體事實的降到訊號層報標題＋待查，不准編「為什麼」。
 - **硬化狀態（2026-06-14 更新：再犯一次 → 已硬化）**：2026-06-14 試跑時 roundup 又留「待挖」空殼,擁有者二度反映「roundup 一定要挖出 picks」。依「反覆出現才硬化」原則,**已硬化（prompt 規則層）**：roundup 一律 WebFetch 挖 picks 才能列、挖不到整條不列;並實測 26 源 crawler 可讀性,7 個封鎖源（gq/esquire/bof/sneakernews/drapers/wwd-japan/put-this-on，多 403）在 `data/sources.yml` 標 `body_fetchable: false`,prompt 看旗標直接不列其 roundup（確定性,不靠寫手自覺）。原候選 (a) collect 抓內文：封鎖源連 collect 也抓不到,故改走「標記 + 不列」;(b) validate gate 暫不加（roundup 在 reports/、不在 validate scope）。
+  - **追記（2026-09-05）**：上面那份「7 個封鎖源」清單**已於 D36／#202（2026-07-28）作廢六個** —— 本機複驗 gq / esquire / bof / drapers / put-this-on / wwd-japan **全部 200、正文與價格齊全**（詳見本檔 2026-07-28「同一個『視角』錯誤修好一條軸、卻留在另一條軸上 44 天」）。2026-09-05 實測 `data/sources.yml` 全庫 `body_fetchable: false` **只剩 1 個：`sneakernews`**。⚠️ **不要從這一段抄那六個名字** —— 跳過清單只能從 `sources.yml` 推導、不得手打（D40，orchestration Step 1）。
   - **2026-06-20 更新（D22）：「封鎖源直接不列」改為「先試 Firecrawl」**。Firecrawl keyless（免 key、1000 credits/月）平行試用勝出——實測 GQ「20 Best New Menswear」WebFetch 硬失敗、Firecrawl scrape 200+結構化抽 17 picks（價格對得上原始 markdown、grounded）;wwd-japan 同樣 200。落地走**對話端 MCP**（`.mcp.json` keyless,不進 Python 腳本 → 不破輕依賴/D5/D16/D21）。封鎖源 roundup 不再無腦丟,先 Firecrawl scrape（schema 結構化抽取,plain 1 credit / json extract 5 credits）,真挖不到才不列。Akamai 級即時榜（ZOZO/KREAM/MUSINSA 逐位）未測、不宣稱解決。production 自動化量級要自帶 key。
 
 ### 2026-06-11 · 排程 workflow 的「今天」是 UTC 的今天
@@ -178,3 +179,22 @@
 - **發生什麼**：寫 2026-09 歐美月報時，House of Heat 的九月發售月曆把 **Air Jordan 4 標成 `$84.60`、Air Max 90 標成 `$87.40`**（AJ4 公認零售約 $215–225）。日期欄與 WWD 月曆對得上、頁面結構正常、沒有 403 也沒有付費牆——**只有價格欄整欄是壞的**，成因未查明（疑似折扣／匯率欄誤取）。
 - **教訓**：**發現一個來源某一欄不可信，不是修那一格，是整欄棄用。** 該站日期經第二路對上後仍可用，價格則一條都不採，寧可讓單品榜 3/5 格 `待查`。這跟 08-29「先問這是哪個市場的價」是同一族但不同刀：那條是**幣別**要問，這條是**欄位可信度**要驗——**引用彙整站的數值前，先拿一個你本來就知道正確答案的品項當校準器**（AJ4 零售價是常識級的錨），一格對不上就整欄不用。
 - **重演**：1｜未硬化
+
+### 2026-09-05 · E5 叫我「確認尺碼」，但沒防「手上那張對照表本身是錯的」
+- **發生什麼**：W35 週挑（2026-08-29 封存）的 🎯 推薦位寫「AURALEE 上 5 下 4／上 5 下 5 兩種組合都買得到」，依據是候選池記的「size 4＝腰 86cm≈W34、5＝90cm」。2026-09-05 第一手抓官方尺寸表：**3=80cm(31.2in)／4=84cm(32.7in)／5=88cm(34.3in)／6=92cm(35.8in)**，且 SIZE CONVERSION 是 `3/4/5/6 = Japan Men S/M/L/XL`。→ **兩個數字都錯**（4 是 84 不是 86、5 是 88 不是 90），而且**擁有者的 W34 對到的是 size 5 不是 4**——「下 4」是 32.7 吋，他穿不下。那條推薦從發出去就是錯的。
+- **為什麼 E5 擋不住**：E5（2026-08-21）立的是「引用單品前先確認尺碼／性別分類涵蓋得到擁有者」，防的是**沒去查**（CONVERSE POINTEDTOE 女鞋 26.0cm 上限）。這次**查了**，只是查的是候選池裡一句沒有出處、沒有實測日期的散文，而那句話本身是錯的。**「有查」與「查對」之間還有一層。**
+- **對策 / 硬化**：`prompts/region_reader.md` 新增「已驗品牌尺碼對照」表（AURALEE／CIOTA／A.PRESSE／marka），逐碼腰圍＋擁有者對應＋**實測日期**，並註明 AURALEE 同一張表有日規與國際規兩列（看錯一列差一整號）、marka 官方未公開尺寸表故標 `待查`。同時立通則：**尺碼表是每個品牌各自的，不可跨品牌外推**（AURALEE 的 5 是 88cm、CIOTA 的 5 是 83cm）。
+- **教訓**：**規則要求「確認 X」時，要一併指定「X 的權威來源在哪」**，否則執行者會拿手邊最近的一句話當權威——而那句話很可能是上一輪某個人憑印象寫的。散文裡的數字沒有實測日期就等於沒有出處。
+- **重演**：2｜已硬化：`prompts/region_reader.md`「已驗品牌尺碼對照」表（08-21 CONVERSE 女鞋 → 09-05 AURALEE 尺碼制）
+
+### 2026-09-05 · 把 A 榜的口徑坑貼到 B 榜上（MUSINSA 兩個榜被我合成一個）
+- **發生什麼**：2026-09-03 我把 MUSINSA 商品榜端點（`api2/hm/web/v5/pans/ranking/sections/199`）寫進 `docs/rankings.md` 時，順手把候選池記的三個口徑特性——「판매액(營收)非件數／浮動七日窗／每週五 11:00 KST 刊」——掛在它身上。09-05 實測：那三條是**주간 랭킹 리포트**那條線的，section 199 是**另一個榜**：頁內 tooltip 自報 `매출, 조회수, 후기수를 반영한 상품 랭킹`＝**銷售額＋瀏覽數＋評論數混合**，`information.updatedAt` 顯示**每日 ~04:47 KST 更新**、且**不揭露日期範圍型的「집계 기간」，只給更新時刻**。
+- **後果**：如果照原文寫月報，會把一個混合指標當成純營收引用，「名次高」被讀成「賣得多」——而這正是 E5 立法時要防的（Polo 트윌 재킷 #1→#14 但銷量零增）。
+- **教訓**：**同一個平台可以有好幾個榜，口徑坑不會自動繼承。** 記端點時要連「這是哪一個榜」一起記；把舊筆記的注意事項搬到新端點上之前，先確認那些注意事項當初講的是不是同一個東西。
+
+### 2026-09-05 · 拍板改了資料層卻沒接進程式，而測試把錯誤狀態釘死當契約
+- **發生什麼**：D24（2026-06-21）用 SNKRDUNK 重建日本球鞋轉售量化板、`data/rankings/snkrdunk.yml` 也建好了，但 `generate_monthly_heat_report.REGIONS["jp"]["baselines"]` 一直是 `()`，而且它的註解引用的是 **D24 前一週（06-14）**的狀態。**後果不是骨架難看，是產出說謊**：`2026-08-jp.md` 與 `2026-09-jp.md` 兩份月報都白紙黑字寫「本區無可自動收的量化基準榜」「日本無量化基準榜是結構性限制」，而那個榜就躺在同一個 repo 裡、76 天沒人用。同一句話另外散在 `prompts/monthly_heat_report.md`（×2）、`prompts/brand_radar.md`、`docs/flow_calendar.md`、`scripts/README.md` 五處。
+- **最惡的一層：測試站在錯誤那一邊**。`test_baseline_labels_and_movements_cover_regional_contracts` 硬斷言 `baseline_label(REGIONS["jp"]) == "無"` 與「jp 的 movement 含『無可自動收的量化基準』」。**任何人把 D24 接上去，這支測試就會紅、看起來像迴歸** —— 它不是沒擋住這個 bug，它是這個 bug 的保鑣。
+- **對策 / 硬化**：① 接上 `snkrdunk.yml`，並在註解裡寫明它只覆蓋球鞋轉售、服飾／精品仍空；② 該測試改成測**函式契約**（用合成 region 測空/非空兩條分支），不再拿某地區當下的資料當斷言；③ 新增推導式守衛 `test_every_region_scoped_ranking_file_is_claimed_as_a_baseline` —— **從 `data/rankings/*.yml` 自己的 `region` 欄位推導**，凡是 region 對得上月報地區的檔都必須被那個地區認領，新增排行檔或改 region 忘了接就紅（不維護第二份手工清單，那正是會漂開的東西）。
+- **教訓（兩條）**：**① 拍板要同時盤點「資料層／程式層／文件層／測試層」四邊**，D24 只做了資料層與 `docs/rankings.md`，其餘三層原地不動了 76 天。**② 斷言「某地區現在沒有 X」是把資料狀態寫進契約** —— 測試該釘的是函式在給定輸入下的行為，不是世界現在長什麼樣；否則修正世界的人會先被自己的測試擋下來。
+- **重演**：2｜已硬化：`test_every_region_scoped_ranking_file_is_claimed_as_a_baseline`（2026-08-18 CI 寫死單檔導致新增測試永不執行的假綠 → 09-05 baselines 未接上的假限制）

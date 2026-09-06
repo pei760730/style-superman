@@ -60,10 +60,16 @@ updates:
       # bundles every pip update into ONE PR. A pytest 9 entry would make that
       # PR red, which blocks the legitimate ruff bumps riding along with it.
       #
-      # This is a convenience, not the guard — ignore rules have leaked before
-      # on range-style specs. The real guard is smoke (3.9) in ci.yml, which
-      # actually runs the code. When 3.9 support is dropped, remove this entry,
+      # This is a convenience, not the guard. The real guard is smoke (3.9) in
+      # ci.yml, which actually runs the code — and it has already earned that
+      # description: see below. When 3.9 support is dropped, remove this entry,
       # the ci.yml matrix floor, and the ceiling note in requirements-dev.txt
       # together.
+      #
+      # ⚠️ Written as an explicit version range, NOT update-types. The first
+      # spelling here was `update-types: ["version-update:semver-major"]` and it
+      # LEAKED within hours: dependabot opened #237 bumping pytest 8.4.2 -> 9.0.3
+      # anyway, and smoke (3.9) went red exactly as the fallback predicted.
+      # Do not "simplify" this back to update-types.
       - dependency-name: pytest
-        update-types: ["version-update:semver-major"]
+        versions: [">=9"]

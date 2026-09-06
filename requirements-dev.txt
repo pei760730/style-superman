@@ -19,7 +19,9 @@
 # pytest 9.0.0 起 `requires_python` 是 >=3.10，而本 repo 支援 3.9
 # （CLAUDE.md：擁有者的 Mac 只有 python3 且是 3.9；ci.yml matrix 同步）。
 # 8.4.2 是最後一個收 3.9 的版本，實測於 2026-09-06 查 PyPI 確認。
-# dependabot 會定期想升到 9.x，`.github/dependabot.yml` 已 ignore 它的 major；
+# dependabot 會定期想升到 9.x，`.github/dependabot.yml` 已用顯式版本範圍
+# （`versions: [">=9"]`）擋掉——第一版寫成 update-types 當天就被穿透（#237
+# 提了 9.0.3），別改回去；
 # 萬一穿透，smoke (3.9) 會紅——那是正確訊號，不要為了讓它綠而拿掉 3.9。
 # 3.9 的限制哪天解除，這裡、ci.yml matrix、dependabot 的 ignore 要一起改。
 pytest==8.4.2

@@ -22,6 +22,6 @@
 # dependabot 會定期想升到 9.x，`.github/dependabot.yml` 已 ignore 它的 major；
 # 萬一穿透，smoke (3.9) 會紅——那是正確訊號，不要為了讓它綠而拿掉 3.9。
 # 3.9 的限制哪天解除，這裡、ci.yml matrix、dependabot 的 ignore 要一起改。
-pytest==8.4.2
+pytest==9.0.3
 
 ruff==0.16.6

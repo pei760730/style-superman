@@ -182,12 +182,19 @@ def parse_feed(xml_text: str, source: dict, limit: int = DEFAULT_LIMIT) -> list[
     return signals
 
 
+# 429 的退避秒數，一個元素一次重試。2026-09-07 由 (3,) 改為 (3, 8)：三個 reddit 源
+# 從 old 域改回 www 域（見 sources.yml 同日註記），而 www 對連打的限速比 old 嚴 ——
+# 實測連續打同域時單次退避不夠，第二次才過（Sneakers 連吃兩個 429 才回 200 XML／25 則）。
+# 只加一階、不無限重試：源真的死掉時仍要快速降級，不能把一輪收集拖住。
+_RETRY_429_BACKOFF_SEC = (3, 8)
+
+
 def fetch_feed(url: str, timeout: int = 15, sleep=time.sleep) -> str | None:
     """抓 feed；失敗回 None（不丟例外）。
-    對 429（Too Many Requests）退避重試一次——reddit old 域對連續/bot 請求限速兇，
-    批次跑 31 源時相鄰的 reddit 會被連打吃 429（2026-06-15 dogfood 抓到），單發退避後就過。
+    對 429（Too Many Requests）退避重試——reddit 對連續/bot 請求限速兇，
+    批次跑 31 源時相鄰的 reddit 會被連打吃 429（2026-06-15 dogfood 抓到），退避後就過。
     sleep 可注入以便測試不真的等。"""
-    for attempt in range(2):  # 最多 1 次重試
+    for attempt in range(len(_RETRY_429_BACKOFF_SEC) + 1):
         try:
             req = urllib.request.Request(url, headers={"User-Agent": UA})
             with urllib.request.urlopen(req, timeout=timeout) as resp:
@@ -195,8 +202,8 @@ def fetch_feed(url: str, timeout: int = 15, sleep=time.sleep) -> str | None:
         except urllib.error.HTTPError as e:
             code = e.code
             e.close()  # urlopen 拋錯時 with 沒進去，先關掉 error response 再退避/返回
-            if code == 429 and attempt == 0:
-                sleep(3)  # 禮貌退避後再試一次
+            if code == 429 and attempt < len(_RETRY_429_BACKOFF_SEC):
+                sleep(_RETRY_429_BACKOFF_SEC[attempt])  # 禮貌退避後再試
                 continue
             return None
         except Exception:  # noqa: BLE001 — 任何網路/解碼錯誤都降級

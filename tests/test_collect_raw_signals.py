@@ -164,3 +164,60 @@ def test_atom_prefers_updated_over_published_for_freshness():
     </feed>"""
     rows = signals.parse_feed(atom, {"id": "atom", "tier": "B", "region": "global"})
     assert rows[0]["published"] == "2026-08-18"
+
+
+def test_fetch_feed_retries_429_twice_with_escalating_backoff(monkeypatch):
+    """2026-09-07:三個 reddit 源自 old 域改回 www 域,而 www 對連打的限速比 old 嚴 ——
+    實測連續打同域時單次退避不夠(Sneakers 連吃兩個 429 才回 200 XML／25 則)。"""
+    calls = []
+
+    def fake_urlopen(request, timeout):
+        calls.append(request.full_url)
+        if len(calls) <= 2:
+            raise urllib.error.HTTPError(request.full_url, 429, "limited", {}, io.BytesIO())
+        return FakeResponse(b"ok")
+
+    sleeps = []
+    monkeypatch.setattr(signals.urllib.request, "urlopen", fake_urlopen)
+
+    assert signals.fetch_feed("https://example.com/feed", sleep=sleeps.append) == "ok"
+    assert len(calls) == 3
+    assert sleeps == [3, 8]
+
+
+def test_fetch_feed_gives_up_after_the_configured_429_budget(monkeypatch):
+    """反向釘子:退避有上限、不是無限重試 —— 源真的死掉時仍要快速降級,
+    不能把一輪收集拖住。"""
+    calls = []
+
+    def always_429(request, timeout):
+        calls.append(request.full_url)
+        raise urllib.error.HTTPError(request.full_url, 429, "limited", {}, io.BytesIO())
+
+    sleeps = []
+    monkeypatch.setattr(signals.urllib.request, "urlopen", always_429)
+
+    assert signals.fetch_feed("https://example.com/feed", sleep=sleeps.append) is None
+    assert len(calls) == len(signals._RETRY_429_BACKOFF_SEC) + 1
+    assert sleeps == list(signals._RETRY_429_BACKOFF_SEC)
+
+
+def test_reddit_sources_do_not_use_the_old_domain():
+    """old.reddit.com/.rss 自 2026-09 起回 200-HTML 封鎖頁(解析 0 則);www 回 200 XML／25 則。
+
+    這是弱釘子(釘值),真正的防線是 `repo_health.py --liveness`。放這裡的理由是
+    sources.yml 的註解曾寫著**相反**的結論(「www 一律 403,改 old」),而那條註記
+    被當成不變的事實信了三週 —— 見 docs/lessons.md 2026-09-07。
+    """
+    from pathlib import Path
+
+    import yaml
+
+    root = Path(__file__).resolve().parent.parent
+    doc = yaml.safe_load((root / "data" / "sources.yml").read_text(encoding="utf-8"))
+    reddit = [s for s in doc["sources"] if "reddit.com" in str(s.get("rss", ""))]
+    assert reddit, "sources.yml 裡找不到任何 reddit 源"
+    for s in reddit:
+        assert "old.reddit.com" not in s["rss"], (
+            f"{s['id']} 還指著 old.reddit —— 該域回 200-HTML／0 則,收集端會靜默收到空的"
+        )

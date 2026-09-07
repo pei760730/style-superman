@@ -209,8 +209,9 @@ def test_reddit_sources_do_not_use_the_old_domain():
     sources.yml 的註解曾寫著**相反**的結論(「www 一律 403,改 old」),而那條註記
     被當成不變的事實信了三週 —— 見 docs/lessons.md 2026-09-07。
     """
-    import yaml
     from pathlib import Path
+
+    import yaml
 
     root = Path(__file__).resolve().parent.parent
     doc = yaml.safe_load((root / "data" / "sources.yml").read_text(encoding="utf-8"))

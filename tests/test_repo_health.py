@@ -368,18 +368,47 @@ def test_ranking_snapshot_ages_skip_lyst_and_report_every_other_file(tmp_path, m
 
 
 def test_ranking_snapshot_ages_survive_bad_published_and_empty_snapshots(tmp_path, monkeypatch):
-    """壞資料不能讓開工的第一支腳本炸掉，也不能靜默吞掉——兩種都要留下一行。"""
+    """壞資料不能讓開工的第一支腳本炸掉，也不能靜默吞掉——兩種都要留下一行。
+
+    2026-09-07 突變測試補強：原本只比對 message，`level`／`action` 兩欄零斷言，
+    把這兩條分支的 "info" 改成 "warn" 照樣全綠（探針 P4 存活）。方向是有後果的——
+    health.yml 跑 `--strict`，warn 會讓它 exit 1 並自動開 repo-health issue，
+    而 #231 的核心決定正是**刻意不設 WARN 門檻**（多舊算過期是內容判斷、SLA 留擁有者拍板）。
+    正常路徑已有 :366 的 `{f.level} == {"info"}` 守著，壞資料這兩條之前沒有。"""
     monkeypatch.setattr(health, "ROOT", tmp_path)
     rdir = tmp_path / "data" / "rankings"
     rdir.mkdir(parents=True)
     _write(rdir / "kream.yml", "source: kream\ncadence: monthly\nsnapshots:\n  - period: '2026-06'\n    published: '近30日'\n")
     _write(rdir / "snkrdunk.yml", "source: snkrdunk\ncadence: monthly\nsnapshots: []\n")
     _write(rdir / "musinsa.yml", "source: musinsa\ncadence: monthly\nsnapshots:\n  - period: z\n    published: '2026-13-99'\n")
-    msgs = sorted(f.message for f in health.check_ranking_snapshot_ages(dt.date(2026, 9, 3)))
-    assert msgs == [
+    got = health.check_ranking_snapshot_ages(dt.date(2026, 9, 3))
+    assert sorted(f.message for f in got) == [
         "排行快照 kream：最新一筆 published 無法解析（'近30日'，cadence monthly）",
         "排行快照 musinsa：最新一筆 published 無法解析（'2026-13-99'，cadence monthly）",
         "排行快照 snkrdunk：尚無快照（cadence monthly）",
+    ]
+    assert {f.level for f in got} == {"info"}      # 壞資料也不得升級成 WARN（無人同意過的 SLA）
+    assert all(f.action is None for f in got)      # info 不進 Next Actions
+
+
+def test_ranking_snapshot_ages_reads_the_newest_snapshot_not_the_oldest(tmp_path, monkeypatch):
+    """多筆快照時必須取 `snapshots[0]`（最新在最上方，CLAUDE.md 核心假設 #6）。
+
+    2026-09-07 突變測試發現的洞（探針 P1）：上面兩支測試的 fixture **每檔都只有一筆快照**，
+    `snapshots[0]` 與 `snapshots[-1]` 因此永遠相等，把「取最新」改成「取最舊」照樣 83 passed。
+    真 repo 是 3/5/4/1/2 筆——同一個突變實測會讓 kream 從 79 天變 219 天、musinsa 變 280 天，
+    正是 #231 立法要防的「數字沒人看」在數字自己身上重演。
+    `validate_repo.check_snapshot_order` 只釘 yaml 內的排序，**沒有任何東西釘住這裡取哪一筆**。"""
+    monkeypatch.setattr(health, "ROOT", tmp_path)
+    rdir = tmp_path / "data" / "rankings"
+    rdir.mkdir(parents=True)
+    _write(rdir / "kream.yml", "source: kream\ncadence: monthly\nsnapshots:\n"
+                               "  - period: '2026-06'\n    published: '2026-06-20'\n"
+                               "  - period: '2026-03'\n    published: '2026-03-15'\n"
+                               "  - period: '2026-01'\n    published: '2026-01-31'\n")
+    got = health.check_ranking_snapshot_ages(dt.date(2026, 9, 3))
+    assert [f.message for f in got] == [
+        "排行快照 kream：最新 2026-06-20，75 天前（cadence monthly）"   # 不是最舊的 2026-01-31（215 天）
     ]
 
 

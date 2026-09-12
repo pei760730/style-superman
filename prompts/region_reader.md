@@ -79,6 +79,23 @@ E5 說「引用單品前先確認尺碼／性別分類涵蓋得到擁有者」�
 | **標 `W` 的並行女段** | BILLY'S 的 adidas Handball Spezial Loafer 站上另有標 `W` 的女段版本 | 同一個商品頁可能同時掛兩段尺碼 |
 | **Shopify tag 就寫著性別** | Graphpaper 的 `Scale Off Wool 6 Panel Cap` / `Necktie` tag 含 `WOMEN` / `INT_WMN`（雖為 `UNISEX`） | `products.json` 的 `tags` 直接看得到，比讀文案快 |
 
+## `0/N` 有三種意思，靠 `tags` 分辨而不是靠庫存數（2026-09-06 第三次踩到）
+
+Shopify 的 `available=false` **不等於完售**。W34（Graphpaper 8/22）與 W35（marka 預約）踩過兩次，
+兩次的結論都寫成「預約中顯示 0 不是完售」——**那只覆蓋了第二態，漏了第三態**：
+
+| 顯示 | 真正的意思 | 判別欄位 | 實例（2026-09-06 實測） |
+|---|---|---|---|
+| `0/N` | **真完售** | `tags` 無 `coming soon`、無 `pre-order`，且**同波次其他品項仍在架** | PUMA for Graphpaper H-STREET `0/15`（23–30cm 全空），tag 僅 `0905/26AW/…` |
+| `0/N` | **預約受付中** | `tags` 有 `coming soon` **＋** `pre-order`，`available=true` | MARKAWARE シャスールジャケット ¥89,100（在架對照組） |
+| `0/N` | **連預約都還沒開** | `tags` 有 `coming soon` **但沒有** `pre-order`，`available=false` | MARKAWARE バークコート ¥220,000 `0/3`，另帶 `260917` = 入荷日 9/17 |
+
+**做法**：看到 `0/N` 先取該商品的完整 `tags`，再取**同一波次（同 `published_at` 或同批次 tag）另一個仍在架的品項**當對照組。
+兩者 tag 結構一比就分得出來。**MARKAWARE 這類站的 `26NNNN` 六位數 tag 是未來入荷日**（`260917` = 2026-09-17），不是批號。
+
+⚠️ 這一態的後果最大：MARKAWARE 2026-09-01 上架的高單價大衣（バークコート ¥220,000／サックコート ¥143,000／
+ダブルプリーテッドトラウザーズ ¥88,000）全是 `0/3`，照字面讀是「本週最貴的一批貨全部秒殺」——**一件都還沒開賣**。
+
 ## 同一批貨 ≠ 同一塊布（價格要跟著 tag 走）
 
 **2026-08-29 W35 最貴的一個錯**：Graphpaper 8/22 那批**同時**鋪了 `Scale Off Wool` 與 `Wool Doeskin` 兩套面料，**各自都有外套＋長褲＋領帶**。報告寫「同一塊 Scale Off Wool 走完頭到腳四格」時，把 **Wool Doeskin Jacket ¥92,400** 塞進 Scale Off Wool 的敘事裡——Scale Off Wool 的外套其實是 **¥77,000**（Double Jacket ¥81,400）。錯誤汙染了 W35 一則 + 9 月 jp 月報三處，包含一整條挑買方向的價位帶。

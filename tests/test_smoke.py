@@ -17,6 +17,7 @@ test_smoke.py — 核心腳本的最小穩定驗收（C5）
 
 from __future__ import annotations
 
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -73,7 +74,8 @@ def main() -> int:
     reader_probes = [
         (
             "reader_output_schema 擋 items 缺 evidence",
-            reader_text.replace('      "evidence": "親測",\n', "", 1),
+            # \r?：bytes 讀檔保留原換行，Windows autocrlf checkout 是 CRLF
+            re.sub(r'      "evidence": "親測",\r?\n', "", reader_text, count=1),
             True,
         ),
         (

@@ -106,7 +106,7 @@ Shopify 的 `available=false` **不等於完售**。W34（Graphpaper 8/22）與 
 - `Scale Off Wool` = 10 型（Jacket ¥77,000／Double Jacket ¥81,400／Wide Slacks ¥41,800／Chef Pants ¥35,200／6 Panel Cap ¥15,400／Necktie ¥14,300…）
 - `Wool Doeskin` = 3 型（Jacket ¥92,400／Wide Tapered Slacks ¥46,200／Necktie ¥15,400）——**它自己也走完頭到腳**
 
-**E5 網址沒驗——已知的錯誤網域對照表**（2026-08-29 實測）：
+**E5 網址沒驗——已知的錯誤網域對照表**（2026-08-29 實測；09-24 追加末四列）：
 | 寫錯的 | 正確的 |
 |---|---|
 | `yoke-tokyo.com`（舊密碼牆） | `yoketokyo.com` |
@@ -115,6 +115,26 @@ Shopify 的 `available=false` **不等於完售**。W34（Graphpaper 8/22）與 
 | `gp-onlinestore.com` | 已 NXDOMAIN（無替代） |
 | `neat-inc.jp`（同名活動公司） | `neat-tokyo.com` |
 | `isplus.co.kr`（網域已死） | `isplus.com` |
+| `brooklyntailors.com` | `brooklyn-tailors.com`（有連字號；從原文取外連網域，不要自己拼） |
+| `https://blurhms.com`（回 `000`＝TLS 失敗，**不是 DNS**） | `http://blurhms.com`（品牌 lookbook，http 200）；通販在 `studious.co.jp/shop/blurhms/` |
+| `https://cale.jp`（回 `000`＝TLS 失敗） | `https://cale-jp.squarespace.com/`（`http://cale.jp` 301 轉過去）；通販在 `studious.co.jp/shop/Cale/` |
+| `stevenalan.jp`（DNS 有解析、http/https 皆無回應） | 日本線由 UNITED ARROWS 經營：`store.united-arrows.co.jp/brand/sa/`（⚠️ 09-24 本機 Chrome UA curl 真假路徑皆 `403`\|~410＝WAF，換 Firefox UA 或走 Firecrawl） |
+
+curl 回 `000` 是**連線／TLS 層**失敗，不是 DNS 失敗——先試 `http://` 再下判斷（09-23 lane reader 把 blurhms／cale 的 `000` 報成 DNS）。
+
+**已實測可讀法（本機視角；09-18／09-23 reader ＋ 09-24 orchestrator 複驗）**——看到 403／500 先查這張，不要直接判 `unreadable`：
+
+| 站 | 表象 | 實測可讀法 |
+|---|---|---|
+| KREAM | 首頁與不存在路徑**同回 `500`\|0**（HTTP 層分不出） | **擋的是 UA 字串**：curl 預設、Chrome 128／141 → 全路徑 500；**不送 UA（`-A ""`）／Firefox 143／Safari 18 → 200**\|1.2MB、不存在路徑 404（09-24 各打 3 次，穩定、非間歇）。급상승 `/?tab=home_ranking_v2` 可讀；週/月切換是 JS，curl 拿不到 |
+| SSENSE | WebFetch 403 | curl ＋ 瀏覽器 UA：`/en-us/men` 200 vs 不存在路徑 404；商品頁 JSON-LD 可取逐碼庫存 |
+| GQ／Permanent Style | WebFetch 403 | curl ＋ 瀏覽器 UA 全文與價格可取（D36 視角問題，非站點屬性） |
+| END. | `/us/latest`、`/us/new-arrivals` 404 | 路徑錯、不是站掛：`/us` 200；但分類頁商品格是 Algolia 前端渲染，逐件取不到 |
+| EYESMAG | 首頁 JS 殼；`/sitemap-news.xml.gz` 404 | 前綴錯：用 robots.txt 列的 `/sitemap/sitemap-news.xml.gz` |
+| MEN'S NON-NO | [Gallery] 模板稿只剩標題 | 站可讀；改找同站非 Gallery 稿 |
+| MUSINSA 週榜 | — | `api.musinsa.com/api2/hm/web/v5/pans/ranking/sections/199?storeCode=musinsa&categoryCode=000&gf=M&period=WEEKLY&ageBand=AGE_BAND_ALL&soldOut=false`（詳見 `docs/rankings.md`）；payload 自帶 `최근 1주일` 與 `updatedAt`，**是商品榜不是品牌榜** |
+
+**UA 也是視角**：同一站換 UA 結果可能完全相反（KREAM 擋 Chrome、放 Firefox）。判 `unreadable` 前，除了 E2 的不跟隨重導＋不存在路徑，**至少再換一種非 Chrome UA（或不送 UA）重打一次**。
 
 ## 怎麼掃
 

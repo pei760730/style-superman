@@ -76,6 +76,11 @@ jobs:
           [ "${{ steps.health.outcome }}" = "failure" ] && need=1
           grep -q "死源候補：" health-liveness.txt 2>/dev/null && need=1
           if [ "$need" = "0" ]; then
+            # 前置步驟失敗會讓 health 被跳過；未完成評估不等於恢復健康。
+            if [ "${{ steps.health.outcome }}" != "success" ]; then
+              echo "strict 巡檢未成功完成，保留既有 health issue。"
+              exit 0
+            fi
             echo "巡檢全綠、無死源。"
             # 轉綠自動關既有 issue：偽陽性 issue 永久掛著每週追評 = 警告衰退成噪音
             # （#122、#186 教訓——三組「死源」本機複核全活,issue 卻一直開著）。

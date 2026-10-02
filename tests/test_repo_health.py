@@ -473,3 +473,52 @@ def test_every_check_function_is_reachable_from_run_checks_or_main():
     assert not orphans, (
         f"這些檢查沒有被 run_checks 或 main 呼叫，等於不存在：{orphans}"
     )
+
+
+def test_health_issue_closure_requires_explicit_assessment_success():
+    """執行 workflow 真正的恢復分支；GitHub/來源結果皆為記憶體 stub，不寫檔、不連網。"""
+    import shutil
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    import yaml
+
+    bash = shutil.which("bash")
+    if sys.platform == "win32":
+        # Windows 的 PATH 可能先找到 WSL launcher；沿用既有 Git for Windows 的 Bash。
+        git = shutil.which("git")
+        bash = str(Path(git).resolve().parent.parent / "bin" / "bash.exe") if git else None
+    assert bash and Path(bash).is_file(), "此 workflow 的離線測試需要 Bash（CI runner 已提供）"
+    workflow = yaml.safe_load((health.ROOT / ".github/workflows/health.yml").read_text(encoding="utf-8"))
+    step = next(s for s in workflow["jobs"]["patrol"]["steps"] if s["name"] == "File or update health issue")
+    recovery, boundary, _ = step["run"].partition("\ngh label create ")
+    assert boundary, "恢復分支與 issue 建立分支的邊界已變動，須重新核對測試範圍"
+    stubs = r'''
+gh() {
+  case "$1 $2" in
+    "issue list") printf '999\n' ;;
+    "issue close") [ "$3" = "999" ] || exit 90; printf 'CLOSED\n' >&2 ;;
+    *) printf 'UNEXPECTED_GH\n' >&2; exit 91 ;;
+  esac
+}
+date() { printf '2026-10-02T00:00Z\n'; }
+'''
+    for outcome in ("success", "failure", "skipped", "cancelled", "", "unknown"):
+        for candidate in (False, True):
+            script = recovery.replace("${{ steps.health.outcome }}", outcome)
+            assert "${{" not in script
+            result = subprocess.run(
+                [bash, "--noprofile", "--norc", "-e", "-o", "pipefail"],
+                input=stubs + f"\ngrep() {{ return {0 if candidate else 1}; }}\n" + script
+                + "\nprintf 'CONTINUE_EXISTING_ISSUE_PATH\\n' >&2\n",
+                capture_output=True, text=True, encoding="utf-8", timeout=10, check=False,
+                env={"PATH": "", "BASH_ENV": ""},
+            )
+            case = (outcome, candidate, result.stdout, result.stderr)
+            assert result.returncode == 0, case
+            assert "UNEXPECTED_GH" not in result.stderr, case
+            should_close = outcome == "success" and not candidate
+            assert ("CLOSED" in result.stderr) == should_close, case
+            assert ("巡檢全綠" in result.stdout) == should_close, case
+            assert ("CONTINUE_EXISTING_ISSUE_PATH" in result.stderr) == (outcome == "failure" or candidate), case

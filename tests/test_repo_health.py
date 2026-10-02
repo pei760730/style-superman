@@ -512,7 +512,7 @@ date() { printf '2026-10-02T00:00Z\n'; }
                 [bash, "--noprofile", "--norc", "-e", "-o", "pipefail"],
                 input=stubs + f"\ngrep() {{ return {0 if candidate else 1}; }}\n" + script
                 + "\nprintf 'CONTINUE_EXISTING_ISSUE_PATH\\n' >&2\n",
-                capture_output=True, text=True, encoding="utf-8", timeout=10,
+                capture_output=True, text=True, encoding="utf-8", timeout=10, check=False,
                 env={"PATH": "", "BASH_ENV": ""},
             )
             case = (outcome, candidate, result.stdout, result.stderr)

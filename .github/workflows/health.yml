@@ -57,13 +57,14 @@ jobs:
       # --liveness 不帶 --strict 故 exit 0，所以下面靠 grep「死源候補：」判斷而非 exit code（403/timeout 類=「疑遭阻擋」不開 issue,#186 結構修法）；
       # ③ 限速(429)被 check_source_liveness 標為「非死源」，抖動造成的暫時 429 不會誤報。
       - name: Probe source liveness (death-of-source watchdog)
+        id: liveness
         if: always()
         continue-on-error: true
         env:
           PYTHONIOENCODING: utf-8
         run: |
           set -o pipefail
-          python scripts/repo_health.py --liveness | tee health-liveness.txt || true
+          python scripts/repo_health.py --liveness | tee health-liveness.txt
 
       - name: File or update health issue
         if: always()
@@ -79,6 +80,11 @@ jobs:
             # 前置步驟失敗會讓 health 被跳過；未完成評估不等於恢復健康。
             if [ "${{ steps.health.outcome }}" != "success" ]; then
               echo "strict 巡檢未成功完成，保留既有 health issue。"
+              exit 0
+            fi
+            # continue-on-error 只保留 fail-soft；探測失敗或缺完整無死源摘要不能證明恢復。
+            if [ "${{ steps.liveness.outcome }}" != "success" ] || ! grep -Eq '^(ℹ️|⚠️)  來源死活：[0-9]+/[0-9]+ 個 RSS 實際收得到料(，[0-9]+ 疑遭阻擋（探測視角，非死源）)?(，[0-9]+ 被限速（非死，見下）)?$' health-liveness.txt 2>/dev/null; then
+              echo "liveness 未成功完成或無完整無死源摘要，保留既有 health issue。"
               exit 0
             fi
             echo "巡檢全綠、無死源。"

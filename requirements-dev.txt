@@ -26,4 +26,4 @@
 # 3.9 的限制哪天解除，這裡、ci.yml matrix、dependabot 的 ignore 要一起改。
 pytest==8.4.2
 
-ruff==0.16.6
+ruff==0.16.8

@@ -36,7 +36,7 @@ python scripts/generate_daily_brief.py --draft
 > ⚠️ **2026-09-05 訂正**：這裡原本寫「填回 `reports/daily/YYYY-MM-DD.md`」，但 D16 的 freeze gate（`validate_repo.DAILY_FREEZE_CUTOFF = 2026-06-16`）**對備援路徑沒有豁免**，且 `generate_daily_brief.py` 也會硬拒非 `--draft`。照舊文走到底必然 CI 紅——而這條是「系統已經壞掉時才會走」的路徑，最不該再絆一次。**全程停在 `*.draft.md`**（gitignored），brief 在對話讀。
 
 ### Step 5 — 出挑買方向
-brief 的 `🎯 對我最相關 For Me` 是**在紅單品情報**（D15：知道現在在紅什麼,非買清單;不開獨立挑買卡 D9）；真要入手隨選再做。週度收斂走週挑 `reports/buy_shortlist/`。
+brief 的 `🎯 對我最相關 For Me` 是**在紅單品情報**（D15：知道現在在紅什麼,非買清單;不開獨立挑買卡 D9）；真要入手隨選再做——貼截圖／連結，照 `prompts/item_research.md` 在對話回答。週度收斂走週挑 `reports/buy_shortlist/`。
 
 ### Step 6 — ~~封存~~（2026-09-05 刪除）
 > **這一步已取消。** 原本寫 `git add reports/daily/YYYY-MM-DD.md` + commit，但 D16 之後

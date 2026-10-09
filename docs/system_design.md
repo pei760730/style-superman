@@ -45,7 +45,7 @@ Style Superman 是一套 **Men's Fashion & Culture Intelligence System**（給�
 1. **收集 Collect** — 依 `sources.yml` 取得當日訊號。現階段人工 / 半自動；`rss` 欄位已為自動化預留。
 2. **分類 Classify** — 用 `trend_taxonomy.yml` 把訊號歸類、掛標籤。主編 agent 直接判讀 raw_signal_pack（中間 insight 層已於 2026-06-11 移除——從未實際運轉；趨勢加權評分 score_trends 已於 2026-06-14 移除——D14，趨勢挑選回歸主編判斷）。
 3. **簡報 Brief** — `daily_trend_brief` prompt 產出當日 brief；**全對話觸發、在對話讀，不入 `reports/daily/`（D16，要封存再另議）**。趨勢卡（`trend_analysis` prompt）是週深挖旁支，不在每日關鍵路徑上。
-4. **對我最相關（在紅單品）** — brief 的 🎯 For Me 是情報層（單品｜是什麼｜在哪紅｜對我的意義｜價格/型號辨識用）,讓擁有者知道現在在紅什麼,**非買清單**（D15，2026-06-14）;不開獨立挑買卡（D9）,真要入手隨選再做定番調研（D10）。
+4. **對我最相關（在紅單品）** — brief 的 🎯 For Me 是情報層（單品｜是什麼｜在哪紅｜對我的意義｜價格/型號辨識用）,讓擁有者知道現在在紅什麼,**非買清單**（D15，2026-06-14）;不開獨立挑買卡（D9）,真要入手隨選再做單品調研（D10，`prompts/item_research.md`，對話即答不落檔）。
 
 ## 4. 人機分工
 

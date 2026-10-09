@@ -1,0 +1,121 @@
+# 單品調研（prompts/item_research.md）的離線對照組。
+# 全部是合成資料：品牌、價格、量測、網址都是編的（網址用 .invalid 保證點不開、不會被誤當真站）。
+# 基準衣量測也是合成值，不是擁有者的身體或衣物資料——真基準只在對話裡給，不進 repo。
+#
+# 用法（無 LLM API，D5）：改 prompts/item_research.md 後，在對話裡把每個 case 的 turns 依序貼給 agent，
+# 照下方 rubric 逐條打勾，跟上一次的結果比。不是 pytest 會讀的檔。
+
+captured_at: "2026-10-09T23:55+08:00"   # 所有快照的凍結時間（動態資訊一律以此為「查詢時間」）
+
+# 合成基準：「我已經有、穿起來剛好」的衣物量測。對話裡由擁有者提供一次，之後不該再被問。
+reference:
+  top:    {label: "基準上衣（合成）", 身幅: 57, 肩寬: 48, 袖長: 62, 着丈: 74}
+  bottom: {label: "基準長褲（合成）", 腰: 88, 渡り: 34, 股上: 30, 股下: 76, 裾幅: 22}
+  tolerance_note: "差 ±2cm 內視為同感；身幅 +4cm 以上開始明顯寬鬆；腰 -2cm 以上會緊"
+
+snapshots:
+  S1:  # 二手拍賣，無標籤照片
+    type: seller
+    url: "https://auction.example.invalid/item/a1001"
+    content: "古著 尼龍教練外套 深綠 80年代? 標籤已剪 身幅58 肩寬50 袖丈61 着丈70 輕微使用感 左袖口小污漬 ¥6,800"
+    photo_visible: "深綠、有光澤的表布、按扣前襟、領口內織標被剪除、左袖口一塊小污漬"
+  S2:  # 選店頁，羊毛混紡針織
+    type: official
+    url: "https://shop.example.invalid/products/crew-knit-oat"
+    content: "Crew Knit / OAT / 綿60% ウール40% / 手洗い / Size 3: 身幅56 着丈68 裄丈83 / Size 4: 身幅59 着丈70 裄丈85 / ¥28,600 / 在庫 3:2 4:0"
+  S3:  # 同款不同尺碼（官方尺寸表）
+    type: official
+    url: "https://brand.example.invalid/item/oxford-bd-shirt"
+    content: "Oxford BD Shirt / 綿100% / Size 2: 肩47 身幅55 袖丈61 着丈75 / Size 3: 肩49 身幅58 袖丈63 着丈77 / ¥19,800 / 2:在庫あり 3:在庫あり"
+  S4a: # 兩件不同版型：寬褲
+    type: official
+    url: "https://brand.example.invalid/item/wide-chino"
+    content: "Wide Chino / 綿100% / Size 4: 腰86 渡り36 股上32 股下74 裾幅25 / ¥22,000 / 在庫あり"
+  S4b: # 兩件不同版型：錐形褲
+    type: official
+    url: "https://brand.example.invalid/item/tapered-slacks"
+    content: "Tapered Slacks / ポリエステル70% 毛30% / Size 4: 腰88 渡り31 股上27 股下75 裾幅17 / ¥24,200 / 在庫あり"
+  S5a: # 矛盾：賣家說純棉
+    type: seller
+    url: "https://flea.example.invalid/listing/77"
+    content: "Harrington jacket 純棉 L 號 近全新 身幅60 ¥9,500"
+  S5b: # 矛盾：同型號官方說含羊毛、身幅不同
+    type: official
+    url: "https://brand.example.invalid/archive/harrington-2019"
+    content: "Harrington Jacket (2019) / 表地 綿65% 毛35% / L: 身幅57 着丈70 / 定価 ¥42,900"
+  S6:  # 價格未知
+    type: seller
+    url: "https://select.example.invalid/vintage/rugby-03"
+    content: "Vintage rugby shirt 英國製 Size XL 身幅59 着丈76 綿100% 價格：私訊詢價 SOLD? 未標示"
+  S7:  # 三件比較用（含一件棉麻、一件 cashmere 混紡）
+    type: official
+    url: "https://shop.example.invalid/collections/fw-knits"
+    content: "A: Cotton Linen Knit 綿70% 麻30% 身幅58 ¥18,700 在庫あり / B: Cashmere Blend Knit 綿80% カシミヤ20% 身幅57 ¥31,900 在庫あり / C: Shetland Crew 毛100% 身幅57 ¥26,400 在庫あり"
+  S8:  # 八件比較用（截圖列表，部分缺資料）
+    type: seller
+    url: "https://auction.example.invalid/search?q=work+jacket"
+    content: >-
+      1) 鴨帆布工作外套 綿100% 身幅59 ¥8,000 /
+      2) 鴨帆布工作外套 同款? 標籤不可見 身幅未標 ¥5,500 /
+      3) 軍裝 M-65 綿50%ナイロン50% 身幅60 ¥12,000 輕微破損 /
+      4) Chore coat 法式 綿100% 身幅55 ¥7,200 /
+      5) Chore coat 毛混 (比例未標) 身幅58 ¥6,000 /
+      6) 牛仔夾克 綿100% 身幅57 價格未標 /
+      7) 刷毛夾克 ポリエステル100% 身幅61 ¥4,800 /
+      8) 獵裝外套 綿/麻(比例未標) 身幅58 ¥15,000 狀態「良好」照片 1 張
+
+cases:
+  - id: no-tag
+    tests: 無標籤、型號不可斷言、照片可確認/可能/待確認三層
+    turns:
+      - "（貼拍賣截圖：S1）這件要買嗎？我基準上衣量測在之前給過了。"
+  - id: wool-blend
+    tests: 羊毛混紡要標出含毛比例；不擴張成排斥棉麻
+    turns:
+      - "（貼 S2 連結）這件燕麥色針織好看，買 3 還是 4？"
+  - id: same-model-sizes
+    tests: 同款不同尺碼，依基準量測選碼，不靠標籤
+    turns:
+      - "（貼 S3）這件 BD 襯衫 2 跟 3 選哪個？"
+  - id: two-fits
+    tests: 兩件不同版型，量測對基準逐項比；S4b 含毛要提但只提一次
+    turns:
+      - "（貼 S4a、S4b）這兩條褲子哪條比較適合我？"
+  - id: conflict
+    tests: 賣家說法與官方規格矛盾，分開陳述、不替任何一方定案
+    turns:
+      - "（貼 S5a 拍賣、S5b 官方舊款頁）這件 Harrington 值得嗎？"
+  - id: price-unknown
+    tests: 價格未知不准推成便宜或稀有；只問會改變決定的資訊
+    turns:
+      - "（貼 S6）這件古著 rugby 怎樣？"
+  - id: compare-3
+    tests: 三件比較：先前三名排序+理由、再表格；偏好說明只出現一次
+    turns:
+      - "（貼 S7 三件）這三件針織選哪件？"
+  - id: compare-8
+    tests: 八件比較：先 Top3、表格收全部、缺資料欄標待確認、不把『同款?』講成同款
+    turns:
+      - "（貼 S8 八件截圖）幫我挑。"
+  - id: size-added-later
+    tests: 先無量測 → 後補量測：第二輪只更新尺寸結論、不重問已給資訊
+    turns:
+      - "（貼一件只寫 Size M、無量測、綿100%、¥7,500 的二手 overshirt 截圖）這件可以嗎？"
+      - "賣家回了：身幅 56、肩寬 47、袖長 60、着丈 73。"
+
+# 每則回覆逐條打勾；「次數」類越少越好，0 為目標。
+rubric:
+  - R1 第一行就是推薦程度＋具體原因（單件）／前三名＋理由（多件）
+  - R2 多件比較有表格，缺資料的格寫「待確認」不是留白或猜值
+  - R3 尺寸結論引用「商品量測 vs 基準量測」的差值；沒有量測時明說無法判斷
+  - R4 重問已提供資訊（次數）
+  - R5 提問數 ≤2，且每題都能說出「答案會怎麼改變買不買」
+  - R6 把照片/賣家推測講成確定型號、年代、產地（次數）
+  - R7 無標籤時分「照片能確認／可能款式／仍待確認」
+  - R8 來源分賣家說法／官方規格／自行推測；價格與庫存附查詢時間
+  - R9 把查不到講成便宜、稀有、保值（次數）
+  - R10 羊毛（含混紡）有標出比例；沒有把棉、麻等一併排斥（擴張次數）
+  - R11 偏好說明在同一則回覆出現次數（目標 ≤1）
+  - R12 每個結論都有可點來源連結（合成案例為 .invalid，檢查連結存在即可）
+  - R13 新增的武斷判斷（沒有依據的斷言，次數）——修後版本不准比修前多
+  - R14 開頭寫品牌歷史／背景介紹（有/無）

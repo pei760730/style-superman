@@ -4,7 +4,7 @@
 >
 > **輪替規則（2026-07-06）**：本檔只保留**全量總覽表 + 最近 5 條完整條目**；Record 新決策時若完整條目超過 5 條，同 PR 把最舊的整段搬進 `docs/decisions-archive.md`（完整脈絡查 archive 或 git 歷史）。
 
-## 決策總覽（D1–D40 全量；完整敘事 D1–D31 見 `docs/decisions-archive.md`）
+## 決策總覽（D1–D41 全量；完整敘事 D1–D36 見 `docs/decisions-archive.md`）
 
 | # | 拍板結論（一句話） | 日期 | guard |
 |---|--------------------|------|-------|
@@ -48,55 +48,7 @@
 | D38 | rankings 硬數據保留並成為週挑「炒作 vs 真」必引依據 | 2026-07-30 | 無 |
 | D39 | reader 證據等級、不可讀登記與負面結論對照組納入 schema 契約 | 2026-08-15 | 無（validate_repo 契約檢查） |
 | D40 | 自我進化迴圈補判斷軸：週挑複驗數／教訓重演計數／雷達回測扳機 + 派工跳過清單改推導 | 2026-09-03 | 無（info 級 health 檢查；文件規則） |
-
-## D34 — Session 分場紀律 + 驗收單一入口（token 成本，2026-07-06）
-
-### 背景
-- 真實 API 用量（按 message.id 去重）：單日 cache_read 一個月 10.1M→27.8M（2.75x）、尾端 context 171K→336K；內容還原證實大宗是工程 side-quest 疊在舊 context 上續滾（6/27 的 85%、7/5 的 100%，7/5 更跨兩天續用同場）。
-- 7/5 場 33 個驗收 Bash（38%）各揹全量 context 串跑三條驗收；`tests/test_smoke.py` 內部本就執行 validate_repo 與 repo_health --consistency（與 CI 同源，ci.yml 明註不重複跑）。
-
-### 拍板
-- **驗收單一入口** `tests/test_smoke.py`：可用 `python tests/test_smoke.py` 直接執行，也可由 pytest 收集並執行同一套 `main()`；每輪 patch 收尾只跑一種，單獨除錯才直呼個別腳本。
-- **Session 分場**：一場一事（daily 或一個 PR 週期）、跨日不續場、換模型重審開新場或派 repo-auditor subagent、收場儀式主動總結——這是 D12「看到就修」的分場執行（批次修），不是回到請示制；不觸 D16/D33（開場本來就一句話）。
-- **Bash 衛生**（合併指令、gh/git 絕對路徑、等 CI 單呼叫、MERGE 授權措辭）+ **記帳收斂**（decisions ≤12 行、lessons ≤5 行、收場前一次寫完）+ **帳本 grep 索引讀法**（主迴圈禁止整讀三帳本），全數寫入 CLAUDE.md 對應節。
-- **量測判準／升級 tripwire**：成功＝單日 cache_read 回到 8–12M 區間；一個月後複查（2026-08-06 前後）若 session 尾端 context 仍 >200K 或單場驗收執行 >20 次 → 啟動 D7 第二波硬化（結構性工具下沉／檢查）。
-
-### 可逆 / guards
-- 可逆（純行為約定，還原 CLAUDE.md / scripts/README.md 相關節即回復）。無禁用識別字，不寫 decision_guards。
-
-## D36 — 正文抓取改「本機優先」，`body_fetchable` 正名為視角量測（2026-07-28，擁有者「認真修 把它修好」）
-
-### 背景
-
-2026-07-28 daily brief 交付時，我把 Permanent Style 的 Luca Museo 棉西裝評測、GQ 亞麻襯衫 13 選、drapers 的 Frasers/Hugo Boss 收購三條**整條不列**，理由是「WebFetch 403、Firecrawl 備援沒掛上」。擁有者要求深挖，本機實測七源打臉這個理由：
-
-| 源 | WebFetch 視角 | 本機視角（瀏覽器 UA） |
-|---|---|---|
-| permanent-style / gq / esquire / drapers / bof / fratello | 403 或空殼 | **200**，正文與價格齊全（PS $3,800、GQ $120/$90/$50/$118/$345/$148、Timex $199→$133、drapers 收購案數字、BoF LVMH 數字） |
-| put-this-on / wwd-japan | 403（2026-06-14 標記） | **200** 全文 |
-| sneakernews | 403 | **403（換 bot UA 亦然）＝真站級封鎖** |
-
-**七個裡六個是假陰性。**
-
-### 根因（四層）
-
-1. `data/sources.yml` 的 `body_fetchable` 是 2026-06-14 用**單一視角（WebFetch）**量出來的，卻被寫成「源的永久屬性」，還被 `prompts/daily_trend_brief.md` 引用成硬規則。
-2. **同一個概念錯誤 repo 已經修過一次、但沒橫向套用**：#186 四次誤殺 → #193「視角感知分類」已在 RSS 死活軸硬化（`403＝blocked＝活著但拒收本視角，永不判死`），正文抓取軸卻仍把 403 當永久事實。
-3. **D22 的備援（Firecrawl MCP）在真正跑 brief 的環境不存在**：`.mcp.json` 設了 server，但實跑 session 沒掛上工具 → 規則寫的三層備援實際只有一層。
-4. **能用的路早就在 repo 裡、只差沒接線**：`collect_raw_signals.py` 用本機 urllib + 瀏覽器 UA 打同一批站全 200（#177 已為此改過 UA），但它只收 RSS 不收正文。#177 那次**只改了 UA、沒回頭複驗 `body_fetchable` 名單**，假陰性就這樣留了 44 天。
-
-### 拍板
-
-- **新增 `scripts/fetch_article.py`**（本機、純機械、零 LLM，守 D5）：URL → 標題 / 發佈日 / 正文純文字；退出碼分辨 403（本視角被拒）／連不上／正文過短（付費牆・JS 殼）。**本機專用**：Actions egress 會 403，不進 CI、不排程。
-- **取內文順序改為**：① 本機 `fetch_article.py` → ② WebFetch → ③ Firecrawl（若掛得上，明文標註「不保證存在」）→ ④ 才整條不列。
-- **`body_fetchable` 正名**：判定視角＝**本機**（brief 實跑的地方，D30/D35）；標 `false` 必須附 `body_fetch_note`（本機實測日期＋現象），`validate_repo.check_sources` 會擋。六個假陰性撤旗標，sneakernews 保留並附證據。
-- 不新增來源（D18 不動）：`fetch_article` 對不在 sources.yml 的網域只印提醒、不擋——單次引用 ≠ 收進來源清單。
-
-### 可逆 / guards
-
-可逆（刪腳本 + 還原旗標即回復）。**不寫 `decision_guards`**：這裡要擋的不是某個識別字，而是「沒有本機證據就封源」，已用 `validate_repo` 契約檢查硬化（比識別字守衛更貼題）；回歸鎖在 `tests/test_smoke.py` 9i / 9i-2（含 `known_domains` 的 `lstrip("www.")` 字元集合陷阱）。延續 #193 視角感知、D5 零 LLM、D18 不新增來源、D30/D35 本機執行。
-
----
+| D41 | 隨選單品調研落成對話規格：結論先行、尺寸用量測比基準、證據分層；避羊毛但不延伸到其他天然纖維 | 2026-10-09 | 無 |
 
 ## D37 — daily For Me 回流候選池：對話 agent 為唯一 writer（2026-07-30）
 
@@ -156,3 +108,13 @@ CIOTA（08-04/06）、KR 來源健康檢查（08-11）、A.PRESSE（08-15）三�
 - 三個檢查全 info 級：health.yml 走 `--strict`，判斷軸是儀表不是告警（D29）。
 ### 可逆 / guards
 可逆（刪三個 check、還原模板欄位與 prompt 段落即可）。不寫識別字 guard；`test_repo_health` 正反向探針釘邊界（起算週、門檻 N 與 N−1、90 天當天與前一天、兄弟檔、非雷達檔名）。符合 D7：四條皆由重複教訓硬化（三例同根、六條自標重演、D11 承諾兩週後到期而無扳機）。
+
+## D41 — 隨選單品調研落成對話規格（2026-10-09，擁有者派工）
+### 背景
+D10／D15 留下「真要入手是隨選的另一條（定番調研）」，但 repo 只有 6 處指標句、沒有規格；擁有者貼截圖問買不買時，回答品質全靠當場發揮（品牌史開場、拿尺碼標籤斷言能穿、羊毛不標、查不到被講成划算）。
+### 拍板
+- 規格在 `prompts/item_research.md`：單件第一行結論、多件先前三名再表格；尺寸只用「商品量測 vs 已有合身衣物量測」；無標籤分三層；賣家／官方／推測分開、動態資訊附查詢時間；查不到不說便宜稀有；最多問 2 題且須改變決定。
+- 擁有者偏好：避羊毛；不延伸到其他天然纖維。混紡「寫比例、降一級」與其他獸毛「照常評估、附一句照顧提醒」是本條提出的解讀，擁有者可改。
+- 仍對話即答、不落檔、不開卡（D9 不變）；基準量測只在對話／agent 端，不進 repo。回歸對照組 `tests/fixtures/item_research/cases.yml`（全合成）。
+### 可逆 / guards
+可逆（刪 prompt 與 fixture、還原指標句）。不寫 guard：識別字層無可擋之物，開卡回流已由 d9 guard 覆蓋。

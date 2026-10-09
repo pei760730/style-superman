@@ -857,9 +857,58 @@ D25/D26（2026-06-23，**昨天**）才設好週挑的「週一早安觸發 + �
 
 追記 2026-07-16：同一殭屍任務再觸發，RSS 全降級（31/31 失敗），WebSearch 補查，brief 寫完後 D16 gate 再次正確擋下，內容走 notify-only PushNotification 傳遞。
 
+## D34 — Session 分場紀律 + 驗收單一入口（token 成本，2026-07-06）
+
+### 背景
+- 真實 API 用量（按 message.id 去重）：單日 cache_read 一個月 10.1M→27.8M（2.75x）、尾端 context 171K→336K；內容還原證實大宗是工程 side-quest 疊在舊 context 上續滾（6/27 的 85%、7/5 的 100%，7/5 更跨兩天續用同場）。
+- 7/5 場 33 個驗收 Bash（38%）各揹全量 context 串跑三條驗收；`tests/test_smoke.py` 內部本就執行 validate_repo 與 repo_health --consistency（與 CI 同源，ci.yml 明註不重複跑）。
+
+### 拍板
+- **驗收單一入口** `tests/test_smoke.py`：可用 `python tests/test_smoke.py` 直接執行，也可由 pytest 收集並執行同一套 `main()`；每輪 patch 收尾只跑一種，單獨除錯才直呼個別腳本。
+- **Session 分場**：一場一事（daily 或一個 PR 週期）、跨日不續場、換模型重審開新場或派 repo-auditor subagent、收場儀式主動總結——這是 D12「看到就修」的分場執行（批次修），不是回到請示制；不觸 D16/D33（開場本來就一句話）。
+- **Bash 衛生**（合併指令、gh/git 絕對路徑、等 CI 單呼叫、MERGE 授權措辭）+ **記帳收斂**（decisions ≤12 行、lessons ≤5 行、收場前一次寫完）+ **帳本 grep 索引讀法**（主迴圈禁止整讀三帳本），全數寫入 CLAUDE.md 對應節。
+- **量測判準／升級 tripwire**：成功＝單日 cache_read 回到 8–12M 區間；一個月後複查（2026-08-06 前後）若 session 尾端 context 仍 >200K 或單場驗收執行 >20 次 → 啟動 D7 第二波硬化（結構性工具下沉／檢查）。
+
+### 可逆 / guards
+- 可逆（純行為約定，還原 CLAUDE.md / scripts/README.md 相關節即回復）。無禁用識別字，不寫 decision_guards。
+
 ## D35 — 速報觸發面改純對話，廢 flash-brief.yml 按鈕層（2026-07-25，擁有者拍板「我只會在對話觸發」）
 
 - **背景**：D19 速報層設計給「手機在外按 Actions 按鈕」；實際 6 週僅 1 次 dispatch（6/16），與擁有者 chat-only 習性結構性矛盾（7/25 深審發現）。
 - **拍板**：刪 flash-brief.yml（原 .github/workflows 下的 dispatch 按鈕層）；`generate_flash.py` + 測試保留，對話說「速報」由 agent 直接跑、對話即讀（同 D16/D33 的 daily 模式）。D19 的機械抽取原則（零 LLM、白名單硬源、不判讀）不變，只改觸發面。
 - **修訂**：D33 尾段「flash-brief.yml 維持僅 workflow_dispatch」該句由本條取代（workflow 已除）；D33 其餘不動。
 - 可逆：未來真需要離機速報，走 D33 已框定的 notify-only 路線，不回退 dispatch 按鈕。
+
+## D36 — 正文抓取改「本機優先」，`body_fetchable` 正名為視角量測（2026-07-28，擁有者「認真修 把它修好」）
+
+### 背景
+
+2026-07-28 daily brief 交付時，我把 Permanent Style 的 Luca Museo 棉西裝評測、GQ 亞麻襯衫 13 選、drapers 的 Frasers/Hugo Boss 收購三條**整條不列**，理由是「WebFetch 403、Firecrawl 備援沒掛上」。擁有者要求深挖，本機實測七源打臉這個理由：
+
+| 源 | WebFetch 視角 | 本機視角（瀏覽器 UA） |
+|---|---|---|
+| permanent-style / gq / esquire / drapers / bof / fratello | 403 或空殼 | **200**，正文與價格齊全（PS $3,800、GQ $120/$90/$50/$118/$345/$148、Timex $199→$133、drapers 收購案數字、BoF LVMH 數字） |
+| put-this-on / wwd-japan | 403（2026-06-14 標記） | **200** 全文 |
+| sneakernews | 403 | **403（換 bot UA 亦然）＝真站級封鎖** |
+
+**七個裡六個是假陰性。**
+
+### 根因（四層）
+
+1. `data/sources.yml` 的 `body_fetchable` 是 2026-06-14 用**單一視角（WebFetch）**量出來的，卻被寫成「源的永久屬性」，還被 `prompts/daily_trend_brief.md` 引用成硬規則。
+2. **同一個概念錯誤 repo 已經修過一次、但沒橫向套用**：#186 四次誤殺 → #193「視角感知分類」已在 RSS 死活軸硬化（`403＝blocked＝活著但拒收本視角，永不判死`），正文抓取軸卻仍把 403 當永久事實。
+3. **D22 的備援（Firecrawl MCP）在真正跑 brief 的環境不存在**：`.mcp.json` 設了 server，但實跑 session 沒掛上工具 → 規則寫的三層備援實際只有一層。
+4. **能用的路早就在 repo 裡、只差沒接線**：`collect_raw_signals.py` 用本機 urllib + 瀏覽器 UA 打同一批站全 200（#177 已為此改過 UA），但它只收 RSS 不收正文。#177 那次**只改了 UA、沒回頭複驗 `body_fetchable` 名單**，假陰性就這樣留了 44 天。
+
+### 拍板
+
+- **新增 `scripts/fetch_article.py`**（本機、純機械、零 LLM，守 D5）：URL → 標題 / 發佈日 / 正文純文字；退出碼分辨 403（本視角被拒）／連不上／正文過短（付費牆・JS 殼）。**本機專用**：Actions egress 會 403，不進 CI、不排程。
+- **取內文順序改為**：① 本機 `fetch_article.py` → ② WebFetch → ③ Firecrawl（若掛得上，明文標註「不保證存在」）→ ④ 才整條不列。
+- **`body_fetchable` 正名**：判定視角＝**本機**（brief 實跑的地方，D30/D35）；標 `false` 必須附 `body_fetch_note`（本機實測日期＋現象），`validate_repo.check_sources` 會擋。六個假陰性撤旗標，sneakernews 保留並附證據。
+- 不新增來源（D18 不動）：`fetch_article` 對不在 sources.yml 的網域只印提醒、不擋——單次引用 ≠ 收進來源清單。
+
+### 可逆 / guards
+
+可逆（刪腳本 + 還原旗標即回復）。**不寫 `decision_guards`**：這裡要擋的不是某個識別字，而是「沒有本機證據就封源」，已用 `validate_repo` 契約檢查硬化（比識別字守衛更貼題）；回歸鎖在 `tests/test_smoke.py` 9i / 9i-2（含 `known_domains` 的 `lstrip("www.")` 字元集合陷阱）。延續 #193 視角感知、D5 零 LLM、D18 不新增來源、D30/D35 本機執行。
+
+---

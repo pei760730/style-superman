@@ -5,6 +5,7 @@
 ## [Unreleased]
 
 ### Fixed
+- **巡檢恢復需 liveness 成功及完整無死源摘要（2026-10-03）**：保留 probe 原始失敗 outcome，缺失／失敗報告不再自動關 health issue；正常完成的阻擋／限速分類仍 fail-soft，離線回歸覆蓋真實報告與 issue shell。
 - **巡檢誤關 issue（2026-10-02）**：自動關閉前要求 strict health 明確成功；前置步驟失敗導致 skipped／cancelled／未執行時保留既有 issue，避免誤報恢復。
 - **三個 reddit 源默默空了三週(2026-09-07)**:`old.reddit.com/.rss` 現在回 200-HTML 封鎖頁、解析 0 則(佔 31 源 ~10%,歐美素人落地層整層缺席);改回 `www.reddit.com/.rss`,三源實測各 200 XML／25 則。`sources.yml` 上一條註記寫的正是相反的話(「www 一律 403,改 old」,06-15),被當成不變的事實信了三週。
 - **429 退避加第二階(3s → 3s/8s)**:`www` 對連打的限速比 `old` 嚴,實測單次退避不夠(Sneakers 連吃兩個 429 才回 200)。上限維持有界,源真死時仍快速降級;正反向測試各一支釘住。

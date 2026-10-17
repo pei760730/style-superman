@@ -72,8 +72,8 @@
 
 ## 👀 早期
 
-### Post O'Alls（日本設計師大淵毅｜工裝原型｜mid）
-- **是什麼：** 1993 年創立，美式工裝原型（Engineers' Jacket、No.1 Jacket、Army Pants）。
+### Post O'Alls（日本設計師 Takeshi Ohfuchi｜工裝原型｜mid）
+- **是什麼：** 1993 年創立（設計師名依 Proper Magazine 拼法），美式工裝原型（Engineers' Jacket、No.1 Jacket、Army Pants）。
 - **為什麼現在紅：** 26FW 上架中（[Engineers' Jacket 10oz rigid ¥66,000](https://postoveralls.com/products/post-oalls-preview-outerwear-26fw-outerwear-engineers-jacket-10-oz-denim-indigo-rigid-true)）；END. 有售（[END.](https://www.endclothing.com/us/post-overalls-engineers-jacket.html)）。熱度訊號弱。
 - **紅在哪：** jp／us-eu 圈層。
 - **Lane 相容度：** 中。

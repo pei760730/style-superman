@@ -506,11 +506,13 @@ date() { printf '2026-10-02T00:00Z\n'; }
 '''
     for outcome in ("success", "failure", "skipped", "cancelled", "", "unknown"):
         for candidate in (False, True):
-            script = recovery.replace("${{ steps.health.outcome }}", outcome)
+            script = recovery.replace("${{ steps.health.outcome }}", outcome).replace(
+                "${{ steps.liveness.outcome }}", "success"
+            )
             assert "${{" not in script
             result = subprocess.run(
                 [bash, "--noprofile", "--norc", "-e", "-o", "pipefail"],
-                input=stubs + f"\ngrep() {{ return {0 if candidate else 1}; }}\n" + script
+                input=stubs + f'\ngrep() {{ [ "$1" = "-Eq" ] && return 0; return {0 if candidate else 1}; }}\n' + script
                 + "\nprintf 'CONTINUE_EXISTING_ISSUE_PATH\\n' >&2\n",
                 capture_output=True, text=True, encoding="utf-8", timeout=10, check=False,
                 env={"PATH": "", "BASH_ENV": ""},

@@ -4,6 +4,9 @@
 
 ## [Unreleased]
 
+### Changed
+- **品牌雷達改版（D42，2026-10-18）**：`prompts/brand_radar.md` 改四步（關鍵字四軸→候選池→商品層→分區取捨），熟悉品牌只當比較基準；新增「📚 值得認識（不主張熱度）」「🚫 熱門但不適合」、局部更新、候選池與來源記錄附錄。前後對照與保留案例在 `reports/analysis/2026-10-18-*`。
+
 ### Fixed
 - **巡檢恢復需 liveness 成功及完整無死源摘要（2026-10-03）**：保留 probe 原始失敗 outcome，缺失／失敗報告不再自動關 health issue；正常完成的阻擋／限速分類仍 fail-soft，離線回歸覆蓋真實報告與 issue shell。
 - **巡檢誤關 issue（2026-10-02）**：自動關閉前要求 strict health 明確成功；前置步驟失敗導致 skipped／cancelled／未執行時保留既有 issue，避免誤報恢復。

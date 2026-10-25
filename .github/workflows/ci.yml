@@ -18,7 +18,8 @@ concurrency:
 
 jobs:
   smoke:
-    runs-on: ubuntu-latest
+    # 鎖 24.04：ubuntu-latest 於 2026-10 改指 26.04，setup-python 在 26.04 無 3.9（下方 matrix 的 floor）。
+    runs-on: ubuntu-24.04
     # 不設就是吃 360 分鐘預設；smoke 離線、實測 <1 分，pip/runner 抖動掛住時
     # 一次 hang = 2（matrix）× 360 分私有 repo 額度。
     timeout-minutes: 10

@@ -116,9 +116,9 @@ Next      → repo_health.py 的 Next Actions 就是下一輪 TODO
   Mac＝`~/.local/bin/gh` + `git -C ~/style-superman`；Windows＝gh 已在 PATH + `git -C ~/projects/style-superman`（D 槽那台 clone 在 `D:/dev/style-superman`；以各機實際路徑為準）。
 - **等 CI 一律單呼叫**：`~/.local/bin/gh run watch <run-id>`，或同一 Bash 內 `until`+`sleep` loop（設逾時）；
   禁止逐次輪詢各發一呼叫。
-- **merge 授權**：要 merge 前一句話問、使用者回「MERGE」即明確授權（2026-07-05 實證分類器放行此措辭；
-  此為 D8/D12 自 merge 的**權限分類器層**通行路徑，非回到事前請示制）；
-  被權限分類器擋兩次直接請使用者 GitHub UI 按 merge，不進 settings.json 攻防。
+- **merge 授權**（2026-11-04 起全艦隊常設）：Claude＋Codex 雙審、修到無阻擋＋CI 綠 → 直接 merge
+  （`--match-head-commit` 鎖審過的 head），不再先問「MERGE」、也不請使用者到 GitHub UI 按。
+  審後又加 commit 要重審；被權限分類器擋就停下回報，不進 settings.json 攻防。
 
 ## 常見坑（詳見 docs/lessons.md）
 

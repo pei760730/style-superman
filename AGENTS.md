@@ -57,7 +57,7 @@ Codex 是這個 repo 的**工程 agent**:在 branch 上做可審查的工程變�
 
 ## PR 流程(走 PR,單主題)
 
-- 開 branch → 單主題 → 跑驗證 → draft PR → `gh pr ready` → Owner merge → 刪 branch。
+- 開 branch → 單主題 → 跑驗證 → draft PR → `gh pr ready` → Claude+Codex 雙審、修到無阻擋+CI 綠 → 直接 merge(不等人工)→ 刪 branch。
 - 同性質低風險文件修正可合併同一 PR;一場最多一個 PR 週期。
 - 記帳收斂:CHANGELOG 單條 ≤3 行;decisions.md 新條目 ≤12 行;lessons.md 單條 ≤5 行;收場前一次寫完,不逐版回改。
 

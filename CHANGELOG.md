@@ -8,6 +8,7 @@
 - **品牌雷達改版（D42，2026-10-18）**：`prompts/brand_radar.md` 改四步（關鍵字四軸→候選池→商品層→分區取捨），熟悉品牌只當比較基準；新增「📚 值得認識（不主張熱度）」「🚫 熱門但不適合」、局部更新、候選池與來源記錄附錄。前後對照與保留案例在 `reports/analysis/2026-10-18-*`。
 
 ### Fixed
+- **Windows Git Bash 測試路徑（2026-11-15）**：兩組離線 workflow 測試共用 Bash 定位，支援 Git 的 cmd、bin 與 mingw64/ucrt64 等巢狀布局；仍避開 PATH 中的 WSL launcher，保留缺 Bash 時明確失敗。
 - **巡檢恢復需 liveness 成功及完整無死源摘要（2026-10-03）**：保留 probe 原始失敗 outcome，缺失／失敗報告不再自動關 health issue；正常完成的阻擋／限速分類仍 fail-soft，離線回歸覆蓋真實報告與 issue shell。
 - **巡檢誤關 issue（2026-10-02）**：自動關閉前要求 strict health 明確成功；前置步驟失敗導致 skipped／cancelled／未執行時保留既有 issue，避免誤報恢復。
 - **三個 reddit 源默默空了三週(2026-09-07)**:`old.reddit.com/.rss` 現在回 200-HTML 封鎖頁、解析 0 則(佔 31 源 ~10%,歐美素人落地層整層缺席);改回 `www.reddit.com/.rss`,三源實測各 200 XML／25 則。`sources.yml` 上一條註記寫的正是相反的話(「www 一律 403,改 old」,06-15),被當成不變的事實信了三週。

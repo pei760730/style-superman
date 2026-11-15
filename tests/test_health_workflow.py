@@ -3,13 +3,12 @@
 import contextlib
 import io
 import os
-import shutil
 import subprocess
 import sys
-from pathlib import Path
 
 import pytest
 import yaml
+from bash_support import find_bash
 
 from scripts import repo_health as health
 
@@ -69,13 +68,7 @@ def _shell(
     list_exit=0,
     close_exit=0,
 ):
-    bash = shutil.which("bash")
-    if sys.platform == "win32":
-        git = shutil.which("git")
-        bash = str(Path(git).resolve().parent.parent / "bin/bash.exe") if git else None
-    assert bash and Path(bash).is_file(), (
-        "Actual workflow shell regression requires Bash"
-    )
+    bash = find_bash()
     if report is not None:
         (tmp_path / "health-liveness.txt").write_text(report, encoding="utf-8")
         (tmp_path / "probe-input.txt").write_text(report, encoding="utf-8")

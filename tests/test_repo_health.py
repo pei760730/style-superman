@@ -477,19 +477,12 @@ def test_every_check_function_is_reachable_from_run_checks_or_main():
 
 def test_health_issue_closure_requires_explicit_assessment_success():
     """執行 workflow 真正的恢復分支；GitHub/來源結果皆為記憶體 stub，不寫檔、不連網。"""
-    import shutil
     import subprocess
-    import sys
-    from pathlib import Path
 
     import yaml
+    from bash_support import find_bash
 
-    bash = shutil.which("bash")
-    if sys.platform == "win32":
-        # Windows 的 PATH 可能先找到 WSL launcher；沿用既有 Git for Windows 的 Bash。
-        git = shutil.which("git")
-        bash = str(Path(git).resolve().parent.parent / "bin" / "bash.exe") if git else None
-    assert bash and Path(bash).is_file(), "此 workflow 的離線測試需要 Bash（CI runner 已提供）"
+    bash = find_bash()
     workflow = yaml.safe_load((health.ROOT / ".github/workflows/health.yml").read_text(encoding="utf-8"))
     step = next(s for s in workflow["jobs"]["patrol"]["steps"] if s["name"] == "File or update health issue")
     recovery, boundary, _ = step["run"].partition("\ngh label create ")

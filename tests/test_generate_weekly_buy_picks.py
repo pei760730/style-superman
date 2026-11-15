@@ -33,6 +33,14 @@ EVIDENCE_EXAMPLES = [
         ),
     ),
     (
+        "attributable-source-without-prior-classification",
+        (
+            "原出現次數 8｜本次檢視來源 1 筆：確認獨立 0／轉載 0／不確定 1；"
+            "[H](https://h.example.invalid/item?product_id=FS100) 可追溯且已確認為合成 FS-100，"
+            "未提供既有逐筆分類、獨立性尚無佐證，因此納入 U 和 M，不排除。"
+        ),
+    ),
+    (
         "rerun-and-reordered-observation",
         (
             "原出現次數 8｜本次檢視來源 1 筆：確認獨立 1／轉載 0／不確定 0；"

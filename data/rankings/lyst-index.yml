@@ -14,6 +14,64 @@ free: true
 url: https://www.lyst.com/data/the-lyst-index/
 
 snapshots:
+  - period: "2026-Q3"
+    published: "2026-10-28"
+    source_url: https://www.lyst.com/the-lyst-index/q3-26/
+    coverage: "full（官方 Q3-26 區塊 Top 20 品牌 + Top 10 單品，無缺漏、無補值）"
+    methodology: >
+      desire / demand / discovery 三維：平台年 1.6 億購物者需求資料，結合社群、搜尋、編輯報導與
+      AI discovery 訊號；按近期活動加權，排除純折扣或負面聲量。
+      單品榜綜合社群提及、Lyst 搜尋、瀏覽、互動與銷售，合併同款顏色並考量可售庫存下的全球需求。
+    notes: >
+      Prada +5 登頂；Celine +5 進 #10。Dries Van Noten（#16）與 Khaite（#20）新進榜，Diesel（#18）重返；
+      Versace、Phoebe Philo、Jacquemus 掉出 Top 20。官方 Q3-26 品牌區塊與單品區塊為本筆來源，
+      不採同頁殘留的 2024 品牌敘事區塊；17 條非新進／重返品牌的 move 均與本檔 Q2 名次核對一致。
+      published 依 Lyst 官方 newsletter（https://lystinsights.substack.com/p/the-q3-2026-index-has-landed），
+      日期為 2026-10-28；排行主頁未印發布日。另以官方 Dries Van Noten 專文
+      （https://www.lyst.com/stories/behind-the-lyst-index-dries-van-noten/）同日發布交叉核對。
+      與封存月報 reports/monthly/2026-11-eu.md 手抄的 Q3 榜一致；月報保持原樣，不回改。
+
+    # move 為官方相對上季標示；Loewe 的「-」依 Q2 #17 → Q3 #17 正規化為「=」。
+    brands:
+      - { rank: 1,  name: Prada,           move: "+5" }
+      - { rank: 2,  name: Chanel,          move: "-1" }
+      - { rank: 3,  name: Miu Miu,         move: "-1" }
+      - { rank: 4,  name: Gucci,           move: "+1" }
+      - { rank: 5,  name: Saint Laurent,   move: "-1" }
+      - { rank: 6,  name: Dior,            move: "-3" }
+      - { rank: 7,  name: Burberry,        move: "+1" }
+      - { rank: 8,  name: Ralph Lauren,    move: "-1" }
+      - { rank: 9,  name: "Chloé",          move: "+2" }
+      - { rank: 10, name: Celine,          move: "+5" }
+      - { rank: 11, name: Bottega Veneta,  move: "+3" }
+      - { rank: 12, name: Coach,           move: "-3" }
+      - { rank: 13, name: Massimo Dutti,   move: "-3" }
+      - { rank: 14, name: The Row,         move: "-2" }
+      - { rank: 15, name: Moncler,         move: "+1" }
+      - { rank: 16, name: Dries Van Noten, move: new }
+      - { rank: 17, name: Loewe,           move: "=" }
+      - { rank: 18, name: Diesel,          move: re-entry }
+      - { rank: 19, name: Stone Island,    move: "+1" }
+      - { rank: 20, name: Khaite,          move: new }
+
+    # 品名依官方 Top 10；未逐項公布的成長率不補值。
+    products:
+      - { rank: 1,  brand: Prada,           item: "Wish Silk Duchesse Pouch",   note: "官方正文：搜尋 +498%" }
+      - { rank: 2,  brand: COS,             item: "Trullo Flap Bag" }
+      - { rank: 3,  brand: "Celine/Reebok",  item: "Freestyle Lo" }
+      - { rank: 4,  brand: Vans,            item: "Premium Authentic" }
+      - { rank: 5,  brand: Dries Van Noten, item: "Long Wrap Scarf-Skirt",      note: "官方正文：Q3 Lyst 需求 +383%" }
+      - { rank: 6,  brand: Phoebe Philo,    item: "Peak Sunglasses" }
+      - { rank: 7,  brand: Free People,     item: "Forever Young Bloomer Pants" }
+      - { rank: 8,  brand: Balenciaga,      item: "Rodeo Bag" }
+      - { rank: 9,  brand: Chanel,          item: "Ballet Flats" }
+      - { rank: 10, brand: Cartier,         item: "Tank Watch" }
+
+    menswear_focus:
+      - "Celine（品牌 #10，+5）：官方明示男裝 Lyst 需求年增 62%；非全品牌或單品的成長率"
+      - "Celine/Reebok Freestyle Lo（單品 #3）：聯名球鞋訊號；單品榜為全性別，不等同男裝榜"
+      - "Vans Premium Authentic（單品 #4）：球鞋訊號；官方未列此款成長率，不補值"
+
   - period: "2026-Q2"
     published: "2026-08-05"
     source_url: https://www.lyst.com/the-lyst-index/q2-26/

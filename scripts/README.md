@@ -119,6 +119,7 @@ python scripts/validate_repo.py --reports
 Lyst 季對季名次比對的 helper，僅供 `generate_monthly_heat_report.py` 月報骨架 import（`lyst_comparison_text` / `snapshots`）。**不是給人跑的指令**：擁有者只走對話，不打指令看檔。
 
 排行快照（`data/rankings/*.yml`）由 AI 在對話中**直接編輯**——格式見 [templates/ranking_snapshot_template.md](../templates/ranking_snapshot_template.md)、排序/口徑細則見 [docs/rankings.md](../docs/rankings.md)。月報的 `## 🆚 對照量化基準` 段會自動帶入季對季變動，不需人工跑比對。
+本季標為 `partial` 時，月報會註明榜單不完整，仍列可確認的名次變動，不把未收錄品牌判成掉榜。
 
 > 2026-06-20（D21）：移除人工 CLI（看榜指令）與 `ingest_ranking_snapshot.py`（存榜助手）——機器無呼叫者、人類也無使用者（擁有者只在對話操作）。詳見 `docs/decisions.md` D21。
 

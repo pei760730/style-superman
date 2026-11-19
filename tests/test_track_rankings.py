@@ -65,3 +65,27 @@ def test_partial_previous_snapshot_avoids_false_new_and_dropped_claims():
     assert "前季殘缺，無法判定" in text
     assert "🆕" not in text
     assert "掉出榜外" not in text
+
+
+def test_partial_current_snapshot_keeps_known_changes_but_does_not_infer_drops():
+    data = {
+        "snapshots": [
+            {
+                "period": "2026-Q2",
+                "coverage": "partial Top 10",
+                "brands": [{"rank": 1, "name": "Up"}, {"rank": 5, "name": "New"}],
+            },
+            {
+                "period": "2026-Q1",
+                "coverage": "full",
+                "brands": [{"rank": 2, "name": "Up"}, {"rank": 17, "name": "Not in excerpt"}],
+            },
+        ]
+    }
+
+    text = rankings.lyst_comparison_text(data)
+
+    assert "掉出榜外：" not in text
+    assert "本季（2026-Q2）為殘缺快照" in text
+    assert "Up                 ↑ 1" in text
+    assert "New                🆕 新進榜" in text

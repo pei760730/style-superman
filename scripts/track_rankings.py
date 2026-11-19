@@ -25,18 +25,24 @@ def lyst_comparison_text(data: dict, top: int | None = None) -> str | None:
 
     前季若是殘缺快照（`coverage: partial`，如媒體轉載 Top 10、非官方完整 Top 20），
     「不在前季榜上」≠ 真的新進榜——會吐一堆假「🆕 新進榜」。偵測到就標警告、把無法判定的
-    標明、並略過「掉出榜外」（殘缺榜本來就沒列全），改提示看快照內建 move 欄。"""
+    標明、並略過「掉出榜外」，改提示看快照內建 move 欄。
+    本季若殘缺，也略過「掉出榜外」：未出現在摘錄裡的品牌不等於掉榜。"""
     snaps = snapshots(data)
     if len(snaps) < 2:
         return None
 
     new, old = snaps[0], snaps[1]
     old_partial = "partial" in str(old.get("coverage", "")).lower()
+    new_partial = "partial" in str(new.get("coverage", "")).lower()
     old_rank = {b["name"]: b["rank"] for b in old.get("brands", [])}
     lines = [f"📊  Lyst 品牌名次：{old.get('period')} → {new.get('period')}", "  " + "-" * 48]
     if old_partial:
         lines.append(f"  ⚠ 前季（{old.get('period')}）為殘缺快照（{old.get('coverage')}）：")
         lines.append("     季對季變動不可靠，未匹配到的不代表新進榜。請改看各快照內建的 move 欄。")
+    if new_partial:
+        lines.append(f"  ⚠ 本季（{new.get('period')}）為殘缺快照（{new.get('coverage')}）：")
+        lines.append("     未收錄的品牌不等於掉榜，本次不判定掉榜。")
+    if old_partial or new_partial:
         lines.append("  " + "-" * 48)
     brands = new.get("brands", [])
     for b in brands[: top or len(brands)]:
@@ -48,8 +54,8 @@ def lyst_comparison_text(data: dict, top: int | None = None) -> str | None:
             change = "— 持平" if diff == 0 else (f"↑ {diff}" if diff > 0 else f"↓ {abs(diff)}")
         lines.append(f"  {rank:>2}. {name:<18} {change}")
 
-    # 前季殘缺時「掉出榜外」無意義（殘缺榜沒列全），略過不誤導
-    if not old_partial:
+    # 任一季殘缺時都不列「掉出榜外」；尤其不能把本季摘錄沒列的當成掉榜。
+    if not (old_partial or new_partial):
         dropped = [n for n in old_rank if n not in {b["name"] for b in brands}]
         if dropped:
             lines.append(f"\n  掉出榜外：{', '.join(dropped)}")

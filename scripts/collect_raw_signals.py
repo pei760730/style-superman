@@ -136,6 +136,10 @@ def _declare_unbound_prefixes(xml_text: str) -> str:
 
 def parse_feed(xml_text: str, source: dict, limit: int = DEFAULT_LIMIT) -> list[dict]:
     """把 feed 字串解析成 raw signals（不碰網路，可離線測試）。支援 RSS 2.0 與 Atom。"""
+    return _parse_feed(xml_text, source, limit)[0]
+
+
+def _parse_feed(xml_text: str, source: dict, limit: int) -> tuple[list[dict], str]:
     signals: list[dict] = []
     try:
         root = ET.fromstring(xml_text.strip())
@@ -143,14 +147,16 @@ def parse_feed(xml_text: str, source: dict, limit: int = DEFAULT_LIMIT) -> list[
         try:
             root = ET.fromstring(_declare_unbound_prefixes(xml_text.strip()))
         except ET.ParseError:
-            return signals
+            return signals, "invalid_feed"
 
-    # RSS 2.0: <rss><channel><item>...；Atom: <feed><entry>...
-    items = root.findall(".//item")
-    is_atom = False
-    if not items:
-        items = root.findall(f".//{ATOM}entry")
-        is_atom = True
+    # A successful HTTP read is not proof of a feed (e.g. XML/HTML WAF pages).
+    # An actual RSS/Atom container with no entries is a successful observation.
+    if root.tag == "rss" and (channel := root.find("channel")) is not None:
+        items, is_atom = channel.findall("item"), False
+    elif root.tag == f"{ATOM}feed":
+        items, is_atom = root.findall(f"{ATOM}entry"), True
+    else:
+        return signals, "invalid_feed"
 
     for item in items[:limit]:
         if is_atom:
@@ -179,7 +185,7 @@ def parse_feed(xml_text: str, source: dict, limit: int = DEFAULT_LIMIT) -> list[
             "signal_type": "待查",
             "credibility": "待查",
         })
-    return signals
+    return signals, "invalid_feed" if items and not signals else "ok"
 
 
 # 429 的退避秒數，一個元素一次重試。2026-09-07 由 (3,) 改為 (3, 8)：三個 reddit 源
@@ -216,6 +222,8 @@ def collect(
     limit: int = DEFAULT_LIMIT,
     fetcher=fetch_feed,
     max_workers: int = 8,
+    *,
+    coverage: list[dict] | None = None,
 ) -> tuple[list[dict], list[str]]:
     """對每個來源 fetch+parse；回傳 (signals, warnings)。fetcher 可注入以便測試。
 
@@ -223,6 +231,8 @@ def collect(
     （可重現）。max_workers 上限刻意保守（預設 8）：相鄰同域請求（如 reddit）同時打易招
     429，fetch_feed 已有單次退避重試，配合小池子即可（見該函式註解）。
     """
+    # Coverage is a separate ledger of observations, never inferred from the
+    # signal count or warnings (e.g. spam was filtered successfully).
     signals: list[dict] = []
     warnings: list[str] = []
     if not sources:
@@ -231,11 +241,12 @@ def collect(
     with ThreadPoolExecutor(max_workers=max(1, min(max_workers, len(sources)))) as ex:
         xml_texts = list(ex.map(lambda s: fetcher(s["rss"]), sources))
     for s, xml_text in zip(sources, xml_texts):
-        if xml_text is None:
+        got, status = ([], "unavailable") if xml_text is None else _parse_feed(xml_text, s, limit)
+        if coverage is not None:
+            coverage.append({"source_id": s.get("id"), "region": s.get("region"), "status": status})
+        if status == "unavailable":
             warnings.append(f"{s.get('id')}: 抓取失敗（跳過）")
-            continue
-        got = parse_feed(xml_text, s, limit)
-        if not got:
+        elif status == "invalid_feed":
             warnings.append(f"{s.get('id')}: 解析不到項目（跳過）")
         if s.get("type") == "community":
             kept = [sig for sig in got if not is_spam(sig["title"], sig["summary"])]
@@ -247,13 +258,16 @@ def collect(
     return signals, warnings
 
 
-def to_yaml(signals: list[dict]) -> str:
+def to_yaml(signals: list[dict], *, coverage: list[dict] | None = None) -> str:
     header = (
         "# raw_signal_pack — 由 collect_raw_signals.py 收集（事實層，未經趨勢判斷）\n"
         "# signal_type / credibility 為『待查』，由寫 brief 的主編 agent 判讀。\n"
         "# 此檔為中間產物，不入長期版控（見 templates/raw_signal_pack_template.md）。\n"
     )
-    body = yaml.dump({"signals": signals}, sort_keys=False, allow_unicode=True)
+    pack = {"signals": signals}
+    if coverage is not None:
+        pack["coverage"] = coverage
+    body = yaml.safe_dump(pack, sort_keys=False, allow_unicode=True)
     return header + body
 
 
@@ -264,12 +278,14 @@ def main() -> None:
     args = parser.parse_args()
 
     sources = rss_sources()
-    signals, warnings = collect(sources, args.limit)
+    coverage: list[dict] = []
+    signals, warnings = collect(sources, args.limit, coverage=coverage)
 
-    out_yaml = to_yaml(signals)
+    out_yaml = to_yaml(signals, coverage=coverage)
     if args.out:
         Path(args.out).write_bytes(out_yaml.encode("utf-8"))
-        print(f"✅ 收集 {len(signals)} 則訊號，來自 {len(sources)} 個 RSS 來源 → {args.out}")
+        checked = sum(row["status"] == "ok" for row in coverage)
+        print(f"✅ 收集 {len(signals)} 則訊號；成功讀取 {checked}/{len(coverage)} 個 RSS 來源 → {args.out}")
     else:
         print(out_yaml)
 

@@ -100,12 +100,14 @@ def collect_rss(out_path: str | None) -> str:
         return f"<!-- RSS 收集略過：無法載入 collect_raw_signals（{e}） -->\n"
 
     sources = crs.rss_sources()
-    signals, warnings = crs.collect(sources)
+    coverage: list[dict] = []
+    signals, warnings = crs.collect(sources, coverage=coverage)
+    degraded = sum(row["status"] != "ok" for row in coverage)
 
     wrote_raw_pack = False
     if out_path:
         try:
-            Path(out_path).write_bytes(crs.to_yaml(signals).encode("utf-8"))
+            Path(out_path).write_bytes(crs.to_yaml(signals, coverage=coverage).encode("utf-8"))
             print(f"📥 raw_signal_pack：收集 {len(signals)} 則 → {out_path}")
         except OSError as e:
             print(f"❌ raw pack 寫入失敗：{e}", file=sys.stderr)
@@ -115,11 +117,11 @@ def collect_rss(out_path: str | None) -> str:
         print(f"📥 raw_signal_pack：收集 {len(signals)} 則（未指定 --raw-signals-out，未寫檔）")
 
     if warnings:
-        print(f"   （{len(warnings)} 個來源降級：{'; '.join(warnings[:3])}{' …' if len(warnings) > 3 else ''}）")
+        print(f"   （{degraded} 個來源降級：{'; '.join(warnings[:3])}{' …' if len(warnings) > 3 else ''}）")
 
     out_hint = f"，已寫到 {out_path}" if wrote_raw_pack else "（未寫檔）"
     return (
-        f"<!-- RSS 收集：{len(signals)} 則事實訊號、{len(warnings)} 來源降級{out_hint}；"
+        f"<!-- RSS 收集：{len(signals)} 則事實訊號、{degraded} 來源降級{out_hint}；"
         f"signal_type/credibility 由 brief 主編 agent 判讀 -->\n"
     )
 

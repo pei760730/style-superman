@@ -27,6 +27,8 @@ python scripts/generate_daily_brief.py --draft
 - raw_signal_pack 是事實層，由寫 brief 的主編 agent 直接判讀收斂（不經中間 insight 層）。
 - 重點放在「新訊號」與「跨來源重複出現」的東西。
 
+速報的離線入口 `generate_flash.py --signals-in …` 會沿用 raw pack 的 `coverage`。只計速報白名單來源：部分失敗仍照列可用記事並標出各區覆蓋、全失敗或舊包未記錄覆蓋就不解讀為沒消息。讀取成功但沒有符合條件的訊號，只代表這次讀到的範圍。
+
 ### Step 3 — 挑出今日趨勢
 把當天訊號收斂成幾個候選趨勢，**由主編判斷**挑出今日 headline（哪些值得追、能不能穿 / 買）。
 值得長線深挖的題目用 `prompts/trend_analysis.md` 做成 trend card（週深挖旁支，不是每日必做）。

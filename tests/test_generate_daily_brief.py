@@ -39,12 +39,14 @@ def test_collect_rss_writes_offline_pack_and_reports_degradation(tmp_path, monke
             return [{"id": "one"}]
 
         @staticmethod
-        def collect(sources):
+        def collect(sources, *, coverage):
             assert sources == [{"id": "one"}]
+            coverage.extend({"status": "unavailable"} for _ in range(4))
             return ([{"title": "signal"}], ["one failed", "two failed", "three failed", "four failed"])
 
         @staticmethod
-        def to_yaml(signals):
+        def to_yaml(signals, *, coverage):
+            assert len(coverage) == 4
             return "signals: 1\n"
 
     monkeypatch.setitem(daily.sys.modules, "collect_raw_signals", FakeCollector)

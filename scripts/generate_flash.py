@@ -88,11 +88,30 @@ def _recent_window(date_str: str, days: int = 2) -> set[str]:
     return {(end - dt.timedelta(days=i)).isoformat() for i in range(max(days, 1))}
 
 
-def extract(signals: list[dict], date_str: str, days: int = 2, degraded: int = 0) -> str:
-    """純機械抽取（不碰網路，可離線測）：白名單 × 非 roundup × 非 noise × 近 N 天 × 去重。
+def _flash_coverage(coverage: list[dict] | None) -> dict[str, list[str]] | None:
+    """A missing, inconsistent, or empty allowlist observation is unknown."""
+    by_region: dict[str, list[str]] = {}
+    seen = set()
+    if not isinstance(coverage, list):
+        return None
+    for row in coverage:
+        if not isinstance(row, dict) or not isinstance(row.get("source_id"), str):
+            return None
+        source_id = row["source_id"]
+        if source_id not in WHITELIST:
+            continue
+        region, status = row.get("region"), row.get("status")
+        if (source_id in seen or region not in REGION_ORDER or
+                status not in ("ok", "unavailable", "invalid_feed")):
+            return None
+        seen.add(source_id)
+        by_region.setdefault(region, []).append(status)
+    return by_region or None
 
-    `degraded` = 收集端降級/失敗的來源數，會標進產出（0 則時區分「市場安靜」vs「收集端壞掉」）。
-    """
+
+def extract(signals: list[dict], date_str: str, days: int = 2, *,
+            coverage: list[dict] | None = None) -> str:
+    """純機械抽取；收集覆蓋狀態獨立於篩選後的消息數量。"""
     recent = _recent_window(date_str, days)
     lines = [
         f"# ⚡ Style 速報 — {date_str}",
@@ -103,6 +122,27 @@ def extract(signals: list[dict], date_str: str, days: int = 2, degraded: int = 0
         ),
         "> 同一事件可能在各區各出一次（跨語言）；標題帶一點雜訊屬正常（速報定位，掃一眼可略）。",
     ]
+    regions = _flash_coverage(coverage)
+    if regions is None:
+        lines += ["", "> ⚠️ 白名單來源覆蓋未知；只能讀這份資料已有的訊號，不能判斷有沒有漏查。"]
+        failed: int | None = None
+    else:
+        checked = sum(states.count("ok") for states in regions.values())
+        attempted = sum(map(len, regions.values()))
+        failed = attempted - checked
+        counts = "、".join(
+            f"{REGION_NAME[region]} {regions[region].count('ok')}/{len(regions[region])}"
+            for region in REGION_ORDER if region in regions
+        )
+        lines += ["", f"> 本輪白名單 RSS 成功讀取／嘗試：{counts}。"]
+        missing = "、".join(REGION_NAME[region] for region in REGION_ORDER if region not in regions)
+        if missing:
+            lines.append(f"> 未涵蓋：{missing}。")
+        if not checked:
+            lines.append("> ⚠️ 本輪嘗試的白名單 RSS 都未查到，不能判定有無消息。")
+        elif failed:
+            lines.append(f"> ⚠️ {failed} 個白名單來源未查到；沒列訊號不等於沒消息。")
+
     total = 0
     for region in REGION_ORDER:
         # 去重只在「同區內」（防同區 RSS 重複條目）；跨區同事件保留，讓每區完整——
@@ -134,37 +174,33 @@ def extract(signals: list[dict], date_str: str, days: int = 2, degraded: int = 0
             summ = _clip(s.get("summary", ""))
             if summ:
                 lines.append(f"  {summ}")
-    if total == 0:
-        # 0 則有兩種完全不同的意思：市場安靜 vs 收集端壞掉。降級源數不標進
-        # 產出的話，斷網 / 全源被 WAF 擋會偽裝成「今日沒硬訊號」——daily brief
-        # 的 footer 有做同款誠實註記，速報是 Kai 直接讀的面、更不能只留 stderr。
-        if degraded:
-            lines += ["", (
-                f"_⚠️ 今日 0 則，且 {degraded} 個來源收集失敗/降級——"
-                "可能是收集端問題而非市場安靜，本速報不可盡信。_"
-            )]
-        else:
-            lines += ["", "_今日白名單源無符合速報條件的硬訊號（可能非發售日 / 全是 roundup）。_"]
-    lines += ["", f"<!-- 速報收集：{len(signals)} 則原始訊號、{degraded} 來源降級 -->"]
+    if total == 0 and failed == 0:
+        lines += ["", "_本輪已查的白名單 RSS，在讀到的範圍與指定日期內，無符合速報條件的硬訊號。_"]
+    elif total == 0:
+        lines += ["", "_目前資料沒有可列的速報，覆蓋不足，暫不判斷有無消息。_"]
+    outcome = "覆蓋未知" if failed is None else f"{failed} 個白名單來源未查到"
+    lines += ["", f"<!-- 速報收集：{len(signals)} 則原始訊號、{outcome} -->"]
     return "\n".join(lines) + "\n"
 
 
-def _collect_live() -> tuple[list[dict], int]:
-    """連網收集（複用 collect_raw_signals，不另寫抓取）。回 (signals, 降級源數)。"""
+def _collect_live() -> tuple[list[dict], list[dict]]:
+    """連網收集並保留每個來源的觀察結果，不用警告數代替。"""
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     import collect_raw_signals as crs
 
-    signals, warnings = crs.collect(crs.rss_sources())
+    coverage: list[dict] = []
+    sources = [source for source in crs.rss_sources() if source.get("id") in WHITELIST]
+    signals, warnings = crs.collect(sources, coverage=coverage)
     for w in warnings:
         print(f"⚠️  {w}", file=sys.stderr)
-    return signals, len(warnings)
+    return signals, coverage
 
 
-def _load_signals(path: str) -> list[dict]:
+def _load_signals(path: str) -> tuple[list[dict], list[dict] | None]:
     if yaml is None:
         sys.exit("⚠️  需要 pyyaml：pip install pyyaml")
     data = yaml.safe_load(Path(path).read_text(encoding="utf-8")) or {}
-    return data.get("signals", [])
+    return data.get("signals", []), data.get("coverage")
 
 
 def main() -> None:
@@ -183,10 +219,10 @@ def main() -> None:
             parser.error(f"--date 須為合法 YYYY-MM-DD（收到 {args.date!r}）")
     date_str = args.date or dt.datetime.now(dt.timezone(dt.timedelta(hours=8))).date().isoformat()
     if args.signals_in:
-        signals, degraded = _load_signals(args.signals_in), 0  # 離線包不經收集端，無降級概念
+        signals, coverage = _load_signals(args.signals_in)
     else:
-        signals, degraded = _collect_live()
-    md = extract(signals, date_str, args.days, degraded=degraded)
+        signals, coverage = _collect_live()
+    md = extract(signals, date_str, args.days, coverage=coverage)
 
     if args.out:
         out = Path(args.out)

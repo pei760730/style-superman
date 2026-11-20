@@ -196,9 +196,7 @@ def main() -> int:
     # 明確要求 raw pack 時，寫入失敗必須非 0 中止，不能繼續產 brief 並謊稱「已寫到」。
     import generate_daily_brief as gdb
     _orig_sources = crs.rss_sources
-    _orig_collect = crs.collect
     crs.rss_sources = list
-    crs.collect = lambda sources: ([], [])
     _raw_exit = None
     import contextlib as _contextlib
     import io as _raw_io
@@ -210,7 +208,6 @@ def main() -> int:
         _raw_exit = exc
     finally:
         crs.rss_sources = _orig_sources
-        crs.collect = _orig_collect
     check("daily raw pack 寫入失敗會中止",
           isinstance(_raw_exit, SystemExit) and _raw_exit.code == 1 and "寫入失敗" in _raw_stderr.getvalue(),
           f"exit={_raw_exit!r} stderr={_raw_stderr.getvalue()!r}")
@@ -419,18 +416,17 @@ def main() -> int:
     )
     check("flash 速報機械抽取（白名單×去 roundup×去 noise×近期）", ok_flash, md[:200])
 
-    # 9d-2. flash 0 則的兩種意思必須可區分：收集端降級要標進產出本體（不能只留
-    #       stderr）——否則斷網 / 全源被 WAF 擋會偽裝成「今日沒硬訊號」（UA 假死源前科同族）。
-    md_degraded = gf.extract([], "2026-06-16", degraded=34)
-    md_quiet = gf.extract([], "2026-06-16")
+    # 9d-2. 零消息可能是成功讀到但未符合，也可能是沒有足夠覆蓋。
+    observed = {"source_id": "hypebeast", "region": "global"}
+    md_degraded = gf.extract([], "2026-06-16", coverage=[{**observed, "status": "unavailable"}])
+    md_quiet = gf.extract([], "2026-06-16", coverage=[{**observed, "status": "ok"}])
+    md_legacy = gf.extract([], "2026-06-16")
     ok_degrade_note = (
-        "34 個來源收集失敗/降級" in md_degraded and "不可盡信" in md_degraded
-        and "無符合速報條件" not in md_degraded        # 降級時不給編輯學理由
-        and "無符合速報條件" in md_quiet               # 真安靜才是編輯學訊息
-        and "不可盡信" not in md_quiet
-        and "0 來源降級" in md_quiet                   # footer 誠實註記恆在
+        "不能判定有無消息" in md_degraded and "無符合速報條件" not in md_degraded
+        and "無符合速報條件" in md_quiet and "0 個白名單來源未查到" in md_quiet
+        and "覆蓋未知" in md_legacy and "無符合速報條件" not in md_legacy
     )
-    check("flash 0 則區分「市場安靜」vs「收集端降級」", ok_degrade_note, md_degraded[-160:])
+    check("flash 0 則區分已讀無消息、降級與未知", ok_degrade_note, md_degraded[-160:])
 
     # 9i. fetch_article 正文抓取（D36；離線：用 fixture + 注入 fetcher，不碰網路）
     #     這支存在的理由本身就是回歸鎖：403 是「誰在看」的陳述，不是「源不可讀」——

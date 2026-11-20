@@ -1,3 +1,6 @@
+import pytest
+
+from scripts import collect_raw_signals as collector
 from scripts import generate_flash as flash
 
 
@@ -41,22 +44,34 @@ def test_extract_filters_by_semantics_and_deduplicates_within_region():
     assert "Duplicate translation" not in text
     assert "best jacket guide" not in text
     assert "NBA finals" not in text
-    assert "速報收集：7 則原始訊號、0 來源降級" in text
+    assert "速報收集：7 則原始訊號、覆蓋未知" in text
 
 
-def test_extract_distinguishes_quiet_market_from_collection_failure():
-    quiet = flash.extract([], "2026-08-18")
-    degraded = flash.extract([], "2026-08-18", degraded=3)
+def _observed(source_id="hypebeast", region="global", status="ok"):
+    return {"source_id": source_id, "region": region, "status": status}
+
+
+def test_extract_distinguishes_quiet_from_all_missing():
+    quiet = flash.extract([], "2026-08-18", coverage=[_observed()])
+    down = flash.extract([], "2026-08-18", coverage=[_observed(status="unavailable")])
 
     assert "無符合速報條件" in quiet
-    assert "可能是收集端問題而非市場安靜" in degraded
-    assert "3 個來源收集失敗/降級" in degraded
+    assert "都未查到" in down and "不能判定有無消息" in down
+    assert "無符合速報條件" not in down
+
+
+@pytest.mark.parametrize("coverage", [None, [], [_observed(), _observed(status="unavailable")],
+                                      [_observed(status="not-a-status")], "bad"])
+def test_legacy_missing_or_inconsistent_coverage_is_unknown_not_quiet(coverage):
+    result = flash.extract([], "2026-08-18", coverage=coverage)
+    assert "白名單來源覆蓋未知" in result
+    assert "無符合速報條件" not in result
 
 
 def test_load_signals_and_missing_yaml(tmp_path, monkeypatch):
     path = tmp_path / "signals.yml"
     path.write_text("signals:\n  - title: Example\n", encoding="utf-8")
-    assert flash._load_signals(str(path)) == [{"title": "Example"}]
+    assert flash._load_signals(str(path)) == ([{"title": "Example"}], None)
 
     monkeypatch.setattr(flash, "yaml", None)
     try:
@@ -71,19 +86,21 @@ def test_collect_live_reports_each_warning(monkeypatch, capsys):
     class FakeCollector:
         @staticmethod
         def rss_sources():
-            return [{"id": "one"}]
+            return [{"id": "hypebeast"}, {"id": "outside"}]
 
         @staticmethod
-        def collect(sources):
-            assert sources == [{"id": "one"}]
-            return ([{"title": "x"}], ["one failed", "two failed"])
+        def collect(sources, *, coverage):
+            assert sources == [{"id": "hypebeast"}]
+            coverage.append(_observed())
+            return ([{"title": "x"}], ["one notice", "two notice"])
 
     monkeypatch.setitem(flash.sys.modules, "collect_raw_signals", FakeCollector)
-    signals, degraded = flash._collect_live()
+    signals, coverage = flash._collect_live()
 
     assert signals == [{"title": "x"}]
-    assert degraded == 2
-    assert "one failed" in capsys.readouterr().err
+    assert coverage == [_observed()]
+    err = capsys.readouterr().err
+    assert "one notice" in err and "two notice" in err
 
 
 def test_main_offline_writes_requested_file(tmp_path, monkeypatch, capsys):
@@ -98,7 +115,9 @@ def test_main_offline_writes_requested_file(tmp_path, monkeypatch, capsys):
 
     flash.main()
 
-    assert out.read_text(encoding="utf-8").startswith("# ⚡ Style 速報 — 2026-08-18")
+    report = out.read_text(encoding="utf-8")
+    assert report.startswith("# ⚡ Style 速報 — 2026-08-18")
+    assert "白名單來源覆蓋未知" in report and "無符合速報條件" not in report
     assert "速報已產出" in capsys.readouterr().out
 
 
@@ -129,3 +148,75 @@ def test_recent_window_never_returns_empty_even_for_zero_days():
     """
     assert flash._recent_window("2026-08-18", 0) == {"2026-08-18"}
     assert flash._recent_window("2026-08-18", 1) == {"2026-08-18"}
+
+
+def test_live_and_replayed_rss_keep_partial_coverage_visible_with_positive_news(tmp_path, monkeypatch):
+    providers = [
+        {"id": "fashionsnap", "region": "jp", "rss": "jp-fixture"},
+        {"id": "hypebeast-jp", "region": "jp", "rss": "jp-empty-fixture"},
+        {"id": "wwd", "region": "us-eu", "rss": "http-failure-fixture"},
+        {"id": "sneakernews", "region": "us-eu", "rss": "waf-fixture"},
+        {"id": "hypebeast-kr", "region": "kr", "rss": "bad-xml-fixture"},
+        {"id": "not-whitelisted", "region": "global", "rss": "skip-fixture"},
+    ]
+    responses = {
+        "jp-fixture": "<rss><channel><item><title>New jacket</title><link>https://example.test/jacket</link>"
+                      "<pubDate>Tue, 18 Aug 2026 09:00:00 GMT</pubDate></item></channel></rss>",
+        "jp-empty-fixture": '<feed xmlns="http://www.w3.org/2005/Atom"><title>Empty news</title></feed>',
+        "http-failure-fixture": None,
+        "waf-fixture": "<html><body>Blocked</body></html>",
+        "bad-xml-fixture": "<rss><channel>",
+    }
+    class FakeCollector:
+        @staticmethod
+        def rss_sources():
+            return providers
+
+        @staticmethod
+        def collect(sources, *, coverage):
+            return collector.collect(sources, coverage=coverage, fetcher=responses.__getitem__)
+
+    monkeypatch.setitem(flash.sys.modules, "collect_raw_signals", FakeCollector)
+    rows, coverage = flash._collect_live()
+    assert coverage == [_observed("fashionsnap", "jp"), _observed("hypebeast-jp", "jp"),
+                        _observed("wwd", "us-eu", "unavailable"),
+                        _observed("sneakernews", "us-eu", "invalid_feed"),
+                        _observed("hypebeast-kr", "kr", "invalid_feed")]
+    path = tmp_path / "raw.yml"
+    path.write_text(collector.to_yaml(rows, coverage=coverage), encoding="utf-8")
+    replay_rows, replay_coverage = flash._load_signals(str(path))
+    report = flash.extract(rows, "2026-08-18", coverage=coverage)
+    assert report == flash.extract(replay_rows, "2026-08-18", coverage=replay_coverage)
+    assert "New jacket" in report and "3 個白名單來源未查到" in report
+    assert "日本 2/2" in report and "歐美 0/2" in report and "韓國 0/1" in report
+    assert "未涵蓋：🌐 全球" in report
+
+
+def test_empty_feed_and_excluded_rows_are_valid_observations_not_failed_sources(monkeypatch):
+    sources = [
+        {"id": "hypebeast", "region": "global", "rss": "empty"},
+        {"id": "fashionsnap", "region": "jp", "rss": "filtered", "type": "community"},
+        {"id": "not-whitelisted", "region": "kr", "rss": "unavailable"},
+    ]
+    entry = ("<rss><channel><item><title>Definitely spam</title>"
+             "<pubDate>Tue, 18 Aug 2026 09:00:00 GMT</pubDate></item></channel></rss>")
+    payload = {"empty": "<rss><channel><title>Empty</title></channel></rss>",
+               "filtered": entry, "unavailable": None}
+    monkeypatch.setattr(collector, "is_spam", lambda *_: True)
+    coverage = []
+    rows, warnings = collector.collect(sources, coverage=coverage, fetcher=payload.__getitem__)
+    assert not rows and len(warnings) == 2
+    assert [r["status"] for r in coverage] == ["ok", "ok", "unavailable"]
+    report = flash.extract(rows, "2026-08-18", coverage=coverage)
+    assert "無符合速報條件" in report and "⚠️" not in report
+
+
+def test_offline_cli_does_not_turn_recorded_total_outage_into_quiet_market(tmp_path, monkeypatch):
+    path = tmp_path / "outage.yml"
+    path.write_text("signals: []\ncoverage:\n- source_id: wwd\n  region: us-eu\n  status: unavailable\n",
+                    encoding="utf-8")
+    out = tmp_path / "report.md"
+    monkeypatch.setattr(flash.sys, "argv", ["flash", "--signals-in", str(path), "--out", str(out)])
+    flash.main()
+    report = out.read_text(encoding="utf-8")
+    assert "都未查到" in report and "無符合速報條件" not in report

@@ -114,7 +114,7 @@ def baseline_movement(region: dict) -> str:
         return "（Lyst 僅 1 筆快照，尚無季對季可比；下季發布後自動帶入）"
     return (
         "```\n" + text + "\n```\n"
-        "*（↑ 上方為 `data/rankings/lyst-index.yml` 自有歷史的季對季計算，非來源標示的 move 欄；"
+        "*（↑ 上方為 `data/rankings/lyst-index.yml` 自有歷史的季對季計算；新進／重返依來源標示的 move 欄；"
         "填 🆚 對照基準 / 📈 升溫退燒時以此為客觀依據，別只憑體感。）*"
     )
 

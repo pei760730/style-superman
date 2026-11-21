@@ -20,36 +20,50 @@ def snapshots(data: dict) -> list[dict]:
 
 
 def lyst_comparison_text(data: dict, top: int | None = None) -> str | None:
-    """比對最新兩季品牌名次（用我們自己的歷史，而非來源標示），回傳格式化字串。
+    """比對最新兩季品牌名次（名次升降用我們自己的歷史計算），回傳格式化字串。
     快照不足 2 筆回傳 None。top 限制顯示前 N 名（None＝全部）。供月報骨架使用。
 
     前季若是殘缺快照（`coverage: partial`，如媒體轉載 Top 10、非官方完整 Top 20），
     「不在前季榜上」≠ 真的新進榜——會吐一堆假「🆕 新進榜」。偵測到就標警告、把無法判定的
-    標明、並略過「掉出榜外」（殘缺榜本來就沒列全），改提示看快照內建 move 欄。"""
+    標明、並略過「掉出榜外」，改提示看快照內建 move 欄。
+    本季若殘缺，也略過「掉出榜外」：未出現在摘錄裡的品牌不等於掉榜。
+    前季完整時，本季榜的 move 欄可區分新進與重返；缺來源標示只說本季入榜。"""
     snaps = snapshots(data)
     if len(snaps) < 2:
         return None
 
     new, old = snaps[0], snaps[1]
     old_partial = "partial" in str(old.get("coverage", "")).lower()
+    new_partial = "partial" in str(new.get("coverage", "")).lower()
     old_rank = {b["name"]: b["rank"] for b in old.get("brands", [])}
     lines = [f"📊  Lyst 品牌名次：{old.get('period')} → {new.get('period')}", "  " + "-" * 48]
     if old_partial:
         lines.append(f"  ⚠ 前季（{old.get('period')}）為殘缺快照（{old.get('coverage')}）：")
         lines.append("     季對季變動不可靠，未匹配到的不代表新進榜。請改看各快照內建的 move 欄。")
+    if new_partial:
+        lines.append(f"  ⚠ 本季（{new.get('period')}）為殘缺快照（{new.get('coverage')}）：")
+        lines.append("     未收錄的品牌不等於掉榜，本次不判定掉榜。")
+    if old_partial or new_partial:
         lines.append("  " + "-" * 48)
     brands = new.get("brands", [])
     for b in brands[: top or len(brands)]:
         name, rank = b["name"], b["rank"]
         if name not in old_rank:
-            change = "－（前季殘缺，無法判定）" if old_partial else "🆕 新進榜"
+            if old_partial:
+                change = "－（前季殘缺，無法判定）"
+            elif b.get("move") == "re-entry":
+                change = "重返榜"
+            elif b.get("move") == "new":
+                change = "🆕 新進榜"
+            else:
+                change = "本季入榜（上季未列榜）"
         else:
             diff = old_rank[name] - rank  # 名次變小 = 上升
             change = "— 持平" if diff == 0 else (f"↑ {diff}" if diff > 0 else f"↓ {abs(diff)}")
         lines.append(f"  {rank:>2}. {name:<18} {change}")
 
-    # 前季殘缺時「掉出榜外」無意義（殘缺榜沒列全），略過不誤導
-    if not old_partial:
+    # 任一季殘缺時都不列「掉出榜外」；尤其不能把本季摘錄沒列的當成掉榜。
+    if not (old_partial or new_partial):
         dropped = [n for n in old_rank if n not in {b["name"] for b in brands}]
         if dropped:
             lines.append(f"\n  掉出榜外：{', '.join(dropped)}")

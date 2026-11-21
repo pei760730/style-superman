@@ -1,3 +1,5 @@
+import pytest
+
 from scripts import generate_monthly_heat_report as monthly
 
 
@@ -112,6 +114,37 @@ def test_main_writes_draft_and_does_not_overwrite(tmp_path, monkeypatch, capsys)
     monthly.main()
     assert out.read_text(encoding="utf-8") == "first"
     assert "已存在，未覆蓋" in capsys.readouterr().out
+
+
+
+@pytest.mark.parametrize("template_bytes", [None, b"", b" \r\n", b"\xff"])
+@pytest.mark.parametrize("draft", [False, True])
+def test_main_rejects_unusable_template_without_writing_output(
+    tmp_path, monkeypatch, capsys, template_bytes, draft
+):
+    template = tmp_path / "monthly_heat_report_template.md"
+    if template_bytes is not None:
+        template.write_bytes(template_bytes)
+    output = tmp_path / "reports" / "monthly"
+    monkeypatch.setattr(monthly, "ROOT", tmp_path)
+    monkeypatch.setattr(monthly, "OUT_DIR", output)
+    monkeypatch.setattr(monthly, "TEMPLATE", template)
+    monkeypatch.setattr(monthly, "DATA_DIR", tmp_path / "data")
+    monkeypatch.setattr(monthly, "RANKINGS_DIR", tmp_path / "data" / "rankings")
+    args = ["prog", "--month", "2026-08", "--region", "jp"]
+    if draft:
+        args.append("--draft")
+    monkeypatch.setattr(monthly.sys, "argv", args)
+
+    with pytest.raises(SystemExit) as failure:
+        monthly.main()
+
+    assert failure.value.code == 2
+    captured = capsys.readouterr()
+    assert "monthly_heat_report_template.md" in captured.err
+    assert "Traceback" not in captured.err
+    assert "已產出骨架" not in captured.out
+    assert not output.exists()
 
 
 def test_every_region_scoped_ranking_file_is_claimed_as_a_baseline():

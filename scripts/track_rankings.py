@@ -20,13 +20,14 @@ def snapshots(data: dict) -> list[dict]:
 
 
 def lyst_comparison_text(data: dict, top: int | None = None) -> str | None:
-    """比對最新兩季品牌名次（用我們自己的歷史，而非來源標示），回傳格式化字串。
+    """比對最新兩季品牌名次（名次升降用我們自己的歷史計算），回傳格式化字串。
     快照不足 2 筆回傳 None。top 限制顯示前 N 名（None＝全部）。供月報骨架使用。
 
     前季若是殘缺快照（`coverage: partial`，如媒體轉載 Top 10、非官方完整 Top 20），
     「不在前季榜上」≠ 真的新進榜——會吐一堆假「🆕 新進榜」。偵測到就標警告、把無法判定的
     標明、並略過「掉出榜外」，改提示看快照內建 move 欄。
-    本季若殘缺，也略過「掉出榜外」：未出現在摘錄裡的品牌不等於掉榜。"""
+    本季若殘缺，也略過「掉出榜外」：未出現在摘錄裡的品牌不等於掉榜。
+    前季完整時，本季榜的 move 欄可區分新進與重返；缺來源標示只說本季入榜。"""
     snaps = snapshots(data)
     if len(snaps) < 2:
         return None
@@ -48,7 +49,14 @@ def lyst_comparison_text(data: dict, top: int | None = None) -> str | None:
     for b in brands[: top or len(brands)]:
         name, rank = b["name"], b["rank"]
         if name not in old_rank:
-            change = "－（前季殘缺，無法判定）" if old_partial else "🆕 新進榜"
+            if old_partial:
+                change = "－（前季殘缺，無法判定）"
+            elif b.get("move") == "re-entry":
+                change = "重返榜"
+            elif b.get("move") == "new":
+                change = "🆕 新進榜"
+            else:
+                change = "本季入榜（上季未列榜）"
         else:
             diff = old_rank[name] - rank  # 名次變小 = 上升
             change = "— 持平" if diff == 0 else (f"↑ {diff}" if diff > 0 else f"↓ {abs(diff)}")

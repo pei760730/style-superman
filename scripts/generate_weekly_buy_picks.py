@@ -62,13 +62,22 @@ def latest_ranking_periods() -> list[str]:
     return parts
 
 
+class WeeklyTemplateError(Exception):
+    """The weekly template is unusable; leave existing reports untouched."""
+
+
 def build(day: dt.date) -> tuple[str, str]:
     """回傳 (週標籤 YYYY-Wnn, 骨架全文)。"""
     iso = day.isocalendar()
     week_label = f"{iso[0]}-W{iso[1]:02d}"
     monday, sunday = week_bounds(day)
 
-    body = TEMPLATE.read_text(encoding="utf-8")
+    try:
+        body = TEMPLATE.read_text(encoding="utf-8")
+    except (OSError, UnicodeError) as exc:
+        raise WeeklyTemplateError(f"無法讀取週報模板 {TEMPLATE}：{exc}") from exc
+    if not body.strip():
+        raise WeeklyTemplateError(f"週報模板 {TEMPLATE} 是空白的")
     body = body.replace("{{week}}", week_label)
     body = body.replace("{{date_range}}", f"{monday.isoformat()} ～ {sunday.isoformat()}")
 
@@ -95,7 +104,10 @@ def main() -> None:
             parser.error(f"--date 須為合法 YYYY-MM-DD（收到 {args.date!r}）")
     else:
         day = dt.datetime.now(dt.timezone(dt.timedelta(hours=8))).date()
-    week_label, body = build(day)
+    try:
+        week_label, body = build(day)
+    except WeeklyTemplateError as exc:
+        parser.error(str(exc))
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     suffix = ".draft.md" if args.draft else ".md"

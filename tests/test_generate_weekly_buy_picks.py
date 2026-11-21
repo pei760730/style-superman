@@ -186,3 +186,31 @@ def test_main_writes_draft_and_refuses_existing_snapshot(tmp_path, monkeypatch, 
     else:
         raise AssertionError("existing archived snapshot must stop the command")
     assert "不覆寫" in capsys.readouterr().out
+
+
+@pytest.mark.parametrize("payload", [None, b"", b" \n\t", b"\xff"])
+@pytest.mark.parametrize("mode", ["archive", "new-draft", "existing-draft"])
+def test_bad_template_never_writes_report(tmp_path, monkeypatch, capsys, payload, mode):
+    template = tmp_path / "template.md"
+    if payload is not None:
+        template.write_bytes(payload)
+    out_dir = tmp_path / "out"
+    target = out_dir / ("2099-W02.md" if mode == "archive" else "2099-W02.draft.md")
+    if mode == "existing-draft":
+        out_dir.mkdir()
+        target.write_bytes(b"keep me")
+    monkeypatch.setattr(weekly, "TEMPLATE", template)
+    monkeypatch.setattr(weekly, "RANKINGS_DIR", tmp_path / "no-rankings")
+    monkeypatch.setattr(weekly, "ROOT", tmp_path)
+    monkeypatch.setattr(weekly, "OUT_DIR", out_dir)
+    args = ["prog", "--date", "2099-01-07"]
+    monkeypatch.setattr(weekly.sys, "argv", args if mode == "archive" else args + ["--draft"])
+
+    with pytest.raises(SystemExit) as error:
+        weekly.main()
+    assert error.value.code == 2
+    assert "週報模板" in capsys.readouterr().err
+    if mode == "existing-draft":
+        assert target.read_bytes() == b"keep me"
+    else:
+        assert not out_dir.exists()

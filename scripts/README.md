@@ -66,7 +66,7 @@ D35（2026-07-25）起由對話觸發（說「速報」,agent 直接跑本腳本
 
 ### `generate_weekly_buy_picks.py`
 產出「本週在紅 Head-to-Toe」骨架（在紅單品情報，非買清單，D15），寫到 `reports/buy_shortlist/YYYY-Wnn.md`（ISO 週）。
-自動帶入週期、本週 daily briefs 清單、各排行快照最新 period；5 區 × 3 樣的挑買內容由 AI（`prompts/weekly_buy_picks.md`）或人工補上。
+模板缺失、無法讀取或空白時，不建立週報或覆寫既有草稿。自動帶入週期與各排行快照最新 period；5 區 × 3 樣的挑買內容由 AI（`prompts/weekly_buy_picks.md`）或人工補上。
 
 ```bash
 python scripts/generate_weekly_buy_picks.py                  # 本週

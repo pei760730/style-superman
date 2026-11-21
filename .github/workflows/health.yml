@@ -73,6 +73,13 @@ jobs:
           GH_REPO: ${{ github.repository }}
         run: |
           # 開 issue 條件：strict 巡檢失敗，或 liveness 偵測到死源候補（404/410/NXDOMAIN;疑遭阻擋/限速不算）。兩者皆無就不開。
+          # 查詢失敗（即使有部分 stdout）不是「沒有既有 issue」；只採用成功查詢的結果。
+          find_open_issue() {
+            gh issue list --label repo-health --state open --json number --jq '.[0].number // empty' || {
+              echo "無法查詢現有 repo-health issue，已停止本輪 issue 更新。" >&2
+              return 1
+            }
+          }
           need=0
           [ "${{ steps.health.outcome }}" = "failure" ] && need=1
           grep -q "死源候補：" health-liveness.txt 2>/dev/null && need=1
@@ -90,7 +97,7 @@ jobs:
             echo "巡檢全綠、無死源。"
             # 轉綠自動關既有 issue：偽陽性 issue 永久掛著每週追評 = 警告衰退成噪音
             # （#122、#186 教訓——三組「死源」本機複核全活,issue 卻一直開著）。
-            stale=$(gh issue list --label repo-health --state open --json number --jq '.[0].number // empty' || echo "")
+            stale=$(find_open_issue) || exit 1
             if [ -n "$stale" ]; then
               gh issue close "$stale" --comment "巡檢轉綠（$(date -u +%Y-%m-%dT%H:%MZ)），自動關閉。若之前列的死源其實是 Actions egress 視角誤報，無需任何動作。"
             fi
@@ -118,7 +125,7 @@ jobs:
           } > issue-body.md
           # `// empty`：無開啟 issue 時 .[0].number 為 null，沒有 fallback 會印出字面 "null"
           # → 走進 comment 分支對 issue "null" 留言而失敗，新 issue 永遠開不出來。
-          existing=$(gh issue list --label repo-health --state open --json number --jq '.[0].number // empty' || echo "")
+          existing=$(find_open_issue) || exit 1
           if [ -n "$existing" ]; then
             gh issue comment "$existing" --body-file issue-body.md
           else

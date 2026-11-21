@@ -62,6 +62,8 @@ python scripts/generate_flash.py --signals-in /tmp/raw.yml --out /tmp/flash.md  
 
 D35（2026-07-25）起由對話觸發（說「速報」,agent 直接跑本腳本;原 flash-brief.yml 按鈕層已廢）；**趨勢判讀 + 挖 picks + For Me 仍是對話 opus 深度版的活，不在這層做**。
 
+即時與 `--signals-in` 都依 raw pack 結構化覆蓋標示各區成功／嘗試數；有記事時也會明示部分來源未讀到。只有本輪讀到且篩選後沒有事件才標「無符合條件」，未覆蓋或舊包缺 `coverage` 不等於沒消息。RSS 暫存包可沿用同一路徑，沒有新增儲存位置。
+
 ### `generate_weekly_buy_picks.py`
 產出「本週在紅 Head-to-Toe」骨架（在紅單品情報，非買清單，D15），寫到 `reports/buy_shortlist/YYYY-Wnn.md`（ISO 週）。
 自動帶入週期、本週 daily briefs 清單、各排行快照最新 period；5 區 × 3 樣的挑買內容由 AI（`prompts/weekly_buy_picks.md`）或人工補上。

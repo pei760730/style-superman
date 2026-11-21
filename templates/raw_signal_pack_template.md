@@ -21,6 +21,20 @@ signals:
     credibility: high|medium|low   # 一手報導=high；轉述/公關稿=medium；推測/單一來源=low
 ```
 
+RSS 收集器也會附可選的頂層 `coverage`。既有 `signals` 不改，人工或舊資料可沒有這段；沒有紀錄表示覆蓋未知，不是零失敗。
+
+```yaml
+coverage:
+  - source_id: fashionsnap
+    region: jp
+    status: ok
+  - source_id: wwd
+    region: us-eu
+    status: unavailable
+```
+
+每個嘗試讀取的來源一筆：`ok` 表示讀到可辨認的 RSS/Atom（無文章、或文章被後續過濾仍算讀到）；`unavailable` 表示沒有取得回應內容；`invalid_feed` 表示取得的內容不能解析為可用的 feed。這記錄的是這份暫存資料的讀取範圍，不是市場全貌或任何日期範圍的完整性。
+
 ## 欄位規則
 
 | 欄位 | 規則 |

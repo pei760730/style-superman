@@ -85,6 +85,8 @@ python scripts/generate_monthly_heat_report.py --month 2026-07 --region jp
 python scripts/generate_monthly_heat_report.py --month 2026-06 --draft   # 產 *.draft.md
 ```
 
+月報模板缺失、無法以 UTF-8 讀取或只有空白時，指令會報錯，不會寫入封存檔或草稿。
+
 月報改對話觸發（D16，無排程）：月初說一聲，agent 跑這支產骨架 → 補內容。內容判斷見 `prompts/monthly_heat_report.md`。
 
 ### `repo_health.py`

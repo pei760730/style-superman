@@ -133,8 +133,17 @@ def source_summary(region: dict) -> str:
     return f"{region['name']}/全球來源 {len(hits)} 個（media {media}、ranking {ranking}）"
 
 
+class MonthlyTemplateError(Exception):
+    """The template is unavailable or unusable; do not write a report."""
+
+
 def build(month: str, region: dict) -> str:
-    body = TEMPLATE.read_text(encoding="utf-8") if TEMPLATE.exists() else "# 月報 · {{month}}\n（找不到模板）\n"
+    try:
+        body = TEMPLATE.read_text(encoding="utf-8")
+    except (OSError, UnicodeError) as exc:
+        raise MonthlyTemplateError(f"無法讀取月報模板 {TEMPLATE}：{exc}") from exc
+    if not body.strip():
+        raise MonthlyTemplateError(f"月報模板 {TEMPLATE} 是空白的")
 
     # 只填可自動推導的 metadata；品牌/單品等判斷留給 AI/人工。
     body = body.replace("{{month}}", month)
@@ -170,7 +179,6 @@ def main() -> None:
         parser.error(f"--month 月份須為 01–12（收到 {args.month!r}）")
 
     region = REGIONS[args.region]
-    OUT_DIR.mkdir(parents=True, exist_ok=True)
     name = f"{args.month}-{region['suffix']}" + (".draft.md" if args.draft else ".md")
     out_path = OUT_DIR / name
 
@@ -178,7 +186,13 @@ def main() -> None:
         print(f"⚠️  {out_path.name} 已存在，未覆蓋。要重產請先刪除或改用 --draft。")
         return
 
-    out_path.write_bytes(build(args.month, region).encode("utf-8"))
+    try:
+        body = build(args.month, region)
+    except MonthlyTemplateError as exc:
+        parser.error(str(exc))
+
+    OUT_DIR.mkdir(parents=True, exist_ok=True)
+    out_path.write_bytes(body.encode("utf-8"))
     print(f"✅ 已產出骨架：{out_path.relative_to(ROOT)}")
     print("   下一步：依 prompts/monthly_heat_report.md 用 AI 或人工填入本月品牌 / 單品判斷。")
 

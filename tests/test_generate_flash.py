@@ -70,8 +70,13 @@ def test_legacy_missing_or_inconsistent_coverage_is_unknown_not_quiet(coverage):
 
 def test_load_signals_and_missing_yaml(tmp_path, monkeypatch):
     path = tmp_path / "signals.yml"
-    path.write_text("signals:\n  - title: Example\n", encoding="utf-8")
-    assert flash._load_signals(str(path)) == ([{"title": "Example"}], None)
+    path.write_text("signals:\n  - {source_id: wwd, region: us-eu, published: '2026-08-18', title: Example}\n",
+                    encoding="utf-8")
+    signals, coverage = flash._load_signals(str(path))
+    assert signals == [{"source_id": "wwd", "region": "us-eu", "published": "2026-08-18", "title": "Example"}]
+    assert coverage is None
+    report = flash.extract(signals, "2026-08-18", coverage=coverage)
+    assert "Example" in report and "白名單來源覆蓋未知" in report
 
     monkeypatch.setattr(flash, "yaml", None)
     try:
@@ -220,3 +225,60 @@ def test_offline_cli_does_not_turn_recorded_total_outage_into_quiet_market(tmp_p
     flash.main()
     report = out.read_text(encoding="utf-8")
     assert "都未查到" in report and "無符合速報條件" not in report
+
+
+@pytest.mark.parametrize(
+    "pack",
+    [
+        b"",
+        b"[]\n",
+        b"coverage:\n- {source_id: wwd, region: us-eu, status: ok}\n",
+        b"signals: null\n",
+        b"signals: {}\ncoverage:\n- {source_id: wwd, region: us-eu, status: ok}\n",
+        b"signals: [broken]\n",
+        b"signals: [{}]\ncoverage: [{source_id: wwd, region: us-eu, status: ok}]\n",
+        b"signals: [{source_id: null, region: us-eu}]\ncoverage: [{source_id: wwd, region: us-eu, status: ok}]\n",
+        b"signals: [{source_id: wwd, region: null}]\ncoverage: [{source_id: wwd, region: us-eu, status: ok}]\n",
+        b"signals: [{source_id: wwd, region: ' '}]\ncoverage: [{source_id: wwd, region: us-eu, status: ok}]\n",
+        b"signals: [{source_id: wwd}]\ncoverage: [{source_id: wwd, region: us-eu, status: ok}]\n",
+        b"signals: [{region: us-eu}]\ncoverage: [{source_id: wwd, region: us-eu, status: ok}]\n",
+        b"signals: [{source_id: wwd, region: us-eu, published: '2026-08-18', title: 123}]\n",
+        b"signals: [\n",
+        b"\xff",
+    ],
+)
+@pytest.mark.parametrize("existing", [False, True])
+def test_offline_cli_rejects_broken_signal_pack_before_writing(tmp_path, monkeypatch, capsys, pack, existing):
+    path = tmp_path / "signals.yml"
+    path.write_bytes(pack)
+    out = tmp_path / "nested" / "flash.md"
+    if existing:
+        out.parent.mkdir()
+        out.write_bytes(b"existing report")
+    monkeypatch.setattr(flash.sys, "argv", ["flash", "--signals-in", str(path), "--out", str(out)])
+
+    with pytest.raises(SystemExit) as exc:
+        flash.main()
+
+    assert exc.value.code == 2
+    captured = capsys.readouterr()
+    assert "--signals-in" in captured.err and "signals.yml" in captured.err
+    assert "速報已產出" not in captured.out
+    if existing:
+        assert out.read_bytes() == b"existing report"
+    else:
+        assert not out.parent.exists()
+
+
+def test_offline_cli_distinguishes_explicit_empty_pack_from_missing_file(tmp_path, monkeypatch, capsys):
+    path = tmp_path / "raw.yml"
+    monkeypatch.setattr(flash.sys, "argv", ["flash", "--signals-in", str(path)])
+    with pytest.raises(SystemExit) as exc:
+        flash.main()
+    assert exc.value.code == 2
+    assert "raw.yml" in capsys.readouterr().err
+
+    path.write_text("signals: []\ncoverage:\n- {source_id: wwd, region: us-eu, status: ok}\n",
+                    encoding="utf-8")
+    flash.main()
+    assert "無符合速報條件" in capsys.readouterr().out

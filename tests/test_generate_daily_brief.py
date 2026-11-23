@@ -1,3 +1,6 @@
+import re
+from pathlib import Path
+
 from scripts import generate_daily_brief as daily
 
 
@@ -84,3 +87,21 @@ def test_main_writes_draft_without_network(tmp_path, monkeypatch):
     daily.main()
 
     assert (tmp_path / "2026-08-18.draft.md").read_text(encoding="utf-8") == "2026-08-18"
+
+
+def test_daily_candidate_pool_instructions_match_seven_column_contract():
+    root = Path(__file__).resolve().parents[1]
+    columns = ("單品", "區", "首見", "次數", "在哪紅", "為什麼", "來源")
+    for path in (
+        "docs/flow_calendar.md",
+        "prompts/daily_scan_orchestration.md",
+        "prompts/daily_trend_brief.md",
+    ):
+        instructions = (root / path).read_text(encoding="utf-8")
+        # Only the candidate-pool row, not the separate For Me report format.
+        row = re.search(
+            r"`reports/buy_shortlist/_candidates\.draft\.md`[^\n]*?(單品\s*｜[^\n]*?來源)(?=[`，）])",
+            instructions,
+        )
+        assert row is not None, f"{path}: candidate-pool columns not found"
+        assert tuple(part.strip() for part in row[1].split("｜")) == columns, path

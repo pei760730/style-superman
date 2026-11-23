@@ -95,6 +95,7 @@ Repo 自我健康檢查（Self-Evolution Loop 的 Observe / Diagnose / Next Acti
 **決策守衛** `data/decision_guards.yml`——已拍板決策的禁用識別字不得回到活文件 / 程式碼）與
 **新鮮度 / 產線**（週挑 / 當月月報缺不缺、Lyst 快照是否落後、
 重定位後產的 daily / monthly 是否符合現行契約——殭屍任務卡的產出層防線），並輸出 Next Actions。
+週挑的「須更正」若大於「複驗」，以 info 標示數字不一致，不顯示更正率，也不擋巡檢。
 
 ```bash
 python scripts/repo_health.py                # 人讀報告 + Next Actions

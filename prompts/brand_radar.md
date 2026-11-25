@@ -20,7 +20,7 @@
 - `KEYWORD`: {{keyword}} — 擁有者給的關鍵字，先用一句話複述你對它的理解（理解錯比挖錯更糟）
 - repo 存量：近 30 天 `reports/daily/`、最新月報、`data/rankings/*.yml` 最新快照、`reports/analysis/`（含過去雷達）、
   `data/brands.yml`、`data/trend_history.yml`（趨勢生命週期基準——判斷炒作 vs 真趨勢先對照）
-- 當下網路查證：媒體、市場數據、話語層、**商品頁**（agent 在對話側查，不在 repo 內接 API——D5）
+- 當下網路查證：媒體、市場數據、話語層、**商品頁**（agent 在對話側查）
 
 ## 流程（四步，順序不可跳）
 

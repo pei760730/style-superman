@@ -82,7 +82,7 @@ brief 的 `🎯 對我最相關 For Me` 是**在紅單品情報**（D15：知道
 ## 5. 自動化開關
 
 - **GitHub Actions**：daily-brief workflow 已**退役並刪檔**（D30，2026-06-27——D16 後 daily 全對話觸發，該 workflow 與 D16 freeze gate 互斥、要交棒的 signals 又被 gitignore，實質無用）。每日 brief 改對話觸發；本機收 RSS 失靈時的備援是直接在本機跑下方腳本（非 workflow_dispatch）。現存 workflow 只剩 `ci.yml` / `health.yml`（巡檢）——`flash-brief.yml` 亦於 D35（2026-07-25）廢除,速報改對話說「速報」由 agent 跑 `generate_flash.py`。
-  AI 撰寫全文由對話中的 agent 做，**不接 repo 內 LLM API**（決策 D5，見 `docs/decisions.md`）。
+  AI 撰寫全文由對話中的 agent 做；腳本**可選配 Claude API**（決策 D43 推翻 D5：只限 Anthropic、預設關、key 走環境變數、每個呼叫點另外拍板，見 `docs/decisions.md`）。
 - **推送（Telegram / Notion 等）**：未拍板。先手動跑順、確認有價值，再自動化；不要為了自動化而自動化。
 
 ## 5.5 系統自我檢查

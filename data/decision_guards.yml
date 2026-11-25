@@ -55,10 +55,10 @@ guards:
       - docs/lessons.md
       - data/decision_guards.yml
 
-  - id: d5-no-llm-api-in-repo
-    decision: "D5（2026-06-04）"
-    reason: "不接 repo 內 LLM API：AI 撰寫走對話 agent / 排程雲端 agent，腳本不呼叫 LLM、不管 API key"
-    pattern: "import anthropic|import openai|from anthropic|from openai|ANTHROPIC_API_KEY|OPENAI_API_KEY"
+  - id: d43-claude-api-only-no-literal-key
+    decision: "D43（2026-11-25，推翻 D5）"
+    reason: "腳本可呼叫 Claude API，但只限 Anthropic（OpenAI 不接）；repo 是 PUBLIC，key 只從環境變數讀，字面值不得進 git"
+    pattern: "import openai|from openai|OPENAI_API_KEY|sk-ant-[A-Za-z0-9_-]{8,}"
     scope:
       - scripts/
       - tests/

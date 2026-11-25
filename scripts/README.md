@@ -39,7 +39,7 @@ python scripts/collect_raw_signals.py --out /tmp/raw.yml --limit 5
 > raw_signal_pack 是中間產物，**不入長期版控**（見 `templates/raw_signal_pack_template.md`）。
 
 ### `fetch_article.py`
-把**單篇文章 URL** 抓成純文字（標題 / 發佈日 / 正文），給寫 brief 的對話 agent 挖 roundup 的實際 picks、補價格與型號用。**純機械抽取、零 LLM**（守 D5）：只做 HTTP + 去標籤 + 壓空白，判讀留在對話端。
+把**單篇文章 URL** 抓成純文字（標題 / 發佈日 / 正文），給寫 brief 的對話 agent 挖 roundup 的實際 picks、補價格與型號用。**純機械抽取、零 LLM**：只做 HTTP + 去標籤 + 壓空白，判讀留在對話端。
 
 ```bash
 python scripts/fetch_article.py https://www.gq.com/gallery/best-linen-shirts-for-men
@@ -52,7 +52,7 @@ python scripts/fetch_article.py <url> --json               # 結構化（status/
 - 為什麼有這支：`body_fetchable: false` 有六個源是 2026-06-14 用 WebFetch 視角量錯的（本機複驗全 200、價格與 picks 都在）。要再封一個源的正文，得本機實測 + 填 `body_fetch_note`，`validate_repo` 會擋。
 
 ### `generate_flash.py`
-⚡ **速報層**（D19）：對白名單硬資訊源做**純機械抽取**（零 LLM，守 D5），寫到 `reports/flash/YYYY-MM-DD.md`。回答「今天有什麼上了 / 漲了 / 併了」，帶 RSS summary 內現成的 SKU / 價格 / 發售日。只收「標題即資訊」的發售 / 新品 / 併購 / 漲價硬源（`hypebeast` 系 / `sneakernews` / `wwd` / `fashionsnap` / `senken` / 錶源），**排除**需要逐篇判讀的 roundup / editorial / clickbait（那些留對話深度版）。因為只機械抽取、不讓 LLM 假裝判讀，不會退化成 D16 砍掉的「空殼 roundup」。
+⚡ **速報層**（D19）：對白名單硬資訊源做**純機械抽取**（零 LLM），寫到 `reports/flash/YYYY-MM-DD.md`。回答「今天有什麼上了 / 漲了 / 併了」，帶 RSS summary 內現成的 SKU / 價格 / 發售日。只收「標題即資訊」的發售 / 新品 / 併購 / 漲價硬源（`hypebeast` 系 / `sneakernews` / `wwd` / `fashionsnap` / `senken` / 錶源），**排除**需要逐篇判讀的 roundup / editorial / clickbait（那些留對話深度版）。因為只機械抽取、不讓 LLM 假裝判讀，不會退化成 D16 砍掉的「空殼 roundup」。
 
 ```bash
 python scripts/generate_flash.py                                  # 收 RSS → stdout
@@ -151,6 +151,6 @@ python -m pytest -q -s tests/test_smoke.py # 同一套驗收（pytest 會收集 
 ## 後續規劃
 - 接更多來源自動收集（非 RSS API；新增來源需人類拍板）
 - 推送（Telegram / Notion / Sheets）——未拍板，先讓 daily 產線跑順
-- AI 撰寫全文走對話 agent / 排程雲端 agent，**不接 repo 內 LLM API**（決策 D5）
+- AI 撰寫全文走對話 agent；腳本**可選配 Claude API**（決策 D43，推翻 D5：只限 Anthropic、預設關、key 走環境變數、每個呼叫點另外拍板）
 
 詳見 [docs/operating_manual.md](../docs/operating_manual.md)。

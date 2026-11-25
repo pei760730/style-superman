@@ -4,7 +4,7 @@
 >
 > **輪替規則（2026-07-06）**：本檔只保留**全量總覽表 + 最近 5 條完整條目**；Record 新決策時若完整條目超過 5 條，同 PR 把最舊的整段搬進 `docs/decisions-archive.md`（完整脈絡查 archive 或 git 歷史）。
 
-## 決策總覽（D1–D42 全量；完整敘事 D1–D36 見 `docs/decisions-archive.md`）
+## 決策總覽（D1–D43 全量；完整敘事 D1–D38 見 `docs/decisions-archive.md`）
 
 | # | 拍板結論（一句話） | 日期 | guard |
 |---|--------------------|------|-------|
@@ -12,7 +12,7 @@
 | D2 | 月報主榜固定 Top 5 + 浮動觀察名單 3–5 條 | 首輪（2026-06-04 前後） | 無 |
 | D3 | 挑買池採 reports/buy_shortlist/（後演進為週檔）；內容生產殘留（選題池等）全清 | 首輪；追記至 2026-06-11 | 有：positioning-no-content-production |
 | D4 | 立來源 tier 判斷原則；不批量重排既有 tier | 首輪（2026-06-04 前後） | 無 |
-| D5 | 不接 repo 內 LLM API、C7 不做；AI 撰寫走對話 agent | 2026-06-04 | 有：d5-no-llm-api-in-repo |
+| D5 | 不接 repo 內 LLM API、C7 不做；AI 撰寫走對話 agent（**D43 推翻「腳本不呼叫 LLM、不管 key」，只限 Claude API**） | 2026-06-04 | 已改：d43-claude-api-only-no-literal-key |
 | D6 | 全域審計四項工程提案全部否決、不可回頭（共用模組／平行契約檔／設定驅動重構／月報回補） | 2026-06-11 | 有：audit-rejected-over-engineering |
 | D7 | 第一性原理瘦身＋立反熵原則（不依賴人類定期勞動；新檢查只由重複教訓硬化） | 2026-06-11 | 無 |
 | D8 | 終審 ≠ merge：例行產出驗證綠即自 merge；人類終審改事後反饋 | 2026-06-12 | 無 |
@@ -50,43 +50,7 @@
 | D40 | 自我進化迴圈補判斷軸：週挑複驗數／教訓重演計數／雷達回測扳機 + 派工跳過清單改推導 | 2026-09-03 | 無（info 級 health 檢查；文件規則） |
 | D41 | 隨選單品調研落成對話規格：結論先行、尺寸用量測比基準、證據分層；避羊毛但不延伸到其他天然纖維 | 2026-10-09 | 無 |
 | D42 | 品牌雷達：熟悉品牌改當比較基準、熱度與「值得認識」分開、商品層深挖 | 2026-10-18 | 無 |
-
-## D37 — daily For Me 回流候選池：對話 agent 為唯一 writer（2026-07-30）
-
-### 背景
-
-`_candidates.draft.md`（D26 候選池）**沒有任何 writer**：`generate_daily_brief.py` 不寫它、`generate_weekly_buy_picks.py` 只帶「訊號依據」文字不讀它。每日 For Me 是對話端 ephemeral（D16）、寫完即焚 → 池停在 2026-07-04、週挑週一收斂看不到本週 lane 料 → **W28/W30 漂成通用榜的根因**。守 D5（腳本不呼叫 LLM）：不能靠腳本讀 ephemeral brief 回填。
-
-### 拍板
-
-- **每日收斂 Step 6（`prompts/daily_scan_orchestration.md`）**：對話 agent 交付 For Me 後，把當日 For Me **追加**進 `_candidates.draft.md`（gitignored 草稿、非 commit）；同單品次數 +1、更新新事實。此為 daily→weekly 複利的**唯一接口**。
-- 週挑（`prompts/weekly_buy_picks.md` input 0）本就以候選池為收斂主依據 → 接上後 W32 起吃得到本週 lane 料。
-- 守 D5/D16：writer 是對話 agent、非腳本；池是 gitignored 草稿、不入版控、不改 ephemeral 契約。
-
-### 可逆 / guards
-
-可逆（回退 orchestration Step 6 即可）。**不寫 guards**：這是「行為要發生」的正向流程、非「禁某識別字」，靠文件規則 + 每日執行硬化（守 CLAUDE.md「能用文件規則就別寫 code」）；上線後看真實使用（若又停更＝行為沒發生，追根因不補規則，D 規則紀律）。延續 D26 候選池、D29 週挑落後只 INFO。
-
----
-
-## D38 — rankings 硬數據脊椎：救不砍，週挑「炒作 vs 真」必交叉引用（2026-07-30）
-
-### 背景
-
-`data/rankings/*.yml`（Lyst / KREAM / MUSINSA / SNKRDUNK / StockX）D21 後改「AI 對話中直接編」，但**沒人編 → 全停在 6 月**（Lyst 6/12、StockX 6/10）、health「Lyst 落後 2 季」。週挑「炒作 vs 真」目前純判讀、無量化背書＝半套。問：救還是砍。
-
-### 拍板
-
-- **救（deepen），不砍**：rankings 是「炒作 vs 真」唯一客觀依據，砍了週挑核心使命（找溢價陷阱/季節錯位）就沒硬地基。
-- **機制（`prompts/weekly_buy_picks.md` 挑選規則）**：「炒作 vs 真」從只對照 `trend_history` 升級成**必加對照 `data/rankings` 量化名次** + 新鮮度守則（逾發布 lag 明標過期、對話端刷新）。
-- **刷新紀律**：MUSINSA 抓 `주간`週榜（集計 confirmed 當年）非 `월간`月榜陷阱（承 C）；反爬站走 Firecrawl/WebFetch 反驗後寫 dated 快照（D22–D24）。
-- **範圍誠實**：本 PR 只上機制；5 個 6 月快照的實際 data 刷新是另一次驗證 pass（KREAM/SNKRDUNK/Lyst 反爬、本 session 未掛 Firecrawl → 不編假數字）。
-
-### 可逆 / guards
-
-可逆（回退挑選規則即可）。不寫 guards（正向流程）。承 C（週榜非月榜）、D22–D24（反爬快照）、D29（health 不因 rankings 落後變紅）。
-
----
+| D43 | 推翻 D5：腳本可呼叫 Claude API（只限 Anthropic、預設關、key 只從環境變數讀）；只解鎖、不新增呼叫點 | 2026-11-25 | 有：d43-claude-api-only-no-literal-key |
 
 ## D39 — reader 證據紀律納入 schema 契約（2026-08-15，擁有者派工拍板）
 ### 背景
@@ -131,3 +95,19 @@ D10／D15 留下「真要入手是隨選的另一條（定番調研）」，但 
 - 驗收：兩組前後雷達＋prompt 定稿（`eb65037`）後才跑的保留案例（高爾夫）＋一次局部更新，皆在 `reports/analysis/2026-10-18-*`。
 ### 可逆 / guards
 可逆（還原 `prompts/brand_radar.md`）。不加 guard、不加檢查（D7：單次改版）。編號跳過 D41（PR #248 草稿已佔用）。
+
+## D43 — 推翻 D5：腳本可呼叫 Claude API（2026-11-25，擁有者「修改」）
+### 背景
+擁有者的 Max 方案每月附 US$100 Claude API 額度（Console 組織，帳單週期結束不累積）。擁有者 2026-11-25 原文：「style-superman：repo 規則本來就禁止呼叫 API 修改」。
+D5（2026-06-04）的理由逐條對照現況：
+- 「每月帳單」：額度是方案附贈，在額度內不另付費 → **不再成立**。
+- 「排程雲端 agent 已接近無人值守」：D16 已刪掉全部排程 routine，repo 現在**沒有任何**無人值守的 AI 路徑 → **前提已不在**。D5 自己寫「若日後真有無人值守的硬需求再重啟」。
+- 「金鑰管理、額外失敗點、編造風險」：**仍成立**，由下列規則守住。
+### 拍板
+- 腳本**可以**呼叫 Anthropic Claude API；OpenAI 仍不接。
+- **本條只解鎖，不新增任何呼叫點。**每個新的呼叫點（用在哪、哪個模型、多久跑一次）要擁有者另外拍板，照本檔開頭「費用或供應商選型需人類拍板」。
+- 預設關閉：沒設 key 時，腳本行為跟現在完全一樣（API 層是選配、不是相依）。
+- key 只從環境變數讀（變數名稱在第一個呼叫點定）；**本 repo 是 PUBLIC**，key 的值不得出現在 git、log、報告或 issue。
+- 不變：D16（全對話觸發、0 排程 routine）、D20（掃描判讀屬內容層）、證據門檻（進推薦位前必讀原文、不准編熱度）。API 產出的文字也要過同一道證據門檻，不因為是腳本寫的就免檢。
+### 可逆 / guards
+可逆（還原本條、把 guard 改回 `d5-no-llm-api-in-repo`）。guard `d5-no-llm-api-in-repo` 改為 `d43-claude-api-only-no-literal-key`：續擋 OpenAI（`import openai`／`from openai`／`OPENAI_API_KEY`），另擋 Anthropic key 字面值（`sk-ant-` 開頭）進 scripts／tests／.github。

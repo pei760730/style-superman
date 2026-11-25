@@ -304,6 +304,22 @@ def test_weekly_review_parses_field_and_grandfathers_older_weeks(tmp_path, monke
     assert "推薦 15、複驗 3、須更正 1（更正率 1/3）" in got.message
 
 
+def test_weekly_review_does_not_compute_rate_for_inconsistent_counts(tmp_path, monkeypatch):
+    monkeypatch.setattr(health, "ROOT", tmp_path)
+    path = tmp_path / "reports" / "buy_shortlist" / "2099-W01.md"
+    for reviewed, fixed in [(2, 3), (0, 1)]:
+        _write(path, f"**上週複驗：** 推薦 15 ／ 複驗 {reviewed} ／ 須更正 {fixed}")
+        finding, = health.check_weekly_review()
+        assert finding.level == "info"
+        assert f"複驗 {reviewed}、須更正 {fixed}（數字不一致）" in finding.message
+        assert "更正率" not in finding.message
+
+    _write(path, "**上週複驗：** 推薦 15 ／ 複驗 0 ／ 須更正 0")
+    finding, = health.check_weekly_review()
+    assert finding.level == "info"
+    assert "複驗 0、須更正 0（更正率 —）" in finding.message
+
+
 def test_lessons_recurrence_counts_only_soft_explicit_tags_without_hardened_mark(tmp_path, monkeypatch):
     """D40 重演計數的判準粒度：只數 Soft 區、只認顯式標籤、門檻 N 與 N−1 分開、「｜已硬化」即關閉、非整數忽略。"""
     monkeypatch.setattr(health, "ROOT", tmp_path)

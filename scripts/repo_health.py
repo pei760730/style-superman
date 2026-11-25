@@ -634,6 +634,8 @@ def check_weekly_review() -> list[Finding]:
             "週挑收斂時填 header 的「上週複驗：推薦 N ／ 複驗 N ／ 須更正 N」——來源是候選池 ⚠️ 區塊，不是新調查",
         )]
     rec, chk, fix = (int(x) for x in m.groups())
+    if fix > chk:
+        return [Finding("info", f"{label} 上週複驗：推薦 {rec}、複驗 {chk}、須更正 {fix}（數字不一致）")]
     rate = f"{fix}/{chk}" if chk else "—"
     return [Finding("info", f"{label} 上週複驗：推薦 {rec}、複驗 {chk}、須更正 {fix}（更正率 {rate}）")]
 

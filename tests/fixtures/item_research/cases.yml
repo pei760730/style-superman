@@ -2,7 +2,7 @@
 # 全部是合成資料：品牌、價格、量測、網址都是編的（網址用 .invalid 保證點不開、不會被誤當真站）。
 # 基準衣量測也是合成值，不是擁有者的身體或衣物資料——真基準只在對話裡給，不進 repo。
 #
-# 用法（無 LLM API，D5）：改 prompts/item_research.md 後，在對話裡把每個 case 的 turns 依序貼給 agent，
+# 用法（不經 LLM API）：改 prompts/item_research.md 後，在對話裡把每個 case 的 turns 依序貼給 agent，
 # 照下方 rubric 逐條打勾，跟上一次的結果比。不是 pytest 會讀的檔。
 
 captured_at: "2026-10-09T23:55+08:00"   # 所有快照的凍結時間（動態資訊一律以此為「查詢時間」）

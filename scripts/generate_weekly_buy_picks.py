@@ -4,7 +4,7 @@ generate_weekly_buy_picks.py
 ============================
 產出「本週在紅 Head-to-Toe」的骨架草稿（在紅單品情報，非買清單，D15）。
 
-這支腳本不做 AI 撰寫（決策 D5），它負責：
+這支腳本不做 AI 撰寫，它負責：
   1. 算出 ISO 週期與日期範圍（週一～週日）
   2. 載入 templates/weekly_buy_picks_template.md
   3. 自動帶入「本週訊號依據」：各排行快照最新 period（daily briefs 清單已拆——D16 後

@@ -4,7 +4,7 @@
 #       各掃自己那一區 / lane，回來後彙整去重。把多區 fan-out 的「覆蓋與密度」固化成規格，
 #       不靠臨場記憶（痛點：臨場開 agent，密度與覆蓋不穩定）。
 #
-# 這不是會跑 LLM 的腳本（守 D5：腳本不呼叫 LLM、不管 key）。派工 / 收斂由「對話 agent」做
+# 這不是會跑 LLM 的腳本（本清單沒有任何 LLM 呼叫點；D43 後腳本可選配 Claude API，但呼叫點要另外拍板）。派工 / 收斂由「對話 agent」做
 #   （D16 全對話觸發、D20 內容層封給對話 + 人、D21 介面只有對話一條）——本檔只是「我每次照掃的規格」。
 # 協定（怎麼派工 / 收斂）見 prompts/daily_scan_orchestration.md；
 # 判讀規則 / 來源清單 / 證據門檻見 prompts/daily_trend_brief.md；輸出契約見 templates/daily_brief_template.md。

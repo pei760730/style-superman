@@ -11,7 +11,7 @@ generate_daily_brief.py
   4. 把 draft 寫到 reports/daily/YYYY-MM-DD.md
 
 之後由對話 agent（prompts/daily_trend_brief.md）判讀與撰寫實際內容。
-收訊號走 collect_raw_signals.py（RSS）；repo 內不呼叫 LLM API（D5），腳本只產骨架。
+收訊號走 collect_raw_signals.py（RSS）；本腳本不呼叫 LLM，只產骨架。
 
 用法：
     python scripts/generate_daily_brief.py                # 用今天日期

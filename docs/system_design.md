@@ -60,7 +60,7 @@ Style Superman 是一套 **Men's Fashion & Culture Intelligence System**（給�
 | 階段 | 現在 | 未來接什麼 |
 |------|------|-----------|
 | 收集 | RSS 半自動（`collect_raw_signals.py`）+ 人工巡檢 | 更多來源（非 RSS API；新增需人類拍板） |
-| 分類/簡報 | AI 撰寫由對話中的 agent 做（**不接 repo 內 LLM API**，決策 D5） | — |
+| 分類/簡報 | AI 撰寫由對話中的 agent 做（腳本可選配 Claude API，呼叫點逐一拍板，決策 D43 推翻 D5） | — |
 | 排程 | **0 支雲端 routine（D16）**：daily / 週挑 / 月報全對話觸發。daily-brief workflow 已於 D30 退役刪檔（與 freeze gate 互斥、signals 被 gitignore，實質無用）；收 RSS 失靈時在本機跑 `generate_daily_brief.py` | — |
 | 推送 | 無 | Telegram / Notion / Sheets（未拍板，先手動跑順再說） |
 | 儲存 | Markdown 檔 | 之後可加 DB / 向量檢索做歷史回顧 |

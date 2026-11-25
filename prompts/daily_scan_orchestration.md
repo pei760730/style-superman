@@ -5,7 +5,7 @@
 全部回來後做一次收斂（去重 → 歸檔 → 組裝）成當天 daily brief。
 
 > **架構定位（守紅線）**：這裡的「主控」是**對話 agent**（你），不是會跑 LLM 的腳本——
-> 腳本不呼叫 LLM、不管 key（D5）；掃描判讀屬內容層、封給對話 + 人（D20）；介面只有對話一條（D21）；
+> 腳本預設不呼叫 LLM（D43：Claude API 為選配、呼叫點逐一拍板）；掃描判讀屬內容層、封給對話 + 人（D20）；介面只有對話一條（D21）；
 > daily brief 全對話觸發、不排程（D16）。本檔是**協定**，工作清單在 `data/scan_units.yml`，
 > 判讀規則 / 來源 / 證據門檻在 `prompts/daily_trend_brief.md`，輸出契約在 `templates/daily_brief_template.md`。
 

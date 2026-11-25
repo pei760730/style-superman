@@ -143,6 +143,8 @@
 
 ## D5 — LLM 供應商策略
 
+> **2026-11-25 已由 D43 推翻**「腳本不呼叫 LLM、不管 key」（見 `docs/decisions.md` D43）；以下為原始脈絡。
+
 ### 選項
 
 1. **先只保留手動 prompt 流程**
@@ -910,5 +912,42 @@ D25/D26（2026-06-23，**昨天**）才設好週挑的「週一早安觸發 + �
 ### 可逆 / guards
 
 可逆（刪腳本 + 還原旗標即回復）。**不寫 `decision_guards`**：這裡要擋的不是某個識別字，而是「沒有本機證據就封源」，已用 `validate_repo` 契約檢查硬化（比識別字守衛更貼題）；回歸鎖在 `tests/test_smoke.py` 9i / 9i-2（含 `known_domains` 的 `lstrip("www.")` 字元集合陷阱）。延續 #193 視角感知、D5 零 LLM、D18 不新增來源、D30/D35 本機執行。
+
+---
+
+## D37 — daily For Me 回流候選池：對話 agent 為唯一 writer（2026-07-30）
+
+### 背景
+
+`_candidates.draft.md`（D26 候選池）**沒有任何 writer**：`generate_daily_brief.py` 不寫它、`generate_weekly_buy_picks.py` 只帶「訊號依據」文字不讀它。每日 For Me 是對話端 ephemeral（D16）、寫完即焚 → 池停在 2026-07-04、週挑週一收斂看不到本週 lane 料 → **W28/W30 漂成通用榜的根因**。守 D5（腳本不呼叫 LLM）：不能靠腳本讀 ephemeral brief 回填。
+
+### 拍板
+
+- **每日收斂 Step 6（`prompts/daily_scan_orchestration.md`）**：對話 agent 交付 For Me 後，把當日 For Me **追加**進 `_candidates.draft.md`（gitignored 草稿、非 commit）；同單品次數 +1、更新新事實。此為 daily→weekly 複利的**唯一接口**。
+- 週挑（`prompts/weekly_buy_picks.md` input 0）本就以候選池為收斂主依據 → 接上後 W32 起吃得到本週 lane 料。
+- 守 D5/D16：writer 是對話 agent、非腳本；池是 gitignored 草稿、不入版控、不改 ephemeral 契約。
+
+### 可逆 / guards
+
+可逆（回退 orchestration Step 6 即可）。**不寫 guards**：這是「行為要發生」的正向流程、非「禁某識別字」，靠文件規則 + 每日執行硬化（守 CLAUDE.md「能用文件規則就別寫 code」）；上線後看真實使用（若又停更＝行為沒發生，追根因不補規則，D 規則紀律）。延續 D26 候選池、D29 週挑落後只 INFO。
+
+---
+
+## D38 — rankings 硬數據脊椎：救不砍，週挑「炒作 vs 真」必交叉引用（2026-07-30）
+
+### 背景
+
+`data/rankings/*.yml`（Lyst / KREAM / MUSINSA / SNKRDUNK / StockX）D21 後改「AI 對話中直接編」，但**沒人編 → 全停在 6 月**（Lyst 6/12、StockX 6/10）、health「Lyst 落後 2 季」。週挑「炒作 vs 真」目前純判讀、無量化背書＝半套。問：救還是砍。
+
+### 拍板
+
+- **救（deepen），不砍**：rankings 是「炒作 vs 真」唯一客觀依據，砍了週挑核心使命（找溢價陷阱/季節錯位）就沒硬地基。
+- **機制（`prompts/weekly_buy_picks.md` 挑選規則）**：「炒作 vs 真」從只對照 `trend_history` 升級成**必加對照 `data/rankings` 量化名次** + 新鮮度守則（逾發布 lag 明標過期、對話端刷新）。
+- **刷新紀律**：MUSINSA 抓 `주간`週榜（集計 confirmed 當年）非 `월간`月榜陷阱（承 C）；反爬站走 Firecrawl/WebFetch 反驗後寫 dated 快照（D22–D24）。
+- **範圍誠實**：本 PR 只上機制；5 個 6 月快照的實際 data 刷新是另一次驗證 pass（KREAM/SNKRDUNK/Lyst 反爬、本 session 未掛 Firecrawl → 不編假數字）。
+
+### 可逆 / guards
+
+可逆（回退挑選規則即可）。不寫 guards（正向流程）。承 C（週榜非月榜）、D22–D24（反爬快照）、D29（health 不因 rankings 落後變紅）。
 
 ---

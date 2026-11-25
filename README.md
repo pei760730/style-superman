@@ -45,7 +45,7 @@
 
 ### ⚡ Style 速報 — 對話觸發（D19 機械抽取原則 × D35 對話入口）
 
-- 對話說「速報」→ agent 跑 `scripts/generate_flash.py`：白名單硬資訊源（hypebeast / sneakernews / WWD / fashionsnap / senken / 錶源…）**純機械抽取（零 LLM，守 D5）**，排成「今天有什麼上了 / 漲了 / 併了」+ 現成 SKU / 價格 / 發售日。
+- 對話說「速報」→ agent 跑 `scripts/generate_flash.py`：白名單硬資訊源（hypebeast / sneakernews / WWD / fashionsnap / senken / 錶源…）**純機械抽取（零 LLM）**，排成「今天有什麼上了 / 漲了 / 併了」+ 現成 SKU / 價格 / 發售日。
 - **刻意不做趨勢判讀 / 不挖 picks / 不下熱度結論**——那是深度版的活。只做機械抽取、不讓 LLM 假裝判讀，從根上不退化成被砍掉的「空殼 roundup」（D16）。
 - 產出對話即讀（同 daily brief）；歷史檔留在 [reports/flash/](reports/flash/)。原 `flash-brief.yml` 手機按鈕層 6 週 1 次使用、與擁有者「只在對話觸發」矛盾 → D35 廢除（2026-07-25）。
 
@@ -115,7 +115,7 @@
 | D2 | 月報主榜固定 Top 5 | 另列浮動觀察名單收早期訊號——主榜只收高信心 |
 | D3 | 挑買 shortlist 取代選題池 | 個人挑買重定位（2026-06-05）的落地，內容生產視角全面移除 |
 | D4 | 來源 tier 不批量改 | 重分級走資料 PR 逐筆說明，來源可信度是內容判斷 |
-| D5 | repo 內不接 LLM API | AI 撰寫走對話 agent；腳本只做確定性工作、不管 API key |
+| D5 | repo 內不接 LLM API（**D43 推翻**） | 2026-11-25 起腳本可接 Claude API（只限 Anthropic、預設關、key 走環境變數）；每個呼叫點另外拍板，日常 AI 撰寫仍走對話 agent |
 | D6 | 審計四提案全否決 | 共用模組 / 設定外部化等「看起來專業」的工程一律不做，守衛防回流 |
 | D7 | 第一性原理瘦身 | 砍死迴圈與手動勞動依賴；立反熵三原則（新流程不得依賴人類定期手動勞動） |
 | D8 | 終審 ≠ merge | 例行產出驗證綠即自 merge；main 是系統記憶不是批准章，我的終審是事後反饋 |
@@ -254,7 +254,7 @@ python -m pytest -q -s tests/test_smoke.py  # 同一套驗收；會收集並執�
 1. **資料與內容分離** — `data/` 是長期知識底層（複利資本），`reports/` 是封存快照，互不污染。
 2. **人機協作** — 腳本負責確定性工作（骨架、排行追蹤、檔案管理），AI 負責語意整理與挑買建議，人（我）負責品味與買不買。
 3. **格式即契約** — 所有產出走 `templates/`；改欄位必須同步 prompts / docs / 腳本。
-4. **輕依賴、先輕後重** — 標準庫 + pyyaml；不在 repo 內接 LLM API（D5），AI 撰寫走對話 agent。
+4. **輕依賴、先輕後重** — 標準庫 + pyyaml；Claude API 是選配層（D43：預設關、沒 key 照舊跑），AI 撰寫走對話 agent。
 5. **反熵**（D7）— 新流程不得依賴人類定期手動勞動；**健康的終極指標是「產出有沒有持續發生」**（非 commit 比例——D16 後產出對話即焚、commit 比例量不到，2026-06-19 修正）。
 6. **產出有沒有持續發生，比工程漂不漂亮重要。**
 
@@ -267,7 +267,7 @@ python -m pytest -q -s tests/test_smoke.py  # 同一套驗收；會收集並執�
 - [x] 資料底層 + Rankings 模組（歐美 / 韓 / 日五榜；KREAM/MUSINSA Firecrawl 重開 D23、SNKRDUNK 日本球鞋板 D24、ZOZO 確認永久死界）
 - [x] CI（validate + smoke）+ 週期健檢巡檢（自動開 issue）
 - [x] RSS 收集事實層（RSS 源擴到 31、每源抓取 10 → 25；新增來源走 D18 門檻）
-- [x] AI 撰寫走對話 agent（D5：不接 repo 內 LLM API；D16：0 排程 routine、全對話）
+- [x] AI 撰寫走對話 agent（D16：0 排程 routine、全對話；D43：腳本可選配 Claude API，呼叫點逐一拍板）
 - [x] Self-Evolution Loop（repo_health Next Actions + lessons 硬化路徑 + 決策守衛）
 - [x] 每日產線（時區 bug 已修）→ D16 改對話觸發、無排程；daily 斷更看門狗隨之移除（無檔可監控）
 - [x] Daily brief 行動帳 + 密度規則；週挑 / 週趨勢深挖卡節奏

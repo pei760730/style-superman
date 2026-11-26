@@ -196,11 +196,36 @@ def _collect_live() -> tuple[list[dict], list[dict]]:
     return signals, coverage
 
 
+class SignalPackError(Exception):
+    """The offline input cannot safely be used to produce a flash."""
+
+
 def _load_signals(path: str) -> tuple[list[dict], list[dict] | None]:
     if yaml is None:
         sys.exit("⚠️  需要 pyyaml：pip install pyyaml")
-    data = yaml.safe_load(Path(path).read_text(encoding="utf-8")) or {}
-    return data.get("signals", []), data.get("coverage")
+    try:
+        data = yaml.safe_load(Path(path).read_text(encoding="utf-8"))
+    except (OSError, UnicodeError) as exc:
+        raise SignalPackError("無法以 UTF-8 讀取資料") from exc
+    except yaml.YAMLError as exc:
+        raise SignalPackError("YAML 格式錯誤") from exc
+
+    # 覆蓋紀錄不能替缺失的訊號清單背書。只有顯式的 signals: [] 才代表這份包沒有訊號。
+    if not isinstance(data, dict) or not isinstance(data.get("signals"), list):
+        raise SignalPackError("缺少有效的 signals 清單（沒有訊號請寫 signals: []）")
+    for i, signal in enumerate(data["signals"], start=1):
+        if not isinstance(signal, dict):
+            raise SignalPackError(f"signals 第 {i} 筆須為欄位對照表")
+        # Without identity, filtering can drop this row and falsely report a quiet observation.
+        for field in ("source_id", "region"):
+            value = signal.get(field)
+            if not isinstance(value, str) or not value.strip():
+                raise SignalPackError(f"signals 第 {i} 筆缺少有效的 {field}")
+        for field in ("title", "url", "summary"):
+            value = signal.get(field)
+            if value is not None and not isinstance(value, str):
+                raise SignalPackError(f"signals 第 {i} 筆的 {field} 須為文字")
+    return data["signals"], data.get("coverage")
 
 
 def main() -> None:
@@ -219,7 +244,10 @@ def main() -> None:
             parser.error(f"--date 須為合法 YYYY-MM-DD（收到 {args.date!r}）")
     date_str = args.date or dt.datetime.now(dt.timezone(dt.timedelta(hours=8))).date().isoformat()
     if args.signals_in:
-        signals, coverage = _load_signals(args.signals_in)
+        try:
+            signals, coverage = _load_signals(args.signals_in)
+        except SignalPackError as exc:
+            parser.error(f"--signals-in {args.signals_in!r}：{exc}")
     else:
         signals, coverage = _collect_live()
     md = extract(signals, date_str, args.days, coverage=coverage)

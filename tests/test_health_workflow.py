@@ -303,19 +303,27 @@ def test_dead_evidence_and_strict_failure_keep_existing_create_path(
     assert "FAKE_CREATE" in result.stderr
 
 
-def test_issue_list_error_and_stale_issue_events_are_unchanged(tmp_path, monkeypatch):
+@pytest.mark.parametrize("health_outcome", ["success", "failure"])
+@pytest.mark.parametrize("listed", ["", "999"])
+def test_failed_issue_lookup_never_changes_tickets(tmp_path, monkeypatch, health_outcome, listed):
+    # A failed lookup is not an empty list; its stdout cannot authorize a mutation either.
     report, _ = _render(tmp_path, monkeypatch, [("ok", 200)])
-    # API failure without stdout is swallowed, so recovery does not close.
-    result = _issue(tmp_path, report=report, listed="", list_exit=1)
+    result = _issue(
+        tmp_path, report=report, health_outcome=health_outcome, listed=listed, list_exit=1
+    )
+    assert result.returncode != 0
+    assert not any(action in result.stderr for action in ("FAKE_CREATE", "FAKE_COMMENT", "FAKE_CLOSE"))
+
+
+def test_successful_empty_recovery_does_not_mutate(tmp_path, monkeypatch):
+    report, _ = _render(tmp_path, monkeypatch, [("ok", 200)])
+    result = _issue(tmp_path, report=report, listed="")
     assert result.returncode == 0
     assert "FAKE_" not in result.stderr
-    # A stale list can race with closure elsewhere; close failure aborts, no retry.
+
+
+def test_stale_issue_close_is_not_retried(tmp_path, monkeypatch):
+    report, _ = _render(tmp_path, monkeypatch, [("ok", 200)])
     result = _issue(tmp_path, report=report, close_exit=1)
     assert result.returncode == 1
     assert result.stderr.count("FAKE_CLOSE:999") == 1
-    # Existing list-error behavior on the fault path can still create a duplicate.
-    result = _issue(
-        tmp_path, report=report, health_outcome="failure", listed="", list_exit=1
-    )
-    assert result.returncode == 0
-    assert "FAKE_CREATE" in result.stderr
